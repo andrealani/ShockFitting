@@ -1,0 +1,689 @@
+\documentclass[11pt]{article}
+%*******************************************************************
+%--Packages
+%*******************************************************************
+\usepackage[final]{graphicx,epsfig}
+%\usepackage{subfigure}
+%\usepackage{subfigmat}
+\usepackage{amssymb}                       % AMS symbols
+\usepackage{amsmath}                       % AMSTeX Math typing
+\usepackage{amsthm}                        % AMS theorem styles
+\usepackage{amstext}                       % define \text for text in maths
+\usepackage{listings}                      % print syntax-highlighted listings
+%\lstloadlanguages{[ANSI]C++}              % activate ISO C++ language
+\lstset{language=[ANSI]C++}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{color}
+
+\newcommand{\noi}{\noindent}
+\newcommand{\redish}[1]{\color{red}{#1}\color{black}}
+\newcommand{\diff}{\mbox{\,d}}
+\newcommand{\grad}{\mbox{$\nabla$}}
+\newcommand{\divg}{\mbox{$\nabla\cdot$}}
+\newcommand{\rot}{\mbox{$\nabla\times$}}
+\newcommand{\pdiff}{\mbox{$\,\partial$}}
+\newcommand{\f}{\frac}
+\newcommand{\p}{\partial}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\pch}{^{+}}
+\newcommand{\dd}[2]{{\frac{\partial #1}{\partial #2}}}
+\newcommand{\ddn}[2]{{\frac{d #1}{d #2}}}
+\newcommand{\dddn}[2]{{\frac{d^2 #1}{d #2 ^2}}}
+\newcommand{\omg}{\scriptscriptstyle\Omega}
+\newcommand{\pdif}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\mb}[1]{\mathbf#1}
+\newcommand{\smod}[1]{\mid#1\mid}
+
+\hoffset-1.2cm
+\voffset-2.0cm
+\setlength{\textwidth}{15.5cm}
+\setlength{\textheight}{22.5cm}
+
+\renewcommand{\thepage}{\roman{page}}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{Assumption}{Assumption}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Remark}{Remark}
+
+
+\def\div{\mathop{\rm div}}
+\def\divB{\divergence {\bf B}}
+\def\divergence{\mathop{\nabla\cdot}}
+\def\divergencewr{\mathop{{\rm div}}}
+\def\divb{\divergencewr({\bf B})}
+\def\divbn{\divergence{\bf B}}
+
+% Predefined colors are: white, black, red, green, blue, cyan, magenta, yellow
+% Define own dark blue:
+\definecolor{darkblue}{rgb}{0,0,0.7}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 2pt minus 1 pt}
+\topmargin  -5mm
+\evensidemargin 8mm
+\oddsidemargin  2mm
+\textwidth  158mm
+\textheight 230mm
+%\renewcommand{\baselinestretch}{1.0}
+\frenchspacing
+\sloppy
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+  {\fontsize{14}{20}\bf
+    User/Developer's Manual for ShockFitting (SF): \\
+    {\small A modular shock-fitting code for unstructured grids.} \\[10pt]}
+\end{center}
+
+\begin{center}
+  Valentina De Amicis, \underline{valentina.deamicis91@gmail.com}\\
+  Dr. Andrea Lani, \underline{lani@vki.ac.be}\\
+  Prof. Renato Paciorri, \underline{paciorri@dma.ing.uniroma1.it}\\
+  Prof. Aldo Bonfiglioli, \underline{aldo.bonfiglioli@unibas.it}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Introduction}
+
+SF is a modular shock fitting solver that can couple to arbitrary unstructured CFD codes.
+
+\section{Configuration file}
+
+The input file for the code is in a readable text format, where keywords are associated 
+to values according to a dynamic configuration language, which is described hereafter.
+
+\subsection{Format description}
+
+\subsubsection{Full format (discouraged)}\label{ssec:full_format}
+
+The format consists of lines in the form:
+\vspace{-0.2cm}
+\begin{verbatim}
+.OptionA = Value1               # use Value1 as value for OptionA
+.Value1.OptionB = Value2        # use Value2 as value for OptionB
+.Value1.Value2.OptionC = Value3 # use Value3 as value for OptionC
+.Value1.Value2.OptionD = Value4 # use Value4 as value for OptionD
+\end{verbatim} 
+where, in each line, the whole LHS is the keyword and the RHS is the value. The
+latter can be:
+
+\begin{itemize}
+\item
+  an alpha-numerical string
+\item
+  an integer
+\item 
+  a boolean (\texttt{true} or \texttt{false})
+\item
+  a floating point number
+\item
+  an arbitrarily complex analytical function
+\item
+  an array of all the previous.
+\end{itemize}
+The keyword is composed of literal strings separated by ".",
+corresponding to different \textit{entities} (configurable
+objects or parameters) defined inside the actual code. The
+configuration is hierarchical and recursive from top to lowest
+level. The order in which the options are declared in the file are
+irrelevant. If needed, the value can be broken into different lines by using the continuation character (back slash) 
+at the end of each line (note that the number of spaces at the end or
+before the line is irrelevant):
+\vspace{-0.2cm}
+\begin{verbatim}
+.Example.arrays = 4 4 10 \
+                 10 4 \
+                 4 3
+\end{verbatim}
+Comments start with "\#": they can occupy full lines or be
+placed at the end of the line. Full blocks of comments can be enclosed 
+between a starting and ending \textbf{single} "\$", without needing a "\#" in each
+line, as in the example below:
+\vspace{-0.2cm}
+\begin{verbatim}
+$
+block of comments can be conveniently 
+written in this way without needing
+a "#" character in each line 
+$
+\end{verbatim} 
+
+\subsubsection{Compact format (standard)}\label{ssec:compact_format}
+
+The full format example in Sec. \ref{ssec:compact_format} can be
+significantly simplified:
+
+\vspace{-0.2cm}
+\begin{verbatim}
+.OptionA = Value1 
+.Value1 {   # start block of nested options for Value1 (note the ".")
+ .OptionB = Value2 
+ .Value2 {  # start block of nested options for Value2 (note the ".")
+ .OptionC = Value3 ; OptionD = Value4   # semicolon separates options
+ }    # this brace ends the block for OptionB (Value2)
+}     # this brace ends the block for OptionA (Value1)
+\end{verbatim} 
+where, in each line, the LHS of the "=" is the keyword and the RHS is
+the value. Each block of options starts with "{" right after the last
+  value and ends with "}". The latter must be the only character on
+the line, a part from comments, if any. Note that with the compact 
+format, different options can be put \textbf{within the same line}, 
+separated by ";".  While reading the configuration file 
+(see implementation details in SConfig/src/ConfigFileReader.cxx), 
+the compact format is internally converted into the full format.
+
+\subsubsection{Errors handling}
+
+The file parser is able to detect errors of different kind. It will
+raise an exception and abort the code if one the following situations
+occur:
+
+\begin{itemize}
+\item
+  a keyword (explicitly indicated within "$<>$") is duplicated;
+\item
+  a keyword (explicitly indicated within "$<>$") doesn't exist;
+\item 
+  a value is not satisfying some predefined validating conditions.
+\end{itemize}
+If the keyword includes (between two successive ".") the name of a
+polymorphic object (base class or derived class), the corresponding
+option, if defined in the parent class (and therefore inherited by the
+derived ones) can be addressed by both the derived class name or the 
+base class name. {\bf All fields previously defined correspond to base
+  classes}, where most of the options are defined. 
+
+\subsubsection{Warnings}\label{sssec:warnings}
+
+Let's consider the following example:
+\vspace{-0.2cm}
+\begin{verbatim}
+.BaseObject = DerivedObject  # DerivedObject is a derived class of BaseObject
+.BaseObject.pnr = 70         # pnr is an option defined in BaseObject
+.DerivedObject.pnr = 40      # but it is also inherited (and "visible") by DerivedObject 
+\end{verbatim}
+If you specify two options for the same parameter (\texttt{pnr} in our
+case), one with the parent \texttt{BaseObject} and another with the actual
+(derived) name \texttt{DerivedObject}, the parser will not detect an error but 
+will notify a self-explanatory warning:
+\vspace{-0.2cm}
+\small
+\begin{verbatim}
+WARNING: Parameter < pnr > is DUPLICATED: is this what you really expect?
+\end{verbatim}
+In our example, there is actually an error to fix, since it is not
+clear which value the user wants to assign to \texttt{pnr}. If not
+properly fixed, the error could lead to undefined behaviour. \\
+Let's make another example where the warning would actually be harmless:
+\vspace{-0.2cm}
+\begin{verbatim}
+.DerivedObject.Inner.Funs = 181.38 \
+                         1936.18*cos(25./180*pi) \
+                         0. \
+                         1936.18*sin(25./180*pi) \
+                         259.96
+
+.DerivedObject.BcField.Funs = 181.38 \
+                         1936.18*cos(25./180*pi) \
+                         0. \
+                         1936.18*sin(25./180*pi) \
+                         259.96
+\end{verbatim}
+In this case, two distinct fields \texttt{Inner} and
+\texttt{BcField} (not deriving one from each other!)
+have been defined, each one specifying an option named \texttt{Funs},
+corresponding to an array of user-defined functions, one per flow 
+variable. Even though \texttt{Funs} is used twice and all 
+corresponding values are the same, the two keywords refer to 
+different entities and is perfectly normal to get the above
+mentioned warning.
+
+\subsubsection{Log files}\label{sssec:logfiles}
+
+After parsing the configuration file, two output files are written 
+(only by the process with rank 0 in a paralllel simulation):
+\begin{itemize}
+\item
+  config.log, where all detected options key and values are listed; 
+\item
+  options.dat, which dumps all descriptions associated to the
+  option keys corresponding to the selected simulation fields.
+\end{itemize}
+
+\subsubsection{Interactive parameters}
+
+All parameters that have been declared interactive (see
+following section) will be updated after a number of iterations
+indicated by the user (which is also by itself interactively modifiable):
+\vspace{-0.2cm}
+\begin{verbatim}
+.config_rate = 1000 # every 1000 iterations the code updates the configuration
+\end{verbatim}
+
+\newpage
+\section{SConfig: a configuration library (by Andrea Lani)}\label{ssec:sconfig}
+
+The parsing of the configuration file and its interpretation is
+performed by a newly implemented library, that we have denominated
+\textit{SConfig}. The latter combines concepts inspired by 
+\cite{Beveridge} (self-registering objects) and \cite{Yagol} 
+(object configuration) and more sophisticated techniques 
+described in \cite{Quintino08, Lani08} (self-registering
+and self-configuring objects) into a new implementation. \\
+The SConfig library is completely independent from ADPDIS3D 
+and can be linked statically or dynamically to whatever other code to
+take profit of the very general functionalities it provides.\\
+Herein, while the C++ implementation details are left out of the present document,
+the usage of the library from a developer point of view will now be 
+addressed.
+
+\subsection{Self-configuring objects}\label{ssec:self-configuration}
+
+In order to take profit of the self-configuration capability, 
+the developer must define \textbf{objects deriving from \texttt{ConfigObject}} 
+or from other objects already deriving from it. The interface of 
+\texttt{ConfigObject} is shown in listing \ref{clist:ConfigObject}.     
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={ConfigObject interface.},
+  label=clist:ConfigObject]
+  class ConfigObject : public NamedObject {
+    public: 
+    
+    // constructor
+    ConfigObject(const string& name);
+    
+    // virtual destructor
+    virtual ~ConfigObject();
+    
+    // set the parameter corresponding to the following inputs
+    template <typename TYPE>
+    void addOption(const string& optionName, 
+                   TYPE* optionPtr, 
+                   const string& optionDescription, 
+                   bool isDynamic = false,
+                   OptionValidation<TYPE>* condition = NULL);
+    
+    // configure all parameters from file
+    virtual void configure(OptionMap& cmap, string* prefix = NULL);
+    
+    // configure dependent objects
+    virtual void configureDeps(OptionMap& cmap, ConfigObject *const other);
+    
+  protected:
+     // get the name of the parent
+     virtual string getParentName() const = 0;
+
+   ... // private data follows
+  };
+\end{lstlisting}
+\noi
+Here follows some guidelines for activating the self-configuration
+capability.
+\begin{enumerate}
+\item
+  An object deriving from \texttt{ConfigObject} must implement the pure virtual
+  function \texttt{getParentName()} specifying the name of the parent 
+  class. This allows users to specify one of both the parent class name or the
+  derived class name for configurable options defined in the parent (see
+  Sec. \ref{sssec:warnings} for an example), in order not to have to
+  introduce too many changes in new configuration files when adapting
+  them for new cases.
+\item
+  A \texttt{ConfigObject} child needing to declare some options
+  must \textbf{call explicitly the \texttt{addOption()} function for each
+    single option} inside its own constructor, specifying the
+  appropriate arguments to it, namely:
+  \begin{itemize}
+  \item the option name;
+  \item a pointer to the local (in the class) variable to be linked to
+    the option;
+  \item the option description (indicating the purpose of the option);   
+  \item a boolean (\texttt{true} or \texttt{false}) to specify if the
+    option is eligible to be modified interactively during the
+    simulation (default value is \texttt{false});
+  \item a pointer to an object deriving from \texttt{OptionValidation}
+    responsible for checking if the option value is valid.    
+  \end{itemize}
+  The last two function arguments are optional and can be omitted. 
+  However, the fifth argument cannot be specified if the fourth 
+  isn't present (this is due to C++ treatment of default arguments).
+\item 
+  A \texttt{ConfigObject} child can in general omit to implement 
+  the function \texttt{configure()}, unless something special is
+  needed during the configuration phase, like configuring nested 
+  objects (to which the object in question holds pointer) via 
+  \texttt{configureNested()}. \textbf{Inside the \texttt{configure()} implementation, a
+    call to \texttt{configure()} on the closest parent 
+    class must be executed first}.
+\item
+  The \texttt{configureNested()} function defined in 
+  \texttt{ConfigObject} should not be overridden by derived 
+  classes (even though such a possibility is left open in case a 
+  SConfig user really need to do something extraordinary atypical).
+\end{enumerate}
+
+\subsection{Self-registering objects}\label{ssec:self-registration}
+
+The self-registration technique pioneered in \cite{Beveridge} allows 
+polymorphic objects (i.e. deriving from some existing base classes) to be 
+dynamically integrated into an existing code, without having to modify
+a single line of the latter. The technique effectively replaces the
+use of conditional constructs \texttt{if-else-if} or \texttt{switch}
+in a more elegant and flexible way. SConfig provides a generic 
+self-registration capability which can be enabled as explained hereafter.
+\begin{enumerate}
+\item
+  The self-registration affects all objects belonging to the same 
+  hierarchy, or, in other words, with the same polymorphic type, which
+  is the same as the base class type. In a generic base class
+  \texttt{Base} of a hierarchy of potentially self-registering objects, 
+  one must define the type \texttt{PROVIDER}, the type \texttt{ARGS} 
+  (constructor arguments) and the class name, as shown in listing \ref{clist:SelfRegistration}.  
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={How
+    to enable Self-registration.}, label=clist:SelfRegistration]
+  class Base {
+    public:
+      typedef Provider<Base> PROVIDER;  // definition of the type PROVIDER 
+      typedef ArgumentsType ARGS;       // definition of the type ARGS      
+
+      Base(ArgumentsType args);         // constructor taking ArgumentsType    
+      static string getClassName(){return "Base";}   // define class name
+
+      // ... whole class definition follows
+  };
+\end{lstlisting}
+\noi
+In our implementation, \texttt{Base} constructor must accept one single
+argument which can be of generic type. In case more than one argument
+is needed, \texttt{ArgumentsType} can be a \texttt{std::pair} or tuple
+object grouping multiple arguments (or even none) of whatever type, 
+for instance:
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={Examples
+    of argument tuples.}, label=clist:ArgTuples]
+  template <typename T1, typename T2, typename T3>
+  struct Args0 {};
+
+  template <typename T1, typename T2, typename T3>
+  struct Args3 {T1 arg1; T2 arg2; T3 arg3;};
+\end{lstlisting}
+\noi
+\item
+  All objects to be made self-registering must derive from a
+  base class satisfying the previous requirement and must define a
+  global variable of type  \texttt{ObjectProvider} parameterized with 
+  the derived class static and polymorphic types in a source file 
+  (not on an header!). An illustrative example is shown in
+  \ref{clist:ObjectProvider}.
+  
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={ObjectProvider
+    defined in DerivedClass.cxx.}, label=clist:ObjectProvider]
+  ObjectProvider<MyDerived, Base> myDerivedProvider("MyDerived1");
+\end{lstlisting}
+\noi
+The provider associates a name to a polymorphic object (in this case
+"MyDerived1" to \texttt{MyDerived}) allowing the code to construct
+such an object on demand, just by knowing its name.
+\end{enumerate}
+
+\subsection{A clarifying example} \label{ssec:example}
+
+After having explained how to make an object self-configurable or 
+self-registering, we are now ready to analyze a case where the two
+properties are combined together, in order to get maximum profit of the 
+two techniques. Let's consider the base class \texttt{BaseObject} 
+(actually defined inside ADPDIS3D), whose interface is presented 
+in listing \ref{clist:BaseObject}.
+
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={BaseObject
+    class definition.}, label=clist:BaseObject]
+#include <ConfigObject.hh>
+#include <Provider.hh>
+
+class BaseObject : public ConfigObject {
+public:
+  typedef Provider<BaseObject> PROVIDER;
+  typedef const string& ARGS; // constructor takes a string (name) as input
+  
+  BaseObject(const string& name); // constructor
+  virtual ~BaseObject() {}        // destructor
+  
+  // ... member virtual some functions
+  
+  // get the class name
+  static string getClassName() {return "BaseObject";}
+
+protected:
+  std::string getParentName() const {return getClassName();}
+};  
+\end{lstlisting}
+\noi
+On the one hand, \texttt{BaseObject} derives from \texttt{ConfigObject}, which makes it
+self-configurable, on the other hand, it defines the types
+\texttt{PROVIDER}, \texttt{ARGS} and the class name, which make itself
+and its children eligible for self-registration. \\
+Let's now consider a prototype derived class \texttt{DerivedObject}, 
+implementing a specific kind of problem for multiple overlapping 
+meshes, as defined in listing \ref{clist:DerivedObject}. 
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={DerivedObject
+    class definition.}, label=clist:DerivedObject]
+class DerivedObject : public BaseObject {
+public:
+  DerivedObject(const string& name); // constructor
+  ~DerivedObject();                  // destructor
+  
+  // ... some member functions 
+ 
+  // configure all parameters from file
+  void configure(OptionMap& cmap, std::string* prefix);
+  
+private:
+  vector<double> m_inletState;  // state vector defining the inlet
+  int m_nspecies;               // number of species
+};
+\end{lstlisting}
+\noi
+In the file DerivedObject.cxx, we can instantiate the corresponding provider by defining:
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={ObjectProvider
+    for DerivedObject defined in DerivedObject.cxx.}, label=clist:DerivedObjectProvider]
+  ObjectProvider<DerivedObject, BaseObject> oversetProvider("DerivedObject");
+\end{lstlisting}
+\noi
+This provider defines the name "DerivedObject" which qualifies a specific
+kind of \texttt{BaseObject} and which can be used as a keyword or as a
+value in the configuration file to configure the corresponding 
+object (see examples in Sec. \ref{sssec:warnings}).\\
+We can now qualify the private data of \texttt{DerivedObject} to be
+configurable by following the guidelines described in 
+Sec. \ref{ssec:self-configuration} and adding the corresponding
+options inside the constructor.
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={DerivedObject
+    constructor.}, label=clist:DerivedObjectConstrutor]
+DerivedObject::DerivedObject(const string& name) : BaseObject(name)
+{  
+  m_inletState = vector<double>();  // default value for inlet field
+  addOption("inlet",&m_inletState,"State for inlet field", true,
+            new GenericValidation< vector<double> >("if(w>0.,1,0)"));
+            
+  m_nspecies = 0;              // default value for number of species
+  addOption("species",&m_species,"Number of species", false, 
+      new CrossCheckValidation<int>
+      ("if((w>0&w1=4&w2>0)|(w=0&w1!=4&w2>=0),1,0)","equation,implicit"));
+}
+\end{lstlisting}
+\noi
+Herein, two configurable options (key names and corresponding values) are defined:
+"inlet" and "species", of type \texttt{vector<double>} and \texttt{int}
+respectively. The value of "species" cannot be changed interactively 
+during the simulation (fourth argument of \texttt{addOption()}
+is set to \texttt{false}), while the inlet state can be modified
+interactively, allowing time dependent inlet conditions. \\
+In both cases, we focus our attention on the last parameters which 
+define the option validation conditions. \\
+\texttt{GenericValidation} accepts a string specifying one
+arbitrarily complex analytical function \texttt{F} in the form
+\begin{verbatim}
+if(F(w),1,0)
+\end{verbatim}
+where "w" indicates the option value (which will be set in the input
+file) and "1" stands for "true" and 0 for "false". In the first simple
+case (here included only for illustrative purposes), we ask that each individual 
+component of \texttt{m\_inletState} is positive:
+\begin{verbatim}
+if(w>0.,1,0)
+\end{verbatim}
+We remark that the expression can be much more complex than this,
+involving analytical mathematical functions (abs, sqrt, tan, sin,
+etc.) and constants (pi, e, etc.). \\
+The second example better shows the power of this approach.
+\texttt{CrossCheckValidation} takes two strings: the first string defines
+the analytical validation function
+\begin{verbatim}
+if((w>0&w1=4&w2>0)|(w=0&w1!=4&w2>=0),1,0)
+\end{verbatim}
+where "\&" and "|" stands for "and" and "or"; the second string
+specify a comma separated list of other existing configurable 
+options ("equation,implicit" in our example) which have been 
+defined in the class itself or in whatever other configurable object
+existing in the code. Those options name are mapped to variable names
+of the type "wN" where N is a number corresponding to the position 
+in the specified name list. As a result,  "w1" corresponds to "equation", "w2"
+corresponds to "implicit" in the validation expression 
+\begin{verbatim}
+if((w>0&w1=4&w2>0)|(w=0&w1!=4&w2>=0),1,0)
+\end{verbatim}
+allowing developers to cross check validity of one user-input value
+(the value corresponding to "species"), in comparison with other related 
+inputs (the values corresponding to "equation" and "implicit").\\
+The input and parsing of analytical functions is made possible by the
+open source FunctionParser library (version 4.0.5) \cite{FParser} 
+available under LPGL license, whose full sources and licence files are
+included in the current ADPDIS3D distribution and automatically
+pre-compiled into a separate statically linked library.
+
+\subsection{User-defined anaytical fields}
+
+Let's now elaborate on the example in \ref{ssec:example} to show how anaytical
+functions turn out to be useful also in different contexts inside 
+ADPDIS3D, for instance to input generic space/time varying boundary 
+conditions or initial fields. We substitute the constant initial 
+values defined inside \texttt{DerivedObject} with an array of generic 
+initial fields, one per conservative (or other useful) variable (see
+listing \ref{clist:DerivedObject2}).
+\begin{lstlisting}[basicstyle={\small\sffamily},float=!htb,caption={DerivedObject
+    class definition 2.}, label=clist:DerivedObject2]
+class DerivedObject : public BaseObject {
+  // ... everything as before
+  private:
+    int m_nspecies;                     // number of species
+    vector<string> m_iniNames;          // names of initialization fields
+    vector<FunctionField*> m_iniFields; // initialization fields functions
+    // other useful private data (check the code ...)
+};
+\end{lstlisting}
+\noi
+Herein, the variable $m\_iniNames$ defines the names for fields for
+which a specific initialization wants to be imposed: the first name
+(user-defined) {\bf must} correspond to the internal portion of the 
+domain ("Inner", "Domain", or whatever else);
+the other names must be the boundary IDs corresponding to the
+boundary conditions specified in the mesh file (e.g. "100" for
+Dirichlet, "8" for periodic boundary etc., as defined in the file
+bc.F) if the user wishes to specify some specific initial values. Each name
+is associated to a different \texttt{FunctionField}, 
+a wrapper class for the  FunctionParser \cite{FParser} defined in 
+ADPDIS3D enabling the end-user to input multiple anaytical functions, 
+one per flow variable. The implementation details are left to the 
+interested reader. We look at the effect on a prototype
+configuration file:
+\begin{verbatim}
+.DerivedObject.IniFields = Inner 
+
+.Inner {                     # initialization field names
+                             # specific settings for the field called "Inner"
+.InVars = fact
+.InDefs = if(R2(x,y)<=0.5,0.,if(R2(x,y)>0.9,1.,(R2(x,y)-0.5)/0.4))
+.Funs = 0.01*(fact+7.*(1.-fact)) \      # rho
+                 	42.7021*FC 0. 0. \    # rhoU rhoV rhoW
+	                92956.5597205 0. 0. 0.  # rhoE Bx By Bz
+}
+\end{verbatim}
+We have declared some parameters for the initialization field, namely
+\texttt{InVars}, \texttt{InDefs} and \texttt{Funs}:
+\begin{itemize}
+\item
+  \texttt{InVars} allows the user to enter the names of some new 
+  variables that will be used in the expressions specified by \texttt{Funs}. By
+  default (if \texttt{InVars} is omitted), \texttt{Funs} can be
+  formulated only in terms of spatial coordinates (x,y,z) and t (time).
+\item
+  \texttt{InDefs} are the functions defining the variables declared by
+  \texttt{InVars}. Those functions can only be using x,y,z,t as 
+  indipendent variables. The number of \texttt{InVars} defined, separated
+  by a space, must match the number of \texttt{InDefs}.
+\item
+  \texttt{Funs} defines functions of x,y,z,t and the extra variables
+  named in \texttt{InVars}. 
+\end{itemize}
+If we look at the given example, the user has defined an extra variable called \texttt{fact} as
+\begin{verbatim}
+if(R2(x,y)<=0.5,0.,if(R2(x,y)>0.9,1.,(R2(x,y)-0.5)/0.4))
+\end{verbatim}
+where \texttt{R2(x,y)} computes the distance in 2D (\texttt{R2(x,y,z)}
+should be used in a 3D case). The final expressions of the initial
+field, one per conservative variable (=8 in total), are functions of x,y,z,t and
+\texttt{fact}, as shown above, and they are clearly much simpler than what they would
+be without the definition of the intermediate \texttt{fact}
+variable. \\
+In our example we have restricted ourselves to an initialization
+field, but a similar treatment is reserved to boundary condition
+fields as well. \\
+As far as the FunctionParser is concerned, syntax errors in the
+analytical functions, if present, will be detected and notified to the
+user. In particular, \textbf{no spaces are allowed inside an
+  analytical function.} \\
+An extensive list of  \textbf{predefined supported functions} is available
+directly on the FunctionParser official webpage: 
+\textit{http://warp.povusers.org/FunctionParser/fparser.html\#parsertypes}.
+More functions and mathematical constants can be defined inside the
+header file \texttt{src/CPP/DerivedParser.hh}, provided within this 
+distribution: interested developers can check the file itself 
+for examples on how \texttt{R2}, \texttt{R3} and some constants
+(\texttt{pi}, \texttt{e}, \texttt{Rair}) were added.
+
+\begin{thebibliography}{00}
+  
+\bibitem{Beveridge}
+  J. Beveridge. Self-Registering Objects in C++. {\em Dr. Dobb's
+    Journal}, 8/1998.
+  
+\bibitem{Yagol}
+  J. Pace. Another Getopt Library, http://yagol.sourceforge.net, 2003.
+  
+\bibitem{Lani08}
+  A.~Lani. \newblock {\em An Object Oriented and high performance platform for
+    aerothermodynamics simulation}.
+  \newblock PhD thesis, Von Karman Institute for Fluid Dynamics, 2008.
+  
+\bibitem{Quintino08}
+  T. L.~Quintino. \newblock {\em A Component Environment for High-Performance
+    Scientific Computing. Design and Implementation}.
+  \newblock PhD thesis,  Von Karman Institute for Fluid Dynamics, 2008.
+  
+\bibitem{FParser} 
+  J. Nieminen, J. Yliluoma. Function Parser for C++, 
+  http://warp.povusers.org/FunctionParser/, 2009.
+  
+\end{thebibliography}
+
+\end{document}

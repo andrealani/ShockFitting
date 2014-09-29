@@ -1,0 +1,74 @@
+#######################################################
+### DEBUG mode
+
+IF(UNIX)
+  IF(CMAKE_COMPILER_IS_GNUCC)
+    LIST ( APPEND SF_C_FLAGS_DEBUG       "-g -O2" )
+    LIST ( APPEND SF_CXX_FLAGS_DEBUG     "-g -O2 -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
+    LIST ( APPEND SF_Fortran_FLAGS_DEBUG "-g -O2" )
+  ENDIF(CMAKE_COMPILER_IS_GNUCC)
+ENDIF()
+
+### TESTING THIS MODIFICATION
+IF( WIN32 )
+    LIST ( APPEND SF_C_FLAGS_DEBUG       "/Zi" )
+    LIST ( APPEND SF_CXX_FLAGS_DEBUG     "/Zi" )
+    LIST ( APPEND SF_Fortran_FLAGS_DEBUG "" )
+ENDIF()
+
+IF(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+  SET_VAR_IF_NOT_DEFINED ( SF_ENABLE_STATIC       OFF  )
+ENDIF()
+
+#######################################################
+### OPTIM mode
+
+IF(UNIX)
+  IF(CMAKE_COMPILER_IS_GNUCC)
+    LIST ( APPEND SF_C_FLAGS_OPTIM       "-g -O2" )
+    LIST ( APPEND SF_CXX_FLAGS_OPTIM     "-g -O2" )
+    LIST ( APPEND SF_Fortran_FLAGS_OPTIM "-g -O2" )
+  ENDIF(CMAKE_COMPILER_IS_GNUCC)
+ENDIF(UNIX)
+
+
+MARK_AS_ADVANCED( SF_CMAKE_CXX_FLAGS_OPTIM  SF_CMAKE_C_FLAGS_OPTIM SF_CMAKE_Fortran_FLAGS_OPTIM )
+
+IF(CMAKE_BUILD_TYPE MATCHES "[Oo][Pp][Tt][Ii][Mm]")
+  SET_VAR_IF_NOT_DEFINED ( SF_ENABLE_STATIC       OFF  )
+ENDIF()
+
+#######################################################
+### RELEASE mode
+
+IF(UNIX)
+  IF(CMAKE_COMPILER_IS_GNUCC)
+    LIST ( APPEND SF_C_FLAGS_RELEASE       "-O2 -DNDEBUG -fomit-frame-pointer" )
+    LIST ( APPEND SF_CXX_FLAGS_RELEASE     "-O2 -DNDEBUG -fomit-frame-pointer" )
+    LIST ( APPEND SF_Fortran_FLAGS_RELEASE "-O2 -DNDEBUG -fomit-frame-pointer" )
+  ENDIF(CMAKE_COMPILER_IS_GNUCC)
+ENDIF(UNIX)
+
+
+MARK_AS_ADVANCED( SF_CMAKE_CXX_FLAGS_RELEASE  SF_CMAKE_C_FLAGS_RELEASE SF_CMAKE_Fortran_FLAGS_RELEASE )
+
+IF(CMAKE_BUILD_TYPE MATCHES "[Re][Ee][Ll][Ee][Aa][Ss][Ee]")
+  SET_VAR_IF_NOT_DEFINED ( SF_ENABLE_STATIC       OFF  )
+ENDIF()
+
+#######################################################
+
+IF(CMAKE_BUILD_TYPE MATCHES "[Re][Ee][Ll][Ee][Aa][Ss][Ee]")
+  SET_VAR_IF_NOT_DEFINED ( SF_ENABLE_STATIC       OFF  )
+ENDIF()
+
+
+IF ( DEFINED SF_C_FLAGS_${CMAKE_BUILD_TYPE} )
+	SET( CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}  "${SF_C_FLAGS_${CMAKE_BUILD_TYPE}}"  CACHE STRING "Flags used by the C compiler during ${CMAKE_BUILD_TYPE} builds." FORCE )
+ENDIF()
+IF ( DEFINED SF_CXX_FLAGS_${CMAKE_BUILD_TYPE} )
+	SET( CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}  "${SF_CXX_FLAGS_${CMAKE_BUILD_TYPE}}"  CACHE STRING "Flags used by the C++ compiler during ${CMAKE_BUILD_TYPE} builds." FORCE )
+ENDIF()
+IF ( DEFINED SF_Fortran_FLAGS_${CMAKE_BUILD_TYPE} )
+	SET( CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}  "${SF_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}"  CACHE STRING "Flags used by the C compiler during ${CMAKE_BUILD_TYPE} builds." FORCE )
+ENDIF()

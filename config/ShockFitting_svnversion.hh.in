@@ -1,0 +1,6 @@
+#ifndef ShockFitting_svnversion_hh
+#define ShockFitting_svnversion_hh
+
+#define SHOCKFITTING_SVNVERSION "${ShockFitting_svnversion}"
+ 
+#endif // !ShockFitting_svnversion_hh

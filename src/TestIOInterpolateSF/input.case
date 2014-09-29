@@ -1,0 +1,56 @@
+.ShockFittingObj = ReadInterpolateWrite 
+# settings for coupling tools object 
+.ReadInterpolateWrite {
+ .VariableTransformerList = DummyVariableTransformer
+ .FieldInterpolatorList = BoxFieldInterpolator
+ .BoxFieldInterpolator {
+  .InputXyzIDs    = 0 1 2
+  .OutputXyzIDs   = 0 1 2
+  .BoxMinMax      = -1.52e9 1.77e9 -0.382e9 0.382e9 -0.382e9 0.382e9
+  .NbSubdiv       = 5 5 5
+  .NbInterpPoints = 16
+  # the following considers that the first three variables are x,y,z  
+  .FlagOutputVars = 1 1 1 1 1 1 1 1 0 1 1 1 0 0 0 0 0 0 0 0 0
+ }
+}
+# more settings for coupling tools object
+.ReadInterpolateWrite {
+ .FileProcessingList = ReadCFmesh ReadPointCloud WritePointCloud
+ .ReadCFmesh {
+  .StartIter = 0                 # starting iteration number
+  .IORate = 100                  # IO rate   
+  .InputFiles = output-P7.CFmesh # output-P7-iter_0.CFmesh is expected to be read 
+                                 # COOLFluiD file from which initial field is taken
+  .FlagOutputVars = 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 0 0 0 0 0 0 0 0 0
+  .VarScalingFactors = \
+        7485925. 7485925. 7485925. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ }
+ .ReadPointCloud {
+  .StartIter = 0               # starting iteration number 
+  .IORate = 0                  # IO rate 
+  .InputFiles = ipic3d.out     # input.dat # file from which x,y,z will be read
+ # .DummyData = true           # flag telling to produce dummy I/O
+ # .NbDummySolVars = 21        # number of dummy solution variables 
+ }
+ .WritePointCloud {
+  .StartIter = 0               # starting iteration number 
+  .IORate = 100                # IO rate
+  .OutputFiles       = coolfluid-output.dat # file where interpolated field will be written
+ #.FlagOutputVars    = 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 0 0 0 0 0 0 0 0 0
+  .VarNames          = x y z density vx vy vz Bx By Bz p Jx Jy Jz
+  .VarScalingFactors = \
+        1. 1. 1. 8.367663591455e-21 \
+        33994.371468076 33994.371468076 33994.371468076 \
+        3.485892803083e-9 3.485892803083e-9 3.485892803083e-9 \
+        9.6698155796078e-12 4.65659595e-16 4.65659595e-16 4.65659595e-16
+
+  .WriteTecplot      = true
+  .NbPointsInIJK     = 131 4 131
+# m_p (proton mass) = 1.67262178e-27 [kg]
+# M_p (molar mass proton) = 1.007 g/mol
+# rho = m_p*n_p  (n_p is number density)
+# V = sqrt(ux^2+uy^2=uz^2)
+# B = sqrt(Bx^2+By^2=Bz^2)
+# p = rho*R/M_p*T
+ }
+}

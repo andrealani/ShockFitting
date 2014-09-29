@@ -1,0 +1,6 @@
+.ShockFittingObj = ShockFittingObj
+.ShockFittingObj {
+ .VariableTransformerList = DummyVariableTransformer
+ .FieldInterpolatorList = DummyFieldInterpolator
+ .FileProcessingList = DummyFileProcessing 
+} 

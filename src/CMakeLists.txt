@@ -1,0 +1,26 @@
+# find modules
+FILE ( GLOB PLUGIN_MODULES "*SF/CMakeLists.txt" )
+LIST ( SORT PLUGIN_MODULES )
+FOREACH( ADIR ${PLUGIN_MODULES} )
+  STRING (REGEX REPLACE "(/)*CMakeLists.txt" "" MODDIR ${ADIR})
+  IF (IS_DIRECTORY ${MODDIR} )
+    STRING (REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" FINALDIR ${MODDIR})
+    LIST ( APPEND SF_MODULES_LIST ${FINALDIR} )
+  ENDIF()
+ENDFOREACH()
+
+# include modules directories
+FOREACH( amodule ${SF_MODULES_LIST} )
+    LOGVERBOSE ( "\#  MODULE [${amodule}]")
+    ADD_SUBDIRECTORY (${amodule})
+ENDFOREACH()
+
+MESSAGE ("SF_MODULES_LIST includes ${SF_MODULES_LIST}")
+
+SET ( SF_KERNEL_MODS SConfig Framework )
+
+# add recursively all subdirectories
+FOREACH( ADIR ${SF_KERNEL_MODS} )
+    LOGVERBOSE ("\# KERNEL MODULE [${ADIR}]")
+    ADD_SUBDIRECTORY (${ADIR})
+ENDFOREACH( ADIR ${SF_KERNEL_MODS} )
