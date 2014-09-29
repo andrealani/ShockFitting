@@ -1,4 +1,4 @@
-ShockFitting
+ShockFitting (SF)
 ============
 
 This will be a modular shock fitting code to be plugged to arbitrary CFD codes.
