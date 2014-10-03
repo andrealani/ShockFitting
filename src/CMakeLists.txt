@@ -17,7 +17,7 @@ ENDFOREACH()
 
 MESSAGE ("SF_MODULES_LIST includes ${SF_MODULES_LIST}")
 
-SET ( SF_KERNEL_MODS SConfig Framework )
+SET ( SF_KERNEL_MODS SConfig Framework MathTools)
 
 # add recursively all subdirectories
 FOREACH( ADIR ${SF_KERNEL_MODS} )

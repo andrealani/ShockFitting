@@ -61,7 +61,7 @@ private:
   
   /// command object interpolating from input to output
   SConfig::SharedPtr<FieldInterpolator> m_ioInterpolator; 
-    
+
 };
   
 //--------------------------------------------------------------------------//

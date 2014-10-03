@@ -83,7 +83,7 @@ void ReadInterpolateWrite::unsetup()
   
   ShockFittingObj::unsetup();
   
-  LogToScreen(VERBOSE, "ReadInterpolateWrite::unsetup() => start\n");
+  LogToScreen(VERBOSE, "ReadInterpolateWrite::unsetup() => end\n");
 }
   
 //--------------------------------------------------------------------------//

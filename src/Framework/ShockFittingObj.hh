@@ -15,6 +15,7 @@
 #include "Framework/VariableTransformer.hh"
 #include "Framework/FieldInterpolator.hh"
 #include "Framework/FileProcessing.hh"
+#include "Framework/MeshGenerator.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -73,6 +74,12 @@ public:
     return m_fProcessing;
   }
   
+  /// get the file meshgenerator list
+  std::vector<PAIR_TYPE(MeshGenerator)>& getMeshGeneratorList()
+  {
+    return m_fMeshGenerator;
+  }
+
 protected:
    
   /// create a list of coupling objects
@@ -101,7 +108,24 @@ protected:
   
   /// array of file processing
   std::vector<PAIR_TYPE(FileProcessing)> m_fProcessing;
-  
+
+  /// array of mesh generator readers
+  std::vector<PAIR_TYPE(MeshGenerator)> m_fMeshGenerator ;
+
+private: // helper functions
+
+  /// create MeshData variables
+  void createMeshData();
+
+  /// create PhysicsData variables
+  void createPhysicsData();
+
+  /// delete MeshData variables
+  void deleteMeshData();
+
+  /// delete PhysicsData variables
+  void deletePhysicsData();
+
 };
   
 //--------------------------------------------------------------------------//
