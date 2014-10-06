@@ -14,6 +14,8 @@ MeshGenerator.hh
 MeshGenerator.cxx
 ReadInterpolateWrite.cxx
 ReadInterpolateWrite.hh
+Remeshing.hh
+Remeshing.cxx
 ShockFittingAPI.cxx
 ShockFittingAPI.hh
 ShockFittingObj.cxx
@@ -26,7 +28,7 @@ VariableTransformer.cxx
 VariableTransformer.hh
 )
 
-LIST ( APPEND Framework_libs SConfig )
+LIST ( APPEND Framework_libs SConfig MathTools)
 
 SF_ADD_KERNEL_LIBRARY ( Framework )
 

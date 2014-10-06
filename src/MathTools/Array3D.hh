@@ -47,7 +47,7 @@ public:
   }
 
   /// initialize array with all sizes assigned to 0
-  void init(const unsigned dim1, const unsigned dim2, const unsigned dim3)
+  void resize(const unsigned dim1, const unsigned dim2, const unsigned dim3)
   {
     setSize1(dim1); setSize2(dim2);setSize3(dim3);
     ptr = new TYPE[size1*size2*size3]; //create space for array

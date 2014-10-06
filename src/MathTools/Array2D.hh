@@ -49,7 +49,7 @@ public:
  ~Array2D(){if (alreadyAlloc) {delete ptr;}}
 
  /// Initialize array with given sizes to 0
- void init(const unsigned nbRows, const unsigned nbColumns)
+ void resize(const unsigned nbRows, const unsigned nbColumns)
  {
   setnRows(nbRows); setnCols(nbColumns);
   ptr = new TYPE[nRows*nCols];

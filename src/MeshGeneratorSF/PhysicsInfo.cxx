@@ -59,14 +59,6 @@ PhysicsInfo::PhysicsInfo(const std::string& objectName) :
   m_naddholesmax = 1;
   addOption("NADDHOLESMAX",&m_naddholesmax,
             "Maximum number of holes");
-
-  m_model = 1;
-  addOption("MODEL",&m_model,
-            "Model adopted");
-
-  m_mixture = 1;
-  addOption("MIXTURE",&m_mixture,
-            "Mixture");
 }
 
 //--------------------------------------------------------------------------//
@@ -106,8 +98,6 @@ void PhysicsInfo::generate()
   *neshmax = m_neshmax;
   *nspmax = m_nspmax;
   *naddholesmax = m_naddholesmax;
-  model = m_model.c_str();
-  mixture = m_mixture.c_str();
 }
 
 //--------------------------------------------------------------------------//
@@ -121,9 +111,6 @@ void PhysicsInfo::setPhysicsData()
   neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
   nspmax = PhysicsData::getInstance().getData <unsigned> ("NSPMAX");
   naddholesmax = PhysicsData::getInstance().getData <unsigned> ("NADDHOLESMAX");
-  model = PhysicsData::getInstance().getData <char> ("MODEL");
-  mixture = PhysicsData::getInstance().getData <char> ("MIXTURE");
-
 }
 
 //--------------------------------------------------------------------------//

@@ -1,0 +1,9 @@
+nitrogen2                               # Mixture file name
+2                                       # NSP
+N N2                                    # SPECIES 
+14.0067d-3 28.0134d-3                   # MM [kgomol]
+3.361377055d7 0.d0                      # HF [Jokg]
+0.0d0 3392.7d0                          # THEV [K]
+1.66666666666666d0 1.4d0                # GAMS
+A B                                     # TYPE 
+

@@ -48,21 +48,6 @@ public:
   /// Run the mesh reading
   virtual void generate();
 
-  /// Read .node file
-  void ReadNode();
-
-  /// Read .poly file
-  void ReadPoly();
-
-  /// Read .ele file
-  void ReadEle();
-
-  /// Read .neigh file
-  void ReadNeigh();
-
-  /// Read .edge file
-  void ReadEdge();
-
 private: // helper functions
 
   /// get the input file name
@@ -83,15 +68,26 @@ private: // helper functions
   /// get the edge file name
   std::string getEdgeFile() const;
 
+  /// read .node file
+  void ReadNode();
+
+  /// read .poly file
+  void ReadPoly();
+
+  /// read .ele file
+  void ReadEle();
+
+  /// read .neigh file
+  void ReadNeigh();
+
+  /// read .neigh file
+  void ReadEdge();
+
   /// assign values read by ReadTriangle to MeshData
   void setMeshData ();
 
   /// assign values read by ReadTriangle to PhysicsData
   void setPhysicsData();
-
-  /// assign PhysicsData constant values to ReadTriangle
-  void setConstValues();
-
 
 private: // data
 
@@ -122,9 +118,6 @@ private: // data
   /// number of boundary points
   unsigned* nbpoin;
 
-  /// number of freezing points
-  unsigned* nfpoin;
-
   /// number of boundary faces
   unsigned* nbfac;
 
@@ -139,12 +132,6 @@ private: // data
 
   /// mesh points coordinates
   std::vector <double>* coor;
-
-  /// pointer to boundary nodes
-  /// nodptr(i-poin)(0) global code number
-  /// nodptr(i-poin)(1) one of the edges it belongs to
-  /// nodptr(i-poin)(2) other edge
-  Array2D <int>* nodptr;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face

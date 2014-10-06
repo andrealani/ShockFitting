@@ -7,12 +7,11 @@
 #include "MeshGeneratorSF/ReadTriangle.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "Framework/IOFunctions.hh"
-#include "Framework/Clist.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Log.hh"
-#include "MathTools/Array2D.hh"
 #include "Common/MeshData.hh"
 #include "Common/PhysicsData.hh"
+#include "MathTools/Array2D.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -52,7 +51,6 @@ void ReadTriangle::setup()
 
   setMeshData();
   setPhysicsData();
-  setConstValues();
 
   LogToScreen(VERBOSE, "ReadTriangle::setup() => end\n");
 }
@@ -145,9 +143,9 @@ void ReadTriangle::ReadPoly()
    exit(1);
   }
 
-  // resize vector with correct size values
+  // resize array with correct size values
   totsize = (*nbfac) + 2 * (*nshmax) * (*neshmax); // leave room for duplicated nodes
-  bndfac->init(3,totsize);
+  bndfac->resize(3,totsize);
 
   //readmesh << "There are " << *nbfac << " polylines in " << getPolyFile().c_str() << "  file"  << endl;
 
@@ -177,8 +175,8 @@ void ReadTriangle::ReadEle()
    exit(1);
   }
 
-  // resize vector with correct size value
-  celnod->init(NVT,NELEM);
+  // resize array with correct size value
+  celnod->resize(NVT,NELEM);
 
 //  readmesh << "There are " << NELEM << " triangles in " << getEleFile().c_str() << " file" << endl;
 
@@ -204,8 +202,8 @@ void ReadTriangle::ReadNeigh()
    exit(1);
   }
 
-  //resize vector with correct size value
-  celcel->init(NVT,NELEM);
+  //resize array with correct size value
+  celcel->resize(NVT,NELEM);
 
 // readmesh << "There are " << NELEM << " triangles in " << getNeighFile().c_str() << " file" << endl;
 
@@ -232,8 +230,8 @@ void ReadTriangle::ReadEdge()
    exit(1);
   }
 
-  // resize vector with correct size value
-  edgptr->init(3,NEDGE);
+  // resize array with correct size value
+  edgptr->resize(3,NEDGE);
 
   //read data from .edge file and fill mesh array
   for (unsigned IFACE=0; IFACE<NEDGE; IFACE++) {
@@ -248,8 +246,8 @@ void ReadTriangle::ReadEdge()
 std::string ReadTriangle::getInputFiles() const
 {
   using namespace std;
-  assert(m_inputFiles.size()==1);
-  string name = m_inputFiles[0];
+  assert(m_inputFile.size()==1);
+  string name = m_inputFile[0];
   return name;
 }
 
@@ -324,7 +322,6 @@ void ReadTriangle::setMeshData ()
   npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
   nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
   nbpoin = MeshData::getInstance().getData <unsigned> ("NBPOIN");
-  nfpoin = MeshData::getInstance().getData <unsigned> ("NFPOIN");
   nhole = MeshData::getInstance().getData <unsigned> ("NHOLE");
   nodcod = MeshData::getInstance().getData< std::vector<int> >("NODCOD");
   zroe = MeshData::getInstance().getData< std::vector<double> >("ZROE");
@@ -333,7 +330,6 @@ void ReadTriangle::setMeshData ()
   celnod = MeshData::getInstance().getData< Array2D<int> >("CELNOD");
   celcel = MeshData::getInstance().getData< Array2D<int> >("CELCEL");
   edgptr = MeshData::getInstance().getData< Array2D<int> >("EDGPTR");
-  nodptr = MeshData::getInstance().getData< Array2D<int> >("NODPTR");
 }
 
 //--------------------------------------------------------------------------//
@@ -341,12 +337,6 @@ void ReadTriangle::setMeshData ()
 void ReadTriangle::setPhysicsData ()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-}
-
-//--------------------------------------------------------------------------//
-
-void ReadTriangle::setConstValues()
-{
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");

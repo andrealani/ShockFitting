@@ -16,6 +16,7 @@
 #include "Framework/FieldInterpolator.hh"
 #include "Framework/FileProcessing.hh"
 #include "Framework/MeshGenerator.hh"
+#include "Framework/Remeshing.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -77,7 +78,13 @@ public:
   /// get the file meshgenerator list
   std::vector<PAIR_TYPE(MeshGenerator)>& getMeshGeneratorList()
   {
-    return m_fMeshGenerator;
+    return m_mGenerator;
+  }
+
+  /// get the remeshing list
+  std::vector<PAIR_TYPE(Remeshing)>& getRemeshingList()
+  {
+    return m_fRemeshing;
   }
 
 protected:
@@ -110,7 +117,10 @@ protected:
   std::vector<PAIR_TYPE(FileProcessing)> m_fProcessing;
 
   /// array of mesh generator readers
-  std::vector<PAIR_TYPE(MeshGenerator)> m_fMeshGenerator ;
+  std::vector<PAIR_TYPE(MeshGenerator)> m_mGenerator ;
+
+  /// array of field remeshing
+  std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
 
 private: // helper functions
 

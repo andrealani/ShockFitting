@@ -62,9 +62,8 @@ public:
 
 protected: //data
 
-  /// names of the input files
-  std::vector<std::string> m_inputFiles;
-
+  /// name of the input file
+  std::vector<std::string> m_inputFile;
 };
 
 //--------------------------------------------------------------------------//

@@ -23,8 +23,8 @@ namespace ShockFitting {
 MeshGenerator::MeshGenerator(const std::string& objectName) :
   BaseShockFitting(objectName)
 {
-  m_inputFiles = vector<string>();
-  addOption("InputFiles",&m_inputFiles,
+  m_inputFile = vector<string>();
+  addOption("InputFiles",&m_inputFile,
             "List of the names of input files");
 
 }

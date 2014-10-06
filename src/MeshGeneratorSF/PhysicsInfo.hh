@@ -43,7 +43,7 @@ public:
 
 private: //helper functions
 
-  /// assign values read by ReadPhysicsConstant to PhysicsData
+  /// assign values read by PhysicsInfo to PhysicsData
   void setPhysicsData();
 
 private: //data
@@ -68,12 +68,6 @@ private: //data
 
   /// max number of holes
   unsigned m_naddholesmax;
-
-  /// model
-  std::string m_model;
-
-  /// mixture
-  std::string m_mixture;
 
   /// space dimension 
   ///(assignable to PhysicsData)
@@ -102,14 +96,6 @@ private: //data
   /// max number of holes
   /// (assignable to PhysicsData)
   unsigned* naddholesmax;
-
-  /// model type
-  /// (assignable to PhysicsData)
-  const char* model;
-
-  /// mixture type
-  /// (assignable to PhysicsData)
-  const char* mixture;
 
 };
 

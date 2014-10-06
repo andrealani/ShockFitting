@@ -1,4 +1,4 @@
-// Copyright (C) 2013 von Karman Institute for Fluid Dynamics, Belgium
+// Copyright (C) 2014 von Karman Institute for Fluid Dynamics, Belgium
 //
 // This software is distributed under the terms of the
 // GNU Lesser General Public License version 3 (LGPLv3).
@@ -17,8 +17,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines a ReadInterpolateWrite, whose task is to read a file, 
-/// remesh a field and write another file with the interpolated field
+/// This class defines a StandardShockFitting, whose task is to 
 ///
 
 class StandardShockFitting : public ShockFittingObj {
@@ -49,14 +48,25 @@ protected:
 private:
 
   /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readInputFile;
+  SConfig::SharedPtr<MeshGenerator> m_readInputFile1;
 
+  /// command object reading mesh generator files
+  SConfig::SharedPtr<MeshGenerator> m_readInputFile2;
+
+  /// command object reading mesh generator files
+  SConfig::SharedPtr<MeshGenerator> m_readInputFile3;
+  
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputValues1;
 
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputValues2;
-  
+
+  /// command object reading mesh generator files
+  SConfig::SharedPtr<MeshGenerator> m_readInputValues3;
+
+  /// command object remeshing field
+  SConfig::SharedPtr<Remeshing> m_remeshField;  
 };
 
 //--------------------------------------------------------------------------//

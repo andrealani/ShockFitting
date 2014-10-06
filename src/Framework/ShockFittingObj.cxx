@@ -12,6 +12,7 @@
 #include "Common/MeshData.hh"
 #include "Common/PhysicsData.hh"
 #include "MathTools/Array2D.hh"
+#include "MathTools/Array3D.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -46,9 +47,13 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   addOption("FileProcessingList",&m_fProcessing, 
 	    "List of the names of file processing"); 
 
-  m_fMeshGenerator = vector<PAIR_TYPE(MeshGenerator)>();
-  addOption("MeshGeneratorList",&m_fMeshGenerator,
+  m_mGenerator = vector<PAIR_TYPE(MeshGenerator)>();
+  addOption("MeshGeneratorList",&m_mGenerator,
             "List of the names of mesh generator files");
+
+  m_fRemeshing = vector<PAIR_TYPE(Remeshing)>();
+  addOption("RemeshingList",&m_fRemeshing,
+	    "List of the names of field remeshing");
 }
   
 //--------------------------------------------------------------------------//
@@ -77,8 +82,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the file processing
     createList<FileProcessing>(m_fProcessing);
 
-    // create the file mesh generator
-    createList<MeshGenerator>(m_fMeshGenerator);
+    // create the mesh generator
+    createList<MeshGenerator>(m_mGenerator);
+
+    // create the remeshing
+    createList<Remeshing>(m_fRemeshing);
   }
   
   // configure the variable transformers
@@ -97,10 +105,15 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   }
  
   // configure the file mesh generator
-  for (unsigned i = 0; i < m_fMeshGenerator.size(); ++i) {
-    configureDeps (cmap, m_fMeshGenerator[i].ptr().get());
+  for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
+    configureDeps (cmap, m_mGenerator[i].ptr().get());
   }
-  
+
+  // configure the remeshing
+  for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
+    configureDeps (cmap, m_fRemeshing[i].ptr().get());
+  }
+   
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
 }
 
@@ -130,8 +143,13 @@ void ShockFittingObj::setup()
   } 
 
   // configure the file mesh generator
-  for (unsigned i = 0; i < m_fMeshGenerator.size(); ++i) {
-    m_fMeshGenerator[i].ptr()->setup();
+  for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
+    m_mGenerator[i].ptr()->setup();
+  }
+
+  // configure the remeshing
+  for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
+    m_fRemeshing[i].ptr()->setup();
   }
   
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
@@ -163,10 +181,15 @@ void ShockFittingObj::unsetup()
   }
 
   // configure the file mesh generator
-  for (unsigned i = 0; i < m_fMeshGenerator.size(); ++i) {
-    m_fMeshGenerator[i].ptr()->unsetup();
+  for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
+    m_mGenerator[i].ptr()->unsetup();
   }
-  
+
+  // configure the remeshing
+  for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
+    m_fRemeshing[i].ptr()->unsetup();
+  }
+    
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
   
@@ -217,9 +240,37 @@ void ShockFittingObj::createPhysicsData()
   PhysicsData::getInstance().createData <unsigned> ("NSPMAX", 1);
   PhysicsData::getInstance().createData <unsigned> ("NESHMAX", 1);
   PhysicsData::getInstance().createData <unsigned> ("NADDHOLESMAX", 1);
-  PhysicsData::getInstance().createData <char> ("MODEL", 1);
-  PhysicsData::getInstance().createData <char> ("MIXTURE", 1);
+  PhysicsData::getInstance().createData <std::vector<std::string> > ("MODEL", 1);
+  PhysicsData::getInstance().createData <std::vector<std::string> > ("MIXTURE", 1);
 
+  PhysicsData::getInstance().createData <double> ("R",1);
+  PhysicsData::getInstance().createData <double> ("Na",1);
+  PhysicsData::getInstance().createData <double> ("K",1);
+  PhysicsData::getInstance().createData <double> ("KSI",1);
+
+  PhysicsData::getInstance().createData <unsigned> ("IE",1);
+  PhysicsData::getInstance().createData <unsigned> ("IX",1);
+  PhysicsData::getInstance().createData <unsigned> ("IY",1);
+  PhysicsData::getInstance().createData <unsigned> ("IEV",1);
+
+  PhysicsData::getInstance().createData <unsigned> ("NSP",1);
+  PhysicsData::getInstance().createData <std::vector<std::string> > ("NAME",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("MM",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("HF",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("THEF",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("GAMS",1);
+  PhysicsData::getInstance().createData <std::vector<std::string> > ("TYPEMOL",1);
+
+  PhysicsData::getInstance().createData < unsigned > ("nShocks", 1);
+  PhysicsData::getInstance().createData < unsigned > ("nSpecPoints", 1);
+  PhysicsData::getInstance().createData <vector <unsigned> > ("nShockPoints", 1);
+  PhysicsData::getInstance().createData <vector <unsigned> > ("nShockEdges", 1);
+  PhysicsData::getInstance().createData <vector <string> > ("TypeSpecPoints", 1);
+  PhysicsData::getInstance().createData <vector <string> > ("TYPESH", 1);
+  PhysicsData::getInstance().createData <Array3D <double> > ("XYSH", 1);
+  PhysicsData::getInstance().createData <Array3D <unsigned> > ("SHinSPPs", 1);
+  PhysicsData::getInstance().createData <Array3D <double> > ("ZROESHuOLD", 1);
+  PhysicsData::getInstance().createData <Array3D <double> > ("ZROESHdOLD", 1);
 }
 
 //--------------------------------------------------------------------------//
@@ -262,8 +313,36 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <unsigned> ("NSPMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NESHMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NADDHOLESMAX");
-  PhysicsData::getInstance().deleteData <char> ("MODEL");
-  PhysicsData::getInstance().deleteData <char> ("MIXTURE");
+  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MODEL");
+  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MIXTURE");
+
+  PhysicsData::getInstance().deleteData <double> ("R");
+  PhysicsData::getInstance().deleteData <double> ("Na");
+  PhysicsData::getInstance().deleteData <double> ("K");
+  PhysicsData::getInstance().deleteData <double> ("KSI");
+
+  PhysicsData::getInstance().deleteData <unsigned> ("IE");
+  PhysicsData::getInstance().deleteData <unsigned> ("IX");
+  PhysicsData::getInstance().deleteData <unsigned> ("IY");
+  PhysicsData::getInstance().deleteData <unsigned> ("IEV");
+
+  PhysicsData::getInstance().deleteData <unsigned> ("NSP");
+  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("NAME");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("MM");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("HF");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("THEF");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("GAMS");
+  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("TYPEMOL");
+
+  PhysicsData::getInstance().deleteData < unsigned > ("nShocks");
+  PhysicsData::getInstance().deleteData < unsigned > ("nSpecPoints");
+  PhysicsData::getInstance().deleteData <vector <unsigned> > ("nShockPoints");
+  PhysicsData::getInstance().deleteData <vector <unsigned> > ("nShockEdges");
+  PhysicsData::getInstance().deleteData <vector <string> > ("TypeSpecPoints");
+  PhysicsData::getInstance().deleteData <vector <string> > ("TYPESH");
+  PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHuOLD");
+  PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHdOLD");
+  PhysicsData::getInstance().deleteData <Array3D <unsigned> > ("SHinSPPs");
 }
 
 //--------------------------------------------------------------------------//
