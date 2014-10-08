@@ -1,4 +1,4 @@
-// Copyright (C) 2013 von Karman Institute for Fluid Dynamics, Belgium
+// Copyright (C) 2014 von Karman Institute for Fluid Dynamics, Belgium
 // 
 // This software is distributed under the terms of the
 // GNU Lesser General Public License version 3 (LGPLv3).
@@ -11,6 +11,8 @@
 
 #include <map>
 #include <string>
+
+//--------------------------------------------------------------------------//
 
 class PhysicsData {
 public:

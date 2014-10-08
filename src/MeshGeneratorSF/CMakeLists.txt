@@ -1,14 +1,14 @@
 LIST ( APPEND MeshGeneratorSF_files
-ChemConst.hh
-ChemConst.cxx
-ChemInfo.hh
-ChemInfo.cxx
+ChemicalInfo.hh
+ChemicalInfo.cxx
 MeshInfo.hh
 MeshInfo.cxx
 PhysicsInfo.hh
 PhysicsInfo.cxx
 ReadTriangle.hh
 ReadTriangle.cxx
+ReferenceInfo.hh
+ReferenceInfo.cxx
 ReSdwInfo.hh
 ReSdwInfo.cxx
 )

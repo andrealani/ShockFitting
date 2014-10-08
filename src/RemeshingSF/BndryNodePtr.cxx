@@ -49,6 +49,8 @@ void BndryNodePtr::setup()
 
   setMeshData();
 
+  logfile.Open(getClassName());
+
   LogToScreen(VERBOSE, "BndryNodePtr::setup() => end\n");
 }
 
@@ -57,6 +59,8 @@ void BndryNodePtr::setup()
 void BndryNodePtr::unsetup()
 {
   LogToScreen(VERBOSE, "BndryNodePtr::unsetup()\n");
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -99,10 +103,10 @@ void BndryNodePtr::myroutine()
     last++;
    }
   }
- //// readmesh << "Found " << last << " boundary points" << endl;
+  logfile("Found ",last," boundary points");
 
   if (last==(*nbpoin)) {
- //// readmesh << "Found " << (*nbpoin) << " boundary points\n";
+  logfile("Found ",(*nbpoin)," boundary points");
   }
   else {
    cout << "LAST =! NBPOIN\n";

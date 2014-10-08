@@ -254,12 +254,21 @@ void ShockFittingObj::createPhysicsData()
   PhysicsData::getInstance().createData <unsigned> ("IEV",1);
 
   PhysicsData::getInstance().createData <unsigned> ("NSP",1);
-  PhysicsData::getInstance().createData <std::vector<std::string> > ("NAME",1);
+  PhysicsData::getInstance().createData <std::vector<std::string> > ("NAMESP",1);
   PhysicsData::getInstance().createData <std::vector<double> > ("MM",1);
   PhysicsData::getInstance().createData <std::vector<double> > ("HF",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("THEF",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("THEV",1);
   PhysicsData::getInstance().createData <std::vector<double> > ("GAMS",1);
   PhysicsData::getInstance().createData <std::vector<std::string> > ("TYPEMOL",1);
+  PhysicsData::getInstance().createData <std::vector<double> > ("RS",1);
+
+  PhysicsData::getInstance().createData <double> ("PREF",1);
+  PhysicsData::getInstance().createData <double> ("TREF",1);
+  PhysicsData::getInstance().createData <double> ("UREF",1);
+  PhysicsData::getInstance().createData <double> ("RHOREF",1);
+  PhysicsData::getInstance().createData <double> ("GREF",1);
+  PhysicsData::getInstance().createData <double> ("GM1REF",1);
+
 
   PhysicsData::getInstance().createData < unsigned > ("nShocks", 1);
   PhysicsData::getInstance().createData < unsigned > ("nSpecPoints", 1);
@@ -327,12 +336,20 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <unsigned> ("IEV");
 
   PhysicsData::getInstance().deleteData <unsigned> ("NSP");
-  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("NAME");
+  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("NAMESP");
   PhysicsData::getInstance().deleteData <std::vector<double> > ("MM");
   PhysicsData::getInstance().deleteData <std::vector<double> > ("HF");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("THEF");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("THEV");
   PhysicsData::getInstance().deleteData <std::vector<double> > ("GAMS");
   PhysicsData::getInstance().deleteData <std::vector<std::string> > ("TYPEMOL");
+  PhysicsData::getInstance().deleteData <std::vector<double> > ("RS");
+
+  PhysicsData::getInstance().deleteData <double> ("PREF");
+  PhysicsData::getInstance().deleteData <double> ("TREF");
+  PhysicsData::getInstance().deleteData <double> ("UREF");
+  PhysicsData::getInstance().deleteData <double> ("RHOREF");
+  PhysicsData::getInstance().deleteData <double> ("GREF");
+  PhysicsData::getInstance().deleteData <double> ("GM1REF");
 
   PhysicsData::getInstance().deleteData < unsigned > ("nShocks");
   PhysicsData::getInstance().deleteData < unsigned > ("nSpecPoints");

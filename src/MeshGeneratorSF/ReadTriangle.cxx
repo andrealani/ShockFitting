@@ -11,6 +11,7 @@
 #include "Framework/Log.hh"
 #include "Common/MeshData.hh"
 #include "Common/PhysicsData.hh"
+#include "Common/FileLogManip.hh"
 #include "MathTools/Array2D.hh"
 
 //--------------------------------------------------------------------------//
@@ -51,6 +52,7 @@ void ReadTriangle::setup()
 
   setMeshData();
   setPhysicsData();
+  logfile.Open(getClassName());
 
   LogToScreen(VERBOSE, "ReadTriangle::setup() => end\n");
 }
@@ -60,6 +62,7 @@ void ReadTriangle::setup()
 void ReadTriangle::unsetup()
 {
   LogToScreen(VERBOSE, "ReadTriangle::unsetup()\n");
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -80,21 +83,22 @@ void ReadTriangle::generate()
 
 void ReadTriangle::ReadNode()
 {
-  unsigned totsize,dim,iattr;
+  unsigned totsize,dim,iattr, states;
   unsigned idum, h1, h2;
 
   file.open(getNodeFile().c_str());
-  file >> *npoin >> dim >> *ndof >> iattr;
-  if (dim != (*ndim) || (*ndof) > (*ndofmax)) {
-//   readmesh << "WARNING !!!!!" << endl;
-//   readmesh << "WARNING !!!!!" << endl;
-//   readmesh << "NDIM: " << dim << " NDOF: " << states << " in file *.node" << endl;
-//   readmesh << "NDIM: " << ndof << " NDOF: " << *ndofmax << " in PhysicData.hh" << endl;
-//   readmesh << "WARNING !!!!!" << endl;
+  file >> *npoin >> dim >> states >> iattr;
+  if (dim != (*ndim) || states > (*ndofmax)) {
+   logfile("WARNING !!!!!");
+   logfile("WARNING !!!!!");
+   logfile("WARNING !!!!!");
+   logfile("NDIM: ", dim, " NDOF: ", states, " in file *.node");
+   logfile("NDIM: ", *ndof, " NDOF: ", *ndofmax, " in PhysicData.hh");
+   logfile("WARNING !!!!!");
    exit(1);
   }
-//  readmesh << "There are " << *npoin << " gridpoints int " << fwork << endl;
-//  readmesh << "There are " << *ndof << " degrees of freedom in " << fwork << endl;
+   logfile("There are ", *npoin, " gridpoints in ", ".node file"); // fwork!!
+   logfile("There are ", *ndof, " ndof in ", ".node file"); // fwork!!
   if (iattr !=1) {
    cout << "# of attributes should be 1 in node file" << endl;
    exit(1);
@@ -147,7 +151,7 @@ void ReadTriangle::ReadPoly()
   totsize = (*nbfac) + 2 * (*nshmax) * (*neshmax); // leave room for duplicated nodes
   bndfac->resize(3,totsize);
 
-  //readmesh << "There are " << *nbfac << " polylines in " << getPolyFile().c_str() << "  file"  << endl;
+  logfile("There are",*nbfac," polylines in ",getPolyFile());
 
   for (unsigned IFACE=0; IFACE < (*nbfac); IFACE++) {
    file >> idum;
@@ -178,7 +182,7 @@ void ReadTriangle::ReadEle()
   // resize array with correct size value
   celnod->resize(NVT,NELEM);
 
-//  readmesh << "There are " << NELEM << " triangles in " << getEleFile().c_str() << " file" << endl;
+  logfile("There are ",NELEM," triangles in ",getEleFile());
 
   //read data from .ele file and fill mesh array
   for (unsigned IELEM=0; IELEM < NELEM; IELEM++) {
@@ -205,7 +209,7 @@ void ReadTriangle::ReadNeigh()
   //resize array with correct size value
   celcel->resize(NVT,NELEM);
 
-// readmesh << "There are " << NELEM << " triangles in " << getNeighFile().c_str() << " file" << endl;
+  logfile("There are ",NELEM," triangles in ",getNeighFile());
 
   //read data from .neigh file and fill mesh array
  for (unsigned IELEM=0; IELEM<NELEM; IELEM++) {
@@ -224,7 +228,9 @@ void ReadTriangle::ReadEdge()
   file.open(getEdgeFile().c_str());
 
   file >> NEDGE >> iattr;
- // readmesh << "There are " << NEDGE << " edge in " << getEdgeFile().c_str() << " file" << endl;
+
+  logfile("There are ",NEDGE," edge in ",getEdgeFile());
+
   if (iattr!=1) {
    cout << "<# of attributes should be 1 in edge file>" << endl;
    exit(1);

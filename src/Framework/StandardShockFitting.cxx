@@ -76,8 +76,8 @@ void StandardShockFitting::setup()
 
   m_readInputValues1 = m_mGenerator[0].ptr();
   m_readInputValues2 = m_mGenerator[1].ptr();
-  m_readInputValues3 = m_mGenerator[2].ptr();
-  m_readInputFile1 = m_mGenerator[3].ptr();
+  m_readInputFile1 = m_mGenerator[2].ptr();
+  m_readInputValues3 = m_mGenerator[3].ptr();
   m_readInputFile2 = m_mGenerator[4].ptr();
   m_readInputFile3 = m_mGenerator[5].ptr();
   m_remeshField = m_fRemeshing[0].ptr();
@@ -104,8 +104,8 @@ void StandardShockFitting::process()
 
   m_readInputValues1->generate();
   m_readInputValues2->generate();
-  m_readInputValues3->generate();
   m_readInputFile1->generate();
+  m_readInputValues3->generate();
   m_readInputFile2->generate();
   m_readInputFile3->generate();
   m_remeshField->remesh();

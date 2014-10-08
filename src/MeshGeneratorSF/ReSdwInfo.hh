@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "SConfig/StringManip.hh"
+#include "Common/FileLogManip.hh"
 #include "Framework/Connectivity.hh"
 #include "Framework/MeshGenerator.hh"
 #include "MathTools/Array2D.hh"
@@ -44,6 +45,9 @@ public:
   virtual void generate();
 
 private: // helper functions
+
+  /// get class name
+  std::string getClassName() const {return "ReSdwInfo";}
 
   /// get the input file name
   std::string getInputFiles() const;
@@ -134,6 +138,8 @@ private: //data
   /// reading file variable
   std::ifstream file;
 
+  ///store information on the log file 
+  FileLogManip logfile;
 };
 
 //--------------------------------------------------------------------------//

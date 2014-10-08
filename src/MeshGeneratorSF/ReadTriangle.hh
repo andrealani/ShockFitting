@@ -13,6 +13,7 @@
 #include "Framework/Connectivity.hh"
 #include "Framework/MeshGenerator.hh"
 #include "MathTools/Array2D.hh"
+#include "Common/FileLogManip.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -49,6 +50,9 @@ public:
   virtual void generate();
 
 private: // helper functions
+
+  /// return class name
+  std::string getClassName() const {return "ReadTriangle";}
 
   /// get the input file name
   std::string getInputFiles() const;
@@ -156,6 +160,8 @@ private: // data
   /// reading file
   std::ifstream file;
 
+  /// store information on the log file
+  FileLogManip logfile;
 };
 
 //--------------------------------------------------------------------------//

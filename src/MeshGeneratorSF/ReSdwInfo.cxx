@@ -43,13 +43,18 @@ ReSdwInfo::~ReSdwInfo()
 void ReSdwInfo::setup()
 {
   LogToScreen(VERBOSE, "ReSdwInfo::setup() => start\n");
+
   setMeshData();
   setPhysicsData();
+
+  logfile.Open(getClassName());
 }
 
 void ReSdwInfo::unsetup()
 {
   LogToScreen(VERBOSE, "ReSdwInfo::unsetup()\n");
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -82,35 +87,39 @@ std::string ReSdwInfo::getInputFiles() const
 void ReSdwInfo::readShockInfo()
 {
   unsigned NSHE, IDUMMY;
+
   // initialize NODCODSH which is part of NODCOD
   // If the code -99 is used this means no shock point
   // If the code 10 is used this means shock point
-   for (unsigned ISH=0; ISH < (*nshmax); ISH++) {
+  for (unsigned ISH=0; ISH < (*nshmax); ISH++) {
     for (unsigned K=0; K < (*npshmax); K++) {(*r_NodCodSh)(K,ISH) = -99;}
-   }
-//  resdw << "Open sh00.dat\n";
+  }
+  logfile("Open sh00.dat\n");
+
   file >> (*r_nShocks);
-// resdw << "Found n. " << (*nSh) << " shock/disocntinuities\n";
+  logfile("Found n. ",(*r_nShocks)," shock/discontinuities");
+
   for (unsigned ISH=0; ISH < (*r_nShocks); ISH++) {
- // resdw << "Shock/Discontinuity n. " << ISH << "\n";
+   logfile("Shock/Discontinuity n. ",ISH);
    file >> (*r_nShockPoints)[ISH] >> (*r_typeSh)[ISH] ;
- // resdw << "Kind of discontinuity: " << (*r_typeSh)[ISH] << "\n";
- // resdw << "n. of points " << (*r_nShockPoints)[ISH] << "\n";
+   logfile("Kind of discontinuity: ",(*r_typeSh)[ISH]);
+   logfile("n. of points ",(*r_nShockPoints)[ISH]);
 
    (*r_nShockEdges)[ISH] = (*r_nShockPoints)[ISH]-1;
    for (unsigned K=0; K < (*r_nShockPoints)[ISH]; K++) {
     for (unsigned I=0; I < (*ndim); I++) {
      file >> (*r_XYSh)(I,K,ISH);
- //    resdw << (*r_XYSh)(I,K,ISH) << " ";
+     logfile((*r_XYSh)(I,K,ISH));
     }
     for (unsigned I=0; I < (*ndof); I++) {
      file >> (*r_ZRoeShd)(I,K,ISH);
-   //  resdw << (*r_ZRoeShd)(I,K,ISH) << " ";
+     logfile((*r_ZRoeShd)(I,K,ISH));
     }
     for (unsigned I=0; I < (*ndof); I++) {
      file >> (*r_ZRoeShu)(I,K,ISH);
- //    resdw << (*r_ZRoeShu)(I,K,ISH) << " ";
+     logfile((*r_ZRoeShu)(I,K,ISH));
     }
+    logfile("\n");
     (*r_NodCodSh)(K,ISH) = 10;
    }
 
@@ -126,17 +135,17 @@ void ReSdwInfo::readShockInfo()
 
   file >> (*r_nSpecPoints);
   r_typeSpecPoints->resize((*r_nSpecPoints));
-  //resdw << (*r_nSpecPoints);
+  logfile("nSpecPoints: ",*r_nSpecPoints);
   for (unsigned ISPPNTS=0; ISPPNTS < (*r_nSpecPoints); ISPPNTS++) {
    file >> (*r_typeSpecPoints)[ISPPNTS];
- //  resdw << (*r_typeSpecPoints)[ISPPNTS];
+   logfile("Type Special Point: ",(*r_typeSpecPoints)[ISPPNTS]);
 
    // internal special point: triple point
    if ((*r_typeSpecPoints)[ISPPNTS]=="TP") {
     NSHE=4; IDUMMY=IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -145,7 +154,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=5; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -154,7 +163,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=2; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -164,7 +173,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -174,7 +183,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -184,7 +193,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -194,7 +203,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-  //   resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -204,7 +213,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-  //   resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     } 
    }
 
@@ -214,7 +223,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-   //  resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }   
 
@@ -223,7 +232,7 @@ void ReSdwInfo::readShockInfo()
     NSHE=1; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
- //    resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
@@ -232,12 +241,12 @@ void ReSdwInfo::readShockInfo()
     NSHE=2; IDUMMY = IDUMMY+NSHE;
     for (unsigned K=0; K<NSHE; K++) {
      file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     //resdw << (*r_SHinSPPs)(0,K,ISPPNTS) << " " <<  (*r_SHinSPPs)(1,K,ISPPNTS) << endl;
+     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS) );
     }
    }
 
    else {
-    //resdw << "Condition not implemented\n";
+    logfile("Condition not implemented");
     cout << "Condition not implemented\n";
     exit(1);
    }
@@ -245,9 +254,9 @@ void ReSdwInfo::readShockInfo()
  
   // check conditions on special points
   if (IDUMMY != 2 * (*r_nShocks)) {
-   //resdw << "Nof conditions on special points not correct\n";
-   //resdw << "Nof asked conditions: " << 2 * (*r_nShocks) << "\n";
-   //resdw << "Nof forced conditions: " << IDUMMY << "\n";
+   logfile("Nof conditions on special points not correct");
+   logfile("Nof asked conditions: ",2 * (*r_nShocks));
+   logfile("Nof forced conditions: ",IDUMMY);
    cout << "Nof conditions on special points not correct\n";
    exit(1);
   }

@@ -1,0 +1,9 @@
+!NAME (name of the mixture)
+!NSP  (number of the chemical species)
+!SPECIES (name of the species IUPAC)
+!MM (molecular weight of the species (kg/mol))
+!HF (formation enthalpy at 0K of the species (J/kg))
+!THEV (characteristic vibrational temperature (K))
+!GAMS (specific heat ratio for each species)
+!TYPE (type of molecule (atomic:A, diatomic or aligned: B, triatomic nonaligned:T)
+

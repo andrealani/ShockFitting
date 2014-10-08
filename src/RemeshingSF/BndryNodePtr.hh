@@ -12,6 +12,7 @@
 #include <vector>
 #include "Framework/Remeshing.hh"
 #include "MathTools/Array2D.hh"
+#include "Common/FileLogManip.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -43,6 +44,9 @@ public:
   virtual void remesh();
 
 private: // helper functions
+
+  /// return class name
+  std::string getClassName() const {return "BndryNodePtr";}
 
   /// local function for NODPTR computation
   void myroutine();
@@ -94,6 +98,8 @@ private: //data
   /// Its is used to store NBPOINTS code number indeces
   std::vector <int> iworkRank_;
 
+  /// store log infos
+  FileLogManip logfile;
 };
 
 } // namespace ShockFitting

@@ -1,17 +1,16 @@
 .ShockFittingObj = StandardShockFitting
 .StandardShockFitting {
- .MeshGeneratorList = PhysicsInfo MeshInfo \
-			ChemConst ReadTriangle \
-                          ChemInfo ReSdwInfo
+ .MeshGeneratorList = PhysicsInfo MeshInfo ChemicalInfo \
+			  ReferenceInfo ReadTriangle ReSdwInfo
 
  .PhysicsInfo {
  .NDIM = 2                              # space dimension
- .NDOFMAX = 6                           # max number of degree of freedom
- .NSHMAX = 1                            # max number of points for each shock
- .NPSHMAX = 5                           # max number of shocks
- .NESHMAX = 4                           # max number of segments for each shock
- .NADDHOLESMAX = 10                     # max number of holes
- .NSPMAX = 12                           # max number of special points
+ .NDOFMAX = 6                           # max nof degree of freedom
+ .NSHMAX = 5                            # max number shocks
+ .NPSHMAX = 1000                        # max nof points for each shock
+ .NESHMAX = 4                           # max nof segments for each shock
+ .NADDHOLESMAX = 10                     # max nof holes
+ .NSPMAX = 12                           # max nof special points
  }
 
  .MeshInfo {
@@ -24,30 +23,18 @@
   .NPROC = 4                            # number of processor
  }
 
- .ChemConst {
-  .R = 8.314472                         # gas constant [J*mole-1*Ke-1]
-  .Na = 6.0221e23                       # avogadro constant
-  .K = 8.617386e-5                      # Boltzmann constant [eV*Ke-1]
-  .KSI = 1.3806*e-23                    # Boltzmann constant [J*Ke-1]
- }
-
- .ReadTriangle {
-  .InputFiles = na00.1                  # processing file
-  .FileTypes = node poly ele \          # file types (in default order)
-                neigh edge
- }
-
- .ChemInfo {
+ .ChemicalInfo {
   .MODEL = TCneq                        # model "PG" || "TCneq" || "Cneq"
   .MIXTURE = nitrogen2                  # mixture (only if MODEL = Cneq || MODEL = TCneq)
   .InputFiles = \
           nitrogen2.dat                 # mixture file (look at data_template.dat)
+  .Qref =/                              # ref speed (only if MODEL=Cneq && MIXTURE=ar4)
   .IE = 1                               # global index
   .IX = 2                               # global index
   .IY = 3                               # global index
   .IEV = 4                              # global index
  }
-$
+
  .ReferenceInfo {
   .Variables = P                        #
   .Adimensional = D                     #
@@ -56,12 +43,17 @@ $
   .TempRef = 1833                       # freestream temperature [K]
   .PressRef = 57.65                     # freestream pressure
   .VelocityRef = 5594                   # freestream velocity
-  .SpeciesDensity = 0.000036354 \       #
-		      0.0004616
+  .SpeciesDensity = 0.00036354 \       #
+                      0.004616
   .Lref = 1                             #
  }
 
-$
+ .ReadTriangle {
+  .InputFiles = na00.1                  # processing file
+  .FileTypes = node poly ele \          # file types (in default order)
+                neigh edge
+ }
+
  .ReSdwInfo {
   .InputFiles = sh00.dat                # shock points informations file
  }

@@ -9,8 +9,6 @@
 
 //--------------------------------------------------------------------------//
 
-#include "SConfig/StringManip.hh"
-#include "Framework/Connectivity.hh"
 #include "Framework/MeshGenerator.hh"
 
 //--------------------------------------------------------------------------//
@@ -19,7 +17,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines ReadMeshConstant, whose task is to read constant
+/// This class defines PhysicsInfo, whose task is to read constant
 /// values realted to the mesh and assign them to PhysicsData pattern.
 
 class PhysicsInfo: public MeshGenerator {
