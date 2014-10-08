@@ -4,12 +4,9 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include "Common/PhysicsData.hh"
-#include "Common/MeshData.hh"
 #include "Framework/StandardShockFitting.hh"
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
-#include "MathTools/Array2D.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -38,7 +35,8 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_readInputValues1(),
   m_readInputValues2(),
   m_readInputValues3(),
-  m_remeshField()
+  m_BndryNodePtr(),
+  m_RedistrShockPoints()
 {
 }
 
@@ -71,8 +69,8 @@ void StandardShockFitting::setup()
   validate(m_mGenerator.size() == 6,
            "StandardShockFitting::setup() => MeshGeneratorList should have size==6");
 
-  validate(m_fRemeshing.size() == 1,
-           "StandardShockFitting::setup() => RemeshingList should have size==1");
+  validate(m_fRemeshing.size() == 2,
+           "StandardShockFitting::setup() => RemeshingList should have size==2");
 
   m_readInputValues1 = m_mGenerator[0].ptr();
   m_readInputValues2 = m_mGenerator[1].ptr();
@@ -80,7 +78,8 @@ void StandardShockFitting::setup()
   m_readInputValues3 = m_mGenerator[3].ptr();
   m_readInputFile2 = m_mGenerator[4].ptr();
   m_readInputFile3 = m_mGenerator[5].ptr();
-  m_remeshField = m_fRemeshing[0].ptr();
+  m_BndryNodePtr = m_fRemeshing[0].ptr();
+  m_RedistrShockPoints = m_fRemeshing[1].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -108,7 +107,8 @@ void StandardShockFitting::process()
   m_readInputValues3->generate();
   m_readInputFile2->generate();
   m_readInputFile3->generate();
-  m_remeshField->remesh();
+  m_BndryNodePtr->remesh();
+  m_RedistrShockPoints->remesh();
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

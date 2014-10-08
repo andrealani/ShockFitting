@@ -118,10 +118,10 @@ void ReferenceInfo::setReferenceParam()
   *pref = m_pref;
   *Tref = m_Tref;
   *uref = m_uref;
-  logfile("TREF = ",*Tref);
-  logfile("PREF = ",*pref);
-  logfile("UREF = " ,*uref);
-  logfile("NSP = ",*nsp);
+  logfile("TREF = ",*Tref,"\n");
+  logfile("PREF = ",*pref,"\n");
+  logfile("UREF = " ,*uref,"\n");
+  logfile("NSP = ",*nsp,"\n");
 
   if (model->at(0)=="Cneq" || model->at(0) == "TCneq") {
 
@@ -129,12 +129,12 @@ void ReferenceInfo::setReferenceParam()
 
    setAlpha_Rgas_Cv();
 
-   logfile("R = ",R);
-   logfile("Cv = ",Cv);
+   logfile("R = ",R,"\n");
+   logfile("Cv = ",Cv,"\n");
 
    setGamRef();
 
-   logfile("GREF = ",*gref);
+   logfile("GREF = ",*gref,"\n");
 
    setGm1Ref();
   }
@@ -161,8 +161,8 @@ void ReferenceInfo::setAlpha_Rgas_Cv()
    R = R + alpha.at(ISP) * Rgp/mm->at(ISP);
    Cv = Cv + alpha.at(ISP) * Rgp/mm->at(ISP)/(gams->at(ISP)-1);
    alphaPerc = alpha.at(ISP)*100;
-   logfile(namesp->at(ISP),alphaPerc);
-   logfile("MM= ",mm->at(ISP));
+   logfile(namesp->at(ISP),"= ",alphaPerc,"\n");
+   logfile("MM = ",mm->at(ISP),"\n");
   }
 }
 

@@ -43,7 +43,7 @@
   .TempRef = 1833                       # freestream temperature [K]
   .PressRef = 57.65                     # freestream pressure
   .VelocityRef = 5594                   # freestream velocity
-  .SpeciesDensity = 0.00036354 \       #
+  .SpeciesDensity = 0.00036354 \        #
                       0.004616
   .Lref = 1                             #
  }
@@ -61,5 +61,5 @@
 }
 
 .StandardShockFitting {
- .RemeshingList = BndryNodePtr
+ .RemeshingList = BndryNodePtr RdDpsEq
 }

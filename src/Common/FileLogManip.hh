@@ -39,50 +39,43 @@ public:
   void Close() {filelog.close();}
 
   /// Overloading of operator ()
-  void operator() (std::string dummy) {
+  template <typename T>
+  void operator() (T dummy) {
    filelog << dummy << "\n";}
 
   /// Overloading of operator ()
-  template <typename T>
-  void operator() (T value) {
-   filelog << value << " ";}
+  template <typename T1, typename T2>
+  void operator() (T1 dummy1, T2 dummy2) {
+   filelog << dummy1 << " " << dummy2;}
 
   /// Overloading of operator ()
-  template <typename T>
-  void operator() (T value1, T value2) {
-   filelog << value1 << ", " << value2 << "\n";}
+  template <typename T1, typename T2, typename T3>
+  void operator() (T1 dummy1, T2 dummy2, T3 dummy3) {
+   filelog << dummy1 << " " << dummy2 << " " << dummy3;}
 
   /// Overloading of operator ()
-  template <typename T>
-  void operator() (const std::string dummy, T value) {
-   filelog << dummy << " " << value << "\n";}
+  template <typename T1, typename T2, typename T3, typename T4>
+  void operator() (T1 dummy1, T2 dummy2, T3 dummy3, T4 dummy4) {
+   filelog << dummy1 << " " << dummy2 << " ";
+   filelog << dummy3 << " " << dummy4;}
 
   /// Overloading of operator ()
-  template <typename T>
-  void operator() (const std::string dummy, T value, std::string dummy2) {
-   filelog << dummy << " " << value << " " << dummy2 << "\n";}
+  template <typename T1, typename T2, typename T3, 
+              typename T4, typename T5>
+  void operator() (T1 dummy1, T2 dummy2, T3 dummy3,
+                   T4 dummy4, T5 dummy5) {
+   filelog << dummy1 << " " << dummy2 << " " << dummy3;
+   filelog << " " << dummy4 << " " << dummy5;}
 
   /// Overloading of operator ()
-  template <typename T>
-  void operator() (const std::string dummy, T value, 
-                   std::string dummy2, std::string str) {
-   filelog << dummy << " " << value << " " << dummy2 << " " << str << "\n";}
+  template <typename T1, typename T2, typename T3,
+            typename T4,typename T5, typename T6>
+  void operator () (T1 dummy1, T2 dummy2, T3 dummy3,
+                    T4 dummy4, T5 dummy5, T6 dummy6) {
+   filelog << dummy1 << " " << dummy2 << " ";
+   filelog << dummy3 << " " << dummy4 << " ";
+   filelog << dummy5 << " " << dummy6;}
 
-  /// Overloading of operator ()
-  template <typename T>
-  void operator() (const std::string dummy1, T value1,
-                    const std::string dummy2, T value2) {
-   filelog << dummy1 << " " << value1 << " ";
-   filelog << dummy2 << " " << value2 << "\n";}
-
-  /// Overloading of operator ()
-  template <typename T>
-  void operator() (const std::string dummy1, T value1,
-                    const std::string dummy2, T value2,
-                    const std::string dummy3           ) {
-   filelog << dummy1 << " " << value1 << " ";
-   filelog << dummy2 << " " << value2 << " ";
-   filelog << dummy3 <<  "\n";}
 
   /// Destructor
   ~FileLogManip() {}

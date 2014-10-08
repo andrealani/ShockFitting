@@ -65,8 +65,11 @@ private:
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputValues3;
 
-  /// command object remeshing field
-  SConfig::SharedPtr<Remeshing> m_remeshField;  
+  /// command object setting bonudary node pointers
+  SConfig::SharedPtr<Remeshing> m_BndryNodePtr;
+
+  /// command object redistribute shock points
+  SConfig::SharedPtr<Remeshing> m_RedistrShockPoints; 
 };
 
 //--------------------------------------------------------------------------//

@@ -91,7 +91,7 @@ void ChemicalInfo::generate()
   setMixture();
   if (m_model == "PG") {
    (*nsp) = 1; (*ndof)=4;
-   logfile("Number of variables: ",*ndof);
+   logfile("Number of variables: ",*ndof,"\n");
     return;}
 
   else if (m_model == "Cneq" || m_model == "TCneq") {
@@ -136,7 +136,7 @@ std::string ChemicalInfo::getInputFiles() const
 void ChemicalInfo::setModel()
 {
   model->at(0) = m_model;
-  logfile("Thermodynamic model: ",m_model);
+  logfile("Thermodynamic model: ",m_model, "\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -144,7 +144,7 @@ void ChemicalInfo::setModel()
 void ChemicalInfo::setMixture() 
 {
   mixture->at(0) = m_mixture;
-  logfile("File mixture data: ",getInputFiles());
+  logfile("File mixture data: ",getInputFiles(),"\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -155,7 +155,7 @@ void ChemicalInfo::setMixtureFileName()
   file >> mixtureFile_name;
   if (mixtureFile_name != m_mixture){
    logfile("error data file is wrong");
-   logfile(mixtureFile_name, m_mixture.c_str());
+   logfile(mixtureFile_name, m_mixture.c_str(),"\n");
    exit(1);}
 }
 
@@ -165,7 +165,7 @@ void ChemicalInfo::setnbSpecies()
 {
   file >> dummystr;
   file >> *nsp;
-  logfile( "Number of the species: ",*nsp);
+  logfile( "Number of the species: ",*nsp,"\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -175,7 +175,7 @@ void ChemicalInfo::setSpeciesNames()
   file >> dummystr;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    file >> name->at(ISP);
-   logfile("Chemical species: ",name->at(ISP));
+   logfile("Chemical species: ",name->at(ISP),"\n");
   }
 }
 
@@ -186,7 +186,7 @@ void ChemicalInfo::setMolWeights()
   file >> dummystr;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    file >> mm->at(ISP);
-   logfile("MM: ",mm->at(ISP));
+   logfile("MM: ",mm->at(ISP),"\n");
   }
 }
 
@@ -197,7 +197,7 @@ void ChemicalInfo::setFormEnthalp()
   file >> dummystr;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    file >> hf->at(ISP);
-   logfile("HF: ",hf->at(ISP));
+   logfile("HF: ",hf->at(ISP),"\n");
    if (mixture->at(0)=="ar4") { hf->at(ISP) = hf->at(ISP)/(m_Qref*m_Qref);}
   }
 }
@@ -219,7 +219,7 @@ void ChemicalInfo::setSpecHeatRatio()
   file >> dummystr;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    file >> gams->at(ISP);
-   logfile("GAMS: ",gams->at(ISP));
+   logfile("GAMS: ",gams->at(ISP),"\n");
   }
 }
 
@@ -267,7 +267,7 @@ void ChemicalInfo::setnbDof()
    logfile("Model not implemented");
    exit(1);
   }
-  logfile("Number of variables: ",*ndof);
+  logfile("Number of variables: ",*ndof,"\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -286,7 +286,7 @@ void ChemicalInfo::setPhysicsData()
   name = PhysicsData::getInstance().getData <std::vector<std::string> > ("NAMESP");
   mm = PhysicsData::getInstance().getData <std::vector<double> > ("MM");
   hf = PhysicsData::getInstance().getData <std::vector<double> > ("HF");
-  thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");
+  thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");  
   gams = PhysicsData::getInstance().getData <std::vector<double> > ("GAMS");
   typemol = PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
 }

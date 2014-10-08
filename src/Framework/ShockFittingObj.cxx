@@ -325,11 +325,6 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MODEL");
   PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MIXTURE");
 
-  PhysicsData::getInstance().deleteData <double> ("R");
-  PhysicsData::getInstance().deleteData <double> ("Na");
-  PhysicsData::getInstance().deleteData <double> ("K");
-  PhysicsData::getInstance().deleteData <double> ("KSI");
-
   PhysicsData::getInstance().deleteData <unsigned> ("IE");
   PhysicsData::getInstance().deleteData <unsigned> ("IX");
   PhysicsData::getInstance().deleteData <unsigned> ("IY");

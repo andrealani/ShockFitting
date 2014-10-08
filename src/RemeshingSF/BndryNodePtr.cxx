@@ -103,10 +103,10 @@ void BndryNodePtr::myroutine()
     last++;
    }
   }
-  logfile("Found ",last," boundary points");
+  logfile("Found ",last," boundary points\n");
 
   if (last==(*nbpoin)) {
-  logfile("Found ",(*nbpoin)," boundary points");
+  logfile("Found ",(*nbpoin)," boundary points\n");
   }
   else {
    cout << "LAST =! NBPOIN\n";

@@ -92,13 +92,13 @@ void ReadTriangle::ReadNode()
    logfile("WARNING !!!!!");
    logfile("WARNING !!!!!");
    logfile("WARNING !!!!!");
-   logfile("NDIM: ", dim, " NDOF: ", states, " in file *.node");
-   logfile("NDIM: ", *ndof, " NDOF: ", *ndofmax, " in PhysicData.hh");
+   logfile("NDIM: ", dim, " NDOF: ", states, " in file *.node\n");
+   logfile("NDIM: ", *ndof, " NDOF: ", *ndofmax, " in PhysicData.hh\n");
    logfile("WARNING !!!!!");
    exit(1);
   }
-   logfile("There are ", *npoin, " gridpoints in ", ".node file"); // fwork!!
-   logfile("There are ", *ndof, " ndof in ", ".node file"); // fwork!!
+   logfile("There are ", *npoin, " gridpoints in ", ".node file\n"); // fwork!!
+   logfile("There are ", *ndof, " ndof in ", ".node file\n"); // fwork!!
   if (iattr !=1) {
    cout << "# of attributes should be 1 in node file" << endl;
    exit(1);
@@ -151,7 +151,7 @@ void ReadTriangle::ReadPoly()
   totsize = (*nbfac) + 2 * (*nshmax) * (*neshmax); // leave room for duplicated nodes
   bndfac->resize(3,totsize);
 
-  logfile("There are",*nbfac," polylines in ",getPolyFile());
+  logfile("There are",*nbfac," polylines in ",getPolyFile(),"\n");
 
   for (unsigned IFACE=0; IFACE < (*nbfac); IFACE++) {
    file >> idum;
@@ -182,7 +182,7 @@ void ReadTriangle::ReadEle()
   // resize array with correct size value
   celnod->resize(NVT,NELEM);
 
-  logfile("There are ",NELEM," triangles in ",getEleFile());
+  logfile("There are ",NELEM," triangles in ",getEleFile(),"\n");
 
   //read data from .ele file and fill mesh array
   for (unsigned IELEM=0; IELEM < NELEM; IELEM++) {
@@ -209,7 +209,7 @@ void ReadTriangle::ReadNeigh()
   //resize array with correct size value
   celcel->resize(NVT,NELEM);
 
-  logfile("There are ",NELEM," triangles in ",getNeighFile());
+  logfile("There are ",NELEM," triangles in ",getNeighFile(),"\n");
 
   //read data from .neigh file and fill mesh array
  for (unsigned IELEM=0; IELEM<NELEM; IELEM++) {
@@ -229,7 +229,7 @@ void ReadTriangle::ReadEdge()
 
   file >> NEDGE >> iattr;
 
-  logfile("There are ",NEDGE," edge in ",getEdgeFile());
+  logfile("There are ",NEDGE," edge in ",getEdgeFile(),"\n");
 
   if (iattr!=1) {
    cout << "<# of attributes should be 1 in edge file>" << endl;
