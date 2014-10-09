@@ -10,11 +10,12 @@
 //--------------------------------------------------------------------------//
 
 #include <map>
-#include <string>
+#include "SConfig/ConfigObject.hh"
+#include "Framework/Log.hh"
 
 //--------------------------------------------------------------------------//
 
-class PhysicsData {
+class PhysicsData : public SConfig::ConfigObject {
 public:
   /// this can be called using MeshData::getInstance().
   static PhysicsData& getInstance() {static PhysicsData pd; return pd;}
@@ -40,15 +41,29 @@ public:
  {
    delete getData<ARRAYPD>(name);
  }
+  
+  /// get the name of the parent
+  std::string getParentName() const {return std::string("PhysicsData");}
 
-
+protected:
+ 
+  /// Configures the options for this object.
+  /// To be extended by derived classes.
+  /// @param args is the ConfigArgs with the arguments to be parsed.
+  virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix)
+  {
+    LogToScreen(VERBOSE, "PhysicsData::configure() => start\n");
+    SConfig::ConfigObject::configure(cmap, prefix);
+    LogToScreen(VERBOSE, "PhysicsData::configure() => end\n");
+  }
+  
 private: //data
 
- PhysicsData() {}
- PhysicsData(PhysicsData&) {}
-
+ PhysicsData() : SConfig::ConfigObject("PhysicsData") {}
+  PhysicsData(PhysicsData&) : SConfig::ConfigObject("PhysicsData") {}
+  
  std::map<std::string, void*> m_mapName2ArrayPD;
-
+  
 };
 
 #endif //PhysicsData_hh

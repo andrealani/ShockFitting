@@ -8,9 +8,10 @@
 #define MeshData_hh
 
 #include <map>
-#include <string>
+#include "SConfig/ConfigObject.hh"
+#include "Framework/Log.hh"
 
-class MeshData {
+class MeshData : public SConfig::ConfigObject{
 public:
 
   /// this can be called using MeshData::getInstance().
@@ -37,13 +38,27 @@ public:
   {
     delete getData<ARRAYMD>(name);
   }
- 
-  private:
-   MeshData() {}
-   MeshData(MeshData&) {}
   
+  /// get the name of the parent
+  std::string getParentName() const {return std::string("MeshData");}
+  
+protected:
  
-   std::map<std::string, void*> m_mapName2ArrayMD;
+  /// Configures the options for this object.
+  /// To be extended by derived classes.
+  /// @param args is the ConfigArgs with the arguments to be parsed.
+  virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix)
+  {
+    LogToScreen(VERBOSE, "MeshData::configure() => start\n");
+    SConfig::ConfigObject::configure(cmap, prefix);
+    LogToScreen(VERBOSE, "MeshData::configure() => end\n");
+  }
+  
+private:
+  MeshData() : SConfig::ConfigObject("MeshData") {}
+  MeshData(MeshData&) : SConfig::ConfigObject("MeshData") {}
+  
+  std::map<std::string, void*> m_mapName2ArrayMD;
 };
 
 #endif //MeshData_hh

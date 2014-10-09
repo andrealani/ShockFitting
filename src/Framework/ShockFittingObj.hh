@@ -32,7 +32,7 @@ namespace ShockFitting {
 /// @author Andrea Lani
 
 class ShockFittingObj : public SConfig::Counter, 
-			 public SConfig::ConfigObject {
+			public SConfig::ConfigObject {
 public:
   
   /// typedef needed by the self-registration mechanism

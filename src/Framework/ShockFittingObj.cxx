@@ -71,6 +71,9 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   
   ConfigObject::configure(cmap, prefix);
   
+  configureDeps (cmap, &MeshData::getInstance());
+  configureDeps (cmap, &PhysicsData::getInstance());
+  
   if (ConfigFileReader::isFirstConfig()) {
     
     // create the variable transformers
@@ -268,7 +271,6 @@ void ShockFittingObj::createPhysicsData()
   PhysicsData::getInstance().createData <double> ("RHOREF",1);
   PhysicsData::getInstance().createData <double> ("GREF",1);
   PhysicsData::getInstance().createData <double> ("GM1REF",1);
-
 
   PhysicsData::getInstance().createData < unsigned > ("nShocks", 1);
   PhysicsData::getInstance().createData < unsigned > ("nSpecPoints", 1);
