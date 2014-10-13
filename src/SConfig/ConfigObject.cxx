@@ -50,6 +50,7 @@ void ConfigObject::configure(OptionMap& cmap, const string& prefix)
       
       bool found = false;
       pair<OptionMap::MapItr, OptionMap::MapItr> pIt = cmap.find(key, found);
+      
       if (found) { 
 	pair<string, bool*> p = pIt.first->second;
 	m_options[i]->resetValue(p.first);
@@ -60,7 +61,7 @@ void ConfigObject::configure(OptionMap& cmap, const string& prefix)
 	(*p.second) = true; 
       }
     }
-  }
+  } 
 }
   
 //----------------------------------------------------------------------------//

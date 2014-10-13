@@ -7,6 +7,7 @@
 #include "Framework/StandardShockFitting.hh"
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsData.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -30,13 +31,10 @@ standardShockFittingProv("StandardShockFitting");
 StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   ShockFittingObj(objectName),
   m_readInputFile1(),
-  m_readInputFile2(),
-  m_readInputFile3(),
-  m_readInputValues1(),
-  m_readInputValues2(),
-  m_readInputValues3(),
-  m_BndryNodePtr(),
-  m_RedistrShockPoints()
+  m_readInputFile2()
+//  m_BndryNodePtr(),
+//  m_RedistrShockPoints()
+ // m_FindPhantPoints()
 {
 }
 
@@ -66,20 +64,17 @@ void StandardShockFitting::setup()
 
   ShockFittingObj::setup();
 
-  validate(m_mGenerator.size() == 6,
-           "StandardShockFitting::setup() => MeshGeneratorList should have size==6");
+  validate(m_mGenerator.size() == 2,
+       "StandardShockFitting::setup() => MeshGeneratorList should have size==2");
 
-  validate(m_fRemeshing.size() == 2,
-           "StandardShockFitting::setup() => RemeshingList should have size==2");
+//  validate(m_fRemeshing.size() == 2,
+     //      "StandardShockFitting::setup() => RemeshingList should have size==3");
 
-  m_readInputValues1 = m_mGenerator[0].ptr();
-  m_readInputValues2 = m_mGenerator[1].ptr();
-  m_readInputFile1 = m_mGenerator[2].ptr();
-  m_readInputValues3 = m_mGenerator[3].ptr();
-  m_readInputFile2 = m_mGenerator[4].ptr();
-  m_readInputFile3 = m_mGenerator[5].ptr();
-  m_BndryNodePtr = m_fRemeshing[0].ptr();
-  m_RedistrShockPoints = m_fRemeshing[1].ptr();
+  m_readInputFile1 = m_mGenerator[0].ptr();
+  m_readInputFile2 = m_mGenerator[1].ptr();
+//  m_BndryNodePtr = m_fRemeshing[0].ptr();
+//  m_RedistrShockPoints = m_fRemeshing[1].ptr();
+ // m_FindPhantPoints = m_fRemeshing[2].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -101,14 +96,15 @@ void StandardShockFitting::process()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::process() => start\n");
 
-  m_readInputValues1->generate();
-  m_readInputValues2->generate();
+  PhysicsData::getInstance().getPhysicsInfo()->read();
+  PhysicsData::getInstance().getChemicalInfo()->read(); 
+  PhysicsData::getInstance().getReferenceInfo()->read();
+
   m_readInputFile1->generate();
-  m_readInputValues3->generate();
   m_readInputFile2->generate();
-  m_readInputFile3->generate();
-  m_BndryNodePtr->remesh();
-  m_RedistrShockPoints->remesh();
+//  m_BndryNodePtr->remesh();
+//  m_RedistrShockPoints->remesh();
+//  m_FindPhantPoints->remesh();
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

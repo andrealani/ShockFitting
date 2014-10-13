@@ -49,27 +49,18 @@ private:
 
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile1;
-
+  
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile2;
 
-  /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readInputFile3;
-  
-  /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readInputValues1;
-
-  /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readInputValues2;
-
-  /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readInputValues3;
-
   /// command object setting bonudary node pointers
-  SConfig::SharedPtr<Remeshing> m_BndryNodePtr;
+//  SConfig::SharedPtr<Remeshing> m_BndryNodePtr;
 
-  /// command object redistribute shock points
-  SConfig::SharedPtr<Remeshing> m_RedistrShockPoints; 
+  /// command object redistributing shock points
+//  SConfig::SharedPtr<Remeshing> m_RedistrShockPoints; 
+
+  /// command object finding phantom points
+//  SConfig::SharedPtr<Remeshing> m_FindPhantPoints;
 };
 
 //--------------------------------------------------------------------------//

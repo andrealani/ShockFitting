@@ -5,7 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "Framework/MeshGenerator.hh"
-#include "Common/PhysicsData.hh"
+#include "Framework/PhysicsData.hh"
 #include "Framework/Log.hh"
 #include "Framework/IOFunctions.hh"
 

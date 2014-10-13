@@ -9,9 +9,9 @@
 #include "Framework/IOFunctions.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Log.hh"
-#include "Common/MeshData.hh"
-#include "Common/PhysicsData.hh"
-#include "Common/FileLogManip.hh"
+#include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
+#include "Framework/FileLogManip.hh"
 #include "MathTools/Array2D.hh"
 
 //--------------------------------------------------------------------------//
@@ -165,12 +165,12 @@ void ReadTriangle::ReadPoly()
 
 void ReadTriangle::ReadEle()
 {
-  unsigned NELEM, NVT, states, idum;
+  unsigned nvt, states, idum;
 
   file.open(getEleFile().c_str());
 
-  file >> NELEM >> NVT >> states;
-  if(NVT!=3) {
+  file >> *nelem >> nvt >> states;
+  if(nvt!=3) {
    cout << "<nodes per triangle> MUST be 3 in " << getEleFile().c_str() << " file" << endl;
    exit(1);
   }
@@ -180,14 +180,14 @@ void ReadTriangle::ReadEle()
   }
 
   // resize array with correct size value
-  celnod->resize(NVT,NELEM);
+  celnod->resize(nvt,*nelem);
 
-  logfile("There are ",NELEM," triangles in ",getEleFile(),"\n");
+  logfile("There are ",*nelem," triangles in ",getEleFile(),"\n");
 
   //read data from .ele file and fill mesh array
-  for (unsigned IELEM=0; IELEM < NELEM; IELEM++) {
+  for (unsigned IELEM=0; IELEM < *nelem; IELEM++) {
    file >> idum;
-   for (unsigned IA=0; IA < NVT; IA++) {file >> (*celnod)(IA,IELEM);}
+   for (unsigned IA=0; IA < nvt; IA++) {file >> (*celnod)(IA,IELEM);}
   }
   file.close();
 }
@@ -196,25 +196,25 @@ void ReadTriangle::ReadEle()
 
 void ReadTriangle::ReadNeigh()
 {
-  unsigned NELEM, NVT, idum;
+  unsigned nvt, idum;
 
   file.open(getNeighFile().c_str());
 
-  file >> NELEM >> NVT;
-  if(NVT !=3) {
+  file >> *nelem >> nvt;
+  if(nvt !=3) {
    cout << "<nodes per triangle> MUST be 3 in .neigh file " << endl;
    exit(1);
   }
 
   //resize array with correct size value
-  celcel->resize(NVT,NELEM);
+  celcel->resize(nvt,*nelem);
 
-  logfile("There are ",NELEM," triangles in ",getNeighFile(),"\n");
+  logfile("There are ",*nelem," triangles in ",getNeighFile(),"\n");
 
   //read data from .neigh file and fill mesh array
- for (unsigned IELEM=0; IELEM<NELEM; IELEM++) {
+ for (unsigned IELEM=0; IELEM<*nelem; IELEM++) {
    file >> idum;
-   for (unsigned IA=0; IA<NVT; IA++) {file >> (*celcel)(IA,IELEM);}
+   for (unsigned IA=0; IA<nvt; IA++) {file >> (*celcel)(IA,IELEM);}
  }
   file.close();
 }
@@ -223,13 +223,13 @@ void ReadTriangle::ReadNeigh()
 
 void ReadTriangle::ReadEdge()
 {
-  unsigned NEDGE, iattr, idum;
+  unsigned iattr, idum;
 
   file.open(getEdgeFile().c_str());
 
-  file >> NEDGE >> iattr;
+  file >> *nedge >> iattr;
 
-  logfile("There are ",NEDGE," edge in ",getEdgeFile(),"\n");
+  logfile("There are ",*nedge," edge in ",getEdgeFile(),"\n");
 
   if (iattr!=1) {
    cout << "<# of attributes should be 1 in edge file>" << endl;
@@ -237,10 +237,10 @@ void ReadTriangle::ReadEdge()
   }
 
   // resize array with correct size value
-  edgptr->resize(3,NEDGE);
+  edgptr->resize(3,(*nedge));
 
   //read data from .edge file and fill mesh array
-  for (unsigned IFACE=0; IFACE<NEDGE; IFACE++) {
+  for (unsigned IFACE=0; IFACE<(*nedge); IFACE++) {
    file >> idum;
     for (unsigned IA = 0; IA<3 ; IA++) {file >> (*edgptr)(IA,IFACE);}
   }
@@ -326,6 +326,8 @@ std::string ReadTriangle::getEdgeFile() const
 void ReadTriangle::setMeshData ()
 {
   npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
+  nedge = MeshData::getInstance().getData <unsigned> ("NEDGE");
+  nelem = MeshData::getInstance().getData <unsigned> ("NELEM");
   nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
   nbpoin = MeshData::getInstance().getData <unsigned> ("NBPOIN");
   nhole = MeshData::getInstance().getData <unsigned> ("NHOLE");

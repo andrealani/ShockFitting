@@ -9,7 +9,7 @@
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
 #include "Framework/Remeshing.hh"
-#include "Common/MeshData.hh"
+#include "Framework/MeshData.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Isortrx.hh"
 #include "MathTools/Binsrc.hh"

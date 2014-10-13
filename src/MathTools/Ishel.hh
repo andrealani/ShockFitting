@@ -21,8 +21,11 @@
 class Ishel {
 public:
 
-  /// Constructor
-  Ishel (std::vector <double>*, std::vector <double>*,
+  /// Default constructor
+  Ishel ();
+
+  /// Constructor with class params assigned
+  Ishel (std::vector <double>, std::vector <double>,
          double, double, double, double);
 
   /// Destructor
@@ -48,10 +51,10 @@ public:
 private: // data
 
   /// x-coordinates of cell vertex
-  std::vector <double>* xc;
+  std::vector <double> xc;
 
   /// y-coordinates of cell vertex
-  std::vector <double>* yc;
+  std::vector <double> yc;
 
   /// shock points which denote straight line
   double xs1, ys1;

@@ -13,7 +13,7 @@ int main (int argc, char** argv)
   system("cp ../../../src/TestStandardSF/input.case .");
 
   // link the I/O files 
-  system("ln -sf ../../../src/TestStandardSF/na00.1.node .");
+/*  system("ln -sf ../../../src/TestStandardSF/na00.1.node .");
 
   system("ln -sf ../../../src/TestStandardSF/na00.1.poly .");
 
@@ -26,7 +26,7 @@ int main (int argc, char** argv)
   system("ln -sf ../../../src/TestStandardSF/nitrogen2.dat .");
 
   system("ln -sf ../../../src/TestStandardSF/sh00.dat .");
-
+*/
   string inputFile = "input.case";
   if (!fileExists(inputFile.c_str())) {
     cout << "ERROR: file <" << inputFile << "> does not exist in current directory!\n"; abort();

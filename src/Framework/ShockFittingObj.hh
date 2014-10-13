@@ -74,18 +74,19 @@ public:
   {
     return m_fProcessing;
   }
-  
-  /// get the file meshgenerator list
+
+  /// get the meshgenerator list
   std::vector<PAIR_TYPE(MeshGenerator)>& getMeshGeneratorList()
   {
     return m_mGenerator;
   }
-
+/*
   /// get the remeshing list
   std::vector<PAIR_TYPE(Remeshing)>& getRemeshingList()
   {
     return m_fRemeshing;
   }
+*/
 
 protected:
    
@@ -120,7 +121,7 @@ protected:
   std::vector<PAIR_TYPE(MeshGenerator)> m_mGenerator ;
 
   /// array of field remeshing
-  std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
+//  std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
 
 private: // helper functions
 
@@ -136,8 +137,7 @@ private: // helper functions
   /// delete PhysicsData variables
   void deletePhysicsData();
 
-};
-  
+};  
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting

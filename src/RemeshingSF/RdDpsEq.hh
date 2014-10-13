@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "Framework/Remeshing.hh"
-#include "Common/FileLogManip.hh"
+#include "Framework/FileLogManip.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
 

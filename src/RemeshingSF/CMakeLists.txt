@@ -1,6 +1,8 @@
 LIST ( APPEND RemeshingSF_files
 BndryNodePtr.hh
 BndryNodePtr.cxx
+#FndPhPs.hh
+#FndPhPs.cxx
 RdDpsEq.hh
 RdDpsEq.cxx
 )

@@ -10,8 +10,8 @@
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Log.hh"
 #include "MathTools/Array3D.hh"
-#include "Common/PhysicsData.hh"
-#include "Common/MeshData.hh"
+#include "Framework/PhysicsData.hh"
+#include "Framework/MeshData.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -288,16 +288,21 @@ void ReSdwInfo::setPhysicsData()
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
 
   r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
-  r_nShockPoints = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
-  r_nShockEdges = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
+  r_nShockPoints = 
+       PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+  r_nShockEdges = 
+       PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
   r_nSpecPoints = PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
-  r_typeSpecPoints = PhysicsData::getInstance().getData <vector <string> > ("TypeSpecPoints");
+  r_typeSpecPoints = 
+       PhysicsData::getInstance().getData <vector <string> > ("TypeSpecPoints");
   r_typeSh = PhysicsData::getInstance().getData <vector <string> > ("TYPESH");
   r_XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
-  r_ZRoeShuOld = PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHuOLD");
-  r_ZRoeShdOld = PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHdOLD");
-  r_SHinSPPs = PhysicsData::getInstance().getData <Array3D <unsigned> > ("SHinSPPs");
-
+  r_ZRoeShuOld = 
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHuOLD");
+  r_ZRoeShdOld = 
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHdOLD");
+  r_SHinSPPs = 
+       PhysicsData::getInstance().getData <Array3D <unsigned> > ("SHinSPPs");
 }
 
 //--------------------------------------------------------------------------//

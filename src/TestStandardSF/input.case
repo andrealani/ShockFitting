@@ -1,65 +1,71 @@
 .ShockFittingObj = StandardShockFitting
+
 .StandardShockFitting {
- .MeshGeneratorList = PhysicsInfo MeshInfo ChemicalInfo \
-			  ReferenceInfo ReadTriangle ReSdwInfo
 
- .PhysicsInfo {
- .NDIM = 2                              # space dimension
- .NDOFMAX = 6                           # max nof degree of freedom
- .NSHMAX = 5                            # max number shocks
- .NPSHMAX = 1000                        # max nof points for each shock
- .NESHMAX = 4                           # max nof segments for each shock
- .NADDHOLESMAX = 10                     # max nof holes
- .NSPMAX = 12                           # max nof special points
- }
+ .MeshData {
 
- .MeshInfo {
-  .EPS = 0.20e-7                        # distance between two shock faces
-  .SNDMIN = 0.1e-4                      # max non dimensional distance of phantom nodes
-  .DXCELL = 0.55e-3                     # length of the shock edges
-  .IBAK = 500                           # number of iterations before saving solution
-  .Naddholes = 0                        # number of hole points
-  .CADDholes = 0                        # hole points coordinates
-  .NPROC = 4                            # number of processor
- }
-
- .ChemicalInfo {
-  .MODEL = TCneq                        # model "PG" || "TCneq" || "Cneq"
-  .MIXTURE = nitrogen2                  # mixture (only if MODEL = Cneq || MODEL = TCneq)
-  .InputFiles = \
-          nitrogen2.dat                 # mixture file (look at data_template.dat)
-  .Qref =/                              # ref speed (only if MODEL=Cneq && MIXTURE=ar4)
-  .IE = 1                               # global index
-  .IX = 2                               # global index
-  .IY = 3                               # global index
-  .IEV = 4                              # global index
- }
-
- .ReferenceInfo {
-  .Variables = P                        #
-  .Adimensional = D                     #
-  .gamma = 1.4                          # heat specific ratio
-  .Rgas = 287                           # gas constant
-  .TempRef = 1833                       # freestream temperature [K]
-  .PressRef = 57.65                     # freestream pressure
-  .VelocityRef = 5594                   # freestream velocity
-  .SpeciesDensity = 0.00036354 \        #
-                      0.004616
-  .Lref = 1                             #
- }
-
- .ReadTriangle {
-  .InputFiles = na00.1                  # processing file
-  .FileTypes = node poly ele \          # file types (in default order)
-                neigh edge
- }
-
- .ReSdwInfo {
-  .InputFiles = sh00.dat                # shock points informations file
- }
-
+   .EPS = 0.20e-7                        # distance between two shock faces
+   .SNDMIN = 0.1e-4                      # max non dimensional distance of phantom nodes
+   .DXCELL = 0.55e-3                     # length of the shock edges
+   .IBAK = 500                           # number of iterations before saving solution
+   .Naddholes = 0                        # number of hole points
+   .CADDholes = 0                        # hole points coordinates
+   .NPROC = 4                            # number of processor
+  }
 }
 
 .StandardShockFitting {
- .RemeshingList = BndryNodePtr RdDpsEq
+
+ .PhysicsData {
+
+   .PhysicsInfo {
+    .NDIM = 2                              # space dimension
+    .NDOFMAX = 6                           # max nof degree of freedom
+    .NSHMAX = 5                            # max number shocks
+    .NPSHMAX = 1000                        # max nof points for each shock
+    .NESHMAX = 4                           # max nof segments for each shock
+    .NADDHOLESMAX = 10                     # max nof holes
+    .NSPMAX = 12                           # max nof special points
+   }  
+
+   .ChemicalInfo {
+    .MODEL = TCneq                        # model "PG" || "TCneq" || "Cneq"
+    .MIXTURE = nitrogen2                  # mixture (only if MODEL = Cneq || MODEL = TCneq)
+    .InputFiles = \
+          nitrogen2.dat                 # mixture file (look at data_template.dat)
+    .Qref =/                              # ref speed (only if MODEL=Cneq && MIXTURE=ar4)
+    .IE = 1                               # global index
+    .IX = 2                               # global index
+    .IY = 3                               # global index
+    .IEV = 4                              # global index
+   }
+
+   .ReferenceInfo {
+    .Variables = P                        #
+    .Adimensional = D                     #
+    .gamma = 1.4                          # heat specific ratio
+    .Rgas = 287                           # gas constant
+    .TempRef = 1833                       # freestream temperature [K]
+    .PressRef = 57.65                     # freestream pressure
+    .VelocityRef = 5594                   # freestream velocity
+    .SpeciesDensity = 0.00036354 \        #
+                      0.004616
+    .Lref = 1                             #
+   }
+ } 
+}
+
+.StandardShockFitting {
+
+ .MeshGeneratorList = ReadTriangle ReSdwInfo
+
+  .ReadTriangle {
+   .InputFiles = na00.1                  # processing file
+   .FileTypes = node poly ele \          # file types (in default order)
+                neigh edge
+  }
+
+  .ReSdwInfo {
+   .InputFiles = sh00.dat                # shock points informations file
+  }
 }

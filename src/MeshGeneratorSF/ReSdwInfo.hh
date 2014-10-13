@@ -10,8 +10,8 @@
 //--------------------------------------------------------------------------//
 
 #include "SConfig/StringManip.hh"
-#include "Common/FileLogManip.hh"
 #include "Framework/Connectivity.hh"
+#include "Framework/FileLogManip.hh"
 #include "Framework/MeshGenerator.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"

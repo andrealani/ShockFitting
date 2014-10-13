@@ -11,9 +11,9 @@
 
 #include "SConfig/StringManip.hh"
 #include "Framework/Connectivity.hh"
+#include "Framework/FileLogManip.hh"
 #include "Framework/MeshGenerator.hh"
 #include "MathTools/Array2D.hh"
-#include "Common/FileLogManip.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -119,6 +119,12 @@ private: // data
   /// number of mesh points
   unsigned* npoin;
 
+  /// number of edge in the mesh
+  unsigned* nedge;
+
+  /// number of elements in the mesh
+  unsigned* nelem;
+
   /// number of boundary points
   unsigned* nbpoin;
 
@@ -160,7 +166,7 @@ private: // data
   /// reading file
   std::ifstream file;
 
-  /// store information on the log file
+  /// store informations in the log file
   FileLogManip logfile;
 };
 

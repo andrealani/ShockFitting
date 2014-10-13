@@ -9,8 +9,8 @@
 #include "SConfig/ObjectProvider.hh"
 #include "Framework/Remeshing.hh"
 #include "Framework/Log.hh"
-#include "Common/PhysicsData.hh"
-#include "Common/MeshData.hh"
+#include "Framework/PhysicsData.hh"
+#include "Framework/MeshData.hh"
 
 //--------------------------------------------------------------------------//
 
