@@ -71,6 +71,7 @@ void ReSdwInfo::generate()
 
   setAddress();
   setSize();
+
   readShockInfo(); 
 
   file.close();

@@ -1,8 +1,17 @@
 LIST ( APPEND RemeshingSF_files
-BndryNodePtr.hh
 BndryNodePtr.cxx
-#FndPhPs.hh
-#FndPhPs.cxx
+BndryNodePtr.hh
+ChangeBndryPtr.cxx
+ChangeBndryPtr.hh
+CoNorm.cxx
+CoNorm.hh
+CoNorm4B.cxx
+CoNorm4B.hh
+DummyRemeshing.cxx
+DummyRemeshing.hh
+FndPhPs.cxx
+FndPhPs.hh
+RdDpsEq.cxx
 RdDpsEq.hh
 RdDpsEq.cxx
 )

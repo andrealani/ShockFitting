@@ -54,13 +54,20 @@ private:
   SConfig::SharedPtr<MeshGenerator> m_readInputFile2;
 
   /// command object setting bonudary node pointers
-//  SConfig::SharedPtr<Remeshing> m_BndryNodePtr;
+  SConfig::SharedPtr<Remeshing> m_bndryNodePtr;
 
   /// command object redistributing shock points
-//  SConfig::SharedPtr<Remeshing> m_RedistrShockPoints; 
+  SConfig::SharedPtr<Remeshing> m_redistrShockPoints; 
 
   /// command object finding phantom points
-//  SConfig::SharedPtr<Remeshing> m_FindPhantPoints;
+  SConfig::SharedPtr<Remeshing> m_findPhantPoints;
+
+  /// command object changing boundary pointers
+  SConfig::SharedPtr<Remeshing> m_changeBndryPoints;
+
+  /// command object computing nomral vectors
+  SConfig::SharedPtr<Remeshing> m_computeNormalVectors;
+
 };
 
 //--------------------------------------------------------------------------//

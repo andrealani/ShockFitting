@@ -1,6 +1,7 @@
 LIST ( APPEND Framework_files
 BaseShockFitting.cxx
 BaseShockFitting.hh
+ChemicalConsts.hh
 ChemicalInfo.cxx
 ChemicalInfo.hh
 Clist.hh
@@ -23,8 +24,8 @@ ReadInterpolateWrite.cxx
 ReadInterpolateWrite.hh
 ReferenceInfo.cxx
 ReferenceInfo.hh
-#Remeshing.hh
-#Remeshing.cxx
+Remeshing.hh
+Remeshing.cxx
 Rdshp.hh
 Rdshp.cxx
 ShockFittingAPI.cxx

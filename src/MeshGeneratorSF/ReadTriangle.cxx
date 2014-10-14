@@ -70,7 +70,6 @@ void ReadTriangle::unsetup()
 void ReadTriangle::generate()
 {
   LogToScreen(INFO, "ReadTriangle::generate()\n");
-
   ReadNode();
   ReadPoly();
   ReadEle();

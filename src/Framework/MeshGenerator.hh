@@ -20,9 +20,9 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-///This class defines a MeshGenerator which reads data related to a mesh
-/// generator format and stores them in arrays.
-
+///This class defines a MeshGenerator, whose task is read informations
+/// needed to generate a mesh from input files and store them in arrays 
+/// and vectors.
 
 class MeshGenerator : public BaseShockFitting {
 public:

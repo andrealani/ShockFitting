@@ -5,6 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "Framework/ReferenceInfo.hh"
+#include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
 
@@ -95,11 +96,10 @@ void ReferenceInfo::read()
 
 void ReferenceInfo::TCneqAdim()
 {
-  double Rgp = 8.31;
   Rs->resize(*nsp);
   for (unsigned ISP=0; ISP<(*nsp); ISP++) {
    hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
-   Rs->at(ISP) = Rgp/mm->at(ISP);
+   Rs->at(ISP) = ChemicalConsts::Rgp()/mm->at(ISP);
    Rs->at(ISP) = Rs->at(ISP) * (*Tref)/((*uref) * (*uref));   
   }
 }
@@ -146,13 +146,12 @@ void ReferenceInfo::setRhoRef()
 
 void ReferenceInfo::setAlpha_Rgas_Cv()
 { 
-  double Rgp = 8.31;
   double alphaPerc;
   R=0; Cv=0; alpha.resize(*nsp);
   for (unsigned ISP=0; ISP<(*nsp); ISP++) {
    alpha.at(ISP) = m_rhor.at(ISP)/(*rhoref);
-   R = R + alpha.at(ISP) * Rgp/mm->at(ISP);
-   Cv = Cv + alpha.at(ISP) * Rgp/mm->at(ISP)/(gams->at(ISP)-1);
+   R = R + alpha.at(ISP) * ChemicalConsts::Rgp()/mm->at(ISP);
+   Cv = Cv + alpha.at(ISP) * ChemicalConsts::Rgp()/mm->at(ISP)/(gams->at(ISP)-1);
    alphaPerc = alpha.at(ISP)*100;
    logfile(namesp->at(ISP),"= ",alphaPerc,"\n");
    logfile("MM = ",mm->at(ISP),"\n");

@@ -8,6 +8,7 @@
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "RemeshingSF/CoNorm4B.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -31,10 +32,12 @@ standardShockFittingProv("StandardShockFitting");
 StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   ShockFittingObj(objectName),
   m_readInputFile1(),
-  m_readInputFile2()
-//  m_BndryNodePtr(),
-//  m_RedistrShockPoints()
- // m_FindPhantPoints()
+  m_readInputFile2(),
+  m_bndryNodePtr(),
+  m_redistrShockPoints(),
+  m_findPhantPoints(),
+  m_changeBndryPoints(),
+  m_computeNormalVectors()
 {
 }
 
@@ -61,20 +64,22 @@ void StandardShockFitting::configure(SConfig::OptionMap& cmap,
 void StandardShockFitting::setup()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => start\n");
-
+cout << "prima di shockFitting setup" << endl;
   ShockFittingObj::setup();
-
+cout << "dopo shock fitting setup" << endl;
   validate(m_mGenerator.size() == 2,
        "StandardShockFitting::setup() => MeshGeneratorList should have size==2");
 
-//  validate(m_fRemeshing.size() == 2,
-     //      "StandardShockFitting::setup() => RemeshingList should have size==3");
+  validate(m_fRemeshing.size() == 5,
+           "StandardShockFitting::setup() => RemeshingList should have size==5");
 
   m_readInputFile1 = m_mGenerator[0].ptr();
   m_readInputFile2 = m_mGenerator[1].ptr();
-//  m_BndryNodePtr = m_fRemeshing[0].ptr();
-//  m_RedistrShockPoints = m_fRemeshing[1].ptr();
- // m_FindPhantPoints = m_fRemeshing[2].ptr();
+  m_bndryNodePtr = m_fRemeshing[0].ptr();
+  m_redistrShockPoints = m_fRemeshing[1].ptr();
+  m_findPhantPoints = m_fRemeshing[2].ptr();
+  m_changeBndryPoints = m_fRemeshing[3].ptr();
+  m_computeNormalVectors = m_fRemeshing[4].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -102,9 +107,15 @@ void StandardShockFitting::process()
 
   m_readInputFile1->generate();
   m_readInputFile2->generate();
-//  m_BndryNodePtr->remesh();
-//  m_RedistrShockPoints->remesh();
-//  m_FindPhantPoints->remesh();
+  m_bndryNodePtr->remesh();
+  m_redistrShockPoints->remesh();
+  m_findPhantPoints->remesh();
+  m_changeBndryPoints->remesh();
+
+  CoNorm4B computeNormalVect4B("CoNorm4B");
+  m_computeNormalVectors = &computeNormalVect4B;
+
+  m_computeNormalVectors->remesh();
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

@@ -89,10 +89,11 @@ int Ishel::Ishel2 ()
   a(0,1)=(xs1-xs2);
   b.at(0)=xs1*(ys2-ys1)+ys1*(xs1-xs2);
 
-  a(1,2)=(yc.at(2)-yc.at(0));
+  a(1,0)=(yc.at(2)-yc.at(0));
   a(1,1)=(xc.at(0)-xc.at(2));
   b.at(1)=xc.at(0)*(yc.at(2)-yc.at(0))+yc.at(0)*(xc.at(0)-xc.at(2));
 
+  x.resize(2);
   x = S.callSolg(a,b);
   xi = x.at(0);
   yi = x.at(1);
@@ -111,14 +112,12 @@ int Ishel::Ishel2 ()
   b.at(1)=xc.at(1)*(yc.at(2)-yc.at(1))+yc.at(1)*(xc.at(1)-xc.at(2));
 
   x = S.callSolg(a,b);
-
   xi=x.at(0);
   yi=x.at(1);
 
   rlsh2=pow((xs1-xs2),2)+pow((ys1-ys2),2);
   rl2  =pow((xs1-xi),2)+pow((ys1-yi),2)+pow((xs2-xi),2)+pow((ys2-yi),2);
   if(rlsh2 >= rl2) return 0;
-
   return 1;
 }
 

@@ -1,4 +1,6 @@
 LIST ( APPEND MeshGeneratorSF_files
+DummyMeshGenerator.cxx
+DummyMeshGenerator.hh
 ReadTriangle.cxx
 ReadTriangle.hh
 ReSdwInfo.cxx

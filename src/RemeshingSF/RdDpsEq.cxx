@@ -48,6 +48,8 @@ void RdDpsEq::setup()
   setPhysicsData();
   setMeshData();
   logfile.Open(getClassName());
+
+  LogToScreen(VERBOSE, "RdDpsEq::setup() => end\n");
 }
 
 //--------------------------------------------------------------------------//

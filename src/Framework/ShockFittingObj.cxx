@@ -50,11 +50,11 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   m_mGenerator = vector<PAIR_TYPE(MeshGenerator)>();
   addOption("MeshGeneratorList",&m_mGenerator,
             "List of the names of mesh generator files");
-/*
+
   m_fRemeshing = vector<PAIR_TYPE(Remeshing)>();
   addOption("RemeshingList",&m_fRemeshing,
 	    "List of the names of field remeshing");
-*/
+
 }
   
 //--------------------------------------------------------------------------//
@@ -86,9 +86,9 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the mesh generator
     createList<MeshGenerator>(m_mGenerator);
 
-/*    // create the remeshing
+    // create the remeshing
     createList<Remeshing>(m_fRemeshing);
-*/
+
   }
 
   // configure the variable transformers
@@ -112,17 +112,16 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   // configure mesh data
   configureDeps (cmap, &MeshData::getInstance());
 
- 
   // configure the file mesh generator
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     configureDeps (cmap, m_mGenerator[i].ptr().get());
   }
-/*
+
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     configureDeps (cmap, m_fRemeshing[i].ptr().get());
   }
-*/   
+   
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
 }
 
@@ -155,12 +154,12 @@ void ShockFittingObj::setup()
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     m_mGenerator[i].ptr()->setup();
   }
-/*
+
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->setup();
   }
-*/  
+  
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
 }
   
@@ -193,12 +192,12 @@ void ShockFittingObj::unsetup()
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     m_mGenerator[i].ptr()->unsetup();
   }
-/*
+
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->unsetup();
   }
-*/    
+    
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
   
@@ -227,6 +226,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <double> ("EPS",1);
   MeshData::getInstance().createData <double> ("SNDMIN",1);
   MeshData::getInstance().createData <double> ("DXCELL",1);
+  MeshData::getInstance().createData <double> ("SHRELAX",1);
   MeshData::getInstance().createData <unsigned> ("IBAK",1);
   MeshData::getInstance().createData <unsigned> ("Naddholes",1);
   MeshData::getInstance().createData < std::vector<double> > ("CADDholes",1);
@@ -301,6 +301,7 @@ void ShockFittingObj::createPhysicsData()
 			  <Array3D <double> > ("ZROESHuOLD", 1);
   PhysicsData::getInstance().createData 
 			  <Array3D <double> > ("ZROESHdOLD", 1);
+  PhysicsData::getInstance().createData <Array3D <double> > ("VSHNOR",1);
 
   PhysicsData::getInstance().setup();
 }
@@ -323,6 +324,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <double> ("EPS");
   MeshData::getInstance().deleteData <double> ("SNDMIN");
   MeshData::getInstance().deleteData <double> ("DXCELL");
+  MeshData::getInstance().deleteData <double> ("SHRELAX");
   MeshData::getInstance().deleteData <unsigned> ("IBAK");
   MeshData::getInstance().deleteData <unsigned> ("Naddholes");
   MeshData::getInstance().deleteData < std::vector<double> > ("CADDholes");
@@ -387,6 +389,7 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHuOLD");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHdOLD");
   PhysicsData::getInstance().deleteData <Array3D <unsigned> > ("SHinSPPs");
+  PhysicsData::getInstance().deleteData <Array3D <double> > ("VSHNOR");
 
   PhysicsData::getInstance().unsetup();
 }

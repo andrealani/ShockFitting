@@ -37,6 +37,7 @@ public:
     *eps = m_eps;
     *sndmin = m_sndmin;
     *dxcell = m_dxcell;
+    *shrelax = m_shrelax;
     *ibak = m_ibak;
     *naddholes = m_naddholes;
     if ( (*naddholes) != 0 ) {
@@ -90,6 +91,9 @@ private:
     m_dxcell = 0;
     addOption("DXCELL",&m_dxcell,
             "Length of the shock edges");
+    m_shrelax = 0;
+    addOption("SHRELAX",&m_shrelax,
+            "Relax Coefficient of shock points integration");
     m_ibak = 1;
     addOption("IBAK",&m_ibak,
             "Number of iterations before saving solution",true);
@@ -123,6 +127,7 @@ private: // helper functions
     eps = MeshData::getInstance().getData <double> ("EPS");
     sndmin = MeshData::getInstance().getData <double> ("SNDMIN");
     dxcell = MeshData::getInstance().getData <double> ("DXCELL");
+    shrelax = MeshData::getInstance().getData <double> ("SHRELAX");
     ibak = MeshData::getInstance().getData <unsigned> ("IBAK");
     naddholes = MeshData::getInstance().getData <unsigned> ("Naddholes");
     caddholes = MeshData::getInstance().getData < std::vector<double> > ("CADDholes");
@@ -144,6 +149,9 @@ private: // data (read from input file)
   /// length of the shock edges
   double m_dxcell;
 
+  /// relax coefficient for shock points integration
+  double m_shrelax;
+
   /// number of iterations before saving solution
   unsigned m_ibak;
 
@@ -156,18 +164,36 @@ private: // data (read from input file)
   /// number of processor
   unsigned m_nproc;
 
+  /// distance between two shock faces
+  /// (assignable to MeshData)
   double* eps;
 
+  /// max non dimensional distance of phantom nodes
+  /// (assignable to MeshData)
   double* sndmin;
 
+  /// length of the shock edges
+  /// (assignable to MeshData)
   double* dxcell;
 
+  /// relax coefficient for shock points integration
+  /// (assignable to MeshData)
+  double* shrelax;
+
+  /// number of iterations before saving solution
+  /// (assignable to MeshData)
   unsigned* ibak;
 
+  /// number of hole points
+  /// (assignable to MeshData)
   unsigned* naddholes;
 
+  /// hole points coordinates
+  /// (assignable to MeshData)
   std::vector <double>* caddholes;
 
+  /// number of processor
+  /// (assignable to MeshData)
   unsigned* nproc;
 
 };

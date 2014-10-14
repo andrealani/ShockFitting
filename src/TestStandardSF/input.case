@@ -7,6 +7,7 @@
    .EPS = 0.20e-7                        # distance between two shock faces
    .SNDMIN = 0.1e-4                      # max non dimensional distance of phantom nodes
    .DXCELL = 0.55e-3                     # length of the shock edges
+   .SHRELAX = 0.2                        # relax coefficient of shock points integration
    .IBAK = 500                           # number of iterations before saving solution
    .Naddholes = 0                        # number of hole points
    .CADDholes = 0                        # hole points coordinates
@@ -68,4 +69,10 @@
   .ReSdwInfo {
    .InputFiles = sh00.dat                # shock points informations file
   }
+}
+
+.StandardShockFitting {
+
+ .RemeshingList = BndryNodePtr RdDpsEq FndPhPs \
+                   ChangeBndryPtr CoNorm
 }

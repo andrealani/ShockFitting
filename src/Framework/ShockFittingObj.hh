@@ -80,13 +80,13 @@ public:
   {
     return m_mGenerator;
   }
-/*
+
   /// get the remeshing list
   std::vector<PAIR_TYPE(Remeshing)>& getRemeshingList()
   {
     return m_fRemeshing;
   }
-*/
+
 
 protected:
    
@@ -121,7 +121,7 @@ protected:
   std::vector<PAIR_TYPE(MeshGenerator)> m_mGenerator ;
 
   /// array of field remeshing
-//  std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
+  std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
 
 private: // helper functions
 

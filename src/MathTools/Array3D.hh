@@ -38,6 +38,19 @@ public:
     alreadyAlloc = true;
   }
 
+  /// Copy Constructor
+  Array3D (const Array3D& ArrayCopy)
+  {
+    setSize1(ArrayCopy.getSize1());
+    setSize2(ArrayCopy.getSize2());
+    setSize3(ArrayCopy.getSize3());
+    ptr = new TYPE[size1*size2*size3];
+    for(unsigned i=0; i<size1*size2*size3; i++) {
+     ptr[i] = ArrayCopy.ptr[i];
+    }
+  }
+
+
   ///Constructor with a given address
   Array3D (const unsigned dim1, const unsigned dim2, const unsigned dim3, TYPE* start)
   {

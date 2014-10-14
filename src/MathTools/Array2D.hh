@@ -36,6 +36,16 @@ public:
  alreadyAlloc = true;
  }
 
+ /// Copy Constructor
+ Array2D(const Array2D& ArrayCopy)
+ {
+   setnRows(ArrayCopy.getnRows()); setnCols(ArrayCopy.getnCols());
+   ptr = new TYPE[nRows*nCols];
+   for(unsigned i=0; i<nRows*nCols; i++) {
+    ptr[i]=ArrayCopy.ptr[i];
+   }
+ }
+
  /// Constructor
  /// set Array2D to a given address
  Array2D (const unsigned nbRows, const unsigned nbColumns, TYPE* start)
