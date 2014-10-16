@@ -47,8 +47,6 @@ void BndryNodePtr::setup()
 {
   LogToScreen(VERBOSE, "BndryNodePtr::setup() => start\n");
 
-  setMeshData();
-
   logfile.Open(getClassName());
 
   LogToScreen(VERBOSE, "BndryNodePtr::setup() => end\n");
@@ -68,6 +66,8 @@ void BndryNodePtr::unsetup()
 void BndryNodePtr::remesh()
 {
   LogToScreen(INFO, "BndryNodePtr::remesh()\n");
+
+  setMeshData();
 
   setBndryNodePtr();
 }

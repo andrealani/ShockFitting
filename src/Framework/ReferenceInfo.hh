@@ -141,7 +141,7 @@ private: // data
   /// species molecular weights
   std::vector <double>* mm;
 
-  /// species heat specifi ratios
+  /// species heat specific ratios
   std::vector <double>* gams;
 
   /// names of species

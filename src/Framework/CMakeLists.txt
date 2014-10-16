@@ -17,6 +17,8 @@ Log.hh
 MeshData.hh
 MeshGenerator.hh
 MeshGenerator.cxx
+NormalUnitVect.cxx
+NormalUnitVect.hh
 PhysicsData.hh
 PhysicsInfo.cxx
 PhysicsInfo.hh
@@ -26,8 +28,6 @@ ReferenceInfo.cxx
 ReferenceInfo.hh
 Remeshing.hh
 Remeshing.cxx
-Rdshp.hh
-Rdshp.cxx
 ShockFittingAPI.cxx
 ShockFittingAPI.hh
 ShockFittingObj.cxx

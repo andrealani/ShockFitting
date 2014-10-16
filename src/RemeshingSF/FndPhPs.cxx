@@ -10,10 +10,10 @@
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/Remeshing.hh"
-#include "Framework/Rdshp.hh"
 #include "MathTools/Array3D.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Ishel.hh"
+#include "RemeshingSF/Rdshp.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -75,11 +75,13 @@ void FndPhPs::remesh()
   yc.resize(3);
   n.resize(3);
   d.resize(3);
+
   for (unsigned iSh=0; iSh < (*r_nShocks); iSh++) {
    for(unsigned iElemSh=0; iElemSh < r_nShockEdges->at(iSh); iElemSh++) {
     for (unsigned iElem=0; iElem < (*nelem); iElem++) {
 
      if(cellCrossed(iSh,iElemSh,iElem)) {
+
 
       // for each triangle crossed by the shock element compute the distance
       // of vertices from the shock straight line.
@@ -88,8 +90,8 @@ void FndPhPs::remesh()
       d.at(1) = dist.getRdshp(xc.at(1),yc.at(1),xs1, ys1, xs2, ys2);
       d.at(2) = dist.getRdshp(xc.at(2),yc.at(2),xs1, ys1, xs2, ys2);
 
-      if (ielem==3926) {
-        writeElem3926();}
+
+      if (ielem==3926) { writeElem3926();}
 
       // if distance is too small the node become a phantom node
       setPhanPoints();
@@ -112,16 +114,17 @@ bool FndPhPs::cellCrossed(unsigned ISH_index, unsigned ielemsh_index,
 {
   setIndex(ISH_index,ielemsh_index,ielem_index); 
   for (unsigned i=0; i<(*nvt); i++) {
-   n.at(i) = (*celnod)(i,ielem);
-   for (unsigned j=0; j<(*ndim); j++) {
-    xc.at(i) = (*xy)(j,n.at(i));
-   }
+   n.at(i) = (*celnod)(i,ielem)-1; //c++ indeces start from 0
+   xc.at(i) = (*xy)(0,n.at(i));
+   yc.at(i) = (*xy)(1,n.at(i));
   }
+
 
   xs1 = (*r_XYSh)(0,ielemsh,ISH);
   ys1 = (*r_XYSh)(1,ielemsh,ISH);
   xs2 = (*r_XYSh)(0,ielemsh+1,ISH);
   ys2 = (*r_XYSh)(1,ielemsh+1,ISH);
+
 
   Ishel isCellCrossed (xc,yc,xs1,xs2,ys1,ys2);
 
@@ -179,16 +182,17 @@ void FndPhPs::countPhanPoints()
 {
   *r_nPhanPoints = 0; *r_nBoundPhanPoints = 0;
   for (unsigned K=0; K<*npoin; K++) {
+  unsigned inod = K+1; // c++ indeces start from 0
    if (nodcod->at(K)==-1 || nodcod->at(K)==-2) {
      *r_nPhanPoints = *r_nPhanPoints + 1; }
    if (nodcod->at(K)==-2) { 
      *r_nBoundPhanPoints = *r_nBoundPhanPoints + 1; }
-   if (nodcod->at(K)==-1) { logfile ("Node ", K, "has become a phantom\n");}
+   if (nodcod->at(K)==-1) { logfile ("Node ", inod, "has become a phantom\n");}
    if (nodcod->at(K)==-2) {
-    logfile ("Node ", K, "on the boundary has become a phantom\n");}
+    logfile ("Node ", inod, "on the boundary has become a phantom\n");}
   } 
   logfile ("Number of Phantom nodes (incl. those on the bndry)",
-           *r_nPhanPoints);
+           *r_nPhanPoints, "\n");
   if (*r_nBoundPhanPoints > 0) {
    logfile("Uh! Oh! there are ", *r_nBoundPhanPoints,
            "phantom nodes on the boundary");
@@ -209,8 +213,7 @@ void FndPhPs::setAddress()
 {
   unsigned start;
   start = 0;
-  unsigned sizeprova = *npoin+1;
-  xy = new Array2D <double> ((*ndim),sizeprova,&coor->at(start));
+  xy = new Array2D <double> ((*ndim),(*npoin),&coor->at(start));
 }
 
 //--------------------------------------------------------------------------//

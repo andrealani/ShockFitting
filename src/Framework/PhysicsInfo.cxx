@@ -26,7 +26,9 @@ PhysicsInfo::PhysicsInfo(const std::string& objectName) :
   m_ndim = 1;
   addOption("NDIM",&m_ndim,
             "Space dimension");
-
+  m_gam = 1;
+  addOption("GAM",&m_gam,
+            "Heat specific ratio");
   m_ndofmax = 1;
   addOption("NDOFMAX",&m_ndofmax,
             "Maximum number of degree of freedom");
@@ -83,6 +85,8 @@ void PhysicsInfo::read()
   LogToScreen(INFO, "PhysicsInfo::read()\n");
 
   *ndim = m_ndim;
+  *gam = m_gam;
+  *gm1 = *gam-1;
   *ndofmax = m_ndofmax;
   *npshmax = m_npshmax;
   *nshmax = m_nshmax;
@@ -96,6 +100,8 @@ void PhysicsInfo::read()
 void PhysicsInfo::setPhysicsData()
 {
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
+  gam = PhysicsData::getInstance().getData <double> ("GAM");
+  gm1 = PhysicsData::getInstance().getData <double> ("GM1");
   ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");

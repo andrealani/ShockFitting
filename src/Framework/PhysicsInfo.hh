@@ -60,6 +60,9 @@ private: //data
   /// space dimension
   unsigned m_ndim;
 
+  /// heat specific ratio
+  double m_gam;
+
   /// max number of degree of freedom
   unsigned m_ndofmax;
 
@@ -81,6 +84,13 @@ private: //data
   /// space dimension 
   ///(assignable to PhysicsData)
   unsigned* ndim;
+
+  /// heat specific ratio
+  /// assignable to PhysicsData
+  double* gam;
+
+  /// gm1 = gam -1
+  double* gm1;
 
   /// max number of degree of freedom
   /// (assignable to PhysicsData)

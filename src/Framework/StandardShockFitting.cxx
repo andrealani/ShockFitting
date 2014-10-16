@@ -8,7 +8,6 @@
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
-#include "RemeshingSF/CoNorm4B.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -64,9 +63,9 @@ void StandardShockFitting::configure(SConfig::OptionMap& cmap,
 void StandardShockFitting::setup()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => start\n");
-cout << "prima di shockFitting setup" << endl;
+
   ShockFittingObj::setup();
-cout << "dopo shock fitting setup" << endl;
+
   validate(m_mGenerator.size() == 2,
        "StandardShockFitting::setup() => MeshGeneratorList should have size==2");
 
@@ -111,10 +110,6 @@ void StandardShockFitting::process()
   m_redistrShockPoints->remesh();
   m_findPhantPoints->remesh();
   m_changeBndryPoints->remesh();
-
-  CoNorm4B computeNormalVect4B("CoNorm4B");
-  m_computeNormalVectors = &computeNormalVect4B;
-
   m_computeNormalVectors->remesh();
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");

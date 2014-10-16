@@ -105,7 +105,8 @@ void ReSdwInfo::readShockInfo()
   logfile("Found n. ",(*r_nShocks)," shock/discontinuities\n");
 
   for (unsigned ISH=0; ISH < (*r_nShocks); ISH++) {
-   logfile("Shock/Discontinuity n. ",ISH,"\n");
+   unsigned iShock = ISH+1; // c++ indeces start from 0
+   logfile("Shock/Discontinuity n. ",iShock,"\n");
    file >> (*r_nShockPoints)[ISH] >> (*r_typeSh)[ISH] ;
    logfile("Kind of discontinuity: ",(*r_typeSh)[ISH],"\n");
    logfile("n. of points ",(*r_nShockPoints)[ISH],"\n");

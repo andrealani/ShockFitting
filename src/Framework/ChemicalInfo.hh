@@ -165,7 +165,7 @@ private: // data
   /// molecular weight of the species (kg/mol)
   std::vector <double>* mm;
 
-  /// formation enthalpy at 0K of the species (J/kg
+  /// formation enthalpy at 0K of the species (J/kg)
   std::vector <double>* hf;
 
   /// characteristic vibrational temperature (K)

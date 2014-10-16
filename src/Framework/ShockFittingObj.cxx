@@ -250,6 +250,8 @@ void ShockFittingObj::createPhysicsData()
 {
   
   PhysicsData::getInstance().createData <unsigned> ("NDIM", 1);
+  PhysicsData::getInstance().createData <double> ("GAM", 1);
+  PhysicsData::getInstance().createData <double> ("GM1", 1);
   PhysicsData::getInstance().createData <unsigned> ("NDOF", 1);
   PhysicsData::getInstance().createData <unsigned> ("NDOFMAX", 1);
   PhysicsData::getInstance().createData <unsigned> ("NSHMAX", 1);
@@ -349,6 +351,8 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().unsetup();
   
   PhysicsData::getInstance().deleteData <unsigned> ("NDIM");
+  PhysicsData::getInstance().deleteData <double> ("GAM");
+  PhysicsData::getInstance().deleteData <double> ("GM1");
   PhysicsData::getInstance().deleteData <unsigned> ("NDOF");
   PhysicsData::getInstance().deleteData <unsigned> ("NDOFMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NSHMAX");

@@ -7,13 +7,22 @@ CoNorm.cxx
 CoNorm.hh
 CoNorm4B.cxx
 CoNorm4B.hh
+CoNormPG.cxx
+CoNormPG.hh
+CoNorm4Ar.cxx
+CoNorm4Ar.hh
+CoNorm4TCneq.cxx
+CoNorm4TCneq.cxx
 DummyRemeshing.cxx
 DummyRemeshing.hh
 FndPhPs.cxx
 FndPhPs.hh
 RdDpsEq.cxx
 RdDpsEq.hh
-RdDpsEq.cxx
+Rdshp.cxx
+Rdshp.hh
+ShpDpndnc.cxx
+ShpDpndnc.hh
 )
 
 LIST ( APPEND RemeshingSF_libs Framework SConfig MathTools )

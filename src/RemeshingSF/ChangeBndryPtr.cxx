@@ -44,8 +44,6 @@ void ChangeBndryPtr::setup()
 {
   LogToScreen (VERBOSE, "ChangeBndryPtr::setup => start\n");
 
-  setMeshData();
-
   logfile.Open(getClassName());
 
   LogToScreen (VERBOSE, "ChangeBndryPtr::setup => end\n");
@@ -66,6 +64,8 @@ void ChangeBndryPtr::remesh()
 {
   LogToScreen (INFO, "ChangeBndryPtr::remesh() \n");
 
+  setMeshData();
+
   logfile("Subr ChangeBndryPtr; NBFAC was = ",(*nbfac),"\n");
   logfile("Subr ChangeBndryPtr; NBPOIN was = ",(*nbpoin),"\n");
   logfile("Subr ChangeBndryPtr; NPOIN was = ",(*npoin),"\n");
@@ -83,11 +83,13 @@ void ChangeBndryPtr::remesh()
     logfile((*nodptr)(ipos,1) , (*nodptr)(ipos,2), "\n");
     removeNode(IPOIN);
 
+
     // update the i-face=nodptr(ipos,2)
     updateIface();
 
     // remove the i-face=nodptr(ipos,3)
     removeIface();
+
    }
   }
 
@@ -108,8 +110,8 @@ void ChangeBndryPtr::lookForNode(int IPOIN)
   Binsrc findIpoin(IPOIN,iwork_nodptr);
   ipos = findIpoin.callBinsrc();
   if (ipos==-1) {
-   logfile("Entry NOT found for ", IPOIN);
-   logfile("Entry NOT found for ", IPOIN);
+   logfile("Entry NOT found for ", IPOIN, "\n");
+   logfile("Entry NOT found for ", IPOIN, "\n");
    exit(1);
   }
 }
@@ -118,12 +120,11 @@ void ChangeBndryPtr::lookForNode(int IPOIN)
 
 void ChangeBndryPtr::removeNode(int IPOIN)
 {
+  inode.resize(2);
   for (unsigned K=1; K<3; K++) {
-   iface = (*nodptr)(ipos,K);
-   if ((*bndfac)(0,iface) != IPOIN) {
-    inode.at(K-1) = (*bndfac)(0,iface);}
-   else {
-    inode.at(K-1) = (*bndfac)(1,iface);}
+   iface = (*nodptr)(ipos,K)-1; // c++ indeces start from 0
+   if ((*bndfac)(0,iface) != IPOIN) { inode.at(K-1) = (*bndfac)(0,iface); }
+   else { inode.at(K-1) = (*bndfac)(1,iface); }
   }
 }
 
@@ -131,7 +132,7 @@ void ChangeBndryPtr::removeNode(int IPOIN)
 
 void ChangeBndryPtr::updateIface()
 {
-  iface = (*nodptr)(ipos,1);
+  iface = (*nodptr)(ipos,1)-1; //c++ indeces start from 0
   (*bndfac)(0,iface)=inode.at(0);
   (*bndfac)(1,iface)=inode.at(1);
   logfile("Face: ",iface, "has been updated with: ");
@@ -142,8 +143,8 @@ void ChangeBndryPtr::updateIface()
 
 void ChangeBndryPtr::removeIface()
 {
-  iface = (*nodptr)(ipos,2);
-  logfile("Face: ", iface, "has been removed");
+  iface = (*nodptr)(ipos,2)-1; // c++ indeces start from 0
+  logfile("Face: ", iface, "has been removed\n");
   (*bndfac)(0,iface) = (*bndfac)(0,iface);
   (*bndfac)(1,iface) = (*bndfac)(1,iface);
   (*bndfac)(2,iface) = -(*bndfac)(2,iface);
@@ -164,9 +165,6 @@ void ChangeBndryPtr::setMeshData()
 //----------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
-
-
 
 
 

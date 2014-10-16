@@ -111,19 +111,19 @@ private: //data
   /// code characterizing shock points
   Array2D <int>* r_NodCodSh;
 
-  /// upstream state
+  /// upstream status
   Array3D <double>* r_ZRoeShu;
 
-  /// downstream state
+  /// downstream status
   Array3D <double>* r_ZRoeShd;
 
   /// shock points coordinates
   Array3D <double>* r_XYSh;
 
-  /// old upstream state
+  /// old upstream status
   Array3D <double>* r_ZRoeShuOld;
 
-  /// old downstream state
+  /// old downstream status
   Array3D <double>* r_ZRoeShdOld;
 
   /// array characterizing special point
