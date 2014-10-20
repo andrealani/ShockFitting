@@ -68,6 +68,11 @@ private:
   /// command object computing nomral vectors
   SConfig::SharedPtr<Remeshing> m_computeNormalVectors;
 
+  /// command object remeshing shock layer
+  SConfig::SharedPtr<Remeshing> m_computeShockLayer;
+
+  /// command object fixinf mesh around special points
+  SConfig::SharedPtr<Remeshing> m_fixMeshSpecialPoints;
 };
 
 //--------------------------------------------------------------------------//

@@ -126,12 +126,12 @@ void CoNorm4B::computeTau(unsigned ISH,unsigned I)
    setTauIp2ToZero();
   }
 
-  if (I>2) {
+  if (I>0) {
    // one point backward
    J=I-1;
    // coordinates of the one point backward
    onePointBackward(J,ISH);
-   if (I>3) {
+   if (I>1) {
     // two points backward
     J2=I-2;
     // coordinates of two points backward
@@ -185,30 +185,25 @@ void CoNorm4B::setVShNorForStype()
 
 void CoNorm4B::setVShNorForWPNRX(unsigned ISPPNTS)
 {
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
+  setShockIndeces(1,ISPPNTS);
 
-  (*r_vShNor)(0,IP1,ISH1) = (*r_vShNor)(0,IP1,ISH1)/abs((*r_vShNor)(0,IP1,ISH1));
-  (*r_vShNor)(1,IP1,ISH1) = 0;
+  (*r_vShNor)(0,IP.at(0),ISH.at(0)) =
+      (*r_vShNor)(0,IP.at(0),ISH.at(0))/abs((*r_vShNor)(0,IP.at(0),ISH.at(0)));
+  (*r_vShNor)(1,IP.at(0),ISH.at(0)) = 0;
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNorm4B::setVShNorForC(unsigned ISPPNTS)
 {
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
+  // ISH.at(0) incident shock
+  // ISH.at(1) reflected shock
+  setShockIndeces(2,ISPPNTS);
 
-  ISH2 = (*r_SHinSPPs)(0,1,ISPPNTS);
-  I2 = (*r_SHinSPPs)(1,1,ISPPNTS)-1;
-  IP2 = 1+I2*(r_nShockPoints->at(ISH2)-1);
-
-  nx1 = (*r_vShNor)(0,IP1,ISH1);
-  nx1 = (*r_vShNor)(1,IP1,ISH1);
-  nx2 = (*r_vShNor)(0,IP2,ISH2);
-  nx2 = (*r_vShNor)(1,IP2,ISH2);
+  nx1 = (*r_vShNor)(0,IP.at(0),ISH.at(0));
+  nx1 = (*r_vShNor)(1,IP.at(0),ISH.at(0));
+  nx2 = (*r_vShNor)(0,IP.at(1),ISH.at(1));
+  ny2 = (*r_vShNor)(1,IP.at(1),ISH.at(1));
 
   nx1 = nx1+nx2;
   ny1 = ny1+ny2;
@@ -217,46 +212,34 @@ void CoNorm4B::setVShNorForC(unsigned ISPPNTS)
   nx1 = nx1/dum;
   ny1 = ny1/dum;
 
-  (*r_vShNor)(0,IP1,ISH1) = nx1;
-  (*r_vShNor)(1,IP1,ISH1) = ny1;
-  (*r_vShNor)(0,IP2,ISH1) = nx1;
-  (*r_vShNor)(1,IP2,ISH1) = ny1;
+  (*r_vShNor)(0,IP.at(0),ISH.at(0)) = nx1;
+  (*r_vShNor)(1,IP.at(0),ISH.at(0)) = ny1;
+  (*r_vShNor)(0,IP.at(1),ISH.at(0)) = nx1;
+  (*r_vShNor)(1,IP.at(1),ISH.at(0)) = ny1;
+
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNorm4B::setVShNorForTP(unsigned ISPPNTS)
 {
-  // define shocks and edge indeces
+  // ISH.at(0) incident shock 
+  // ISH.at(1) reflected shock
+  // ISH.at(2) Mach stem
+  // ISH.at(3) contact discontinuity
+  setShockIndeces(4,ISPPNTS);
 
-  // incident shock 
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
-  // reflected shock
-  ISH2 = (*r_SHinSPPs)(0,1,ISPPNTS);
-  I2 = (*r_SHinSPPs)(1,1,ISPPNTS)-1;
-  IP2 = 1+I2*(r_nShockPoints->at(ISH2)-1);
-  // Mach stem
-  ISH3 = (*r_SHinSPPs)(0,2,ISPPNTS);
-  I3 = (*r_SHinSPPs)(1,2,ISPPNTS)-1;
-  IP3 = 1+I3*(r_nShockPoints->at(ISH3)-1);
-  // contact discontinuity
-  ISH4 = (*r_SHinSPPs)(0,3,ISPPNTS);
-  I4 = (*r_SHinSPPs)(1,3,ISPPNTS)-1;
-  IP4 = 1+I4*(r_nShockPoints->at(ISH4)-1);
+  nx2 = (*r_vShNor)(0,IP.at(1),ISH.at(1));
+  ny2 = (*r_vShNor)(1,IP.at(1),ISH.at(1));
 
-  nx2 = (*r_vShNor)(0,IP2,ISH2);
-  ny2 = (*r_vShNor)(1,IP2,ISH2);
-
-  nx4 = (*r_vShNor)(0,IP4,ISH4);
-  ny4 = (*r_vShNor)(1,IP4,ISH4);
+  nx4 = (*r_vShNor)(0,IP.at(3),ISH.at(3));
+  ny4 = (*r_vShNor)(1,IP.at(3),ISH.at(3));
 
   dum = nx2*nx4+ny2*ny4;
   if (dum < 0) {
-   for (unsigned I=0; I<r_nShockPoints->at(ISH4); I++) {
-    (*r_vShNor)(0,I,ISH4) = -(*r_vShNor)(0,I,ISH4);
-    (*r_vShNor)(1,I,ISH4) = -(*r_vShNor)(1,I,ISH4);
+   for (unsigned I=0; I<r_nShockPoints->at(ISH.at(3)); I++) {
+    (*r_vShNor)(0,I,ISH.at(3)) = -(*r_vShNor)(0,I,ISH.at(3));
+    (*r_vShNor)(1,I,ISH.at(3)) = -(*r_vShNor)(1,I,ISH.at(3));
    }
   }
 }
@@ -287,6 +270,19 @@ void CoNorm4B::writeTecPlotFile()
 
 //----------------------------------------------------------------------------//
 
+void CoNorm4B::setShockIndeces(unsigned nbDiscontinuities, unsigned ISPPNTS)
+{
+  ISH.resize(nbDiscontinuities);
+  IP.resize(nbDiscontinuities);
+  for(unsigned i=0; i<nbDiscontinuities; i++) {
+   ISH.at(i) = (*r_SHinSPPs)(0,i,ISPPNTS)-1; // c++ indeces start from 0
+   I = (*r_SHinSPPs)(1,i,ISPPNTS) - 1;
+   IP.at(i) = I * (r_nShockPoints->at(ISH.at(i))-1); // c++ indeces start from 0
+  }
+}
+
+//----------------------------------------------------------------------------//
+
 void CoNorm4B::onePointForward(unsigned J, unsigned ISH)
 {
   xj = (*r_XYSh)(0,J,ISH);
@@ -301,8 +297,8 @@ void CoNorm4B::twoPointsForward(unsigned J2, unsigned ISH)
 {
   xj2 = (*r_XYSh)(0,J2,ISH);
   yj2 = (*r_XYSh)(1,J2,ISH);
-  tauxip2 = xj2-xi;
-  tauyip2 = yj2-yi;
+  tauxip2 = xj2-xj;
+  tauyip2 = yj2-yj;
 }
 
 //----------------------------------------------------------------------------//
@@ -311,8 +307,8 @@ void CoNorm4B::onePointBackward(unsigned J, unsigned ISH)
 {
   xj = (*r_XYSh)(0,J,ISH);
   yj = (*r_XYSh)(1,J,ISH);
-  tauxim1 = xj-xi;
-  tauyim1 = yj-yi;
+  tauxim1 = xi-xj;
+  tauyim1 = yi-yj;
 }
 
 //----------------------------------------------------------------------------//
@@ -321,8 +317,8 @@ void CoNorm4B::twoPointsBackward(unsigned J2, unsigned ISH)
 {
   xj2 = (*r_XYSh)(0,J2,ISH);
   yj2 = (*r_XYSh)(1,J2,ISH);
-  tauxim2 = xj2-xi;
-  tauyim2 = yj2-yi;
+  tauxim2 = xj-xj2;
+  tauyim2 = yj-yj2;
 }
 
 //----------------------------------------------------------------------------//

@@ -139,7 +139,7 @@ void BndryNodePtr::myroutine()
       }
       for (unsigned k=1; k<3; k++) {
        if ((*nodptr)(ipos,k)==0) {
-        (*nodptr)(ipos,k)=IFACE;
+        (*nodptr)(ipos,k)=IFACE+1;// c++ indeces start from 0
         j++;
         goto five;
         break;

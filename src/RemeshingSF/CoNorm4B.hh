@@ -64,6 +64,9 @@ private: // helper functions
   /// write tecplot file
   void writeTecPlotFile();
 
+  /// set indeces characterizing shock
+  void setShockIndeces(unsigned, unsigned);
+
   /// take one point forward coordinates
   void onePointForward(unsigned, unsigned);
 

@@ -49,7 +49,7 @@ private: // helper functions
   void computeTau(unsigned, unsigned);
 
   /// recover shock point status
-  void recoverStatus(unsigned, unsigned, unsigned);
+  void recoverStatus(std::string, unsigned, unsigned, unsigned);
 
   /// fix normal vector for typeShock = S
   void setVShNorForStype();
@@ -65,6 +65,9 @@ private: // helper functions
 
   /// write tecplot file
   void writeTecPlotFile();
+
+  /// set indeces characterizing shock
+  void setShockIndeces(unsigned, unsigned);
 
   /// take one point forward coordinates
   void onePointForward(unsigned, unsigned);

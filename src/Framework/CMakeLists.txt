@@ -15,8 +15,8 @@ FileProcessing.hh
 IOFunctions.hh
 Log.hh
 MeshData.hh
-MeshGenerator.hh
 MeshGenerator.cxx
+MeshGenerator.hh
 NormalUnitVect.cxx
 NormalUnitVect.hh
 PhysicsData.hh
@@ -26,8 +26,8 @@ ReadInterpolateWrite.cxx
 ReadInterpolateWrite.hh
 ReferenceInfo.cxx
 ReferenceInfo.hh
-Remeshing.hh
 Remeshing.cxx
+Remeshing.hh
 ShockFittingAPI.cxx
 ShockFittingAPI.hh
 ShockFittingObj.cxx

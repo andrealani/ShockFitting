@@ -41,7 +41,7 @@ public:
   /// Compute normal vectors
   void remesh();
 
-private: // helper fucntions
+private: // helper functions
 
   /// return class name
   std::string getClassName () const {return std::string("CoNorm4TCneq");}
@@ -50,7 +50,7 @@ private: // helper fucntions
   void computeTau(unsigned, unsigned);
 
   /// recover shock point status
-  void recoverStatus(unsigned, unsigned, unsigned);
+  void recoverStatus(std::string, unsigned, unsigned, unsigned);
 
   /// fix normal vector for typeShock = S
   void setVShNorForStype();
@@ -66,6 +66,9 @@ private: // helper fucntions
 
   /// write tecplot file
   void writeTecPlotFile();
+
+  /// set indeces characterizing shock
+  void setShockIndeces(unsigned, unsigned);
 
   /// take one point forward coordinates
   void onePointForward(unsigned, unsigned);

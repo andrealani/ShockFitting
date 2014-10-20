@@ -51,7 +51,7 @@ void NormalUnitVect::remesh()
 
   CoNorm* computeNormal = new CoNorm("CoNorm");
 
-/*  if(getModel()=="B"&&(*ndof)==1) {
+  if(getModel()=="B"&&(*ndof)==1) {
    CoNorm4B computeNormalVector4B("CoNorm4B");
    computeNormal=&computeNormalVector4B;
 
@@ -70,13 +70,13 @@ void NormalUnitVect::remesh()
   }
 
   else if (getModel()=="Cneq" && getMixture()=="ar4") {
-*/   CoNorm4Ar computeNormalVector4Ar("CoNorm4Ar");
+   CoNorm4Ar computeNormalVector4Ar("CoNorm4Ar");
    computeNormal=&computeNormalVector4Ar;
 
    computeNormal->setup();
    computeNormal->remesh();
    computeNormal->unsetup();
-/*  }
+  }
 
   else if (getModel()=="TCneq") {
    CoNorm4TCneq computeNormalVector4TCneq("CoNorm4TCneq");
@@ -85,7 +85,7 @@ void NormalUnitVect::remesh()
    computeNormal->setup();
    computeNormal->remesh();
    computeNormal->unsetup();
-  }*/
+  }
 }
 
 //--------------------------------------------------------------------------//

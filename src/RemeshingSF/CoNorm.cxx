@@ -103,5 +103,3 @@ void CoNorm::setPhysicsData()
 
 } // namespace ShockFitting
 
-
-

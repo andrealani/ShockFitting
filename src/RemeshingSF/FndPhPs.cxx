@@ -76,6 +76,11 @@ void FndPhPs::remesh()
   n.resize(3);
   d.resize(3);
 
+  unsigned cont = 0;
+  for (unsigned i=0; i<nodcod->size(); i++) {
+   if (nodcod->at(i)==-1 || nodcod->at(i)==-2) {cont++;}
+  }
+
   for (unsigned iSh=0; iSh < (*r_nShocks); iSh++) {
    for(unsigned iElemSh=0; iElemSh < r_nShockEdges->at(iSh); iElemSh++) {
     for (unsigned iElem=0; iElem < (*nelem); iElem++) {

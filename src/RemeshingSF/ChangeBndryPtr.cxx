@@ -53,9 +53,9 @@ void ChangeBndryPtr::setup()
 
 void ChangeBndryPtr::unsetup()
 {
-  LogToScreen (VERBOSE, "ChangeBndryPtr::unsetup()\n");
-
   logfile.Close();
+
+  LogToScreen (VERBOSE, "ChangeBndryPtr::unsetup()\n");
 }
 
 //----------------------------------------------------------------------------//
@@ -70,6 +70,7 @@ void ChangeBndryPtr::remesh()
   logfile("Subr ChangeBndryPtr; NBPOIN was = ",(*nbpoin),"\n");
   logfile("Subr ChangeBndryPtr; NPOIN was = ",(*npoin),"\n");
 
+
   for (int IPOIN=0; IPOIN<(*npoin); IPOIN++) {
 
    if (nodcod->at(IPOIN)==-2) {
@@ -78,8 +79,10 @@ void ChangeBndryPtr::remesh()
     // dis-actived (nodcod=-2)
     lookForNode(IPOIN);
 
+
     // remove the i-node
-    logfile("Removing node", IPOIN, "belongs to edges: ");
+    unsigned ipoin = IPOIN+1; //c++indeces start from 0
+    logfile("Removing node", ipoin, "belongs to edges: ");
     logfile((*nodptr)(ipos,1) , (*nodptr)(ipos,2), "\n");
     removeNode(IPOIN);
 
@@ -107,11 +110,13 @@ void ChangeBndryPtr::lookForNode(int IPOIN)
    iwork_nodptr.at(i) = (*nodptr)(i,0);
   }
 
-  Binsrc findIpoin(IPOIN,iwork_nodptr);
+  unsigned ipoin = IPOIN+1; //c++ indeces start from 0
+
+  Binsrc findIpoin(ipoin,iwork_nodptr);
   ipos = findIpoin.callBinsrc();
   if (ipos==-1) {
-   logfile("Entry NOT found for ", IPOIN, "\n");
-   logfile("Entry NOT found for ", IPOIN, "\n");
+   logfile("Entry NOT found for ", ipoin, "\n");
+   logfile("Entry NOT found for ", ipoin, "\n");
    exit(1);
   }
 }
@@ -122,32 +127,34 @@ void ChangeBndryPtr::removeNode(int IPOIN)
 {
   inode.resize(2);
   for (unsigned K=1; K<3; K++) {
-   iface = (*nodptr)(ipos,K)-1; // c++ indeces start from 0
-   if ((*bndfac)(0,iface) != IPOIN) { inode.at(K-1) = (*bndfac)(0,iface); }
-   else { inode.at(K-1) = (*bndfac)(1,iface); }
+   iface = (*nodptr)(ipos,K);
+   if ((*bndfac)(0,iface-1) != IPOIN+1) // c++ indeces start from 0
+      { inode.at(K-1) = (*bndfac)(0,iface-1); }
+   else { inode.at(K-1) = (*bndfac)(1,iface-1); } // c++ indeces start from 0
   }
+
 }
 
 //----------------------------------------------------------------------------//
 
 void ChangeBndryPtr::updateIface()
 {
-  iface = (*nodptr)(ipos,1)-1; //c++ indeces start from 0
-  (*bndfac)(0,iface)=inode.at(0);
-  (*bndfac)(1,iface)=inode.at(1);
+  iface = (*nodptr)(ipos,1);
+  (*bndfac)(0,iface-1)=inode.at(0); //c++ indeces start from 0
+  (*bndfac)(1,iface-1)=inode.at(1); //c++ indeces start from 0
   logfile("Face: ",iface, "has been updated with: ");
-  logfile(inode.at(0),inode.at(1));
+  logfile(inode.at(0)," ",inode.at(1),"\n");
 }
 
 //----------------------------------------------------------------------------//
 
 void ChangeBndryPtr::removeIface()
 {
-  iface = (*nodptr)(ipos,2)-1; // c++ indeces start from 0
+  iface = (*nodptr)(ipos,2);
   logfile("Face: ", iface, "has been removed\n");
-  (*bndfac)(0,iface) = (*bndfac)(0,iface);
-  (*bndfac)(1,iface) = (*bndfac)(1,iface);
-  (*bndfac)(2,iface) = -(*bndfac)(2,iface);
+  (*bndfac)(0,iface-1) = (*bndfac)(0,iface-1); // c++ indeces start from 0
+  (*bndfac)(1,iface-1) = (*bndfac)(1,iface-1); // c++ indeces start from 0
+  (*bndfac)(2,iface-1) = -(*bndfac)(2,iface-1); // c++ indeces start from 0
 }
 
 //----------------------------------------------------------------------------//

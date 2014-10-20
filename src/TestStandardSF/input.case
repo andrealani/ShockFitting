@@ -20,13 +20,13 @@
  .PhysicsData {
 
    .PhysicsInfo {
-    .NDIM = 2                              # space dimension
-    .NDOFMAX = 6                           # max nof degree of freedom
-    .NSHMAX = 5                            # max number shocks
-    .NPSHMAX = 1000                        # max nof points for each shock
-    .NESHMAX = 4                           # max nof segments for each shock
-    .NADDHOLESMAX = 10                     # max nof holes
-    .NSPMAX = 12                           # max nof special points
+    .NDIM = 2                            # space dimension
+    .NDOFMAX = 6                         # max nof degree of freedom
+    .NSHMAX = 5                          # max number shocks
+    .NPSHMAX = 1000                      # max nof points for each shock
+    .NESHMAX = 999                       # max nof segments for each shock (NPSHMAX-1)
+    .NADDHOLESMAX = 10                   # max nof holes
+    .NSPMAX = 12                         # max nof special points
    }  
 
    .ChemicalInfo {
@@ -74,5 +74,6 @@
 .StandardShockFitting {
 
  .RemeshingList = BndryNodePtr RdDpsEq FndPhPs \
-                   ChangeBndryPtr NormalUnitVect
+                   ChangeBndryPtr NormalUnitVect \
+		     CoPntDispl FxMshSps
 }

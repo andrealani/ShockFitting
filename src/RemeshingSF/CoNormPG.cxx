@@ -61,12 +61,19 @@ void CoNormPG::remesh()
 
   setSize();
 
-  // compute normal vector for each shock
+  // write status on log file
   for (unsigned ISH=0; ISH<(*r_nShocks); ISH++) {
    for (unsigned I=0; I<r_nShockPoints->at(ISH); I++) {
 
     logfile("I: ",(*r_ZRoeShd)(0,I,ISH), " " ,(*r_ZRoeShd)(1,I,ISH));
     logfile("I: ",(*r_ZRoeShd)(2,I,ISH), " " ,(*r_ZRoeShd)(3,I,ISH));
+   }
+  }
+
+
+  // compute normal vector for each shock
+  for (unsigned ISH=0; ISH<(*r_nShocks); ISH++) {
+   for (unsigned I=0; I<r_nShockPoints->at(ISH); I++) {
 
      computeTau(ISH,I);
 
@@ -105,7 +112,7 @@ void CoNormPG::remesh()
 
 void CoNormPG::computeTau(unsigned ISH, unsigned I)
 {
-  unsigned J, J2;
+  unsigned J, J2, ipoin;
   ush = 0; vsh = 0;
   xi = (*r_XYSh)(0,I,ISH);
   yi = (*r_XYSh)(1,I,ISH);
@@ -117,7 +124,8 @@ void CoNormPG::computeTau(unsigned ISH, unsigned I)
    onePointForward(J, ISH);
 
    // recover status for the forward point
-   recoverStatus(J,ISH);
+   ipoin = J+1; // c++ indeces start from 0
+   recoverStatus("forward",J,ISH);
 
    if (I < (r_nShockPoints->at(ISH)-1)) {
     // two points forward
@@ -138,18 +146,19 @@ void CoNormPG::computeTau(unsigned ISH, unsigned I)
    ShpDpndnc shockDepip(xi,yi,ush,vsh,xj,yj,uj,vj,aj);
    depip1 = shockDepip.getDependence();
   }
-  else if (I==r_nShockPoints->at(ISH)) {depip1=0; depim1=0;}
+  else if (I==r_nShockPoints->at(ISH)) {depip1=0; depim1=1;}
 
-  if (I>2) {
+  if (I>0) {
    // one point backward
    J=I-1;
    // coordinates of the one point backward
    onePointBackward(J,ISH);
 
    // recover status for the backward point
-   recoverStatus(J,ISH);
+   ipoin = J+1; // c++ indeces start from 0
+   recoverStatus("backward",J,ISH);
 
-   if (I>3) {
+   if (I>1) {
     // two points backward
     J2=I-2;
     // coordinates of two points backward
@@ -168,7 +177,7 @@ void CoNormPG::computeTau(unsigned ISH, unsigned I)
    ShpDpndnc shockDepim(xi,yi,ush,vsh,xj,yj,uj,vj,aj);
    depim1 = shockDepim.getDependence();
   }
-  else if (I==0) {depip1=0; depim1=0;}
+  else if (I==0) {depip1=1; depim1=0;}
 
   setLp();
   setLm();
@@ -179,9 +188,10 @@ void CoNormPG::computeTau(unsigned ISH, unsigned I)
   taux = (depim1*tauxim1*lp12+depip1*tauxip1*lm12);
   tauy = (depim1*tauyim1*lp12+depip1*tauyip1*lm12);
 
-  logfile(I, "tau ", taux, " ", tauy);
-  logfile(" ", depim1, " ", depip1, "\n");
-
+  ipoin = I+1; // c++ indeces start from 0
+  logfile("\n", ipoin, "tau ", taux, "   ", tauy);
+  logfile("           ", depim1, " ", depip1, "\n\n");
+  logfile ("\n            --------------          \n");
   tau = sqrt(taux*taux+tauy*tauy);
   taux = taux/tau;
   tauy = tauy/tau;
@@ -200,12 +210,11 @@ void CoNormPG::setVShNorForStype()
      dum = ui*(*r_vShNor)(0,I,ISH)+vi*(*r_vShNor)(1,I,ISH);
      if(dum>0) {ii++;}
     }
-    if (ii > r_nShockPoints->at(ISH)/2) {
+    if (ii < r_nShockPoints->at(ISH)/2 - 1) { break; }
      for (unsigned I=0; I<r_nShockPoints->at(ISH); I++) {
       (*r_vShNor)(0,I,ISH) = -(*r_vShNor)(0,I,ISH);
       (*r_vShNor)(1,I,ISH) = -(*r_vShNor)(1,I,ISH);
      } // I
-    } // if ii > r_nShockPoints->at(ISH)/2
    } // if r_typeSh->at(ISH)=="S"
   } // for
 }
@@ -214,78 +223,58 @@ void CoNormPG::setVShNorForStype()
 
 void CoNormPG::setVShNorForWPNRX(unsigned ISPPNTS)
 {
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
+  setShockIndeces(1,ISPPNTS);
 
-  (*r_vShNor)(0,IP1,ISH1) = (*r_vShNor)(0,IP1,ISH1)/abs((*r_vShNor)(0,IP1,ISH1));
-  (*r_vShNor)(1,IP1,ISH1) = 0;
+  (*r_vShNor)(0,IP.at(0),ISH.at(0)) =
+      (*r_vShNor)(0,IP.at(0),ISH.at(0))/abs((*r_vShNor)(0,IP.at(0),ISH.at(0)));
+  (*r_vShNor)(1,IP.at(0),ISH.at(0)) = 0;
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNormPG::setVShNorForC(unsigned ISPPNTS)
 {
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
-
-  ISH2 = (*r_SHinSPPs)(0,1,ISPPNTS);
-  I2 = (*r_SHinSPPs)(1,1,ISPPNTS)-1;
-  IP2 = 1+I2*(r_nShockPoints->at(ISH2)-1);
-
-  nx1 = (*r_vShNor)(0,IP1,ISH1);
-  nx1 = (*r_vShNor)(1,IP1,ISH1);
-  nx2 = (*r_vShNor)(0,IP2,ISH2);
-  nx2 = (*r_vShNor)(1,IP2,ISH2);
-
+  setShockIndeces(2,ISPPNTS);
+  
+  nx1 = (*r_vShNor)(0,IP.at(0),ISH.at(0));
+  ny1 = (*r_vShNor)(1,IP.at(0),ISH.at(0));
+  nx2 = (*r_vShNor)(0,IP.at(1),ISH.at(1));
+  ny2 = (*r_vShNor)(1,IP.at(1),ISH.at(1));
+  
   nx1 = nx1+nx2;
   ny1 = ny1+ny2;
-
+  
   dum = sqrt(nx1*nx1+ny1*ny1);
   nx1 = nx1/dum;
   ny1 = ny1/dum;
-
-  (*r_vShNor)(0,IP1,ISH1) = nx1;
-  (*r_vShNor)(1,IP1,ISH1) = ny1;
-  (*r_vShNor)(0,IP2,ISH1) = nx1;
-  (*r_vShNor)(1,IP2,ISH1) = ny1;
+  
+  (*r_vShNor)(0,IP.at(0),ISH.at(0)) = nx1;
+  (*r_vShNor)(1,IP.at(0),ISH.at(0)) = ny1;
+  (*r_vShNor)(0,IP.at(1),ISH.at(0)) = nx1;
+  (*r_vShNor)(1,IP.at(1),ISH.at(0)) = ny1;
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNormPG::setVShNorForTP(unsigned ISPPNTS)
 {
-  // define shocks and edge indeces
+  // ISH.at(0) incident shock
+  // ISH.at(1) reflected shock
+  // ISH.at(2) Mach stem
+  // ISH.at(3) contact discontinuity
+  setShockIndeces(4,ISPPNTS);
 
-  // incident shock
-  ISH1 = (*r_SHinSPPs)(0,0,ISPPNTS);
-  I1 = (*r_SHinSPPs)(1,0,ISPPNTS)-1;
-  IP1 = 1+I1*(r_nShockPoints->at(ISH1)-1);
-  // reflected shock
-  ISH2 = (*r_SHinSPPs)(0,1,ISPPNTS);
-  I2 = (*r_SHinSPPs)(1,1,ISPPNTS)-1;
-  IP2 = 1+I2*(r_nShockPoints->at(ISH2)-1);
-  // Mach stem
-  ISH3 = (*r_SHinSPPs)(0,2,ISPPNTS);
-  I3 = (*r_SHinSPPs)(1,2,ISPPNTS)-1;
-  IP3 = 1+I3*(r_nShockPoints->at(ISH3)-1);
-  // contact discontinuity
-  ISH4 = (*r_SHinSPPs)(0,3,ISPPNTS);
-  I4 = (*r_SHinSPPs)(1,3,ISPPNTS)-1;
-  IP4 = 1+I4*(r_nShockPoints->at(ISH4)-1);
+  nx2 = (*r_vShNor)(0,IP.at(1),ISH.at(1));
+  ny2 = (*r_vShNor)(1,IP.at(1),ISH.at(1));
 
-  nx2 = (*r_vShNor)(0,IP2,ISH2);
-  ny2 = (*r_vShNor)(1,IP2,ISH2);
-
-  nx4 = (*r_vShNor)(0,IP4,ISH4);
-  ny4 = (*r_vShNor)(1,IP4,ISH4);
+  nx4 = (*r_vShNor)(0,IP.at(3),ISH.at(3));
+  ny4 = (*r_vShNor)(1,IP.at(3),ISH.at(3));
 
   dum = nx2*nx4+ny2*ny4;
   if (dum < 0) {
-   for (unsigned I=0; I<r_nShockPoints->at(ISH4); I++) {
-    (*r_vShNor)(0,I,ISH4) = -(*r_vShNor)(0,I,ISH4);
-    (*r_vShNor)(1,I,ISH4) = -(*r_vShNor)(1,I,ISH4);
+   for (unsigned I=0; I<r_nShockPoints->at(ISH.at(3)); I++) {
+    (*r_vShNor)(0,I,ISH.at(3)) = -(*r_vShNor)(0,I,ISH.at(3));
+    (*r_vShNor)(1,I,ISH.at(3)) = -(*r_vShNor)(1,I,ISH.at(3));
    }
   }
 }
@@ -300,9 +289,9 @@ void CoNormPG::writeTecPlotFile()
   for (unsigned ISH=0; ISH<(*r_nShocks); ISH++) {
    tecfile << "TITLE = Shock normals\n";
    tecfile << "VARIABLES = X Y Z(1) Z(2) NX NY\n";
-   tecfile << "ZONE T='sampletext' F=FEPOINT ET=TRIANGLE ";
-   tecfile << "N= " << r_nShockPoints->at(ISH);
-   tecfile << "E= " << r_nShockPoints->at(ISH)-1 << "\n";
+   tecfile << "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ";
+   tecfile << "N = " << r_nShockPoints->at(ISH);
+   tecfile << ", E = " << r_nShockPoints->at(ISH)-1 << "\n";
    for (unsigned I=0; I<r_nShockPoints->at(ISH); I++) {
     for (unsigned K=0; K<(*ndim); K++) {tecfile << (*r_XYSh)(K,I,ISH) << " ";}
     tecfile << 1 << " " << 1 << " ";
@@ -316,7 +305,7 @@ void CoNormPG::writeTecPlotFile()
 
 //----------------------------------------------------------------------------//
 
-void CoNormPG::recoverStatus(unsigned J, unsigned ISH)
+void CoNormPG::recoverStatus(string direction, unsigned J, unsigned ISH)
 {
   uj = (*r_ZRoeShd)(2,J,ISH)/(*r_ZRoeShd)(0,J,ISH);
   vj = (*r_ZRoeShd)(3,J,ISH)/(*r_ZRoeShd)(0,J,ISH);
@@ -326,6 +315,19 @@ void CoNormPG::recoverStatus(unsigned J, unsigned ISH)
   aj = sqrt((*gam)*pj/roj);
 
   if (r_typeSh->at(ISH)=="D") { aj = 0;}
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNormPG::setShockIndeces(unsigned nbDiscontinuities, unsigned ISPPNTS)
+{
+  ISH.resize(nbDiscontinuities);
+  IP.resize(nbDiscontinuities);
+  for(unsigned i=0; i<nbDiscontinuities; i++) {
+   ISH.at(i) = (*r_SHinSPPs)(0,i,ISPPNTS)-1; // c++ indeces start from 0
+   I = (*r_SHinSPPs)(1,i,ISPPNTS) - 1;
+   IP.at(i) = I * (r_nShockPoints->at(ISH.at(i))-1); // c++ indeces start from 0
+  }
 }
 
 //----------------------------------------------------------------------------//
@@ -364,8 +366,8 @@ void CoNormPG::twoPointsForward(unsigned J2, unsigned ISH)
 {
   xj2 = (*r_XYSh)(0,J2,ISH);
   yj2 = (*r_XYSh)(1,J2,ISH);
-  tauxip2 = xj2-xi;
-  tauyip2 = yj2-yi;
+  tauxip2 = xj2-xj;
+  tauyip2 = yj2-yj;
 }
 
 //----------------------------------------------------------------------------//
@@ -374,8 +376,8 @@ void CoNormPG::onePointBackward(unsigned J, unsigned ISH)
 {
   xj = (*r_XYSh)(0,J,ISH);
   yj = (*r_XYSh)(1,J,ISH);
-  tauxim1 = xj-xi;
-  tauyim1 = yj-yi;
+  tauxim1 = xi-xj;
+  tauyim1 = yi-yj;
 }
 
 //----------------------------------------------------------------------------//
@@ -384,8 +386,8 @@ void CoNormPG::twoPointsBackward(unsigned J2, unsigned ISH)
 {
   xj2 = (*r_XYSh)(0,J2,ISH);
   yj2 = (*r_XYSh)(1,J2,ISH);
-  tauxim2 = xj2-xi;
-  tauyim2 = yj2-yi;
+  tauxim2 = xj-xj2;
+  tauyim2 = yj-yj2;
 }
 
 //----------------------------------------------------------------------------//

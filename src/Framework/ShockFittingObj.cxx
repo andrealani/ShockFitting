@@ -217,6 +217,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <unsigned> ("NELEM", 1);
   MeshData::getInstance().createData <unsigned> ("NVT", 3);
   MeshData::getInstance().createData <unsigned> ("NBFAC", 1);
+  MeshData::getInstance().createData <unsigned> ("NBFACSH", 1);
   MeshData::getInstance().createData <unsigned> ("NBPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("NFPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("NHOLE", 1);
@@ -317,6 +318,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <unsigned> ("NELEM");
   MeshData::getInstance().deleteData <unsigned> ("NVT");
   MeshData::getInstance().deleteData <unsigned> ("NBFAC");
+  MeshData::getInstance().deleteData <unsigned> ("NBFACSH");
   MeshData::getInstance().deleteData <unsigned> ("NBPOIN");
   MeshData::getInstance().deleteData <unsigned> ("NFPOIN");
   MeshData::getInstance().deleteData <unsigned> ("NHOLE");

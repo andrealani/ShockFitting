@@ -70,9 +70,9 @@ protected: // data
   int depip1, depim1;
 
   /// dummy variables for shock indeces
-  unsigned ISH1, ISH2, ISH3, ISH4;
-  unsigned I1, I2, I3, I4;
-  unsigned IP1, IP2, IP3, IP4;
+  std::vector<unsigned> ISH;
+  unsigned I;
+  std::vector<unsigned> IP;
 
   /// heat specific ratio
   double* gam;

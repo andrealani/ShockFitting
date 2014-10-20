@@ -126,7 +126,7 @@ private: //data
   /// old downstream status
   Array3D <double>* r_ZRoeShdOld;
 
-  /// array characterizing special point
+  /// array characterizing special points
   Array3D <unsigned>* r_SHinSPPs;
 
   /// code characterizing mesh points 
