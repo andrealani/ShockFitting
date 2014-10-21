@@ -17,6 +17,7 @@
 #include "Framework/FileProcessing.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Remeshing.hh"
+#include "Framework/WritingMesh.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -87,6 +88,11 @@ public:
     return m_fRemeshing;
   }
 
+  /// get the writingmesh list
+  std::vector<PAIR_TYPE(WritingMesh)>& getWritingMeshList()
+  {
+    return m_wMesh;
+  }
 
 protected:
    
@@ -122,6 +128,9 @@ protected:
 
   /// array of field remeshing
   std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
+
+  /// array of data writing
+  std::vector<PAIR_TYPE(WritingMesh)> m_wMesh;
 
 private: // helper functions
 

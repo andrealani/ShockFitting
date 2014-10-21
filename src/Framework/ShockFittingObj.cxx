@@ -55,6 +55,10 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   addOption("RemeshingList",&m_fRemeshing,
 	    "List of the names of field remeshing");
 
+  m_wMesh = vector<PAIR_TYPE(WritingMesh)>();
+  addOption("WritingMeshList",&m_wMesh,
+            "List of the names of objects writing");
+
 }
   
 //--------------------------------------------------------------------------//
@@ -89,6 +93,8 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the remeshing
     createList<Remeshing>(m_fRemeshing);
 
+    // create the writing objects
+    createList<WritingMesh>(m_wMesh);
   }
 
   // configure the variable transformers
@@ -120,6 +126,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     configureDeps (cmap, m_fRemeshing[i].ptr().get());
+  }
+
+  // configure the writing objects
+  for (unsigned i = 0; i < m_wMesh.size(); ++i) {
+   configureDeps (cmap, m_wMesh[i].ptr().get());
   }
    
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
@@ -159,6 +170,11 @@ void ShockFittingObj::setup()
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->setup();
   }
+
+  // configure the writing objects
+  for (unsigned i = 0; i < m_wMesh.size(); ++i) {
+    m_wMesh[i].ptr()->setup();
+  }
   
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
 }
@@ -196,6 +212,11 @@ void ShockFittingObj::unsetup()
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->unsetup();
+  }
+
+  // configure the writing objects
+  for (unsigned i = 0; i < m_wMesh.size(); ++i) {
+    m_wMesh[i].ptr()->unsetup();
   }
     
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");

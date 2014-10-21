@@ -100,13 +100,6 @@ void FxMshSps::remesh()
   }
 
   (*nbfacSh) = ibfac;
-
-for(unsigned i=0; i<bndfac->getnCols(); i++) {
- for(unsigned j=0; j<bndfac->getnRows(); j++) {
-  cout << (*bndfac)(j,i) << " ";}
-  cout << endl;}
-
-
 }
 
 //--------------------------------------------------------------------------//

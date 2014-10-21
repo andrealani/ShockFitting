@@ -177,10 +177,10 @@ private: // data
   /// shock points coordinates
   Array3D <double>* r_XYSh;
 
-  /// shock points coordinates belonging to upstream region
+  /// shock points coordinates belonging to upstream zone
   Array3D <double>* r_XYShu;
 
-  /// shock points coordinates belonging to downstream region
+  /// shock points coordinates belonging to downstream zone
   Array3D <double>* r_XYShd;
 
   /// array characterizing special points

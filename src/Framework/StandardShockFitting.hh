@@ -73,6 +73,9 @@ private:
 
   /// command object fixinf mesh around special points
   SConfig::SharedPtr<Remeshing> m_fixMeshSpecialPoints;
+
+  /// command object write output files
+  SConfig::SharedPtr<WritingMesh> m_writeTriangleFile;
 };
 
 //--------------------------------------------------------------------------//

@@ -38,6 +38,8 @@ StandardShockFitting.hh
 StandardShockFitting.cxx
 VariableTransformer.cxx
 VariableTransformer.hh
+WritingMesh.cxx
+WritingMesh.hh
 )
 
 LIST ( APPEND Framework_libs SConfig MathTools)

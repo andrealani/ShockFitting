@@ -77,3 +77,9 @@
                    ChangeBndryPtr NormalUnitVect \
 		     CoPntDispl FxMshSps
 }
+
+.StandardShockFitting {
+
+ .WritingMeshList = WriteTriangle
+
+}

@@ -271,6 +271,35 @@ void ReSdwInfo::readShockInfo()
 
 //--------------------------------------------------------------------------//
 
+void ReSdwInfo::setSize()
+{
+  r_nShockPoints->resize((*nshmax));
+  r_nShockEdges->resize((*nshmax));
+  r_typeSpecPoints->resize((*r_nSpecPoints));
+  r_typeSh->resize((*nshmax));
+  r_XYSh->resize((*ndim),(*npshmax),(*nshmax));
+  r_ZRoeShuOld->resize((*ndofmax),(*npshmax),(*nshmax));
+  r_ZRoeShdOld->resize((*ndof),(*npshmax),(*nshmax));
+  r_SHinSPPs->resize(2,5,(*nspmax));
+}
+
+//--------------------------------------------------------------------------//
+
+void ReSdwInfo::setAddress()
+{
+  unsigned start;
+  start = (*npoin);
+  r_NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
+  start = (*npoin)*(*ndof);
+  r_ZRoeShu = 
+    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
+  start = (*npoin) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+  r_ZRoeShd = 
+    new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroe->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
 void ReSdwInfo::setMeshData()
 {
   npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
@@ -305,33 +334,6 @@ void ReSdwInfo::setPhysicsData()
        PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHdOLD");
   r_SHinSPPs = 
        PhysicsData::getInstance().getData <Array3D <unsigned> > ("SHinSPPs");
-}
-
-//--------------------------------------------------------------------------//
-
-void ReSdwInfo::setAddress()
-{
-  unsigned start;
-  start = (*npoin);
-  r_NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
-  start = (*npoin)*(*ndof);
-  r_ZRoeShu = new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
-  start = (*npoin) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  r_ZRoeShd = new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroe->at(start));
-}
-
-//--------------------------------------------------------------------------//
-
-void ReSdwInfo::setSize()
-{
-  r_nShockPoints->resize((*nshmax));
-  r_nShockEdges->resize((*nshmax));
-  r_typeSpecPoints->resize((*r_nSpecPoints));
-  r_typeSh->resize((*nshmax));
-  r_XYSh->resize((*ndim),(*npshmax),(*nshmax));
-  r_ZRoeShuOld->resize((*ndofmax),(*npshmax),(*nshmax));
-  r_ZRoeShdOld->resize((*ndof),(*npshmax),(*nshmax));
-  r_SHinSPPs->resize(2,5,(*nspmax));
 }
 
 //--------------------------------------------------------------------------//

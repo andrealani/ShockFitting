@@ -4,6 +4,7 @@ LIST ( APPEND TestStandardSF_files testStandardSF.cxx )
 LIST ( APPEND TestStandardSF_libs ${SF_KERNEL_LIBS} ${SF_KERNEL_STATIC_LIBS}
 MeshGeneratorSF
 RemeshingSF
+WritingMeshSF
 )
 
 SF_ADD_PLUGIN_APP ( TestStandardSF )
