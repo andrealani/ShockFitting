@@ -62,7 +62,7 @@ void CoPntDispl::unsetup()
 
 void CoPntDispl::remesh()
 {
-  LogToScreen(VERBOSE, "CoPntDispl::remesh()\n");
+  LogToScreen(INFO, "CoPntDispl::remesh()\n");
 
   setMeshData();
   setPhysicsData();

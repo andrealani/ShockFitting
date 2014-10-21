@@ -71,14 +71,11 @@ void FxMshSps::remesh()
   setPhysicsData();
 
   setAddress();
-cout << "set address" << endl;
 
   createShockNodesList();
-cout << "creata shock nodes list" << endl;
 
   /// create downstream shock edges
   createDownShEdges();
-cout << "creato shock edge" << endl;
 
   for(unsigned ISPPNTS=0; ISPPNTS<(*r_nSpecPoints); ISPPNTS++) {
 
@@ -102,7 +99,14 @@ cout << "creato shock edge" << endl;
        { cout << "Condition not implemented\n"; exit(1);}
   }
 
- (*nbfacSh) = ibfac;
+  (*nbfacSh) = ibfac;
+
+for(unsigned i=0; i<bndfac->getnCols(); i++) {
+ for(unsigned j=0; j<bndfac->getnRows(); j++) {
+  cout << (*bndfac)(j,i) << " ";}
+  cout << endl;}
+
+
 }
 
 //--------------------------------------------------------------------------//
@@ -154,43 +158,50 @@ void FxMshSps::createDownShEdges()
 
 void FxMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
 {
-  setShockIndeces(1,ISPPNTS);
 
-  logfile("TypeSpecPoints: ", r_typeSpecPoints->at(ISPPNTS), "\n");
+  setShockIndeces(1,ISPPNTS);
+  unsigned ishock = ISH.at(0)+1 ;
 
   FindBEdg lookForBE;
 
   // look for boundary edge for downstream point
   setShockPointCoor("Down",IP.at(0),ISH.at(0));
+
+  logfile("\nTypeSpecPoints: ", r_typeSpecPoints->at(ISPPNTS), "\n");
+
   iedg1 = lookForBE.getBEdg(xsh, ysh);
   s1 = lookForBE.getS();
-  if (iedg1==-1) { 
-   logfile("Failed matching 1st shock point of the shock n.",ISH.at(0));
-   exit(1);}
-  logfile("s(1): ", s1, " ");
-  logfile(xsh," ", ysh, " ", iedg1);
-  logfile ("\nShock point (1)", xsh, " ", ysh, " ");
-  logfile ("falls within ", (*bndfac)(0,iedg1-1), " ", (*bndfac)(1,iedg1-1));
 
+  if (iedg1==-1) {
+   logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
+   exit(1);}
+  int iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
+  logfile(" s(1): ", s1, " ");
+  logfile(xsh," ", ysh, " ", iedg);
+  logfile ("\nShock point (1)", xsh, " ", ysh, " ");
+  logfile ("falls within ", (*bndfac)(0,iedg1), " ", (*bndfac)(1,iedg1),"\n");
 
   // look for boundary edge for upstream point
   setShockPointCoor("Up",IP.at(0),ISH.at(0)); 
   iedg2 = lookForBE.getBEdg(xsh, ysh);
   s2 = lookForBE.getS();
+
   if (iedg2==-1) { 
-   logfile("Failed matching 1st shock point of the shock n.",ISH.at(0));
+   logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
    exit(1);}
-  logfile("s(2): ", s2, " ");
-  logfile(xsh," ", ysh, " ", iedg2); 
+  iedg = iedg2+1; // only for log file printing, c++ indeces start from 0
+  logfile(" s(2): ", s2, " ");
+  logfile(xsh," ", ysh, " ", iedg); 
   logfile ("\nShock point (1)", xsh, " ", ysh, " ");
-  logfile ("falls within ", (*bndfac)(0,iedg2-1), " ", (*bndfac)(1,iedg2-1));
+  logfile ("falls within ", (*bndfac)(0,iedg2), " ", (*bndfac)(1,iedg2),"\n");
 
   // check if the shock crosses a boundary point
   checkShockBndryEdgeCrossing();
 
+  iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
   logfile ("****************************");
-  logfile ("    Shock: ", ISH.at(0), "\n");
-  logfile ("    ", iedg1, "\n");
+  logfile ("    Shock: ", ishock, "\n");
+  logfile ("    ", iedg, "\n");
   logfile ("****************************");
 
 
@@ -208,6 +219,7 @@ void FxMshSps::fixMeshForRRX(unsigned ISPPNTS)
   // ISH.at(0) incident shock
   // ISH.at(1) reflected shock
   setShockIndeces(2,ISPPNTS);
+  unsigned ishock = ISH.at(1)+1;
 
   FindBEdg lookForBE;
 
@@ -216,31 +228,35 @@ void FxMshSps::fixMeshForRRX(unsigned ISPPNTS)
   iedg1 = lookForBE.getBEdg(xsh, ysh);
   s1 = lookForBE.getS();
   if (iedg1==-1) { 
-   logfile("Failed matching 1st shock point of the shock n.",ISH.at(1));
+   logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
    exit(1);}
-  logfile("s(1): ", s1, " ");
-  logfile(xsh," ", ysh, " ", iedg1);
+  int iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
+  logfile(" s(1): ", s1, " ");
+  logfile(xsh," ", ysh, " ", iedg);
   logfile ("\nShock point (1)", xsh, " ", ysh, " ");
-  logfile ("falls within ", (*bndfac)(0,iedg1-1), " ", (*bndfac)(1,iedg1-1));
+  logfile ("falls within ", (*bndfac)(0,iedg1), " ", (*bndfac)(1,iedg1),"\n");
 
   // look for boundary edge for upstream point
   setShockPointCoor("Up",IP.at(0),ISH.at(0));
   iedg2 = lookForBE.getBEdg(xsh, ysh);
   s2 = lookForBE.getS();
   if (iedg2==-1) { 
-   logfile("Failed matching 1st shock point of the shock n.",ISH.at(0));
+   ishock = ISH.at(0)+1;
+   logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
    exit(1);}
-  logfile("s(2): ", s2, " ");
-  logfile(xsh," ", ysh, " ", iedg2);
+  iedg = iedg2+1; // only for log file printing, c++ indeces start from 0
+  logfile(" s(2): ", s2, " ");
+  logfile(xsh," ", ysh, " ", iedg);
   logfile ("\nShock point (1)", xsh, " ", ysh, " ");
-  logfile ("falls within ", (*bndfac)(0,iedg2-1), " ", (*bndfac)(1,iedg2-1));
+  logfile ("falls within ", (*bndfac)(0,iedg2), " ", (*bndfac)(1,iedg2),"\n");
 
   // check if the shock crosses a boundary point
   checkShockBndryEdgeCrossing();
 
+  iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
   logfile ("****************************");
-  logfile ("    Shock: ", ISH.at(0), "\n");
-  logfile ("    ", iedg1, "\n");
+  logfile ("    Shock: ", ishock, "\n");
+  logfile ("    ", iedg, "\n");
   logfile ("****************************");
 
   // Split the existing edges of the background mesh
@@ -258,9 +274,9 @@ void FxMshSps::setShockIndeces(unsigned nbDiscontinuities,unsigned ISPPNTS)
   ISH.resize(nbDiscontinuities);
   IP.resize(nbDiscontinuities);
   for(unsigned i=0; i<nbDiscontinuities; i++) {
-   ISH.at(i) = (*r_SHinSPPs)(0,i,ISPPNTS);
+   ISH.at(i) = (*r_SHinSPPs)(0,i,ISPPNTS)-1; // c++ indeces start from 0
    I = (*r_SHinSPPs)(1,i,ISPPNTS) - 1;
-   IP.at(i) = 1 + I * (r_nShockPoints->at(ISH.at(i))-1);
+   IP.at(i) = I * (r_nShockPoints->at(ISH.at(i))-1); // c++ indeces start from 0
   }
 }
 
@@ -283,9 +299,11 @@ void FxMshSps::checkShockBndryEdgeCrossing()
    logfile ("s(1): ", s1, " s(2): ", s2, "out of bonds\n");
    exit(1);
   }
+  int iedge1 = iedg1+1; // only for file log printing, c++ indeces start from 0
+  int iedge2 = iedg2+1; // only for file log printing, c++ indeces start from 0
   if (iedg2 != iedg1) {
    logfile ("Shock points (1) (2) NOT on the same boundary edge\n");
-   logfile (iedg1, " ", iedg2, "\n");
+   logfile (iedge1, " ", iedge2, "\n");
    logfile (s1, " ", s2, "\n");
   }
 }
@@ -294,14 +312,13 @@ void FxMshSps::checkShockBndryEdgeCrossing()
 
 void FxMshSps::splitEdges()
 {
-  IEDGE = iedg1;
-  I1 = (*bndfac)(0,IEDGE-1); // c++ indeces start from 0
-  I2 = (*bndfac)(1,IEDGE-1); // c++ indeces start from 0 
-  IBC = (*bndfac)(2,IEDGE-1); // c++ indeces start from 0 
+  I1 = (*bndfac)(0,iedg1); // c++ indeces start from 0
+  I2 = (*bndfac)(1,iedg1); // c++ indeces start from 0 
+  IBC = (*bndfac)(2,iedg1); // c++ indeces start from 0 
 
-  (*bndfac)(2,IEDGE) = -IBC;
-
-  logfile("Removing background edge ", IEDGE, " ");
+  (*bndfac)(2,iedg1) = -IBC;
+  int iedg = iedg1+1; // only for file log printing, c++ indeces start from 0
+  logfile("Removing background edge ", iedg, " ");
   logfile(I1, " ", I2, "\n");
 }
 
@@ -309,27 +326,27 @@ void FxMshSps::splitEdges()
 
 void FxMshSps::createNewEdges(unsigned IP, unsigned ISH)
 { 
-  ibfac++;
   (*bndfac)(2,ibfac) = IBC;
   if (s1<s2) {
-   (*bndfac)(0,ibfac-1)=I1;
-   (*bndfac)(1,ibfac-1) = ISHPlistd(IP,ISH);
+   (*bndfac)(0,ibfac)=I1;
+   (*bndfac)(1,ibfac) = ISHPlistd(IP,ISH);
   }
   else {
-   (*bndfac)(0,ibfac-1)=I1;
-   (*bndfac)(1,ibfac-1) = ISHPlistu(IP,ISH);
+   (*bndfac)(0,ibfac)=I1;
+   (*bndfac)(1,ibfac) = ISHPlistu(IP,ISH);
   }
   
   ibfac++;
   (*bndfac)(2,ibfac) = IBC;
   if (s1<s2) {
-   (*bndfac)(0,ibfac-1)=ISHPlistu(IP,ISH);
-   (*bndfac)(1,ibfac-1) = I2;
+   (*bndfac)(0,ibfac)=ISHPlistu(IP,ISH);
+   (*bndfac)(1,ibfac) = I2;
   }
   else {
-   (*bndfac)(0,ibfac-1)=ISHPlistd(IP,ISH);
-   (*bndfac)(1,ibfac-1) = I2;
+   (*bndfac)(0,ibfac)=ISHPlistd(IP,ISH);
+   (*bndfac)(1,ibfac) = I2;
   }
+  ibfac++;
 }
 
 //--------------------------------------------------------------------------//
@@ -337,27 +354,27 @@ void FxMshSps::createNewEdges(unsigned IP, unsigned ISH)
 void FxMshSps::createNewEdges(unsigned IP1, unsigned ISH1,
                               unsigned IP2, unsigned ISH2)
 {
-  ibfac++;
   (*bndfac)(2,ibfac) = IBC;
   if (s1<s2) {
-   (*bndfac)(0,ibfac-1)=I1;
-   (*bndfac)(1,ibfac-1) = ISHPlistd(IP2,ISH2);
+   (*bndfac)(0,ibfac)=I1;
+   (*bndfac)(1,ibfac) = ISHPlistd(IP2,ISH2);
   }
   else {
-   (*bndfac)(0,ibfac-1)=I1;
-   (*bndfac)(1,ibfac-1) = ISHPlistu(IP1,ISH1);
+   (*bndfac)(0,ibfac)=I1;
+   (*bndfac)(1,ibfac) = ISHPlistu(IP1,ISH1);
   }
 
   ibfac++;
   (*bndfac)(2,ibfac) = IBC;
   if (s1<s2) {
-   (*bndfac)(0,ibfac-1)=ISHPlistu(IP1,ISH1);
-   (*bndfac)(1,ibfac-1) = I2;
+   (*bndfac)(0,ibfac)=ISHPlistu(IP1,ISH1);
+   (*bndfac)(1,ibfac) = I2;
   }
   else {
-   (*bndfac)(0,ibfac-1)=ISHPlistd(IP2,ISH2);
-   (*bndfac)(1,ibfac-1) = I2;
+   (*bndfac)(0,ibfac)=ISHPlistd(IP2,ISH2);
+   (*bndfac)(1,ibfac) = I2;
   }
+  ibfac++;
 }
 
 //--------------------------------------------------------------------------//
