@@ -8,10 +8,12 @@
 #include "RemeshingSF/CoNorm4TCneq.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
 
 using namespace std;
+using namespace SConfig;
 
 //---------------------------------------------------------------------------//
 
@@ -19,8 +21,14 @@ namespace ShockFitting {
 
 //---------------------------------------------------------------------------//
 
-CoNorm4TCneq::CoNorm4TCneq(const std::string& objectName)
- :CoNorm("CoNorm4TCneq")
+// this variable instantiation activates the self-registration mechanism
+ObjectProvider<CoNorm4TCneq, CoNorm> 
+computeNormalVector4TCneqProv("CoNorm4TCneq");
+
+//--------------------------------------------------------------------------//
+
+CoNorm4TCneq::CoNorm4TCneq(const std::string& objectName) :
+  CoNorm(objectName)
 {
 }
 

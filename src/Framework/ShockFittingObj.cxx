@@ -51,6 +51,10 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   addOption("MeshGeneratorList",&m_mGenerator,
             "List of the names of mesh generator files");
 
+  m_cNormalVector.name() = "CoNorm";
+  addOption("CoNorm", &m_cNormalVector,
+            "Object computing normal vector");
+
   m_fRemeshing = vector<PAIR_TYPE(Remeshing)>();
   addOption("RemeshingList",&m_fRemeshing,
 	    "List of the names of field remeshing");
@@ -93,6 +97,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the remeshing
     createList<Remeshing>(m_fRemeshing);
 
+    // create the normal vector computing
+    m_cNormalVector.ptr().reset(SConfig::Factory<CoNorm>::getInstance().
+                          getProvider(m_cNormalVector.name())
+                          ->create(m_cNormalVector.name()));
+
     // create the writing objects
     createList<WritingMesh>(m_wMesh);
   }
@@ -127,6 +136,9 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     configureDeps (cmap, m_fRemeshing[i].ptr().get());
   }
+
+  // configure the normal vector computing
+  configureDeps (cmap, m_cNormalVector.ptr().get());
 
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
@@ -171,6 +183,9 @@ void ShockFittingObj::setup()
     m_fRemeshing[i].ptr()->setup();
   }
 
+  // configure the normal vector computing
+  m_cNormalVector.ptr()->setup();
+
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
     m_wMesh[i].ptr()->setup();
@@ -213,6 +228,9 @@ void ShockFittingObj::unsetup()
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->unsetup();
   }
+
+  // configure the normal vector computing
+  m_cNormalVector.ptr()->unsetup();
 
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
@@ -262,6 +280,8 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <Array2D <int> >("CELCEL", 1);
   MeshData::getInstance().createData <Array2D <int> >("EDGPTR", 1);
   MeshData::getInstance().createData <Array2D <int> >("NODPTR", 1);
+
+  MeshData::getInstance().createData <vector<string> >("FNAME",1);
 
   MeshData::getInstance().setup();
 }
@@ -326,6 +346,7 @@ void ShockFittingObj::createPhysicsData()
   PhysicsData::getInstance().createData 
 			  <Array3D <double> > ("ZROESHdOLD", 1);
   PhysicsData::getInstance().createData <Array3D <double> > ("VSHNOR",1);
+  PhysicsData::getInstance().createData <Array3D <double> > ("WSH",1);
 
   PhysicsData::getInstance().setup();
 }
@@ -363,6 +384,8 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <Array2D <int> >("CELCEL");
   MeshData::getInstance().deleteData <Array2D <int> >("EDGPTR");
   MeshData::getInstance().deleteData <Array2D <int> >("NODPTR");
+
+  MeshData::getInstance().deleteData <vector<string> >("FNAME");
 
   MeshData::getInstance().unsetup();
 }
@@ -417,6 +440,7 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHdOLD");
   PhysicsData::getInstance().deleteData <Array3D <unsigned> > ("SHinSPPs");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("VSHNOR");
+  PhysicsData::getInstance().deleteData <Array3D <double> > ("WSH");
 
   PhysicsData::getInstance().unsetup();
 }

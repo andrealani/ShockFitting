@@ -22,11 +22,11 @@ namespace ShockFitting {
 
 /// This class defines ReferenceInfo, whose task is to read freestream
 /// conditions, computes:
-/// .) @param gref   : heat specific ratio
+/// .) @param gref   : isoentropic coefficient of the gas
 /// .) @param Tref   : reference temperature
 /// .) @param pref   : reference pressure
 /// .) @param rhoref : reference density
-/// .) @param uref   : reference velocity
+/// .) @param uref   : reference speed
 /// and uses them for adimensionalization of MODEL = TCneq
 
 class ReferenceInfo :   public SConfig::Counter,
@@ -87,25 +87,30 @@ private: // helper functions
 
 private: // data
 
-  ///
+  /// Variables: Output/input variables for CF (P,U or Z)
+  /// a) P: Primitive variables [p,u,v,T]
+  /// b) U: Conservative varibles [rho,rho_u,rho_v,rho_E]
+  /// c) Z: Roe Parameter vector sqrt(rho)[1,u,v,H]
   std::string m_var;
 
-  ///
+  /// Adimensional: D or A
+  /// CF output dimensional: D
+  /// CF output adimensional: A
   std::string m_adim;
 
-  /// heat specific ratio
+  /// isoentropic coefficient of the gas
   double m_gam;
 
-  /// gas constant
+  /// gas constant (J/kg/K)
   double m_R;
 
-  /// freestream temperature [K]
+  /// reference temperature (K)
   double m_Tref;
 
-  /// freestream pressure
+  /// reference pressure (p)
   double m_pref;
 
-  /// freestream velocity
+  /// freestream speed (m/s)
   double m_uref;
 
   /// species densities
@@ -114,7 +119,7 @@ private: // data
   ///
   double m_Lref;
 
-  /// freestream pressure (assignable to PhysicsData
+  /// freestream pressure (assignable to PhysicsData)
   double* pref;
 
   /// freestream temperature (assignable to PhysicsData)

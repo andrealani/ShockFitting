@@ -32,19 +32,19 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
             "Adimensional");
   m_gam = 1;
   addOption("gamma",&m_gam,
-            "Heat Specific ratio");
+            "Isoentropic coefficient of the gas");
   m_R = 1;
   addOption("Rgas",&m_R,
             "Gas constant");
   m_Tref = 1;
   addOption("TempRef",&m_Tref,
-            "Freestream temperature");
+            "Reference temperature [K]");
   m_pref = 1;
   addOption("PressRef",&m_pref,
-            "Freestream pressure");
+            "Reference pressure [p]");
   m_uref = 1;
   addOption("VelocityRef",&m_uref,
-            "Freestream velocitry");
+            "Reference speed [m/s]");
   m_rhor = vector<double>();
   addOption("SpeciesDensity",&m_rhor,
             "Species density");

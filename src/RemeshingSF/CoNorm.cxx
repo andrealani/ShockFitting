@@ -8,7 +8,6 @@
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/MeshData.hh"
-#include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
 
@@ -21,13 +20,8 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-// this variable instantiation activates the self-registration mechanism
-//ObjectProvider<CoNorm, Remeshing> computeNormProv("CoNorm");
-
-//--------------------------------------------------------------------------//
-
-CoNorm::CoNorm(const std::string& objectName)
- :NormalUnitVect(objectName)
+CoNorm::CoNorm(const std::string& objectName) : 
+  Remeshing(objectName)
 {
 
 }
@@ -36,6 +30,13 @@ CoNorm::CoNorm(const std::string& objectName)
 
 CoNorm::~CoNorm()
 {
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm::configure(OptionMap& cmap, const std::string& prefix)
+{
+  Remeshing::configure(cmap, prefix);
 }
 
 //----------------------------------------------------------------------------//

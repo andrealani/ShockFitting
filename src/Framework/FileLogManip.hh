@@ -27,6 +27,7 @@ public:
 
   /// create file .log 
   void Open(std::string nameobj) { 
+    system("if [ ! -d log ]; then  mkdir log ; fi");
     namefile = nameobj;
     command = "touch " + namefile + ".log";
     system(command.c_str());

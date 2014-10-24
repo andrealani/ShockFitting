@@ -20,7 +20,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines BndryNodePtr, whose task is create an array
+/// This class defines a BndryNodePtr, whose task is to create an array
 /// NODPTR which owns informations about boundary nodes.
 ///
 

@@ -20,8 +20,8 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines FndPhPs, whose task is find the cells crossed by the
-/// shock and the phantom points
+/// This class defines a FndPhPs, whose task is to find the cells crossed 
+/// by the shock and the phantom points.
 
 class FndPhPs: public Remeshing {
 public:

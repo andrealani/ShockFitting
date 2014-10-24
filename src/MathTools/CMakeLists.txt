@@ -8,6 +8,7 @@ Ishel.hh
 Ishel.cxx
 Isortrx.hh
 Isortrx.cxx
+Jcycl.hh
 Solg.hh
 )
 

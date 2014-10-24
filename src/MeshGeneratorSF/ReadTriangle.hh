@@ -174,6 +174,4 @@ private: // data
 
 } //namespace ShockFitting
 
-//--------------------------------------------------------------------------//
-
 #endif //ShockFitting_ReadTriangle_hh

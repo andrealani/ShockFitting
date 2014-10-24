@@ -7,10 +7,12 @@
 #include <fstream>
 #include "RemeshingSF/CoNorm4B.hh"
 #include "Framework/Log.hh"
+#include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
 
 using namespace std;
+using namespace SConfig;
 
 //---------------------------------------------------------------------------//
 
@@ -18,8 +20,13 @@ namespace ShockFitting {
 
 //---------------------------------------------------------------------------//
 
-CoNorm4B::CoNorm4B(const std::string& objectName)
- :CoNorm("CoNorm4B")
+// this variable instantiation activates the self-registration mechanism
+ObjectProvider<CoNorm4B, CoNorm> computeNormalVector4BProv("CoNorm4B");
+
+//--------------------------------------------------------------------------//
+
+CoNorm4B::CoNorm4B(const std::string& objectName) :
+  CoNorm(objectName)
 {
 }
 

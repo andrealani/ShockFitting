@@ -18,7 +18,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines CoNorm4B, whose task is compute the normal unit
+/// This class defines a CoNorm4B, whose task is to compute the normal unit
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// for NDOF=1 && MODEL="B"
 
@@ -96,7 +96,5 @@ private: // data
 //----------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
-//----------------------------------------------------------------------------//
 
 #endif // ShockFitting_CoNorm4B

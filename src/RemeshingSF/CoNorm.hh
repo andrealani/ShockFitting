@@ -1,4 +1,4 @@
-// Copyright (C) 2013 von Karman Institute for Fluid Dynamics, Belgium
+// Copyright (C) 2014 von Karman Institute for Fluid Dynamics, Belgium
 //
 // This software is distributed under the terms of the
 // GNU Lesser General Public License version 3 (LGPLv3).
@@ -10,9 +10,9 @@
 
 //----------------------------------------------------------------------------//
 
-#include <vector>
 #include <cmath>
-#include "Framework/NormalUnitVect.hh"
+#include <vector>
+#include "Framework/Remeshing.hh"
 #include "MathTools/Array3D.hh"
 
 //----------------------------------------------------------------------------//
@@ -21,15 +21,18 @@ namespace ShockFitting {
 
 //----------------------------------------------------------------------------//
 
-/// This class defines CoNorm, whose task is compute the normal unit
+/// This class defines a CoNorm, whose task is to compute the normal unit
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// CoNorm4B    : if NDOF=1 && MODEL="B"
 /// CoNormPG    : if NDOF=4 && MODEL="PG"
 /// CoNorm4Ar   : if MIXTURE=ar4 && MODEL="Cneq"
 /// CoNormTCneq : if MODEL=TCneq
 
-class CoNorm : public NormalUnitVect {
+class CoNorm : public Remeshing {
 public:
+
+  /// typedef needed by the self-registration mechanism
+  typedef SConfig::Provider<CoNorm> PROVIDER;
 
   /// Constructor
   /// @param objectName the concrete class name
@@ -39,13 +42,35 @@ public:
   virtual ~CoNorm();
 
   /// Set up this object before its first use
-  virtual void setup() {};
+  virtual void setup() = 0;
 
   /// Unset up this object after its last use
-  virtual void unsetup() {};
+  virtual void unsetup() = 0;
 
   /// compute normal vectors
-  virtual void remesh() {};
+  virtual void remesh() = 0;
+
+  /// Gets the Class name
+  static std::string getClassName() {return "CoNorm";}
+
+protected: // functions
+
+  /// Configures the options for this object.
+  /// To be extended by derived classes.
+  /// @param args is the ConfigArgs with the arguments to be parsed.
+  virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
+
+  /// assign start pointers of Array2D and 3D
+  void setAddress();
+
+  /// resize vectors and arrays
+  void setSize();
+
+  /// assign values used in CoNorm to MeshData pattern
+  void setMeshData();
+
+  /// assign values used in CoNorm to PhysicsData pattern
+  void setPhysicsData();
 
 protected: // data
 
@@ -70,8 +95,8 @@ protected: // data
   int depip1, depim1;
 
   /// dummy variables for shock indeces
-  std::vector<unsigned> ISH;
   unsigned I;
+  std::vector<unsigned> ISH;
   std::vector<unsigned> IP;
 
   /// heat specific ratio
@@ -89,12 +114,6 @@ protected: // data
   /// number of species
   unsigned* nsp;
 
-  /// global indeces
-  unsigned* ie;
-  unsigned* iev;
-  unsigned* ix;
-  unsigned* iy;
-
   /// max number of shocks
   unsigned* nshmax;
 
@@ -106,6 +125,12 @@ protected: // data
 
   /// number of mesh points
   unsigned* npoin;
+
+  /// global indeces
+  unsigned* ie;
+  unsigned* iev;
+  unsigned* ix;
+  unsigned* iy;
 
   /// heat specific ratio
   double* gref;
@@ -154,19 +179,6 @@ protected: // data
 
   /// array characterizing special points
   Array3D <unsigned>* r_SHinSPPs;
-
-  /// assign values used in CoNorm to PhysicsData
-  void setPhysicsData();
-
-  /// assign values used in CoNorm to MeshData
-  void setMeshData();
-
-  /// assign start pointers of Array2D and 3D
-  void setAddress();
-
-  /// resize vectors and arrays
-  void setSize();
-
 };
 
 //----------------------------------------------------------------------------//
@@ -175,4 +187,4 @@ protected: // data
 
 //----------------------------------------------------------------------------//
 
-#endif // ShockFitting_NormalUnitVect_CoNorm_hh
+#endif // ShockFitting_CoNorm_hh

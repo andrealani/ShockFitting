@@ -20,9 +20,10 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines CoPntDispl, whose task is split the background mesh in
-/// two regions separated by a hole containing the shock. Therefore it
-/// computes displaced positions of the shock/discontinuity points
+/// This class defines a CoPntDispl, whose task is to split the background 
+/// mesh in two regions separated by a hole containing the shock. 
+/// Therefore it computes displaced positions of the shock/discontinuity
+/// points.
 
 class CoPntDispl : public Remeshing {
 public:

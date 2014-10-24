@@ -18,7 +18,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines CoNorm4Ar, whose task is compute the normal unit
+/// This class defines a CoNorm4Ar, whose task is to compute the normal unit
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// for MIXTURE="ar4" && MODEL="Cneq"
 
@@ -98,7 +98,5 @@ private: // data
 //----------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
-//----------------------------------------------------------------------------//
 
 #endif // ShockFitting_CoNorm4Ar

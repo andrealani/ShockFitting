@@ -19,8 +19,8 @@ namespace ShockFitting {
 
 //----------------------------------------------------------------------------//
 
-/// This class defines ChangeBndryPtr, whose task is update the boundary data
-/// structure to take into account the boundary phantom nodes
+/// This class defines a ChangeBndryPtr, whose task is to update the 
+/// boundary data structure to take into account the boundary phantom nodes
 
 class ChangeBndryPtr : public Remeshing {
 public:
@@ -41,9 +41,6 @@ public:
   /// change boundary node pointer
   virtual void remesh();
 
-  /// return class name
-  std::string getClassName() {return std::string("ChangeBndryPtr");}
-
 private: // helper functions
 
   /// search the i-node IPOIN in inodptr vector if the node has been
@@ -58,6 +55,9 @@ private: // helper functions
 
   /// remove the i-face=nodptr(ipos,3)
   void removeIface();
+
+  /// return class name
+  std::string getClassName() {return std::string("ChangeBndryPtr");}
 
   /// assign values used in ChangeBndryPtr to MeshData pattern
   void setMeshData();

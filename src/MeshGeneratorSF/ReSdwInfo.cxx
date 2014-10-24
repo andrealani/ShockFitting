@@ -46,9 +46,6 @@ void ReSdwInfo::setup()
 {
   LogToScreen(VERBOSE, "ReSdwInfo::setup() => start\n");
 
-  setMeshData();
-  setPhysicsData();
-
   logfile.Open(getClassName());
 }
 
@@ -68,6 +65,9 @@ void ReSdwInfo::generate()
   LogToScreen(INFO, "ReadSdwInfo::generate()\n");
 
   file.open(getInputFiles().c_str());
+
+  setMeshData();
+  setPhysicsData();
 
   setAddress();
   setSize();
@@ -149,113 +149,78 @@ void ReSdwInfo::readShockInfo()
    // internal special point: triple point
    if ((*r_typeSpecPoints)[ISPPNTS]=="TP") {
     NSHE=4; IDUMMY=IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // internal special point: quad point
    else if ((*r_typeSpecPoints)[ISPPNTS]=="QP") {
     NSHE=5; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: regular reflection along x
    else if ((*r_typeSpecPoints)[ISPPNTS]=="RRX") {
     NSHE=2; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: wall point without reflection
    // floating along X direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="WPNRX") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: wall point without reflection
    // floating along Y direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="WPNRY") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: inlet point
    // floating along X direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="IPX") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: inlet point
    // floating along Y direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="IPY") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: outlet point
    // floating along X direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="OPX") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    } 
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: outlet point
    // floating along Y direction
    else if ((*r_typeSpecPoints)[ISPPNTS]=="OPY") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }   
 
-   // boundary special point: end point
+   // boundary special point: end point in supersonic zone
    else if ((*r_typeSpecPoints)[ISPPNTS]=="EP") {
     NSHE=1; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
    // boundary special point: connection between two shocks
    else if ((*r_typeSpecPoints)[ISPPNTS]=="C") {
     NSHE=2; IDUMMY = IDUMMY+NSHE;
-    for (unsigned K=0; K<NSHE; K++) {
-     file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
-     logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
-    }
+    setSHinSPPs(NSHE,ISPPNTS);
    }
 
-   else {
-    logfile("Condition not implemented");
-    cout << "Condition not implemented\n";
-    exit(1);
-   }
+   else { logfile("Condition not implemented");
+          cout << "Condition not implemented\n";
+          exit(1); }
   }
  
   // check conditions on special points
@@ -266,6 +231,16 @@ void ReSdwInfo::readShockInfo()
    logfile("Nof forced conditions: ",IDUMMY,"\n");
    cout << "Nof conditions on special points not correct\n";
    exit(1);
+  }
+}
+
+//--------------------------------------------------------------------------//
+
+void ReSdwInfo::setSHinSPPs(unsigned NSHE, unsigned ISPPNTS)
+{
+  for (unsigned K=0; K<NSHE; K++) {
+   file >> (*r_SHinSPPs)(0,K,ISPPNTS) >> (*r_SHinSPPs)(1,K,ISPPNTS);
+   logfile((*r_SHinSPPs)(0,K,ISPPNTS),(*r_SHinSPPs)(1,K,ISPPNTS),"\n" );
   }
 }
 
@@ -317,15 +292,14 @@ void ReSdwInfo::setPhysicsData()
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nspmax = PhysicsData::getInstance().getData <unsigned> ("NSPMAX");
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-
   r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   r_nShockPoints = 
-       PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+     PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
   r_nShockEdges = 
-       PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
+     PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
   r_nSpecPoints = PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
   r_typeSpecPoints = 
-       PhysicsData::getInstance().getData <vector <string> > ("TypeSpecPoints");
+     PhysicsData::getInstance().getData <vector <string> > ("TypeSpecPoints");
   r_typeSh = PhysicsData::getInstance().getData <vector <string> > ("TYPESH");
   r_XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
   r_ZRoeShuOld = 

@@ -1,4 +1,6 @@
 LIST ( APPEND WritingMeshSF_files
+DummyWritingMesh.cxx
+DummyWritingMesh.hh
 WriteTriangle.cxx
 WriteTriangle.hh
 )

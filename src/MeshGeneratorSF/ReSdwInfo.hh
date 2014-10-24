@@ -55,6 +55,9 @@ private: // helper functions
   /// read shock infos
   void readShockInfo();
 
+  /// set array characterizing special points
+  void setSHinSPPs(unsigned, unsigned);
+
   /// assign values read and used by ReSdwInfo to PhysicsData
   void setPhysicsData();
 
@@ -144,8 +147,6 @@ private: //data
 
 //--------------------------------------------------------------------------//
 
-} //namespace ShockFitting
-
-//--------------------------------------------------------------------------//
+} // namespace ShockFitting
 
 #endif //ShockFitting_ReSdwInfo_hh

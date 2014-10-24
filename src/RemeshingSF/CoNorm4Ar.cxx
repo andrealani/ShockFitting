@@ -8,10 +8,12 @@
 #include "RemeshingSF/CoNorm4Ar.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
 
 using namespace std;
+using namespace SConfig;
 
 //---------------------------------------------------------------------------//
 
@@ -19,8 +21,13 @@ namespace ShockFitting {
 
 //---------------------------------------------------------------------------//
 
-CoNorm4Ar::CoNorm4Ar(const std::string& objectName)
- :CoNorm("CoNorm4Ar")
+// this variable instantiation activates the self-registration mechanism
+ObjectProvider<CoNorm4Ar, CoNorm> computeNormalVector4ArProv("CoNorm4Ar");
+
+//--------------------------------------------------------------------------//
+
+CoNorm4Ar::CoNorm4Ar(const std::string& objectName) :
+  CoNorm(objectName)
 {
 }
 

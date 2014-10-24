@@ -18,7 +18,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines CoNorm4TCneq, whose task is compute the normal unit
+/// This class defines a CoNorm4TCneq, whose task is to compute the normal unit
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// MODEL = TCneq
 
@@ -99,7 +99,5 @@ private: // data
 //----------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
-//----------------------------------------------------------------------------//
 
 #endif // ShockFitting_CoNorm4TCneq

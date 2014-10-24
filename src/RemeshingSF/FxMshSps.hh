@@ -20,8 +20,8 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines FxMshSps, whose task is fix the mesh around special
-/// points.
+/// This class defines a FxMshSps, whose task is to fix the mesh around
+/// special points.
 
 class FxMshSps : public Remeshing {
 public:

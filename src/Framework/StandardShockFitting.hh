@@ -17,13 +17,15 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines a StandardShockFitting, whose task is to 
-///
+/// This class defines a StandardShockFitting, whose task is to read files
+/// which informations about a mesh and a chemical enviroment and process
+/// the data.
 
 class StandardShockFitting : public ShockFittingObj {
 public:
 
   ///Constructor
+  /// @param objectName the concrete class name
   StandardShockFitting(const std::string& objectName);
 
   ///Destructor
@@ -65,8 +67,8 @@ private:
   /// command object changing boundary pointers
   SConfig::SharedPtr<Remeshing> m_changeBndryPoints;
 
-  /// command object computing nomral vectors
-  SConfig::SharedPtr<Remeshing> m_computeNormalVectors;
+  /// command object computing shock points normal
+  SConfig::SharedPtr<CoNorm> m_computeNormalVector;
 
   /// command object remeshing shock layer
   SConfig::SharedPtr<Remeshing> m_computeShockLayer;

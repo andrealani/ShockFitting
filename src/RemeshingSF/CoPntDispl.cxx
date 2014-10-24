@@ -55,7 +55,7 @@ void CoPntDispl::setup()
 void CoPntDispl::unsetup()
 {
   logfile.Close();
-  LogToScreen(VERBOSE, "CoPntDispl::unsetup()");
+  LogToScreen(VERBOSE, "CoPntDispl::unsetup()\n");
 }
 
 //--------------------------------------------------------------------------//

@@ -6,6 +6,8 @@ ChemicalInfo.cxx
 ChemicalInfo.hh
 Clist.hh
 Compatibility.hh
+#ComputeStateDpsAdmin.cxx
+#ComputeStateDpsAdmin.hh
 Connectivity.hh
 FieldInterpolator.cxx
 FieldInterpolator.hh
@@ -17,8 +19,6 @@ Log.hh
 MeshData.hh
 MeshGenerator.cxx
 MeshGenerator.hh
-NormalUnitVect.cxx
-NormalUnitVect.hh
 PhysicsData.hh
 PhysicsInfo.cxx
 PhysicsInfo.hh
@@ -36,6 +36,8 @@ ShockFittingManager.cxx
 ShockFittingManager.hh
 StandardShockFitting.hh
 StandardShockFitting.cxx
+#StateUpdater.cxx
+#StateUpdater.hh
 VariableTransformer.cxx
 VariableTransformer.hh
 WritingMesh.cxx

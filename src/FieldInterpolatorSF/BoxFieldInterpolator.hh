@@ -144,7 +144,7 @@ protected:
   /// Number of box subdivisions in x,y,z
   std::vector<unsigned> m_nbSubdiv;
   
-  /// Number of neighbor p;oints to use for the interpolation
+  /// Number of neighbor points to use for the interpolation
   unsigned m_nbInterp;
     
 };

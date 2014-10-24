@@ -51,9 +51,7 @@ void WriteTriangle::setup()
 
 void WriteTriangle::unsetup()
 {
-  LogToScreen(VERBOSE, "WriteTriangle::unsetup() => start\n");
-
-  LogToScreen(VERBOSE, "WriteTriangle::unsetup() => end\n");
+  LogToScreen(VERBOSE, "WriteTriangle::unsetup()\n");
 }
 
 //--------------------------------------------------------------------------//

@@ -20,7 +20,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines RdDpsEq, whose task is to re-distribute shock points 
+/// This class defines a RdDpsEq, whose task is to re-distribute shock points 
 /// in each shock with uniform spacing
 
 class RdDpsEq : public Remeshing {

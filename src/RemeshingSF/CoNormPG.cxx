@@ -8,10 +8,12 @@
 #include "RemeshingSF/CoNormPG.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
 
 using namespace std;
+using namespace SConfig;
 
 //---------------------------------------------------------------------------//
 
@@ -19,8 +21,13 @@ namespace ShockFitting {
 
 //---------------------------------------------------------------------------//
 
-CoNormPG::CoNormPG(const std::string& objectName)
- :CoNorm("CoNormPG")
+// this variable instantiation activates the self-registration mechanism
+ObjectProvider<CoNormPG, CoNorm> computeNormalVectorPGProv("CoNormPG");
+
+//--------------------------------------------------------------------------//
+
+CoNormPG::CoNormPG(const std::string& objectName) :
+  CoNorm(objectName)
 {
 }
 

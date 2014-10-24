@@ -36,7 +36,7 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_redistrShockPoints(),
   m_findPhantPoints(),
   m_changeBndryPoints(),
-  m_computeNormalVectors(),
+  m_computeNormalVector(),
   m_computeShockLayer(),
   m_fixMeshSpecialPoints(),
   m_writeTriangleFile()
@@ -72,8 +72,8 @@ void StandardShockFitting::setup()
   validate(m_mGenerator.size() == 2,
        "StandardShockFitting::setup() => MeshGeneratorList should have size==2");
 
-  validate(m_fRemeshing.size() == 7,
-           "StandardShockFitting::setup() => RemeshingList should have size==7");
+  validate(m_fRemeshing.size() == 6,
+           "StandardShockFitting::setup() => RemeshingList should have size==6");
 
   m_readInputFile1 = m_mGenerator[0].ptr();
   m_readInputFile2 = m_mGenerator[1].ptr();
@@ -81,9 +81,9 @@ void StandardShockFitting::setup()
   m_redistrShockPoints = m_fRemeshing[1].ptr();
   m_findPhantPoints = m_fRemeshing[2].ptr();
   m_changeBndryPoints = m_fRemeshing[3].ptr();
-  m_computeNormalVectors = m_fRemeshing[4].ptr();
-  m_computeShockLayer = m_fRemeshing[5].ptr();
-  m_fixMeshSpecialPoints = m_fRemeshing[6].ptr();
+  m_computeNormalVector = m_cNormalVector.ptr();
+  m_computeShockLayer = m_fRemeshing[4].ptr();
+  m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
@@ -117,7 +117,7 @@ void StandardShockFitting::process()
   m_redistrShockPoints->remesh();
   m_findPhantPoints->remesh();
   m_changeBndryPoints->remesh();
-  m_computeNormalVectors->remesh();
+  m_computeNormalVector->remesh();
   m_computeShockLayer->remesh();
   m_fixMeshSpecialPoints->remesh();
 

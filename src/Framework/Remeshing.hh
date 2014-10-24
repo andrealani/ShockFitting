@@ -11,8 +11,6 @@
 
 #include <vector>
 #include "Framework/BaseShockFitting.hh"
-#include "Framework/Field.hh"
-#include "SConfig/SharedPtr.hh"
 
 //--------------------------------------------------------------------------//
 

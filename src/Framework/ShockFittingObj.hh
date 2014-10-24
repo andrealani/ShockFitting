@@ -17,6 +17,7 @@
 #include "Framework/FileProcessing.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Remeshing.hh"
+#include "RemeshingSF/CoNorm.hh"
 #include "Framework/WritingMesh.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
@@ -106,7 +107,7 @@ protected:
 			 getProvider(name)->create(name));
     }
   }
-  
+   
   /// Configures the options for this object.
   /// To be extended by derived classes.
   /// @param args is the ConfigArgs with the arguments to be parsed.
@@ -128,6 +129,9 @@ protected:
 
   /// array of field remeshing
   std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
+
+  /// object normal vector computing
+  PAIR_TYPE(CoNorm) m_cNormalVector;
 
   /// array of data writing
   std::vector<PAIR_TYPE(WritingMesh)> m_wMesh;

@@ -18,7 +18,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines CoNormPG, whose task is compute the normal unit
+/// This class defines a CoNormPG, whose task is to compute the normal unit
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// for NDOF = 4 && MODEL = PG
 
@@ -99,7 +99,5 @@ private: // data
 //----------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
-//----------------------------------------------------------------------------//
 
 #endif // ShockFitting_CoNormPG

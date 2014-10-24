@@ -85,14 +85,15 @@ void ChemicalInfo::read()
   LogToScreen(INFO, "ChemicalInfo::read()\n");
 
   setModel();
-  setMixture();
+
   if (m_model == "PG") {
    (*nsp) = 1; (*ndof)=4;
    logfile("Number of variables: ",*ndof,"\n");
     return;}
 
   else if (m_model == "Cneq" || m_model == "TCneq") {
- 
+
+   setMixture(); 
    file.open(getInputFiles().c_str());
 
    setMixtureFileName();
