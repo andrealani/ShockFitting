@@ -33,8 +33,8 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
   m_gam = 1;
   addOption("gamma",&m_gam,
             "Isoentropic coefficient of the gas");
-  m_R = 1;
-  addOption("Rgas",&m_R,
+  m_Rgas = 1;
+  addOption("Rgas",&m_Rgas,
             "Gas constant");
   m_Tref = 1;
   addOption("TempRef",&m_Tref,
@@ -108,9 +108,23 @@ void ReferenceInfo::TCneqAdim()
 
 void ReferenceInfo::setReferenceParam()
 {
+  *gFreeStream = m_gam;
+  *RFreeStream = m_Rgas;
   *pref = m_pref;
   *Tref = m_Tref;
   *uref = m_uref;
+  *Lref = m_Lref;
+  var->at(0) = m_var;
+  if (var->at(0)!= "P" && var->at(0)!= "Z" && var->at(0)!= "U") {
+   cout << "ReferenceInfo::error =>";
+   cout << "Check input.case: Variables should be P, Z or U\n";
+   exit(1);}
+  adim->at(0) = m_adim;
+  if (adim->at(0)!= "A" && adim->at(0)!= "D") {
+   cout << "ReferenceInfo::error =>"; 
+   cout << "Check input.case: Adimensional should be A or D\n";
+   exit(1);}
+
   logfile("TREF = ",*Tref,"\n");
   logfile("PREF = ",*pref,"\n");
   logfile("UREF = " ,*uref,"\n");
@@ -187,8 +201,13 @@ void ReferenceInfo::setPhysicsData()
   Tref = PhysicsData::getInstance().getData <double> ("TREF");
   uref = PhysicsData::getInstance().getData <double> ("UREF");
   rhoref = PhysicsData::getInstance().getData <double> ("RHOREF");
+  Lref = PhysicsData::getInstance().getData <double> ("LREF");
   gref = PhysicsData::getInstance().getData <double> ("GREF");
   gm1ref = PhysicsData::getInstance().getData <double> ("GM1REF");
+  RFreeStream = PhysicsData::getInstance().getData <double> ("RgasFreeStream");
+  gFreeStream = PhysicsData::getInstance().getData <double> ("GamFreeStream");
+  var = PhysicsData::getInstance().getData <vector<string> > ("Variables");
+  adim = PhysicsData::getInstance().getData <vector<string> > ("Adimensional");
 }
 
 //--------------------------------------------------------------------------//

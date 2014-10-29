@@ -5,6 +5,8 @@ ReadTriangle.cxx
 ReadTriangle.hh
 ReSdwInfo.cxx
 ReSdwInfo.hh
+Triangle.hh
+Triangle.cxx
 )
 
 LIST ( APPEND MeshGeneratorSF_libs Framework SConfig MathTools)

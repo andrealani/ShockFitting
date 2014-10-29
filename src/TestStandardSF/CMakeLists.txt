@@ -5,6 +5,8 @@ LIST ( APPEND TestStandardSF_libs ${SF_KERNEL_LIBS} ${SF_KERNEL_STATIC_LIBS}
 MeshGeneratorSF
 RemeshingSF
 WritingMeshSF
+ConverterSF
+VariableTransformerSF
 #StateUpdaterSF
 )
 

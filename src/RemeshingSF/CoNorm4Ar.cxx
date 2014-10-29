@@ -343,6 +343,8 @@ void CoNorm4Ar::recoverStatus(string direction, unsigned I,
   uj = (*r_ZRoeShd)((*ix),J,ISH)/zrho;
   vj = (*r_ZRoeShd)((*iy),J,ISH)/zrho;
   help = pow((*r_ZRoeShd)((*ix),J,ISH),2)+pow((*r_ZRoeShd)((*iy),J,ISH),2);
+  // gam and gm1 are referred to the values read by PhysicsInfo
+  // (it was previously read by re_inp_dat)
   pj = (*gm1)/(*gam) * (zrho * (*r_ZRoeShd)((*ie),J,ISH) - 0.5 * help - rhoHf );
   aj = sqrt( (*gam) * pj/roj );
   if(direction=="forward") {

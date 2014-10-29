@@ -109,6 +109,7 @@ void ChemicalInfo::read()
    setVibrTemp();
    setSpecHeatRatio();
    setMolTypes();
+   setnbMol();
 
    file.close();
   }
@@ -154,7 +155,7 @@ void ChemicalInfo::setMixtureFileName()
   file >> dummystr;
   file >> mixtureFile_name;
   if (mixtureFile_name != m_mixture){
-   logfile("error data file is wrong");
+   logfile("ChemicalInfo::error => data file is wrong");
    logfile(mixtureFile_name, m_mixture.c_str(),"\n");
    exit(1);}
 }
@@ -239,6 +240,16 @@ void ChemicalInfo::setMolTypes()
 
 //--------------------------------------------------------------------------//
 
+void ChemicalInfo::setnbMol()
+{
+  *nmol = 0;
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) {
+   if(typemol->at(ISP)=="B") { ++(*nmol); }
+  }
+}
+
+//--------------------------------------------------------------------------//
+
 void ChemicalInfo::setSize()
 {
   name->resize(*nsp);
@@ -278,19 +289,24 @@ void ChemicalInfo::setPhysicsData()
 {
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  model = PhysicsData::getInstance().getData <std::vector<std::string> > ("MODEL");
-  mixture = PhysicsData::getInstance().getData <std::vector<std::string> > ("MIXTURE");
+  model =
+    PhysicsData::getInstance().getData <std::vector<std::string> > ("MODEL");
+  mixture =
+    PhysicsData::getInstance().getData <std::vector<std::string> > ("MIXTURE");
   ie = PhysicsData::getInstance().getData <unsigned> ("IE");
   ix = PhysicsData::getInstance().getData <unsigned> ("IX");
   iy = PhysicsData::getInstance().getData <unsigned> ("IY");
   iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  nmol = PhysicsData::getInstance().getData <unsigned> ("NMOL");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
-  name = PhysicsData::getInstance().getData <std::vector<std::string> > ("NAMESP");
+  name = 
+    PhysicsData::getInstance().getData <std::vector<std::string> > ("NAMESP");
   mm = PhysicsData::getInstance().getData <std::vector<double> > ("MM");
   hf = PhysicsData::getInstance().getData <std::vector<double> > ("HF");
   thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");  
   gams = PhysicsData::getInstance().getData <std::vector<double> > ("GAMS");
-  typemol = PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
+  typemol =
+    PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
 }
 
 //--------------------------------------------------------------------------//

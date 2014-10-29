@@ -17,8 +17,9 @@
 #include "Framework/FileProcessing.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Remeshing.hh"
-#include "RemeshingSF/CoNorm.hh"
 #include "Framework/WritingMesh.hh"
+#include "Framework/Converter.hh"
+#include "RemeshingSF/CoNorm.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -58,13 +59,7 @@ public:
   
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}
-  
-  /// get the variable transformer
-  std::vector<PAIR_TYPE(VariableTransformer)>& getVariableTransformerList()
-  {
-    return m_vTransformer;
-  }
-  
+
   /// get the field interpolators list
   std::vector<PAIR_TYPE(FieldInterpolator)>& getFieldInterpolatorList()
   {
@@ -95,6 +90,12 @@ public:
     return m_wMesh;
   }
 
+  /// get the converters list
+  std::vector<PAIR_TYPE(Converter)>& getConverterList()
+  {
+    return m_fConverter;
+  }
+
 protected:
    
   /// create a list of coupling objects
@@ -115,9 +116,9 @@ protected:
     
 protected:
   
-  /// array of variable transformers
-  std::vector<PAIR_TYPE(VariableTransformer)> m_vTransformer; 
-  
+  /// array of variable transformer
+//  std::vector<PAIR_TYPE(VariableTransformer)> m_vTransformer;
+
   /// array of field interpolators
   std::vector<PAIR_TYPE(FieldInterpolator)> m_fInterpolator;
   
@@ -135,6 +136,9 @@ protected:
 
   /// array of data writing
   std::vector<PAIR_TYPE(WritingMesh)> m_wMesh;
+
+  /// array of converter objects
+  std::vector<PAIR_TYPE(Converter)> m_fConverter;
 
 private: // helper functions
 

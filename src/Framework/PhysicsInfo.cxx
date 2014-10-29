@@ -84,7 +84,7 @@ void PhysicsInfo::read()
 {
   LogToScreen(INFO, "PhysicsInfo::read()\n");
 
- // ndim = m_ndim;
+  *ndim = m_ndim;
   *gam = m_gam;
   *gm1 = *gam-1;
   *ndofmax = m_ndofmax;

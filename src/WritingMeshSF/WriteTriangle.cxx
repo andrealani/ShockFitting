@@ -65,13 +65,19 @@ void WriteTriangle::write()
 
   setAddress();
 
+  string dummyfile;
+  fname->at(0) = "na00001";
+
   // write node file
-  file.open("na00.2.node");
+  dummyfile = fname->at(0)+".node";
+  file.open(dummyfile.c_str());
+
+  file.precision(20);
 
   ilist = (*npoin) + 2 * (*nshmax) * (*npshmax);
 
-  M02M1.resize(ilist);
-  M12M0.resize(ilist);
+  M02M1.resize(ilist+1); // c++ indeces start from 0
+  M12M0.resize(ilist+1); // c++ indeces start from 0
 
   // set map vector for nodcod
   setMapVectorForNodcod();
@@ -84,8 +90,8 @@ void WriteTriangle::write()
   // set map vector for NodCodSh
   setMapVectorForNodcodSh();
 
-
   ilist = TNPOIN;
+
   file << ilist << " " << *ndim << " " << *ndof << " 1\n";
   
   // write mesh points coordinates and status on Triangle file
@@ -102,7 +108,8 @@ void WriteTriangle::write()
   file.close();
 
   // write poly file
-  file.open("na00.2.poly");
+  dummyfile = fname->at(0)+".poly";
+  file.open(dummyfile.c_str());
 
   file << "0 " << (*ndim) << " 0 1 \n";
   
@@ -120,9 +127,9 @@ void WriteTriangle::write()
 void WriteTriangle::setMapVectorForNodcod()
 {
   for (unsigned IPOIN=0; IPOIN< (*npoin); IPOIN++) {
-   if (nodcod->at(IPOIN)>=0) { M02M1.at(IPOIN) = TNPOIN;
-                               M12M0.at(TNPOIN) = IPOIN; 
-			       ++TNPOIN;                }
+   if (nodcod->at(IPOIN)>=0) { ++TNPOIN;
+                               M02M1.at(IPOIN+1) = TNPOIN;
+                               M12M0.at(TNPOIN) = IPOIN+1; } 
   }
 }
 
@@ -132,10 +139,11 @@ void WriteTriangle::setMapVectorForNodcodSh()
 {
   for (unsigned ISH=0; ISH<(*nshmax); ISH++) {
    for(unsigned I=0; I<(*npshmax); I++) {
-    if ((*w_NodCodSh)(I,ISH)==10) { M02M1.at(icount) = TNPOIN;
-                                    M12M0.at(TNPOIN) = icount;
-                                    ++TNPOIN;                 }
     ++icount;
+
+    if ((*w_NodCodSh)(I,ISH)==10) { ++TNPOIN;
+                                    M02M1.at(icount) = TNPOIN;
+                                    M12M0.at(TNPOIN) = icount;}
    }
   }
 }
@@ -147,16 +155,13 @@ void WriteTriangle::writeMeshVariables()
   unsigned h = 0;
   for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
    if(nodcod->at(IPOIN)>=0) {
-    file << M02M1.at(IPOIN) << "\n";
+    file << M02M1.at(IPOIN+1) << "  "; // c++ indeces start from 0
     for(unsigned IA=0; IA<(*ndim); IA++) {
-     file << (*w_XY)(IA,IPOIN) << " ";}
-    file << "\n";
+     file << (*w_XY)(IA,IPOIN) << "  ";}
     for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << zroe->at(h) << " "; h++; }
-    file << "\n";
-    file << nodcod->at(IPOIN);
+     file << zroe->at(h) << "  "; h++; }
+    file << nodcod->at(IPOIN) << endl;
    }
-  file << "\n";
   }
 }
 
@@ -166,22 +171,17 @@ void WriteTriangle::writeUpstreamStatus()
 {
   for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
    for(unsigned I=0; I<(*npshmax); I++) {
-    if((*w_NodCodSh)(I,ISH)==10) {
-     file << M02M1.at(icount) << "\n";
-     for(unsigned IA=0; IA<(*ndim); IA++) {
-     file << (*w_XYShu)(IA,I,ISH) << " ";}
-     file << "\n";
-     for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << (*w_ZRoeShu)(IA,I,ISH) << " ";}
-     file << "\n";
-     file << (*w_NodCodSh)(I,ISH);
-    }
     ++icount;
-    file << "\n";
+    if((*w_NodCodSh)(I,ISH)==10) {
+     file << M02M1.at(icount) << "  ";
+     for(unsigned IA=0; IA<(*ndim); IA++) {
+     file << (*w_XYShu)(IA,I,ISH) << "  ";}
+     for(unsigned IA=0; IA<(*ndof); IA++) {
+     file << (*w_ZRoeShu)(IA,I,ISH) << "  ";}
+     file << (*w_NodCodSh)(I,ISH) << endl;
+    }
    }
-   file << "\n";
   }
-  file << "\n";
 }
 
 //--------------------------------------------------------------------------//
@@ -190,22 +190,17 @@ void WriteTriangle::writeDownstreamStatus()
 {
   for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
    for(unsigned I=0; I<(*npshmax); I++) {
+     icount++;
     if((*w_NodCodSh)(I,ISH)==10) {
-     file << M02M1.at(icount) << "\n";
+     file << M02M1.at(icount) << "  ";
      for(unsigned IA=0; IA<(*ndim); IA++) {
-     file << (*w_XYShd)(IA,I,ISH) << " ";}
-     file << "\n";
+     file << (*w_XYShd)(IA,I,ISH) << "  ";}
      for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << (*w_ZRoeShd)(IA,I,ISH) << " ";}
-     file << "\n";
-     file << (*w_NodCodSh)(I,ISH);
+     file << (*w_ZRoeShd)(IA,I,ISH) << "  ";}
+     file << (*w_NodCodSh)(I,ISH) << endl;
     }
-    icount++;
-    file << "\n";
    }
-   file << "\n";
   }
-  file << "\n";
 }
 
 //--------------------------------------------------------------------------//
@@ -217,19 +212,23 @@ void WriteTriangle::writeBndfac()
    IBC = (*bndfac)(2,IFACE);
    if(IBC>0) { ++ICHECK; }
   }
-  file << ICHECK << " 1\n";
+  file << ICHECK << "  1" << endl;
 
   ICHECK=0;
 
+
   for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) { 
    IBC = (*bndfac)(2,IFACE);
+
+
+
    if(IBC>0) {
     ++ICHECK; 
-    file << ICHECK  << " ";
-    for(unsigned IA=0; IA<1; IA++) {
-     file << M02M1.at((*bndfac)(IA,IFACE)) << " ";
+    file << ICHECK  << "  ";
+    for(unsigned IA=0; IA<2; IA++) {
+     file << M02M1.at((*bndfac)(IA,IFACE)) << "  ";
     }
-   file << IBC << "\n";
+   file << IBC << endl;
    }
   }
 }
@@ -242,19 +241,19 @@ void WriteTriangle::computenbHoles()
    nHoles = nHoles + w_nShockPoints->at(ISH)-2;
   }
 
-  file << nHoles + (*naddholes);
+  file << nHoles + (*naddholes) << endl;
 
   unsigned iHole=0;
   for(unsigned ISH=0; ISH<(*w_nShocks); ISH++) {
-   for(unsigned I=0; I<w_nShockPoints->at(ISH); I++) {
+   for(unsigned I=1; I<w_nShockPoints->at(ISH)-1; I++) {
     ++iHole;
-    file << iHole << " ";
-    file << (*w_XYSh)(0,I,ISH) << " " << (*w_XYSh)(1,I,ISH) << "\n";
+    file << iHole << "  ";
+    file << (*w_XYSh)(0,I,ISH) << "  " << (*w_XYSh)(1,I,ISH) << endl;
    }
   }
 
   for (unsigned I=0; I<(*naddholes); I++) {
-   file << iHole+I << " ";
+   file << iHole+I << "  ";
    for(unsigned j=0; j<2; j++) { file << caddholes->at(j) << " ";}
   }
 }
@@ -298,6 +297,7 @@ void WriteTriangle::setMeshData()
   coor = MeshData::getInstance().getData< std::vector<double> >("COOR");
   bndfac = MeshData::getInstance().getData< Array2D<int> >("BNDFAC");
   celnod = MeshData::getInstance().getData< Array2D<int> >("CELNOD");
+  fname = MeshData::getInstance().getData <vector <string> > ("FNAME");
 }
 
 //--------------------------------------------------------------------------//

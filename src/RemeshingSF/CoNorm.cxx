@@ -5,7 +5,6 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "RemeshingSF/CoNorm.hh"
-#include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/MeshData.hh"
 
@@ -23,7 +22,6 @@ namespace ShockFitting {
 CoNorm::CoNorm(const std::string& objectName) : 
   Remeshing(objectName)
 {
-
 }
 
 //----------------------------------------------------------------------------//

@@ -9,8 +9,6 @@ CoNorm.cxx
 CoNorm.hh
 CoNorm4Ar.cxx
 CoNorm4Ar.hh
-CoNorm4B.cxx
-CoNorm4B.hh
 CoNorm4TCneq.cxx
 CoNorm4TCneq.hh
 CoNormPG.cxx

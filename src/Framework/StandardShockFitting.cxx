@@ -39,7 +39,10 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_computeNormalVector(),
   m_computeShockLayer(),
   m_fixMeshSpecialPoints(),
-  m_writeTriangleFile()
+  m_writeTriangleFile(),
+  m_callTriangle(),
+  m_triangleToCFmesh(),
+  m_CFmeshToTriangle()
 {
 }
 
@@ -69,8 +72,8 @@ void StandardShockFitting::setup()
 
   ShockFittingObj::setup();
 
-  validate(m_mGenerator.size() == 2,
-       "StandardShockFitting::setup() => MeshGeneratorList should have size==2");
+  validate(m_mGenerator.size() == 3,
+       "StandardShockFitting::setup() => MeshGeneratorList should have size==3");
 
   validate(m_fRemeshing.size() == 6,
            "StandardShockFitting::setup() => RemeshingList should have size==6");
@@ -85,6 +88,9 @@ void StandardShockFitting::setup()
   m_computeShockLayer = m_fRemeshing[4].ptr();
   m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
+  m_callTriangle = m_mGenerator[2].ptr();
+  m_triangleToCFmesh = m_fConverter[0].ptr();
+  m_CFmeshToTriangle = m_fConverter[1].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -122,6 +128,12 @@ void StandardShockFitting::process()
   m_fixMeshSpecialPoints->remesh();
 
   m_writeTriangleFile->write();
+
+  m_callTriangle->generate();
+
+  m_triangleToCFmesh->convert();
+
+  m_CFmeshToTriangle->convert();
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

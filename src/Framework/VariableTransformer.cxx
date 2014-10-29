@@ -5,9 +5,11 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "Framework/VariableTransformer.hh"
+#include "Framework/Log.hh"
 
 //--------------------------------------------------------------------------//
 
+using namespace std;
 using namespace SConfig;
 
 //--------------------------------------------------------------------------//
@@ -31,7 +33,11 @@ VariableTransformer::~VariableTransformer()
 
 void VariableTransformer::configure(OptionMap& cmap, const std::string& prefix)
 { 
+  LogToScreen(VERBOSE, "VariableTransformer::configure() => start\n");
+
   BaseShockFitting::configure(cmap, prefix);
+
+  LogToScreen(VERBOSE, "VariableTransformer::configure() => end\n");
 }
 
 //--------------------------------------------------------------------------//

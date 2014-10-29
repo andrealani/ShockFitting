@@ -48,14 +48,24 @@ public:
   virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
   
   /// Transform one set of variable into another
-  /// @param inArray  input array of states/coordinates;
-  /// @param outArray output array of states/coordinates;
-  /// @param ns       state size.
-  virtual void transform (double* inArray, double* outArray, int ns) = 0;
+  virtual void transform () = 0;
 
   /// Gets the Class name
   static std::string getClassName() {return "VariableTransformer";}
-  
+
+protected: // data
+
+  /// in variables format
+  std::string m_inFmt;
+
+  /// out variables format
+  std::string m_outFmt;  
+
+  /// model used to compute the variables transformation
+  std::string m_modelTransf;
+
+  /// additional infos used to compute variables transformation
+  std::string m_addInfo;
 };
   
 //--------------------------------------------------------------------------//

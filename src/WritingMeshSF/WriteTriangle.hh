@@ -180,6 +180,9 @@ private: // data
 
   /// ofstream variables to write triangle fmt file
   std::ofstream file;
+
+  /// name of current file
+  std::vector<std::string>* fname;
 };
 
 //--------------------------------------------------------------------------//

@@ -73,11 +73,20 @@ private:
   /// command object remeshing shock layer
   SConfig::SharedPtr<Remeshing> m_computeShockLayer;
 
-  /// command object fixinf mesh around special points
+  /// command object fixing mesh around special points
   SConfig::SharedPtr<Remeshing> m_fixMeshSpecialPoints;
 
-  /// command object write output files
+  /// command object writing output files
   SConfig::SharedPtr<WritingMesh> m_writeTriangleFile;
+
+  /// command object generating new mesh
+  SConfig::SharedPtr<MeshGenerator> m_callTriangle;
+
+  /// command object converting file format from Triangle to CFmesh
+  SConfig::SharedPtr<Converter> m_triangleToCFmesh;
+
+  /// command object converting file format from CFmesh to Triangle
+  SConfig::SharedPtr<Converter> m_CFmeshToTriangle;
 };
 
 //--------------------------------------------------------------------------//

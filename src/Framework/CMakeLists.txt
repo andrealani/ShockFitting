@@ -9,6 +9,8 @@ Compatibility.hh
 #ComputeStateDpsAdmin.cxx
 #ComputeStateDpsAdmin.hh
 Connectivity.hh
+Converter.cxx
+Converter.hh
 FieldInterpolator.cxx
 FieldInterpolator.hh
 FileLogManip.hh

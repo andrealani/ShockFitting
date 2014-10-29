@@ -48,12 +48,8 @@ void DummyVariableTransformer::unsetup()
  
 //--------------------------------------------------------------------------// 
 
-void DummyVariableTransformer::transform (double* inArray, double* outArray, int ns)
+void DummyVariableTransformer::transform()
 {
-  for (int i = 0; i < ns; ++i) {
-    inArray[i] = outArray[i];
-  }
-  
   std::cout << "DummyVariableTransformer::transform()\n";
 }
 

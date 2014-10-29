@@ -102,7 +102,7 @@ private: // data
   double m_gam;
 
   /// gas constant (J/kg/K)
-  double m_R;
+  double m_Rgas;
 
   /// reference temperature (K)
   double m_Tref;
@@ -116,11 +116,23 @@ private: // data
   /// species densities
   std::vector <double> m_rhor;
 
-  ///
+  /// reference length
   double m_Lref;
+
+  /// variables (assignable to PhysicsData)
+  std::vector<std::string>* var;
+
+  /// adimensional (assignable to PhysicsData)
+  std::vector<std::string>* adim;
 
   /// freestream pressure (assignable to PhysicsData)
   double* pref;
+
+  /// gas constant (assignable to PhysicsData)
+  double* RFreeStream;
+
+  /// heat specific ratio (assignable to PhysicsData)
+  double* gFreeStream;
 
   /// freestream temperature (assignable to PhysicsData)
   double* Tref;
@@ -128,8 +140,11 @@ private: // data
   /// freestream velocity (assignable to PhysicsData)
   double* uref;
 
-  /// reference pressure (assignable to PhysicsData)
+  /// reference density (assignable to PhysicsData)
   double* rhoref;
+
+  /// reference length (assignable to PhysicsData)
+  double* Lref;
 
   /// heat specific ratio (assignable to PhysicsData)
   double* gref;
@@ -158,10 +173,10 @@ private: // data
   /// formation enthalpies for each species
   std::vector <double>* hf;
 
-  /// gas constant
+  /// dummy gas constant
   double R;
 
-  /// specific heat
+  /// dummy specific heat
   double Cv;
 
   /// chemical species concentrations

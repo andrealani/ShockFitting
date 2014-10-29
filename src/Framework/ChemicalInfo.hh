@@ -105,6 +105,9 @@ private: // helper functions
   /// set molecular types
   void setMolTypes();
 
+  /// set number of molecules
+  void setnbMol();
+
 private: // data
 
   /// reference speed
@@ -137,6 +140,9 @@ private: // data
 
   /// number of degrees of freedom
   unsigned* ndof;
+
+  /// number of molecules
+  unsigned* nmol;
 
   /// global index (assignable to PhysicsData)
   unsigned* ie;

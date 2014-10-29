@@ -35,10 +35,6 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   Counter(),
   ConfigObject(objectName)
 {
-  m_vTransformer = vector<PAIR_TYPE(VariableTransformer)>();
-  addOption("VariableTransformerList",&m_vTransformer, 
-	    "List of the names of variable transformers"); 
-  
   m_fInterpolator = vector<PAIR_TYPE(FieldInterpolator)>();
   addOption("FieldInterpolatorList",&m_fInterpolator, 
 	    "List of the names of field interpolators"); 
@@ -63,6 +59,9 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   addOption("WritingMeshList",&m_wMesh,
             "List of the names of objects writing");
 
+  m_fConverter = vector<PAIR_TYPE(Converter)>();
+  addOption("ConverterList",&m_fConverter,
+            "List of the names of converter objects");
 }
   
 //--------------------------------------------------------------------------//
@@ -81,9 +80,6 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   ConfigObject::configure(cmap, prefix);
   
   if (ConfigFileReader::isFirstConfig()) {
-    
-    // create the variable transformers
-    createList<VariableTransformer>(m_vTransformer);
     
     // create the field interpolators
     createList<FieldInterpolator>(m_fInterpolator);
@@ -104,13 +100,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
 
     // create the writing objects
     createList<WritingMesh>(m_wMesh);
+
+    // create the converter objects
+    createList<Converter>(m_fConverter);
   }
 
-  // configure the variable transformers
-  for (unsigned i = 0; i < m_vTransformer.size(); ++i) {
-    configureDeps (cmap, m_vTransformer[i].ptr().get());
-  }
-  
   // configure the field interpolators
   for (unsigned i = 0; i < m_fInterpolator.size(); ++i) {
     configureDeps (cmap, m_fInterpolator[i].ptr().get());
@@ -144,7 +138,12 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
    configureDeps (cmap, m_wMesh[i].ptr().get());
   }
-   
+
+  // configure the converter objects
+  for (unsigned i = 0; i < m_fConverter.size(); ++i) {
+   configureDeps (cmap, m_fConverter[i].ptr().get());
+  }
+
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
 }
 
@@ -158,11 +157,6 @@ void ShockFittingObj::setup()
 
   createMeshData();
 
-  // configure the variable transformers
-  for (unsigned i = 0; i < m_vTransformer.size(); ++i) {
-    m_vTransformer[i].ptr()->setup();
-  }
-  
   // configure the field interpolators
   for (unsigned i = 0; i < m_fInterpolator.size(); ++i) {
     m_fInterpolator[i].ptr()->setup();
@@ -190,7 +184,12 @@ void ShockFittingObj::setup()
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
     m_wMesh[i].ptr()->setup();
   }
-  
+
+  // configure the converter objects
+  for (unsigned i = 0; i < m_fConverter.size(); ++i) {
+    m_fConverter[i].ptr()->setup();
+  }
+
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
 }
   
@@ -203,11 +202,6 @@ void ShockFittingObj::unsetup()
   deleteMeshData();
 
   deletePhysicsData();
-  
-  // configure the variable transformers
-  for (unsigned i = 0; i < m_vTransformer.size(); ++i) {
-    m_vTransformer[i].ptr()->unsetup();
-  }
   
   // configure the field interpolators
   for (unsigned i = 0; i < m_fInterpolator.size(); ++i) {
@@ -236,7 +230,12 @@ void ShockFittingObj::unsetup()
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
     m_wMesh[i].ptr()->unsetup();
   }
-    
+
+  // configure the converter objects
+  for (unsigned i = 0; i < m_fConverter.size(); ++i) {
+    m_fConverter[i].ptr()->unsetup();
+  }
+
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
   
@@ -292,6 +291,7 @@ void ShockFittingObj::createPhysicsData()
 {
   
   PhysicsData::getInstance().createData <unsigned> ("NDIM", 1);
+  // these two values are read by PhysicsInfo object
   PhysicsData::getInstance().createData <double> ("GAM", 1);
   PhysicsData::getInstance().createData <double> ("GM1", 1);
   PhysicsData::getInstance().createData <unsigned> ("NDOF", 1);
@@ -302,10 +302,10 @@ void ShockFittingObj::createPhysicsData()
   PhysicsData::getInstance().createData <unsigned> ("NESHMAX", 1);
   PhysicsData::getInstance().createData <unsigned> ("NADDHOLESMAX", 1);
   PhysicsData::getInstance().createData 
-                          <std::vector<std::string> > ("MODEL", 1);
+                          <vector<string> > ("MODEL", 1);
   PhysicsData::getInstance().createData 
-                          <std::vector<std::string> > ("MIXTURE", 1);
-
+                          <vector<string> > ("MIXTURE", 1);
+  PhysicsData::getInstance().createData <unsigned> ("NMOL",1);
   PhysicsData::getInstance().createData <unsigned> ("IE",1);
   PhysicsData::getInstance().createData <unsigned> ("IX",1);
   PhysicsData::getInstance().createData <unsigned> ("IY",1);
@@ -313,19 +313,26 @@ void ShockFittingObj::createPhysicsData()
 
   PhysicsData::getInstance().createData <unsigned> ("NSP",1);
   PhysicsData::getInstance().createData 
-                          <std::vector<std::string> > ("NAMESP",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("MM",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("HF",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("THEV",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("GAMS",1);
+                          <vector<string> > ("NAMESP",1);
+  PhysicsData::getInstance().createData <vector<double> > ("MM",1);
+  PhysicsData::getInstance().createData <vector<double> > ("HF",1);
+  PhysicsData::getInstance().createData <vector<double> > ("THEV",1);
+  PhysicsData::getInstance().createData <vector<double> > ("GAMS",1);
   PhysicsData::getInstance().createData 
-                          <std::vector<std::string> > ("TYPEMOL",1);
-  PhysicsData::getInstance().createData <std::vector<double> > ("RS",1);
+                          <vector<string> > ("TYPEMOL",1);
+  PhysicsData::getInstance().createData <vector<double> > ("RS",1);
 
+
+  PhysicsData::getInstance().createData <vector<string> > ("Variables",1);
+  PhysicsData::getInstance().createData <vector<string> > ("Adimensional",1);
+  // these two values are read by ReferenceInfo object
+  PhysicsData::getInstance().createData <double> ("RgasFreeStream",1);
+  PhysicsData::getInstance().createData <double> ("GamFreeStream",1);
   PhysicsData::getInstance().createData <double> ("PREF",1);
   PhysicsData::getInstance().createData <double> ("TREF",1);
   PhysicsData::getInstance().createData <double> ("UREF",1);
   PhysicsData::getInstance().createData <double> ("RHOREF",1);
+  PhysicsData::getInstance().createData <double> ("LREF",1);
   PhysicsData::getInstance().createData <double> ("GREF",1);
   PhysicsData::getInstance().createData <double> ("GM1REF",1);
 
@@ -373,7 +380,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <double> ("SHRELAX");
   MeshData::getInstance().deleteData <unsigned> ("IBAK");
   MeshData::getInstance().deleteData <unsigned> ("Naddholes");
-  MeshData::getInstance().deleteData < std::vector<double> > ("CADDholes");
+  MeshData::getInstance().deleteData <vector<double> > ("CADDholes");
   MeshData::getInstance().deleteData <unsigned> ("NPROC");
 
   MeshData::getInstance().deleteData <vector <int> >("NODCOD");
@@ -397,8 +404,6 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().unsetup();
   
   PhysicsData::getInstance().deleteData <unsigned> ("NDIM");
-  PhysicsData::getInstance().deleteData <double> ("GAM");
-  PhysicsData::getInstance().deleteData <double> ("GM1");
   PhysicsData::getInstance().deleteData <unsigned> ("NDOF");
   PhysicsData::getInstance().deleteData <unsigned> ("NDOFMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NSHMAX");
@@ -406,27 +411,38 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <unsigned> ("NSPMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NESHMAX");
   PhysicsData::getInstance().deleteData <unsigned> ("NADDHOLESMAX");
-  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MODEL");
-  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("MIXTURE");
+  // these values are read by PhysicsInfo object
+  PhysicsData::getInstance().deleteData <double> ("GAM");
+  PhysicsData::getInstance().deleteData <double> ("GM1");
 
+  PhysicsData::getInstance().deleteData <vector<string> > ("MODEL");
+  PhysicsData::getInstance().deleteData <vector<string> > ("MIXTURE");
+
+  PhysicsData::getInstance().deleteData <unsigned> ("NMOL");
   PhysicsData::getInstance().deleteData <unsigned> ("IE");
   PhysicsData::getInstance().deleteData <unsigned> ("IX");
   PhysicsData::getInstance().deleteData <unsigned> ("IY");
   PhysicsData::getInstance().deleteData <unsigned> ("IEV");
 
   PhysicsData::getInstance().deleteData <unsigned> ("NSP");
-  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("NAMESP");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("MM");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("HF");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("THEV");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("GAMS");
-  PhysicsData::getInstance().deleteData <std::vector<std::string> > ("TYPEMOL");
-  PhysicsData::getInstance().deleteData <std::vector<double> > ("RS");
+  PhysicsData::getInstance().deleteData <vector<std::string> > ("NAMESP");
+  PhysicsData::getInstance().deleteData <vector<double> > ("MM");
+  PhysicsData::getInstance().deleteData <vector<double> > ("HF");
+  PhysicsData::getInstance().deleteData <vector<double> > ("THEV");
+  PhysicsData::getInstance().deleteData <vector<double> > ("GAMS");
+  PhysicsData::getInstance().deleteData <vector<string> > ("TYPEMOL");
+  PhysicsData::getInstance().deleteData <vector<double> > ("RS");
 
+  PhysicsData::getInstance().deleteData <vector<string> > ("Variables");
+  PhysicsData::getInstance().deleteData <vector<string> > ("Adimensional");
+  // these values are read by ReferenceInfo object
+  PhysicsData::getInstance().deleteData <double> ("RgasFreeStream");
+  PhysicsData::getInstance().deleteData <double> ("GamFreeStream");
   PhysicsData::getInstance().deleteData <double> ("PREF");
   PhysicsData::getInstance().deleteData <double> ("TREF");
   PhysicsData::getInstance().deleteData <double> ("UREF");
   PhysicsData::getInstance().deleteData <double> ("RHOREF");
+  PhysicsData::getInstance().deleteData <double> ("LREF");
   PhysicsData::getInstance().deleteData <double> ("GREF");
   PhysicsData::getInstance().deleteData <double> ("GM1REF");
 
