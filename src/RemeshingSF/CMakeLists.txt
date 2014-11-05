@@ -11,8 +11,8 @@ CoNorm4Ar.cxx
 CoNorm4Ar.hh
 CoNorm4TCneq.cxx
 CoNorm4TCneq.hh
-CoNormPG.cxx
-CoNormPG.hh
+CoNormPg.cxx
+CoNormPg.hh
 CoPntDispl.cxx
 CoPntDispl.hh
 DummyRemeshing.cxx
@@ -21,8 +21,10 @@ FindBEdg.cxx
 FindBEdg.hh
 FndPhPs.cxx
 FndPhPs.hh
-FxMshSps.cxx
-FxMshSps.hh
+FixMshSps.cxx
+FixMshSps.hh
+RdDps.cxx
+RdDps.hh
 RdDpsEq.cxx
 RdDpsEq.hh
 Rdshp.cxx

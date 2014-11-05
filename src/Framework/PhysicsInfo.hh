@@ -89,7 +89,7 @@ private: //data
   /// assignable to PhysicsData
   double* gam;
 
-  /// gm1 = gam -1
+  /// @param gm1 = gam -1
   double* gm1;
 
   /// max number of degree of freedom

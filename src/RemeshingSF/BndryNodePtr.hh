@@ -60,25 +60,43 @@ private: // helper functions
   /// local function computes vector NODPTR
   void setBndryNodePtr();
 
+  /// assign array starting pointers
+  void setAddress();
+
   /// assign values used in BndryNodePtr to MeshData pattern
   void setMeshData();
+
+  /// assign values used in BndryNodePtr to PhysicsData pattern
+  void setPhysicsData();
 
 private: //data
 
   /// number of freezed points
   unsigned* nfpoin;
 
+  /// max number of shocks
+  unsigned* nshmax;
+  
+  /// max number of shock edges
+  unsigned* neshmax;
+
   /// number of mesh points
-  unsigned* npoin;
+  std::vector<unsigned>* npoin;
 
   /// number of boundary points
-  unsigned* nbpoin;
+  std::vector<unsigned>* nbpoin;
 
   /// number of boundary faces in the mesh
-  unsigned* nbfac;
+  std::vector<unsigned>* nbfac;
 
   /// code charactering mesh points
   std::vector <int>* nodcod;
+
+  /// vector characterizing boundary faces (assignable to MeshData)
+  std::vector<int>* bndfacVect;
+
+  /// vector characterizing boundary nodes
+  std::vector<int>* nodptrVect;
 
   /// nodptr(i-poin)(0) global code number
   /// nodptr(i-poin)(1) one of the edges it belongs to

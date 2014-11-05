@@ -49,7 +49,7 @@ private: // helper functions
   void computeTau(unsigned, unsigned);
 
   /// recover shock point status
-  void recoverStatus(std::string, unsigned, unsigned, unsigned);
+  void recoverState(std::string, unsigned, unsigned, unsigned);
 
   /// fix normal vector for typeShock = S
   void setVShNorForStype();

@@ -23,7 +23,7 @@ VibrEnergy.cxx
 VibrEnergy.hh
 )
 
-LIST ( APPEND VariableTransformerSF_libs Framework SConfig )
+LIST ( APPEND VariableTransformerSF_libs Framework SConfig MathTools )
 
 SF_ADD_PLUGIN_LIBRARY ( VariableTransformerSF )
 

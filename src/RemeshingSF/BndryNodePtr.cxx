@@ -6,10 +6,10 @@
 
 #include "RemeshingSF/BndryNodePtr.hh"
 #include "SConfig/ObjectProvider.hh"
-#include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
 #include "Framework/Remeshing.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Isortrx.hh"
 #include "MathTools/Binsrc.hh"
@@ -30,8 +30,8 @@ ObjectProvider<BndryNodePtr, Remeshing> readBndryNodePtrProv("BndryNodePtr");
 
 //--------------------------------------------------------------------------//
 
-BndryNodePtr::BndryNodePtr(const std::string& objectName)
-             :Remeshing(objectName)
+BndryNodePtr::BndryNodePtr(const std::string& objectName) :
+ Remeshing(objectName)
 {
 }
 
@@ -39,6 +39,7 @@ BndryNodePtr::BndryNodePtr(const std::string& objectName)
 
 BndryNodePtr::~BndryNodePtr()
 {
+  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//
@@ -46,8 +47,6 @@ BndryNodePtr::~BndryNodePtr()
 void BndryNodePtr::setup()
 {
   LogToScreen(VERBOSE, "BndryNodePtr::setup() => start\n");
-
-  logfile.Open(getClassName());
 
   LogToScreen(VERBOSE, "BndryNodePtr::setup() => end\n");
 }
@@ -57,8 +56,6 @@ void BndryNodePtr::setup()
 void BndryNodePtr::unsetup()
 {
   LogToScreen(VERBOSE, "BndryNodePtr::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -67,9 +64,14 @@ void BndryNodePtr::remesh()
 {
   LogToScreen(INFO, "BndryNodePtr::remesh()\n");
 
+  logfile.Open(getClassName());
+
   setMeshData();
+  setPhysicsData();
 
   setBndryNodePtr();
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -78,10 +80,13 @@ void BndryNodePtr::setBndryNodePtr()
 {
   getnbFreezedPoints();
   getnbBndryPoints();
-  
-  nodptr->resize((*nbpoin),3);
-  iwork_.resize((*nbpoin));
-  iworkRank_.resize((*nbpoin));
+
+  nodptrVect->resize(nbpoin->at(0) * 3);
+  iwork_.resize(nbpoin->at(0));
+  iworkRank_.resize(nbpoin->at(0));
+
+  // assign arrays used in BndryNodePtr to MeshData 
+  setAddress();
 
   // return vector nodptr
   myroutine();
@@ -94,10 +99,10 @@ void BndryNodePtr::myroutine()
   unsigned IPOIN, last, ifail;
   int ipos;
   vector <int> iwork_nodptr;
-  iwork_nodptr.resize((*nbpoin));
+  iwork_nodptr.resize(nbpoin->at(0));
 
   last=0;
-  for (IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  for (IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if ((*nodcod)[IPOIN] > 0 && (*nodcod)[IPOIN]!=999) {
     iwork_.at(last) = IPOIN+1; // c++ vector index starts from 0
     last++;
@@ -105,8 +110,8 @@ void BndryNodePtr::myroutine()
   }
   logfile("Found ",last," boundary points\n");
 
-  if (last==(*nbpoin)) {
-  logfile("Found ",(*nbpoin)," boundary points\n");
+  if (last==nbpoin->at(0)) {
+  logfile("Found ",nbpoin->at(0)," boundary points\n");
   }
   else {
    cout << "LAST =! NBPOIN\n";
@@ -114,17 +119,17 @@ void BndryNodePtr::myroutine()
   }
 
   // iwork_(1:NBPOIN) stores the NBPOIN node numbers
-  Isortrx I(iwork_,nbpoin);
+  Isortrx I(iwork_,&nbpoin->at(0));
   iworkRank_ = I.callIsortrx();
 
-  for (IPOIN=0; IPOIN < (*nbpoin); IPOIN++) {
+  for (IPOIN=0; IPOIN < nbpoin->at(0); IPOIN++) {
    (*nodptr)(IPOIN,0) = iwork_.at(iworkRank_.at(IPOIN));
    iwork_nodptr.at(IPOIN) = (*nodptr)(IPOIN,0);
   }
 
   ifail = 0;
   unsigned IFACE=0;
-  while (IFACE< (*nbfac)) {
+  while (IFACE< nbfac->at(0)) {
   unsigned j=0;
   five:
      while (j<2) {
@@ -169,7 +174,7 @@ void BndryNodePtr::myroutine()
 void BndryNodePtr::getnbFreezedPoints()
 {
   *nfpoin=0;
-  for (unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  for (unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if((*nodcod)[IPOIN]==999) { (*nfpoin)++;}
   }
 }
@@ -178,29 +183,46 @@ void BndryNodePtr::getnbFreezedPoints()
 
 void BndryNodePtr::getnbBndryPoints()
 {
-  *nbpoin=0;
-  for (unsigned IPOIN=0; IPOIN<(*npoin)-1; IPOIN++) {
-   if((*nodcod)[IPOIN]>0) {(*nbpoin)++;}
+  nbpoin->at(0)=0;
+  for (unsigned IPOIN=0; IPOIN<npoin->at(0)-1; IPOIN++) {
+   if((*nodcod)[IPOIN]>0) {nbpoin->at(0)++;}
   }
-  (*nbpoin) = (*nbpoin) - (*nfpoin);
+  nbpoin->at(0) = nbpoin->at(0) - (*nfpoin);
+}
+
+//--------------------------------------------------------------------------//
+
+void BndryNodePtr::setAddress()
+{
+  unsigned start = 0;
+  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
+  nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
 
 void BndryNodePtr::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  nbpoin = MeshData::getInstance().getData <unsigned> ("NBPOIN");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
   nfpoin = MeshData::getInstance().getData <unsigned> ("NFPOIN");
-  nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
-  nodcod = MeshData::getInstance().getData< std::vector<int> >("NODCOD");
-  nodptr = MeshData::getInstance().getData< Array2D<int> >("NODPTR");
-  bndfac = MeshData::getInstance().getData< Array2D<int> >("BNDFAC");
+  nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
+  nodptrVect = MeshData::getInstance().getData <vector<int> >("NODPTR");
+  bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
+}
+
+//--------------------------------------------------------------------------//
+
+void BndryNodePtr::setPhysicsData()
+{
+  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
+  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting
-
 
 

@@ -55,14 +55,23 @@ private: // data
   /// space dimension
   unsigned* ndim;
 
+  /// max number of shocks
+  unsigned* nshmax;
+  
+  /// max number of shock edges
+  unsigned* neshmax;
+  
   /// number of boundar faces
-  unsigned* nbfac;
+  std::vector<unsigned>* nbfac;
 
   /// number of mesh points
-  unsigned* npoin;
+  std::vector<unsigned>* npoin;
 
   /// mesh points coordinates
-  std::vector <double>* coor;
+  std::vector <double>* coorVect;
+
+  /// vector characterizing boundary faces
+  std::vector<int>* bndfacVect;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face

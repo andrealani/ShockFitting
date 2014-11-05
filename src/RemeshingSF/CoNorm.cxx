@@ -28,6 +28,7 @@ CoNorm::CoNorm(const std::string& objectName) :
 
 CoNorm::~CoNorm()
 {
+  delete ZRoeShd;
 }
 
 //----------------------------------------------------------------------------//
@@ -41,8 +42,8 @@ void CoNorm::configure(OptionMap& cmap, const std::string& prefix)
 
 void CoNorm::setAddress()
 {
-  unsigned start = (*npoin) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  r_ZRoeShd =
+  unsigned start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+  ZRoeShd =
     new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroe->at(start));
 }
 
@@ -50,14 +51,14 @@ void CoNorm::setAddress()
 
 void CoNorm::setSize()
 {
-  r_vShNor->resize((*ndim),(*npshmax),(*nshmax));
+  vShNor->resize((*ndim),(*npshmax),(*nshmax));
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNorm::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
 }
 
@@ -83,18 +84,18 @@ void CoNorm::setPhysicsData()
   iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
   ix = PhysicsData::getInstance().getData <unsigned> ("IX");
   iy = PhysicsData::getInstance().getData <unsigned> ("IY");
-  r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
-  r_nShockPoints =
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
       PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");
-  r_nSpecPoints =
+  nSpecPoints =
       PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
-  r_typeSh =
+  typeSh =
       PhysicsData::getInstance().getData <vector<string> > ("TYPESH");
-  r_typeSpecPoints =
+  typeSpecPoints =
       PhysicsData::getInstance().getData <vector<string> > ("TypeSpecPoints");
-  r_XYSh = PhysicsData::getInstance().getData <Array3D<double> > ("XYSH");
-  r_vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
-  r_SHinSPPs =
+  XYSh = PhysicsData::getInstance().getData <Array3D<double> > ("XYSH");
+  vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
+  SHinSPPs =
       PhysicsData::getInstance().getData <Array3D<unsigned> > ("SHinSPPs");
 }
 

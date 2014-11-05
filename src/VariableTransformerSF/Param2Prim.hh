@@ -24,14 +24,19 @@ namespace ShockFitting {
 
 /// This class defines a Param2Prim, whose task is to operate a variable
 /// transformation from Roe parameter vector variables to primitive variables.
-/// According to gas model (Pg, Cneq or TCneq) and to CFmesh output 
+/// The new values are stored in new arrays to not overwrite the old mesh status.
+/// These new values are pushed back at the end of the arrays of the old mesh
+/// in the fortran version these new arrays are referred to index "1"
+/// (ex: ZROE(1))
+///
+/// According to the gas model (Pg, Cneq or TCneq) and to CFmesh output 
 /// (dimensional or adimensional) several objects are defined:
 /// .) Param2PrimPgAdimensional
 /// .) Param2PrimPgDimensional
-/// .) Param2PrimTCneqAdimensional
+/// .) Param2PrimTCneqAdimensional (not implemented yet)
 /// .) Param2PrimTCneqDimesnional
-/// .) Param2PrimCneqAdimensional
-/// .) Param2Prim4CneqDimensional
+/// .) Param2PrimCneqAdimensional (not implemented yet)
+/// .) Param2PrimCneqDimensional (not implemented yet)
 
 class Param2Prim : public VariableTransformer {
 public:
@@ -82,8 +87,14 @@ protected: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// number of mesh points
-  unsigned* npoin;
+  /// max number of degrees of freedom
+  unsigned* ndofmax;
+
+  /// max number of shocks
+  unsigned* nshmax;
+
+  /// max number of shock points for each shock
+  unsigned* npshmax;
 
   /// number of species
   unsigned* nsp;
@@ -118,6 +129,9 @@ protected: // data
   /// number of molecules
   unsigned* nmol;
 
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+
   /// molecular weight of the species (kg/mol)
   std::vector <double>* mm;
 
@@ -134,20 +148,26 @@ protected: // data
   std::vector <std::string>* typemol;
 
   /// mesh points status
-  std::vector<double>* zroe;
+  std::vector<double>* zroeVect;
 
   /// mesh points coordinates
-  std::vector<double>* coor;
+  std::vector<double>* coorVect;
 
   /// mesh points status (in array storing)
-  Array2D <double>* v_Zroe;
+  Array2D <double>* zroe;
 
   /// mesh points coordinates (in array storing)
-  Array2D <double>* v_XY;
+  Array2D <double>* XY;
+
+  /// dummy variable to store new arrays size
+  unsigned totsize;
+
+  /// dummy variable to store array starting pointer
+  unsigned start;
 
   /// dummy variables used to make the transformation
-  double rho; double kinetic; double h; double help;
-  double pres; double p; double u; double v;
+  double rho, kinetic, h, help;
+  double pres, p, u, v;
 };
 
 //--------------------------------------------------------------------------//

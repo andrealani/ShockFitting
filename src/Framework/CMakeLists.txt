@@ -1,13 +1,13 @@
 LIST ( APPEND Framework_files
 BaseShockFitting.cxx
 BaseShockFitting.hh
+CFDSolver.cxx
+CFDSolver.hh
 ChemicalConsts.hh
 ChemicalInfo.cxx
 ChemicalInfo.hh
 Clist.hh
 Compatibility.hh
-#ComputeStateDpsAdmin.cxx
-#ComputeStateDpsAdmin.hh
 Connectivity.hh
 Converter.cxx
 Converter.hh
@@ -38,8 +38,8 @@ ShockFittingManager.cxx
 ShockFittingManager.hh
 StandardShockFitting.hh
 StandardShockFitting.cxx
-#StateUpdater.cxx
-#StateUpdater.hh
+StateUpdater.cxx
+StateUpdater.hh
 VariableTransformer.cxx
 VariableTransformer.hh
 WritingMesh.cxx

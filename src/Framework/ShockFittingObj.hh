@@ -19,7 +19,11 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/WritingMesh.hh"
 #include "Framework/Converter.hh"
+#include "Framework/CFDSolver.hh"
+#include "Framework/StateUpdater.hh"
 #include "RemeshingSF/CoNorm.hh"
+#include "StateUpdaterSF/ComputeStateDps.hh"
+#include "StateUpdaterSF/MoveDps.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -96,6 +100,12 @@ public:
     return m_fConverter;
   }
 
+  /// get the state updater list
+  std::vector<PAIR_TYPE(StateUpdater)>& getStateUpdaterList()
+  {
+    return m_sUpdater;
+  }
+
 protected:
    
   /// create a list of coupling objects
@@ -139,6 +149,18 @@ protected:
 
   /// array of converter objects
   std::vector<PAIR_TYPE(Converter)> m_fConverter;
+
+  /// array of state updater objects
+  std::vector<PAIR_TYPE(StateUpdater)> m_sUpdater;
+
+  /// object calling CFDSolver
+  PAIR_TYPE(CFDSolver) m_CFDSolver;
+
+  /// object updating solution
+  PAIR_TYPE(ComputeStateDps) m_cState;
+
+  /// object moving shock points
+  PAIR_TYPE(MoveDps) m_moveDps;
 
 private: // helper functions
 

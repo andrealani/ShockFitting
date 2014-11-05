@@ -31,6 +31,8 @@ ObjectProvider<CoPntDispl, Remeshing> coPointdisplProv("CoPntDispl");
 CoPntDispl::CoPntDispl (const std::string& objectName) :
   Remeshing(objectName)
 {
+  delete ZRoeShu; delete NodCodSh;
+  delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -76,31 +78,31 @@ void CoPntDispl::remesh()
   addSecondShockLayer();
 
   // correct the displacement in the boundary special points
-  for(unsigned ISPPNTS=0; ISPPNTS<(*r_nSpecPoints); ISPPNTS++) {
+  for(unsigned ISPPNTS=0; ISPPNTS<(*nSpecPoints); ISPPNTS++) {
 
-   if (r_typeSpecPoints->at(ISPPNTS) == "IPX" ||
-       r_typeSpecPoints->at(ISPPNTS) == "OPX" ||
-       r_typeSpecPoints->at(ISPPNTS) == "WPNRX")
+   if (typeSpecPoints->at(ISPPNTS) == "IPX" ||
+       typeSpecPoints->at(ISPPNTS) == "OPX" ||
+       typeSpecPoints->at(ISPPNTS) == "WPNRX")
     { setCoorForIPXorOPXorWPNRX(ISPPNTS); } 
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "IPY" ||
-            r_typeSpecPoints->at(ISPPNTS) == "OPY" ||
-            r_typeSpecPoints->at(ISPPNTS) == "WPNRY")
+   else if (typeSpecPoints->at(ISPPNTS) == "IPY" ||
+            typeSpecPoints->at(ISPPNTS) == "OPY" ||
+            typeSpecPoints->at(ISPPNTS) == "WPNRY")
     { setCoorForIPYorOPYorWPNRY(ISPPNTS); }
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "TP")
+   else if (typeSpecPoints->at(ISPPNTS) == "TP")
     { setCoorForTP(ISPPNTS); }
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "RRX")
+   else if (typeSpecPoints->at(ISPPNTS) == "RRX")
     { setCoorForRRX(ISPPNTS); }
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "QP")
+   else if (typeSpecPoints->at(ISPPNTS) == "QP")
     { setCoorForQP(ISPPNTS); }
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "EP")
+   else if (typeSpecPoints->at(ISPPNTS) == "EP")
     { setCoorForEP(ISPPNTS); }
 
-   else if (r_typeSpecPoints->at(ISPPNTS) == "C")
+   else if (typeSpecPoints->at(ISPPNTS) == "C")
     { setCoorForC(ISPPNTS); }
 
    else 
@@ -116,7 +118,7 @@ void CoPntDispl::setNodCodSh()
 {
   for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
    for(unsigned I=0; I<(*npshmax); I++) {
-    (*r_NodCodSh)(I,ISH) = -99;
+    (*NodCodSh)(I,ISH) = -99;
    }
   }
 }
@@ -125,16 +127,16 @@ void CoPntDispl::setNodCodSh()
 
 void CoPntDispl::addSecondShockLayer()
 {
-  for(unsigned ish=0; ish<(*r_nShocks); ish++) {
-   for(unsigned i=0; i<r_nShockPoints->at(ish); i++) {
-    dx = (*r_vShNor)(0,i,ish);
-    dy = (*r_vShNor)(1,i,ish);
-    (*r_XYShu)(0,i,ish) = (*r_XYSh)(0,i,ish) + 0.5 * (*eps) * dx;
-    (*r_XYShu)(1,i,ish) = (*r_XYSh)(1,i,ish) + 0.5 * (*eps) * dy;
-    (*r_XYShd)(0,i,ish) = (*r_XYSh)(0,i,ish) - 0.5 * (*eps) * dx;
-    (*r_XYShd)(1,i,ish) = (*r_XYSh)(1,i,ish) - 0.5 * (*eps) * dy;
+  for(unsigned ish=0; ish<(*nShocks); ish++) {
+   for(unsigned i=0; i<nShockPoints->at(ish); i++) {
+    dx = (*vShNor)(0,i,ish);
+    dy = (*vShNor)(1,i,ish);
+    (*XYShu)(0,i,ish) = (*XYSh)(0,i,ish) + 0.5 * (*eps) * dx;
+    (*XYShu)(1,i,ish) = (*XYSh)(1,i,ish) + 0.5 * (*eps) * dy;
+    (*XYShd)(0,i,ish) = (*XYSh)(0,i,ish) - 0.5 * (*eps) * dx;
+    (*XYShd)(1,i,ish) = (*XYSh)(1,i,ish) - 0.5 * (*eps) * dy;
 
-    (*r_NodCodSh)(i,ish) = 10;
+    (*NodCodSh)(i,ish) = 10;
    }
   }
 }
@@ -145,15 +147,15 @@ void CoPntDispl::setCoorForIPXorOPXorWPNRX(unsigned ISPPNTS)
 {
   setShockIndeces(1,ISPPNTS);
 
-  dx = (*r_vShNor)(0,IP.at(0),ISH.at(0));
-  dy = (*r_vShNor)(1,IP.at(0),ISH.at(0));
+  dx = (*vShNor)(0,IP.at(0),ISH.at(0));
+  dy = (*vShNor)(1,IP.at(0),ISH.at(0));
 
-  (*r_XYShu)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0))
-                                      + 0.5 * (*eps)/dx;
-  (*r_XYShu)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0));
-  (*r_XYShd)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0))
-                                      - 0.5 * (*eps)/dx;
-  (*r_XYShd)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0));
+  (*XYShu)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0))
+                                    + 0.5 * (*eps)/dx;
+  (*XYShu)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
+  (*XYShd)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0))
+                                    - 0.5 * (*eps)/dx;
+  (*XYShd)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
 }
 
 //--------------------------------------------------------------------------//
@@ -162,15 +164,15 @@ void CoPntDispl::setCoorForIPYorOPYorWPNRY(unsigned ISPPNTS)
 {
   setShockIndeces(1,ISPPNTS);
 
-  dx = (*r_vShNor)(0,IP.at(0),ISH.at(0));
-  dy = (*r_vShNor)(1,IP.at(0),ISH.at(0));
+  dx = (*vShNor)(0,IP.at(0),ISH.at(0));
+  dy = (*vShNor)(1,IP.at(0),ISH.at(0));
 
-  (*r_XYShu)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0));
-  (*r_XYShu)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0)) 
-                                     + 0.5 * (*eps)/dy;
-  (*r_XYShd)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0));
-  (*r_XYShd)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0)) 
-                                     - 0.5 * (*eps)/dy;
+  (*XYShu)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
+  (*XYShu)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0)) 
+                                   + 0.5 * (*eps)/dy;
+  (*XYShd)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
+  (*XYShd)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0)) 
+                                   - 0.5 * (*eps)/dy;
 }
 
 //--------------------------------------------------------------------------//
@@ -225,13 +227,15 @@ void CoPntDispl::superimposeDiscPoints(string discState1, unsigned IP1,
 				       string discState2, unsigned IP2,
                                        unsigned ISH2)
 {
-  Array3D <double>* XYSh1 = new Array3D <double>(*ndim,*npshmax,*nshmax);
-  Array3D <double>* XYSh2 = new Array3D <double>(*ndim,*npshmax,*nshmax);
+  Array3D <double>* XYSh1 = 
+    new Array3D <double>(*ndim,*npshmax,*nshmax);
+  Array3D <double>* XYSh2 = 
+    new Array3D <double>(*ndim,*npshmax,*nshmax);
 
-  if (discState1=="up")   {XYSh1 = r_XYShu;}
-  if (discState1=="down") {XYSh1 = r_XYShd;}
-  if (discState2=="up")   {XYSh2 = r_XYShu;}
-  if (discState2=="down") {XYSh2 = r_XYShd;}
+  if (discState1=="up")   {XYSh1 = XYShu;}
+  if (discState1=="down") {XYSh1 = XYShd;}
+  if (discState2=="up")   {XYSh2 = XYShu;}
+  if (discState2=="down") {XYSh2 = XYShd;}
 
   for(unsigned K=0; K<(*ndim); K++) {
    dum = 0.5 * ((*XYSh1)(K,IP1,ISH1)+(*XYSh2)(K,IP2,ISH2));
@@ -250,13 +254,13 @@ void CoPntDispl::setCoorForRRX(unsigned ISPPNTS)
   setShockIndeces(2,ISPPNTS);
 
   for (unsigned i=0; i<2; i++) {
-   (*r_XYShu)(0,IP.at(i),ISH.at(i)) = (*r_XYSh)(0,IP.at(i),ISH.at(i)) 
-				      + 0.5 * (*eps)/dx;
-   (*r_XYShu)(1,IP.at(i),ISH.at(i)) = (*r_XYSh)(1,IP.at(i),ISH.at(i)); 
+   (*XYShu)(0,IP.at(i),ISH.at(i)) = (*XYSh)(0,IP.at(i),ISH.at(i)) 
+				    + 0.5 * (*eps)/dx;
+   (*XYShu)(1,IP.at(i),ISH.at(i)) = (*XYSh)(1,IP.at(i),ISH.at(i)); 
 
-   (*r_XYShd)(0,IP.at(i),ISH.at(i)) = (*r_XYSh)(0,IP.at(i),ISH.at(i))
-                                      - 0.5 * (*eps)/dx;
-   (*r_XYShd)(1,IP.at(i),ISH.at(i)) = (*r_XYSh)(1,IP.at(i),ISH.at(i));
+   (*XYShd)(0,IP.at(i),ISH.at(i)) = (*XYSh)(0,IP.at(i),ISH.at(i))
+                                    - 0.5 * (*eps)/dx;
+   (*XYShd)(1,IP.at(i),ISH.at(i)) = (*XYSh)(1,IP.at(i),ISH.at(i));
   }
 
   xc = getDownXVect(IP.at(0),ISH.at(0));
@@ -268,11 +272,11 @@ void CoPntDispl::setCoorForRRX(unsigned ISPPNTS)
   CoIntrPnt findNewCoor;
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
   
-  (*r_XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-  (*r_XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY();
+  (*XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+  (*XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY();
 
-  (*r_XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-  (*r_XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY();
+  (*XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+  (*XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY();
 }
 
 //--------------------------------------------------------------------------//
@@ -287,13 +291,13 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
   setShockIndeces(5,ISPPNTS);
 
   // set the family which the first incident shock belongs to
-  f1 = (*r_vShNor)(0,IP.at(0),ISH.at(0))* (*r_ZRoeShu)(3,IP.at(0),ISH.at(0))
-      -(*r_vShNor)(1,IP.at(0),ISH.at(0))* (*r_ZRoeShu)(2,IP.at(0),ISH.at(0)); 
+  f1 = (*vShNor)(0,IP.at(0),ISH.at(0))* (*ZRoeShu)(3,IP.at(0),ISH.at(0))
+      -(*vShNor)(1,IP.at(0),ISH.at(0))* (*ZRoeShu)(2,IP.at(0),ISH.at(0)); 
   f1 = copysign(1,f1);
 
   // set the family which the second incident shock belongs to
-  f3 = (*r_vShNor)(0,IP.at(2),ISH.at(2))* (*r_ZRoeShu)(3,IP.at(2),ISH.at(2))
-      -(*r_vShNor)(1,IP.at(2),ISH.at(2))* (*r_ZRoeShu)(2,IP.at(2),ISH.at(2));
+  f3 = (*vShNor)(0,IP.at(2),ISH.at(2))* (*ZRoeShu)(3,IP.at(2),ISH.at(2))
+      -(*vShNor)(1,IP.at(2),ISH.at(2))* (*ZRoeShu)(2,IP.at(2),ISH.at(2));
   f3 = copysign(1,f1);
 
   // move point belongs to the first incident shock
@@ -331,17 +335,17 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
 
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
   
-  if (f1>0) { (*r_XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-              (*r_XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
+  if (f1>0) { (*XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+              (*XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
 
-  else      { (*r_XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-              (*r_XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
+  else      { (*XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+              (*XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
 
-  if (f3<0) { (*r_XYShu)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
-              (*r_XYShu)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
+  if (f3<0) { (*XYShu)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
+              (*XYShu)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
 
-  else      { (*r_XYShd)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
-  	      (*r_XYShd)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
+  else      { (*XYShd)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
+  	      (*XYShd)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
 
   // superimpose point belongs to downstream state of first incident
   // shock to point belongs to downstream state of first
@@ -357,14 +361,14 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
 
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
 
-  if(f1>0) { (*r_XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-  	     (*r_XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
+  if(f1>0) { (*XYShd)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+  	     (*XYShd)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
 
-  else 	   { (*r_XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
-             (*r_XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
+  else 	   { (*XYShu)(0,IP.at(0),ISH.at(0)) = findNewCoor.getX();
+             (*XYShu)(1,IP.at(0),ISH.at(0)) = findNewCoor.getY(); }
 
-  (*r_XYShu)(0,IP.at(1),ISH.at(1)) = findNewCoor.getX();
-  (*r_XYShu)(1,IP.at(1),ISH.at(1)) = findNewCoor.getY();
+  (*XYShu)(0,IP.at(1),ISH.at(1)) = findNewCoor.getX();
+  (*XYShu)(1,IP.at(1),ISH.at(1)) = findNewCoor.getY();
 
   // superimpose point belongs to downstream state of second
   // incident shock to point belongs to upstream state of
@@ -380,14 +384,14 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
 
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
 
-  if (f3<0) { (*r_XYShd)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
-   	      (*r_XYShd)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
+  if (f3<0) { (*XYShd)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
+   	      (*XYShd)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
 
-  else 	    { (*r_XYShu)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
-   	      (*r_XYShu)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
+  else 	    { (*XYShu)(0,IP.at(2),ISH.at(2)) = findNewCoor.getX();
+   	      (*XYShu)(1,IP.at(2),ISH.at(2)) = findNewCoor.getY(); }
 
-  (*r_XYShu)(0,IP.at(3),ISH.at(3)) = findNewCoor.getX();
-  (*r_XYShu)(1,IP.at(3),ISH.at(3)) = findNewCoor.getY();
+  (*XYShu)(0,IP.at(3),ISH.at(3)) = findNewCoor.getX();
+  (*XYShu)(1,IP.at(3),ISH.at(3)) = findNewCoor.getY();
 
   // superimpose point belongs to downstream state of first
   // reflected shock to point belongs to upstream state of
@@ -400,11 +404,11 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
 
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
 
-  (*r_XYShd)(0,IP.at(1),ISH.at(1)) = findNewCoor.getX();
-  (*r_XYShd)(1,IP.at(1),ISH.at(1)) = findNewCoor.getY();
+  (*XYShd)(0,IP.at(1),ISH.at(1)) = findNewCoor.getX();
+  (*XYShd)(1,IP.at(1),ISH.at(1)) = findNewCoor.getY();
 
-  (*r_XYShu)(0,IP.at(4),ISH.at(4)) = findNewCoor.getX();
-  (*r_XYShu)(1,IP.at(4),ISH.at(4)) = findNewCoor.getY();
+  (*XYShu)(0,IP.at(4),ISH.at(4)) = findNewCoor.getX();
+  (*XYShu)(1,IP.at(4),ISH.at(4)) = findNewCoor.getY();
 
   // superimpose point belongs to downstream state of 
   // second reflected shock to point belong to downstream
@@ -417,8 +421,8 @@ void CoPntDispl::setCoorForQP(unsigned ISPPNTS)
 
   findNewCoor.callCoIntrPnt(xc,yc,xs,ys);
 
-  (*r_XYShd)(0,IP.at(3),ISH.at(3)) = findNewCoor.getX();
-  (*r_XYShd)(1,IP.at(4),ISH.at(4)) = findNewCoor.getY();
+  (*XYShd)(0,IP.at(3),ISH.at(3)) = findNewCoor.getX();
+  (*XYShd)(1,IP.at(4),ISH.at(4)) = findNewCoor.getY();
 }
 
 //--------------------------------------------------------------------------/e {
@@ -429,10 +433,10 @@ void CoPntDispl::setCoorForEP(unsigned ISPPNTS)
 
   // superimpose point belongs to downstream state to point
   // belongs to upstream state
-  (*r_XYShd)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0));
-  (*r_XYShd)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0));
-  (*r_XYShu)(0,IP.at(0),ISH.at(0)) = (*r_XYSh)(0,IP.at(0),ISH.at(0));
-  (*r_XYShu)(1,IP.at(0),ISH.at(0)) = (*r_XYSh)(1,IP.at(0),ISH.at(0));
+  (*XYShd)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
+  (*XYShd)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
+  (*XYShu)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
+  (*XYShu)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
 }
 
 //--------------------------------------------------------------------------//
@@ -445,10 +449,10 @@ void CoPntDispl::setCoorForC(unsigned ISPPNTS)
 
   // superimpose point belongs to downstream state to point
   // belongs to upstream state of connection point
-  (*r_XYShd)(0,IP.at(1),ISH.at(1)) = (*r_XYShd)(0,IP.at(0),ISH.at(0));
-  (*r_XYShd)(1,IP.at(1),ISH.at(1)) = (*r_XYShd)(1,IP.at(0),ISH.at(0));
-  (*r_XYShu)(0,IP.at(1),ISH.at(1)) = (*r_XYShu)(0,IP.at(0),ISH.at(0));
-  (*r_XYShu)(1,IP.at(1),ISH.at(1)) = (*r_XYShu)(1,IP.at(0),ISH.at(0));
+  (*XYShd)(0,IP.at(1),ISH.at(1)) = (*XYShd)(0,IP.at(0),ISH.at(0));
+  (*XYShd)(1,IP.at(1),ISH.at(1)) = (*XYShd)(1,IP.at(0),ISH.at(0));
+  (*XYShu)(0,IP.at(1),ISH.at(1)) = (*XYShu)(0,IP.at(0),ISH.at(0));
+  (*XYShu)(1,IP.at(1),ISH.at(1)) = (*XYShu)(1,IP.at(0),ISH.at(0));
 }
 
 //--------------------------------------------------------------------------//
@@ -456,9 +460,9 @@ void CoPntDispl::setCoorForC(unsigned ISPPNTS)
 std::vector <double> CoPntDispl::getUpXVect(unsigned IP, unsigned ISH)
 {
   std::vector <double> x(2);
-  x.at(0) = (*r_XYShu)(0,IP,ISH);
-  if (IP==0) { x.at(1) = (*r_XYShu)(0,IP+1,ISH); }
-  else       { x.at(1) = (*r_XYShu)(0,IP-1,ISH); }
+  x.at(0) = (*XYShu)(0,IP,ISH);
+  if (IP==0) { x.at(1) = (*XYShu)(0,IP+1,ISH); }
+  else       { x.at(1) = (*XYShu)(0,IP-1,ISH); }
   return x;
 }
 
@@ -467,9 +471,9 @@ std::vector <double> CoPntDispl::getUpXVect(unsigned IP, unsigned ISH)
 std::vector <double> CoPntDispl::getUpYVect(unsigned IP, unsigned ISH)
 {
   std::vector <double> y(2);
-  y.at(0) = (*r_XYShu)(1,IP,ISH);
-  if (IP==0) { y.at(1) = (*r_XYShu)(1,IP+1,ISH); }
-  else       { y.at(1) = (*r_XYShu)(1,IP-1,ISH); }
+  y.at(0) = (*XYShu)(1,IP,ISH);
+  if (IP==0) { y.at(1) = (*XYShu)(1,IP+1,ISH); }
+  else       { y.at(1) = (*XYShu)(1,IP-1,ISH); }
   return y;
 }
 
@@ -478,9 +482,9 @@ std::vector <double> CoPntDispl::getUpYVect(unsigned IP, unsigned ISH)
 std::vector <double> CoPntDispl::getDownXVect(unsigned IP, unsigned ISH)
 {
   std::vector <double> x(2);
-  x.at(0) = (*r_XYShd)(0,IP,ISH);
-  if (IP==0) { x.at(1) = (*r_XYShd)(0,IP+1,ISH); }
-  else       { x.at(1) = (*r_XYShd)(0,IP-1,ISH); }
+  x.at(0) = (*XYShd)(0,IP,ISH);
+  if (IP==0) { x.at(1) = (*XYShd)(0,IP+1,ISH); }
+  else       { x.at(1) = (*XYShd)(0,IP-1,ISH); }
   return x;
 }
 
@@ -489,9 +493,9 @@ std::vector <double> CoPntDispl::getDownXVect(unsigned IP, unsigned ISH)
 std::vector <double> CoPntDispl::getDownYVect(unsigned IP, unsigned ISH)
 { 
   std::vector <double> y(2);
-  y.at(0) = (*r_XYShd)(1,IP,ISH);
-  if (IP==0) { y.at(1) = (*r_XYShd)(1,IP+1,ISH); }
-  else       { y.at(1) = (*r_XYShd)(1,IP-1,ISH); }
+  y.at(0) = (*XYShd)(1,IP,ISH);
+  if (IP==0) { y.at(1) = (*XYShd)(1,IP+1,ISH); }
+  else       { y.at(1) = (*XYShd)(1,IP-1,ISH); }
   return y;
 }
 
@@ -500,22 +504,22 @@ std::vector <double> CoPntDispl::getDownYVect(unsigned IP, unsigned ISH)
 void CoPntDispl::moveDiscontinuity(unsigned IP, unsigned ISH)
 {
   if(IP==1) {
-   tx = (*r_XYSh)(0,IP,ISH) - (*r_XYSh)(0,IP-1,ISH);
-   ty = (*r_XYSh)(1,IP,ISH) - (*r_XYSh)(1,IP-1,ISH);
+   tx = (*XYSh)(0,IP,ISH) - (*XYSh)(0,IP-1,ISH);
+   ty = (*XYSh)(1,IP,ISH) - (*XYSh)(1,IP-1,ISH);
   }
   else {
-   tx = (*r_XYSh)(0,IP-1,ISH) - (*r_XYSh)(0,IP,ISH);
-   ty = (*r_XYSh)(1,IP-1,ISH) - (*r_XYSh)(1,IP,ISH);
+   tx = (*XYSh)(0,IP-1,ISH) - (*XYSh)(0,IP,ISH);
+   ty = (*XYSh)(1,IP-1,ISH) - (*XYSh)(1,IP,ISH);
   }
   dum = sqrt(pow(tx,2)+pow(ty,2));
   tx = tx/dum;
   ty = ty/dum;
 
-  (*r_XYShu)(0,IP,ISH) = (*r_XYShu)(0,IP,ISH) + (*eps) * tx;
-  (*r_XYShu)(1,IP,ISH) = (*r_XYShu)(1,IP,ISH) + (*eps) * ty;
+  (*XYShu)(0,IP,ISH) = (*XYShu)(0,IP,ISH) + (*eps) * tx;
+  (*XYShu)(1,IP,ISH) = (*XYShu)(1,IP,ISH) + (*eps) * ty;
 
-  (*r_XYShd)(0,IP,ISH) = (*r_XYShd)(0,IP,ISH) + (*eps) * tx;
-  (*r_XYShd)(1,IP,ISH) = (*r_XYShd)(1,IP,ISH) + (*eps) * ty;
+  (*XYShd)(0,IP,ISH) = (*XYShd)(0,IP,ISH) + (*eps) * tx;
+  (*XYShd)(1,IP,ISH) = (*XYShd)(1,IP,ISH) + (*eps) * ty;
 }
 
 //--------------------------------------------------------------------------//
@@ -525,9 +529,9 @@ void CoPntDispl::setShockIndeces(unsigned nbDiscontinuities, unsigned ISPPNTS)
   ISH.resize(nbDiscontinuities);
   IP.resize(nbDiscontinuities);
   for(unsigned i=0; i<nbDiscontinuities; i++) {
-   ISH.at(i) = (*r_SHinSPPs)(0,i,ISPPNTS)-1; // c++ indeces start from 0
-   I = (*r_SHinSPPs)(1,i,ISPPNTS) - 1;
-   IP.at(i) = I * (r_nShockPoints->at(ISH.at(i))-1); // c++ indeces start from 0
+   ISH.at(i) = (*SHinSPPs)(0,i,ISPPNTS)-1; // c++ indeces start from 0
+   I = (*SHinSPPs)(1,i,ISPPNTS) - 1;
+   IP.at(i) = I * (nShockPoints->at(ISH.at(i))-1); // c++ indeces start from 0
   }
 }
 
@@ -536,16 +540,16 @@ void CoPntDispl::setShockIndeces(unsigned nbDiscontinuities, unsigned ISPPNTS)
 void CoPntDispl::setAddress()
 {
   unsigned start;
-  start = (*npoin);
-  r_NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
-  start = (*npoin)*(*ndof);
-  r_ZRoeShu =
+  start = npoin->at(0);
+  NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
+  start = npoin->at(0)*(*ndof);
+  ZRoeShu =
     new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
-  start = (*npoin) * (*ndim);
-  r_XYShu =
+  start = npoin->at(0) * (*ndim);
+  XYShu =
     new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coor->at(start));
-  start = (*npoin) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
-  r_XYShd =
+  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
+  XYShd =
     new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coor->at(start));
 }
 
@@ -553,7 +557,7 @@ void CoPntDispl::setAddress()
 
 void CoPntDispl::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
+  npoin = MeshData::getInstance().getData <vector<unsigned> >("NPOIN");
   eps = MeshData::getInstance().getData <double> ("EPS");
   nodcod = MeshData::getInstance().getData <vector<int> > ("NODCOD");
   zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
@@ -568,22 +572,22 @@ void CoPntDispl::setPhysicsData()
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
   nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
-  r_nSpecPoints = 
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nSpecPoints = 
         PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
-  r_nShockPoints =
+  nShockPoints =
         PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");
-  r_nShockEdges =
+  nShockEdges =
         PhysicsData::getInstance().getData <vector<unsigned> > ("nShockEdges");
-  r_typeSh =
+  typeSh =
         PhysicsData::getInstance().getData <vector<string> > ("TYPESH");
-  r_typeSpecPoints =
+  typeSpecPoints =
         PhysicsData::getInstance().getData <vector<string> > ("TypeSpecPoints");
-  r_XYSh =
+  XYSh =
         PhysicsData::getInstance().getData <Array3D<double> > ("XYSH");
-  r_SHinSPPs =
+  SHinSPPs =
         PhysicsData::getInstance().getData <Array3D<unsigned> > ("SHinSPPs");
-  r_vShNor =
+  vShNor =
         PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
 }
 

@@ -27,7 +27,8 @@ public:
   ~Rdshp();
 
   /// return  distance between a cell vertex and shock segment
-  double getRdshp (double, double, double, double, double, double);
+  double getRdshp (double, double, double,
+                   double, double, double);
 
 private: // helper function
 

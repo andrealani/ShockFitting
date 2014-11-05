@@ -7,6 +7,7 @@
 #include "RemeshingSF/ChangeBndryPtr.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "MathTools/Binsrc.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -36,6 +37,7 @@ ChangeBndryPtr::ChangeBndryPtr(const std::string& objectName) :
 
 ChangeBndryPtr::~ChangeBndryPtr()
 {
+  delete nodptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//
@@ -44,8 +46,6 @@ void ChangeBndryPtr::setup()
 {
   LogToScreen (VERBOSE, "ChangeBndryPtr::setup => start\n");
 
-  logfile.Open(getClassName());
-
   LogToScreen (VERBOSE, "ChangeBndryPtr::setup => end\n");
 }
 
@@ -53,8 +53,6 @@ void ChangeBndryPtr::setup()
 
 void ChangeBndryPtr::unsetup()
 {
-  logfile.Close();
-
   LogToScreen (VERBOSE, "ChangeBndryPtr::unsetup()\n");
 }
 
@@ -64,14 +62,19 @@ void ChangeBndryPtr::remesh()
 {
   LogToScreen (INFO, "ChangeBndryPtr::remesh() \n");
 
+  logfile.Open(getClassName());
+
   setMeshData();
+  setPhysicsData();
 
-  logfile("Subr ChangeBndryPtr; NBFAC was = ",(*nbfac),"\n");
-  logfile("Subr ChangeBndryPtr; NBPOIN was = ",(*nbpoin),"\n");
-  logfile("Subr ChangeBndryPtr; NPOIN was = ",(*npoin),"\n");
+  setAddress();
+
+  logfile("Subr ChangeBndryPtr; NBFAC was = ",nbfac->at(0),"\n");
+  logfile("Subr ChangeBndryPtr; NBPOIN was = ",nbpoin->at(0),"\n");
+  logfile("Subr ChangeBndryPtr; NPOIN was = ",npoin->at(0),"\n");
 
 
-  for (int IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  for (int IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
 
    if (nodcod->at(IPOIN)==-2) {
 
@@ -96,7 +99,9 @@ void ChangeBndryPtr::remesh()
    }
   }
 
-  logfile("Subr ChangeBndryPtr; NBFAC is now = ",(*nbfac),"\n");
+  logfile("Subr ChangeBndryPtr; NBFAC is now = ",nbfac->at(0),"\n");
+
+  logfile.Close();
 }
 
 //----------------------------------------------------------------------------//
@@ -104,9 +109,9 @@ void ChangeBndryPtr::remesh()
 void ChangeBndryPtr::lookForNode(int IPOIN)
 {
   vector <int> iwork_nodptr;
-  iwork_nodptr.resize((*nbpoin));
+  iwork_nodptr.resize(nbpoin->at(0));
 
-  for (unsigned i=0; i < (*nbpoin); i++) {
+  for (unsigned i=0; i < nbpoin->at(0); i++) {
    iwork_nodptr.at(i) = (*nodptr)(i,0);
   }
 
@@ -159,14 +164,32 @@ void ChangeBndryPtr::removeIface()
 
 //----------------------------------------------------------------------------//
 
+void ChangeBndryPtr::setAddress()
+{
+  unsigned start = 0;
+  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
+  nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
 void ChangeBndryPtr::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  nbpoin = MeshData::getInstance().getData <unsigned> ("NBPOIN");
-  nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
-  nodcod = MeshData::getInstance().getData< std::vector<int> >("NODCOD");
-  nodptr = MeshData::getInstance().getData< Array2D<int> >("NODPTR");
-  bndfac = MeshData::getInstance().getData< Array2D<int> >("BNDFAC");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
+  nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
+  nodptrVect = MeshData::getInstance().getData <vector<int> >("NODPTR");
+  bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
+}
+
+//----------------------------------------------------------------------------//
+
+void ChangeBndryPtr::setPhysicsData()
+{
+  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
+  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //----------------------------------------------------------------------------//

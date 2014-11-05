@@ -67,26 +67,26 @@ void Param2PrimTCneqDimensional::transform()
 
   cout.precision(10);
 
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     // zrho and rho
     double sqrtr = 0;
     for (unsigned ISP=0; ISP<(*nsp); ISP++) {
-     sqrtr = sqrtr + (*v_Zroe)(ISP,IPOIN);  }
+     sqrtr = sqrtr + (*zroe)(ISP,IPOIN);  }
     rho = pow(sqrtr,2);
 
     // rho-i and alpha-i
     alpha.resize(*nsp);
     rhos.resize(*nsp);
     for (unsigned ISP=0; ISP<(*nsp); ISP++) {
-     alpha.at(ISP) = (*v_Zroe)(ISP,IPOIN)/sqrtr;
-     rhos.at(ISP) = (*v_Zroe)(ISP,IPOIN) * sqrtr * (*rhoref); }     
+     alpha.at(ISP) = (*zroe)(ISP,IPOIN)/sqrtr;
+     rhos.at(ISP) = (*zroe)(ISP,IPOIN) * sqrtr * (*rhoref); }     
 
     // u, v, h, ev
     u.resize(2);
-    h = (*v_Zroe)((*ie),IPOIN)/sqrtr * pow((*uref),2);
-    u.at(0) = (*v_Zroe)((*ix),IPOIN)/sqrtr * (*uref);
-    u.at(1) = (*v_Zroe)((*iy),IPOIN)/sqrtr * (*uref);
-    ev = (*v_Zroe)((*iev),IPOIN)/sqrtr * pow((*uref),2);
+    h = (*zroe)((*ie),IPOIN)/sqrtr * pow((*uref),2);
+    u.at(0) = (*zroe)((*ix),IPOIN)/sqrtr * (*uref);
+    u.at(1) = (*zroe)((*iy),IPOIN)/sqrtr * (*uref);
+    ev = (*zroe)((*iev),IPOIN)/sqrtr * pow((*uref),2);
 
     // kinetic energy
     kinetic = pow(u.at(0),2)+pow(u.at(1),2);
@@ -136,17 +136,17 @@ void Param2PrimTCneqDimensional::transform()
            exit(1); }
 
     for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-     (*v_Zroe)(ISP,IPOIN)=rhos.at(ISP);
+     (*zroe)(ISP,IPOIN)=rhos.at(ISP);
     }
 
-   (*v_Zroe)((*ie),IPOIN) = u.at(0);
-   (*v_Zroe)((*ix),IPOIN) = u.at(1);
-   (*v_Zroe)((*iy),IPOIN) = T.at(0);
-   (*v_Zroe)((*iev),IPOIN) = T.at(1);
+   (*zroe)((*ie),IPOIN) = u.at(0);
+   (*zroe)((*ix),IPOIN) = u.at(1);
+   (*zroe)((*iy),IPOIN) = T.at(0);
+   (*zroe)((*iev),IPOIN) = T.at(1);
    
 
-   (*v_XY)(0,IPOIN) = (*v_XY)(0,IPOIN) * (*Lref);
-   (*v_XY)(1,IPOIN) = (*v_XY)(1,IPOIN) * (*Lref);
+   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * (*Lref);
+   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) * (*Lref);
   }
 }  
 

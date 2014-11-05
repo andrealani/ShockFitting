@@ -7,7 +7,8 @@ RemeshingSF
 WritingMeshSF
 ConverterSF
 VariableTransformerSF
-#StateUpdaterSF
+CFDSolverSF
+StateUpdaterSF
 )
 
 SF_ADD_PLUGIN_APP ( TestStandardSF )

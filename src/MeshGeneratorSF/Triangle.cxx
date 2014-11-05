@@ -57,7 +57,7 @@ void Triangle::unsetup()
 
 void Triangle::generate()
 {
-  LogToScreen(INFO,"TriangleMeshGenerator::generate()\n");
+  LogToScreen(INFO,"TriangleMeshGenerator::generate()\n\n");
 
   fname = MeshData::getInstance().getData<vector<string> >("FNAME");
 

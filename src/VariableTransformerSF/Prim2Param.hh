@@ -25,6 +25,11 @@ namespace ShockFitting {
 /// This class defines a Prim2Param, whose task is to operate a variable
 /// transformation from primitive cariables to Roe parameter vector
 /// variables.
+/// The new values are stored in new arrays to not overwrite the old mesh status.
+/// These new values are pushed back at the end of the arrays of the old mesh
+/// in the fortran version these new arrays are referred to index "1"
+/// (ex: ZROE(1))
+///
 /// According to gas model (Pg, Cneq or TCneq) and to Roe Variables 
 /// (dimensional or adimensional) several objects are defined:
 /// .) Prim2ParamPgAdimesnional
@@ -80,19 +85,25 @@ protected: // data
   /// space dimension
   unsigned* ndim;
 
-  /// number of mesh points
-  unsigned* npoin;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
   /// number of species
   unsigned* nsp;
 
+  /// max number of shocks
+  unsigned* nshmax;
+
+  /// max number of points for each shock
+  unsigned* npshmax;
+
+  /// max number of degrees of freedom
+  unsigned* ndofmax;
+
   /// gas constant (value read by ReferenceInfo)
   double* Rgas;
 
-  /// heat specific ratio (value read by ReferenceInfo)
+  /// specific heat ratio (value read by ReferenceInfo)
   double* gam;
 
   /// freestream temperature
@@ -116,6 +127,9 @@ protected: // data
   unsigned* ie;
   unsigned* iev;
 
+  /// number of mesh points
+  std::vector<unsigned>* npoin; 
+ 
   /// molecular weight of the species (kg/mol)
   std::vector <double>* mm;
 
@@ -131,21 +145,27 @@ protected: // data
   /// molecules types
   std::vector <std::string>* typemol;
 
-  /// mesh points status
-  std::vector<double>* zroe;
+  /// mesh points status (assignable to MeshData)
+  std::vector<double>* zroeVect;
 
-  /// mesh points coordinates
-  std::vector<double>* coor;
+  /// mesh points coordinates (assignable to MeshData)
+  std::vector<double>* coorVect;
 
   /// mesh points status (in array storing)
-  Array2D <double>* v_Zroe;
+  Array2D <double>* zroe;
 
   /// mesh points status(in array storing)
-  Array2D <double>* v_XY;
+  Array2D <double>* XY;
+
+  /// dummy variable to store new arrays size
+  unsigned totsize;
+
+  /// dummy variable to store array starting pointer
+  unsigned start;
 
   /// dummy variables used to make the transformation
-  double rho; double kinetic; double h; double help;
-  double pres; double p; double u; double v;
+  double rho, kinetic, h, help;
+  double pres, p, u, v;
 };
 
 //--------------------------------------------------------------------------//

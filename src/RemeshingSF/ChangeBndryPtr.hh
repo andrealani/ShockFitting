@@ -59,22 +59,40 @@ private: // helper functions
   /// return class name
   std::string getClassName() {return std::string("ChangeBndryPtr");}
 
+  /// assign starting pointers to arrays
+  void setAddress();
+
   /// assign values used in ChangeBndryPtr to MeshData pattern
   void setMeshData();
 
+  /// assign values used in ChangeBndryPtr to PhysicsData pattern
+  void setPhysicsData();
+
 private: // data
 
+  /// max number of shocks
+  unsigned* nshmax;
+ 
+  /// max number of shock edges
+  unsigned* neshmax;
+
   /// number of points in the mesh
-  unsigned* npoin;
+  std::vector<unsigned>* npoin;
 
   /// number of boundary points
-  unsigned* nbpoin;
+  std::vector<unsigned>* nbpoin;
 
   /// number of boundary faces
-  unsigned* nbfac;
+  std::vector<unsigned>* nbfac;
 
   /// code characterizing mesh points
   std::vector <int>* nodcod;
+
+  /// vector characterizing boundary faces (assignable to MeshData)
+  std::vector<int>* bndfacVect;
+
+  /// vector characterizing boundary points (assignable to MeshData)
+  std::vector<int>* nodptrVect;
 
   /// nodptr(i-poin)(0) global code number
   /// nodptr(i-poin)(1) one of the edges it belongs to

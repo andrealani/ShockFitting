@@ -83,7 +83,7 @@ void FndPhPs::remesh()
 
   for (unsigned iSh=0; iSh < (*r_nShocks); iSh++) {
    for(unsigned iElemSh=0; iElemSh < r_nShockEdges->at(iSh); iElemSh++) {
-    for (unsigned iElem=0; iElem < (*nelem); iElem++) {
+    for (unsigned iElem=0; iElem < nelem->at(0); iElem++) {
 
      if(cellCrossed(iSh,iElemSh,iElem)) {
 
@@ -186,7 +186,7 @@ void FndPhPs::setPhanPoints()
 void FndPhPs::countPhanPoints()
 {
   *r_nPhanPoints = 0; *r_nBoundPhanPoints = 0;
-  for (unsigned K=0; K<*npoin; K++) {
+  for (unsigned K=0; K<npoin->at(0); K++) {
   unsigned inod = K+1; // c++ indeces start from 0
    if (nodcod->at(K)==-1 || nodcod->at(K)==-2) {
      *r_nPhanPoints = *r_nPhanPoints + 1; }
@@ -216,9 +216,9 @@ void FndPhPs::setIndex(unsigned ISH_index, unsigned ielemsh_index,
 
 void FndPhPs::setAddress()
 {
-  unsigned start;
-  start = 0;
-  xy = new Array2D <double> ((*ndim),(*npoin),&coor->at(start));
+  unsigned start = 0;
+  xy = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start));
+  celnod = new Array2D <int> ((*nvt), nelem->at(0), &celnodVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -236,17 +236,17 @@ void FndPhPs::setPhysicsData()
 
 void FndPhPs::setMeshData()
 {
-  nedge = MeshData::getInstance().getData <unsigned> ("NEDGE");
+  nedge = MeshData::getInstance().getData <vector<unsigned> > ("NEDGE");
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
-  nelem = MeshData::getInstance().getData <unsigned> ("NELEM");
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
+  nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   r_nPhanPoints = MeshData::getInstance().getData <unsigned> ("nPhanPoints");
   r_nBoundPhanPoints = 
              MeshData::getInstance().getData <unsigned> ("nBoundPhanPoints");
-  nodcod = MeshData::getInstance().getData< std::vector<int> >("NODCOD");
-  coor = MeshData::getInstance().getData< std::vector<double> >("COOR");
-  celnod = MeshData::getInstance().getData< Array2D<int> >("CELNOD");
-  SNDmin = MeshData::getInstance().getData< double >("SNDMIN");
+  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
+  coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
+  celnodVect = MeshData::getInstance().getData < vector<int> >("CELNOD");
+  SNDmin = MeshData::getInstance().getData<double >("SNDMIN");
 }
 
 //--------------------------------------------------------------------------//

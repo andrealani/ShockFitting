@@ -29,6 +29,15 @@ namespace ShockFitting {
 /// an ele  file if FTYPE = "ele"
 /// a neigh file if FTYPE = "neigh"
 /// an edge file if FTYPE = "edge"
+///
+/// "firstRead" flag is defined to properly store the mesh data
+/// if firstRead==1 the Triangle files are read for the first time and
+/// data are stored in arrays that in the fortran version are referred to
+/// index "0" (ex: ZROE(0)
+/// if firstRead==0 data are stored in new arrays in order to not overwrite
+/// the old mesh ones. In the fortran version are referred to index "1"
+/// (ex: ZROE(1)), here are pushed back to the old arrays and are addressed 
+/// by defining starting pointers.
 
 class ReadTriangle : public MeshGenerator {
 public:
@@ -95,9 +104,6 @@ private: // helper functions
 
 private: // data
 
-  /// type of the input files 
-  std::vector<std::string> m_fileTypes;
-
   /// space dimension
   unsigned* ndim;
 
@@ -116,32 +122,50 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
+  /// number of elements vertices
+  unsigned* nvt;
+
   /// number of mesh points
-  unsigned* npoin;
+  std::vector<unsigned>* npoin;
 
   /// number of edge in the mesh
-  unsigned* nedge;
+  std::vector<unsigned>* nedge;
 
   /// number of elements in the mesh
-  unsigned* nelem;
-
-  /// number of boundary points
-  unsigned* nbpoin;
+  std::vector<unsigned>* nelem;
 
   /// number of boundary faces
-  unsigned* nbfac;
+  std::vector<unsigned>* nbfac;
 
   /// number of bodies(holes)
-  unsigned* nhole;
+  std::vector<unsigned>* nhole;
 
   /// code characterizing mesh points
   std::vector <int>* nodcod;
 
-  /// mesh points status
-  std::vector <double>* zroe;
+  /// mesh points state (assignable to MeshData)
+  std::vector <double>* zroeVect;
 
-  /// mesh points coordinates
-  std::vector <double>* coor;
+  /// mesh points coordinates (assignable to MeshData)
+  std::vector <double>* coorVect;
+
+  /// mesh boundary faces (assignable to MeshData)
+  std::vector<int>* bndfacVect;
+
+  /// vector characterizing nodes elements
+  std::vector<int>* celnodVect;
+
+  /// vector characterizing elements
+  std::vector<int>* celcelVect;
+
+  /// vector characterizing edges
+  std::vector<int>* edgptrVect;
+
+  /// mesh points coordinates (in array storing)
+  Array2D <double>* coor;
+
+  /// mesh points state (in array storing)
+  Array2D <double>* zroe;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face
@@ -162,6 +186,39 @@ private: // data
   /// edgptr(1)(i-edge) 2° endpoint of i-edge
   /// edgptr(2)(i-edge) boundary marker of i-edge
   Array2D <int>* edgptr;
+
+  /// name of the reading current file
+  std::vector<std::string>* fname;
+
+  /// bool checking if the fname is already read from the input.case
+  /// firstRead=1 not already read from the input.case
+  /// firstRead=0 read already from the input.case
+  unsigned* firstRead;
+
+  /// type of the input files 
+  std::vector<std::string> m_fileTypes;
+
+  /// defines start pointers for arrays
+  unsigned start;
+
+  /// dummy variables to store size values
+  unsigned totsize;
+  unsigned totsize0;
+
+  /// current number of mesh points
+  unsigned m_npoin;
+
+  /// current number of boundary faces
+  unsigned m_nbfac;
+
+  /// current number of mesh elements
+  unsigned m_nelem;
+
+  /// current number of edges
+  unsigned m_nedge;
+
+  /// current number of holes
+  unsigned m_nhole;
 
   /// reading file
   std::ifstream file;

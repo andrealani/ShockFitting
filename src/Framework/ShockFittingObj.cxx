@@ -62,6 +62,20 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   m_fConverter = vector<PAIR_TYPE(Converter)>();
   addOption("ConverterList",&m_fConverter,
             "List of the names of converter objects");
+
+  m_CFDSolver.name() = "COOLFluiD";
+
+  m_sUpdater = vector<PAIR_TYPE(StateUpdater)>();
+  addOption("StateUpdaterList",&m_sUpdater,
+            "List of the names of state updaters");
+
+  m_cState.name() = "ComputeStateDps";
+  addOption("ComputeStateDps", &m_cState,
+            "Object updating solution by enforcing RH relations");
+
+  m_moveDps.name() = "MoveDps";
+  addOption("MoveDps", &m_moveDps,
+            "Object moving shock points");
 }
   
 //--------------------------------------------------------------------------//
@@ -103,6 +117,24 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
 
     // create the converter objects
     createList<Converter>(m_fConverter);
+
+    // create the object calling COOLFluiD
+    m_CFDSolver.ptr().reset(SConfig::Factory<CFDSolver>::getInstance().
+                          getProvider(m_CFDSolver.name())
+                          ->create(m_CFDSolver.name()));
+
+    // create the state updaters list
+    createList<StateUpdater>(m_sUpdater);
+
+    // create the solution updating
+    m_cState.ptr().reset(SConfig::Factory<ComputeStateDps>::getInstance().
+                          getProvider(m_cState.name())
+                          ->create(m_cState.name()));
+
+    // create shock moving shock points
+    m_moveDps.ptr().reset(SConfig::Factory<MoveDps>::getInstance().
+                          getProvider(m_moveDps.name())
+                          ->create(m_moveDps.name()));
   }
 
   // configure the field interpolators
@@ -143,6 +175,20 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   for (unsigned i = 0; i < m_fConverter.size(); ++i) {
    configureDeps (cmap, m_fConverter[i].ptr().get());
   }
+
+  // configure the object calling COOLFluiD
+  configureDeps (cmap,m_CFDSolver.ptr().get());
+
+  // configure the state updating
+  for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
+   configureDeps (cmap, m_sUpdater[i].ptr().get());
+  }
+
+  // configure the object updating solution
+  configureDeps (cmap,m_cState.ptr().get());
+
+  // configure the object moving shock points
+  configureDeps (cmap,m_moveDps.ptr().get());
 
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
 }
@@ -190,6 +236,20 @@ void ShockFittingObj::setup()
     m_fConverter[i].ptr()->setup();
   }
 
+  // configure the object calling COOLFluiD
+  m_CFDSolver.ptr()->setup();
+
+  // configure the state updating
+  for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
+    m_sUpdater[i].ptr()->setup();
+  }
+
+  // configure the computing state
+  m_cState.ptr()->setup();
+
+  // configure object moving shock points
+  m_moveDps.ptr()->setup();
+
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
 }
   
@@ -236,6 +296,20 @@ void ShockFittingObj::unsetup()
     m_fConverter[i].ptr()->unsetup();
   }
 
+  // configure the object calling COOLFluiD
+  m_CFDSolver.ptr()->unsetup();
+
+  // configure the state updating
+  for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
+    m_sUpdater[i].ptr()->unsetup();
+  }
+
+  // configure the object updating solution
+  m_cState.ptr()->unsetup();
+
+  // configure object moving shock points
+  m_moveDps.ptr()->setup();
+
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
   
@@ -250,17 +324,17 @@ void ShockFittingObj::process()
 
 void ShockFittingObj::createMeshData()
 {
-  MeshData::getInstance().createData <unsigned> ("NPOIN", 1);
-  MeshData::getInstance().createData <unsigned> ("NEDGE", 1);
-  MeshData::getInstance().createData <unsigned> ("NELEM", 1);
-  MeshData::getInstance().createData <unsigned> ("NVT", 3);
-  MeshData::getInstance().createData <unsigned> ("NBFAC", 1);
+  MeshData::getInstance().createData <unsigned> ("NVT", 1);
   MeshData::getInstance().createData <unsigned> ("NBFACSH", 1);
-  MeshData::getInstance().createData <unsigned> ("NBPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("NFPOIN", 1);
-  MeshData::getInstance().createData <unsigned> ("NHOLE", 1);
   MeshData::getInstance().createData <unsigned> ("nPhanPoints",1);
   MeshData::getInstance().createData <unsigned> ("nBoundPhanPoints",1);
+  MeshData::getInstance().createData <vector<unsigned> > ("NPOIN", 2);
+  MeshData::getInstance().createData <vector<unsigned> > ("NEDGE", 2);
+  MeshData::getInstance().createData <vector<unsigned> > ("NELEM", 2);
+  MeshData::getInstance().createData <vector<unsigned> > ("NBFAC", 2);
+  MeshData::getInstance().createData <vector<unsigned> > ("NBPOIN", 2);
+  MeshData::getInstance().createData <vector<unsigned> > ("NHOLE", 1);
 
   MeshData::getInstance().createData <double> ("EPS",1);
   MeshData::getInstance().createData <double> ("SNDMIN",1);
@@ -268,19 +342,23 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <double> ("SHRELAX",1);
   MeshData::getInstance().createData <unsigned> ("IBAK",1);
   MeshData::getInstance().createData <unsigned> ("Naddholes",1);
-  MeshData::getInstance().createData < std::vector<double> > ("CADDholes",1);
+  MeshData::getInstance().createData <vector<double> > ("CADDholes",1);
   MeshData::getInstance().createData <unsigned> ("NPROC",1);
 
   MeshData::getInstance().createData <vector <int> >("NODCOD", 1);
   MeshData::getInstance().createData <vector <double> >("ZROE", 1);
   MeshData::getInstance().createData <vector <double> >("COOR", 1);
-  MeshData::getInstance().createData <Array2D <int> >("BNDFAC", 1);
-  MeshData::getInstance().createData <Array2D <int> >("CELNOD", 1);
-  MeshData::getInstance().createData <Array2D <int> >("CELCEL", 1);
-  MeshData::getInstance().createData <Array2D <int> >("EDGPTR", 1);
-  MeshData::getInstance().createData <Array2D <int> >("NODPTR", 1);
+  MeshData::getInstance().createData <vector <int> >("BNDFAC", 1);
+  MeshData::getInstance().createData <vector <int> >("CELNOD", 1);
+  MeshData::getInstance().createData <vector <int> >("CELCEL", 1);
+  MeshData::getInstance().createData <vector <int> >("EDGPTR", 1);
+  MeshData::getInstance().createData <vector <int> >("NODPTR", 1);
+  MeshData::getInstance().createData <vector <int> >("M12M0", 1);
+  MeshData::getInstance().createData <vector <int> >("M02M1", 1);
 
+  MeshData::getInstance().createData <unsigned>("FirstRead",1);
   MeshData::getInstance().createData <vector<string> >("FNAME",1);
+  MeshData::getInstance().createData <vector<string> >("FNAMEBACK",1);
 
   MeshData::getInstance().setup();
 }
@@ -322,9 +400,6 @@ void ShockFittingObj::createPhysicsData()
                           <vector<string> > ("TYPEMOL",1);
   PhysicsData::getInstance().createData <vector<double> > ("RS",1);
 
-
-  PhysicsData::getInstance().createData <vector<string> > ("Variables",1);
-  PhysicsData::getInstance().createData <vector<string> > ("Adimensional",1);
   // these two values are read by ReferenceInfo object
   PhysicsData::getInstance().createData <double> ("RgasFreeStream",1);
   PhysicsData::getInstance().createData <double> ("GamFreeStream",1);
@@ -362,17 +437,17 @@ void ShockFittingObj::createPhysicsData()
 
 void ShockFittingObj::deleteMeshData()
 {
-  MeshData::getInstance().deleteData <unsigned> ("NPOIN");
-  MeshData::getInstance().deleteData <unsigned> ("NEDGE");
-  MeshData::getInstance().deleteData <unsigned> ("NELEM");
   MeshData::getInstance().deleteData <unsigned> ("NVT");
-  MeshData::getInstance().deleteData <unsigned> ("NBFAC");
   MeshData::getInstance().deleteData <unsigned> ("NBFACSH");
-  MeshData::getInstance().deleteData <unsigned> ("NBPOIN");
   MeshData::getInstance().deleteData <unsigned> ("NFPOIN");
-  MeshData::getInstance().deleteData <unsigned> ("NHOLE");
   MeshData::getInstance().deleteData <unsigned> ("nPhanPoints");
   MeshData::getInstance().deleteData <unsigned> ("nBoundPhanPoints");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NPOIN");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NEDGE");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NELEM");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NBFAC");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NBPOIN");
+  MeshData::getInstance().deleteData <vector<unsigned> > ("NHOLE");
 
   MeshData::getInstance().deleteData <double> ("EPS");
   MeshData::getInstance().deleteData <double> ("SNDMIN");
@@ -386,13 +461,17 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector <int> >("NODCOD");
   MeshData::getInstance().deleteData <vector <double> >("ZROE");
   MeshData::getInstance().deleteData <vector <double> >("COOR");
-  MeshData::getInstance().deleteData <Array2D <int> >("BNDFAC");
-  MeshData::getInstance().deleteData <Array2D <int> >("CELNOD");
-  MeshData::getInstance().deleteData <Array2D <int> >("CELCEL");
-  MeshData::getInstance().deleteData <Array2D <int> >("EDGPTR");
-  MeshData::getInstance().deleteData <Array2D <int> >("NODPTR");
+  MeshData::getInstance().deleteData <vector <int> >("BNDFAC");
+  MeshData::getInstance().deleteData <vector <int> >("CELNOD");
+  MeshData::getInstance().deleteData <vector <int> >("CELCEL");
+  MeshData::getInstance().deleteData <vector <int> >("EDGPTR");
+  MeshData::getInstance().deleteData <vector <int> >("NODPTR");
+  MeshData::getInstance().deleteData <vector <int> >("M12M0");
+  MeshData::getInstance().deleteData <vector <unsigned> >("M02M1");
 
+  MeshData::getInstance().deleteData <unsigned>("FirstRead");
   MeshData::getInstance().deleteData <vector<string> >("FNAME");
+  MeshData::getInstance().deleteData <vector<string> >("FNAMEBACK");
 
   MeshData::getInstance().unsetup();
 }
@@ -425,7 +504,7 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <unsigned> ("IEV");
 
   PhysicsData::getInstance().deleteData <unsigned> ("NSP");
-  PhysicsData::getInstance().deleteData <vector<std::string> > ("NAMESP");
+  PhysicsData::getInstance().deleteData <vector<string> > ("NAMESP");
   PhysicsData::getInstance().deleteData <vector<double> > ("MM");
   PhysicsData::getInstance().deleteData <vector<double> > ("HF");
   PhysicsData::getInstance().deleteData <vector<double> > ("THEV");
@@ -433,8 +512,6 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <vector<string> > ("TYPEMOL");
   PhysicsData::getInstance().deleteData <vector<double> > ("RS");
 
-  PhysicsData::getInstance().deleteData <vector<string> > ("Variables");
-  PhysicsData::getInstance().deleteData <vector<string> > ("Adimensional");
   // these values are read by ReferenceInfo object
   PhysicsData::getInstance().deleteData <double> ("RgasFreeStream");
   PhysicsData::getInstance().deleteData <double> ("GamFreeStream");

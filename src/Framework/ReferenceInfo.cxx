@@ -24,12 +24,6 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
   Counter(),
   ConfigObject(objectName)
 {
-  m_var = 1;
-  addOption("Variables",&m_var,
-	    "Variables");
-  m_adim = 1;
-  addOption("Adimensional",&m_adim,
-            "Adimensional");
   m_gam = 1;
   addOption("gamma",&m_gam,
             "Isoentropic coefficient of the gas");
@@ -46,11 +40,11 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
   addOption("VelocityRef",&m_uref,
             "Reference speed [m/s]");
   m_rhor = vector<double>();
-  addOption("SpeciesDensity",&m_rhor,
-            "Species density");
+  addOption("SpeciesDensities",&m_rhor,
+            "Species densities");
   m_Lref = 1;
   addOption("Lref",&m_Lref,
-            "L ref");
+            "Reference length");
 }
 
 //--------------------------------------------------------------------------//
@@ -114,16 +108,6 @@ void ReferenceInfo::setReferenceParam()
   *Tref = m_Tref;
   *uref = m_uref;
   *Lref = m_Lref;
-  var->at(0) = m_var;
-  if (var->at(0)!= "P" && var->at(0)!= "Z" && var->at(0)!= "U") {
-   cout << "ReferenceInfo::error =>";
-   cout << "Check input.case: Variables should be P, Z or U\n";
-   exit(1);}
-  adim->at(0) = m_adim;
-  if (adim->at(0)!= "A" && adim->at(0)!= "D") {
-   cout << "ReferenceInfo::error =>"; 
-   cout << "Check input.case: Adimensional should be A or D\n";
-   exit(1);}
 
   logfile("TREF = ",*Tref,"\n");
   logfile("PREF = ",*pref,"\n");
@@ -206,8 +190,6 @@ void ReferenceInfo::setPhysicsData()
   gm1ref = PhysicsData::getInstance().getData <double> ("GM1REF");
   RFreeStream = PhysicsData::getInstance().getData <double> ("RgasFreeStream");
   gFreeStream = PhysicsData::getInstance().getData <double> ("GamFreeStream");
-  var = PhysicsData::getInstance().getData <vector<string> > ("Variables");
-  adim = PhysicsData::getInstance().getData <vector<string> > ("Adimensional");
 }
 
 //--------------------------------------------------------------------------//

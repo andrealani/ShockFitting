@@ -77,17 +77,8 @@ protected: // data
   /// space dimension
   unsigned* ndim;
 
-  /// number of edge in the mesh
-  unsigned* nedge;
-
   /// number of vertices of a cell (=3);
   unsigned* nvt;
-
-  /// number of elements in the mesh
-  unsigned* nelem;
-
-  /// number of points in the mesh
-  unsigned* npoin;
 
   /// number of shocks
   unsigned* r_nShocks;
@@ -101,15 +92,26 @@ protected: // data
   /// Max non dimensional distance of phantom nodes
   double* SNDmin;
 
+  /// number of elements in the mesh
+  std::vector<unsigned>* nelem;
+  
+  /// number of points in the mesh
+  std::vector<unsigned>* npoin;
+
+  /// number of edge in the mesh
+  std::vector<unsigned>* nedge;
+
   /// number of shock edges for each shock
   std::vector <unsigned>* r_nShockEdges;
 
   /// code characterizing mesh points
   std::vector <int>* nodcod;
 
-  /// mesh points coordinates
-  /// (assignable to MeshData)
-  std::vector <double>* coor;
+  /// mesh points coordinates (assignable to MeshData)
+  std::vector <double>* coorVect;
+
+  /// vector characterizing nodes elements (assignable to MeshData)
+  std::vector<int>* celnodVect;
 
   /// mesh points coordinates
   Array2D <double>* xy;
@@ -141,12 +143,10 @@ protected: // data
   std::vector <double> yc;
 
   /// shock points which denote straight line
-  double xs1;
-  double ys1;
+  double xs1; double ys1;
  
   /// shock points which denote straight line
-  double xs2;
-  double ys2;
+  double xs2; double ys2;
 
   /// distance between cell vertex and shock segment for each vertex
   std::vector <double> d;

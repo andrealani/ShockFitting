@@ -91,46 +91,46 @@ private: //data
   unsigned* nspmax;
 
   /// number of mesh points
-  unsigned* npoin;
+  std::vector<unsigned>* npoin;
 
   /// number of shocks
-  unsigned* r_nShocks;
+  unsigned* nShocks;
 
   /// number of special points
-  unsigned* r_nSpecPoints;
+  unsigned* nSpecPoints;
 
   /// number of shock points for each shock
-  std::vector <unsigned>* r_nShockPoints;
+  std::vector <unsigned>* nShockPoints;
 
   /// number of shock edges for each shock
-  std::vector <unsigned>* r_nShockEdges;
+  std::vector <unsigned>* nShockEdges;
 
   /// type of shock
-  std::vector <std::string>* r_typeSh;
+  std::vector <std::string>* typeSh;
 
   /// type of special points
-  std::vector <std::string>* r_typeSpecPoints;
+  std::vector <std::string>* typeSpecPoints;
 
   /// code characterizing shock points
-  Array2D <int>* r_NodCodSh;
+  Array2D <int>* NodCodSh;
 
   /// upstream status
-  Array3D <double>* r_ZRoeShu;
+  Array3D <double>* ZRoeShu;
 
   /// downstream status
-  Array3D <double>* r_ZRoeShd;
+  Array3D <double>* ZRoeShd;
 
   /// shock points coordinates
-  Array3D <double>* r_XYSh;
+  Array3D <double>* XYSh;
 
   /// old upstream status
-  Array3D <double>* r_ZRoeShuOld;
+  Array3D <double>* ZRoeShuOld;
 
   /// old downstream status
-  Array3D <double>* r_ZRoeShdOld;
+  Array3D <double>* ZRoeShdOld;
 
   /// array characterizing special points
-  Array3D <unsigned>* r_SHinSPPs;
+  Array3D <unsigned>* SHinSPPs;
 
   /// code characterizing mesh points 
   std::vector <int>* nodcod;
@@ -148,5 +148,7 @@ private: //data
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting
+
+//--------------------------------------------------------------------------//
 
 #endif //ShockFitting_ReSdwInfo_hh

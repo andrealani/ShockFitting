@@ -59,7 +59,7 @@ private:
   SConfig::SharedPtr<Remeshing> m_bndryNodePtr;
 
   /// command object redistributing shock points
-  SConfig::SharedPtr<Remeshing> m_redistrShockPoints; 
+  SConfig::SharedPtr<Remeshing> m_redistrEqShockPoints; 
 
   /// command object finding phantom points
   SConfig::SharedPtr<Remeshing> m_findPhantPoints;
@@ -85,8 +85,41 @@ private:
   /// command object converting file format from Triangle to CFmesh
   SConfig::SharedPtr<Converter> m_triangleToCFmesh;
 
+  /// command object calling CFDSolver
+  SConfig::SharedPtr<CFDSolver> m_COOLFluiD;
+
   /// command object converting file format from CFmesh to Triangle
   SConfig::SharedPtr<Converter> m_CFmeshToTriangle;
+
+  /// command object reading mesh generator files
+  SConfig::SharedPtr<MeshGenerator> m_readNewMesh;
+
+  /// command object copying Roe values
+  SConfig::SharedPtr<StateUpdater> m_copyZRoe0_1;
+
+  /// command object updating solution
+  SConfig::SharedPtr<ComputeStateDps> m_updateSolution;
+
+  /// command object fixing mesh around special points
+  SConfig::SharedPtr<StateUpdater> m_fixSpecPoints;
+
+  /// command object copying Roe values
+  SConfig::SharedPtr<StateUpdater> m_copyZRoe1_0;
+
+  /// command object moving shock points
+  SConfig::SharedPtr<MoveDps> m_moveShPoints;
+
+  /// command object updating values in the phantom nodes
+  SConfig::SharedPtr<StateUpdater> m_updatePhantPoints;
+
+  /// command object redistributing shock points
+  SConfig::SharedPtr<Remeshing> m_redistrShockPoints;
+
+  /// command object writing back triangle node file
+  SConfig::SharedPtr<WritingMesh> m_writeBackTriangleFile;
+
+  /// command object writing shock infos
+  SConfig::SharedPtr<WritingMesh> m_writeShockInfo;
 };
 
 //--------------------------------------------------------------------------//

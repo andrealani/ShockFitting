@@ -87,17 +87,6 @@ private: // helper functions
 
 private: // data
 
-  /// Variables: Output/input variables for CF (P,U or Z)
-  /// a) P: Primitive variables [p,u,v,T]
-  /// b) U: Conservative varibles [rho,rho_u,rho_v,rho_E]
-  /// c) Z: Roe Parameter vector sqrt(rho)[1,u,v,H]
-  std::string m_var;
-
-  /// Adimensional: D or A
-  /// CF output dimensional: D
-  /// CF output adimensional: A
-  std::string m_adim;
-
   /// isoentropic coefficient of the gas
   double m_gam;
 
@@ -118,12 +107,6 @@ private: // data
 
   /// reference length
   double m_Lref;
-
-  /// variables (assignable to PhysicsData)
-  std::vector<std::string>* var;
-
-  /// adimensional (assignable to PhysicsData)
-  std::vector<std::string>* adim;
 
   /// freestream pressure (assignable to PhysicsData)
   double* pref;

@@ -39,6 +39,8 @@ CFmesh2Triangle::CFmesh2Triangle(const std::string& objectName) :
 
 CFmesh2Triangle::~CFmesh2Triangle()
 {
+  delete XY; delete zroe; delete celnod;
+  delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//
@@ -90,8 +92,6 @@ void CFmesh2Triangle::convert()
   setMeshData();
   setPhysicsData();
 
-  setAddress();
-
   // read CFmesh format file
   LogToScreen(DEBUG_MIN, "CFmesh2Triangle::reading CFmesh format\n");
   readCFmeshFmt();
@@ -138,12 +138,12 @@ void CFmesh2Triangle::readCFmeshFmt()
   // read !CFMESH_FORMAT_VERSIONE cfmeshFmtversion
   while(ISKIP<(LSKIP)) { file >> skipver >> dummy;
                           ++ISKIP;      }
-  file >> dummy >> (*ndim);           // read !NB_DIM    ndim
-  file >> dummy >> (*ndof);           // read !NB_EQ     ndof
-  file >> dummy >> (*npoin) >> dummy; // read !NB_NODES  npoin 0
-  file >> dummy >> dummy >> dummy;    // read !NB_STATES nbstates 0
-  file >> dummy >> (*nelem);          // read !NB_ELEM   nelem
-  file >> dummy >> dummy;             // read !NB_ELEM_TYPES nbelemTypes
+  file >> dummy >> (*ndim);                   // read !NB_DIM    ndim
+  file >> dummy >> (*ndof);                   // read !NB_EQ     ndof
+  file >> dummy >> npoin->at(1) >> dummy;     // read !NB_NODES  npoin 0
+  file >> dummy >> dummy >> dummy;            // read !NB_STATES nbstates 0
+  file >> dummy >> nelem->at(1);              // read !NB_ELEM   nelem
+  file >> dummy >> dummy;                     // read !NB_ELEM_TYPES nbelemTypes
   // read !GEOM_POLYORDER   geomPolyOrder
   // read !SOL_POLYORDER    solPolyOrder
   // read !ELEM_TYPES       Triag
@@ -157,7 +157,7 @@ void CFmesh2Triangle::readCFmeshFmt()
   file >> dummy;
   // read elements of LIST_ELEM 
   I=0;
-  while(I<(*nelem)) { 
+  while(I<nelem->at(1)) { 
    file >> dummy >> dummy >> dummy >> dummy >> dummy >> dummy;
    ++I;
   }
@@ -182,19 +182,17 @@ void CFmesh2Triangle::readCFmeshFmt()
 
   file.close();
     
-  (*nbfac) = 0;
+  nbfac->at(1) = 0;
   for(unsigned IFACE=0; IFACE<NCLR; IFACE++) {
-   (*nbfac) = nFacB.at(IFACE) + (*nbfac);
+   nbfac->at(1) = nFacB.at(IFACE) + nbfac->at(1);
   }
 
   (*nvt) = (*ndim) + 1;
-  (*nHole) = 0; 
+  nhole->at(1) = 0; 
 
-  // resize vector and array with the new values read on CFmesh file
-  resizeArrays();
-
-  // set address with the new values read on CFmesh files for mesh points
-  setAddress();
+  // resize vectors of MeshData pattern with the new values read on CFmesh file
+  // and assign starting pointers for arrays 2D
+  resizeVectors();
 
   // read mesh points coordinates, mesh points status, the mesh connectivity,
   // the boundary structure and the solution from CFmesh file
@@ -234,7 +232,7 @@ void CFmesh2Triangle::readCFmeshFmt()
   file >> dummy;
 
   // read celnod values on !LIST_ELEM
-  for(unsigned IELEM=0; IELEM<(*nelem); IELEM++) {
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
    for(unsigned IVERT=0; IVERT<(*nvt); IVERT++) {
     file >> value;
     (*celnod)(IVERT,IELEM) = value+1;
@@ -275,18 +273,18 @@ void CFmesh2Triangle::readCFmeshFmt()
   if(dummy!="!LIST_NODE") { file >> dummy; }
 
   // read the nodal coordinates
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-   file >> (*c_XY)(0,IPOIN) >> (*c_XY)(1,IPOIN); }
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+   file >> (*XY)(0,IPOIN) >> (*XY)(1,IPOIN); }
 
   file >> dummy >> LIST_STATES;
   if      (LIST_STATES==0) {
-   for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-    for(unsigned I=0; I<(*ndof); I++) { (*c_Zroe)(I,IPOIN) = 0; }
+   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+    for(unsigned I=0; I<(*ndof); I++) { (*zroe)(I,IPOIN) = 0; }
    }
   }
   else if (LIST_STATES==1) {
-   for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-    for(unsigned I=0; I<(*ndof); I++) { file >> (*c_Zroe)(I,IPOIN); }
+   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+    for(unsigned I=0; I<(*ndof); I++) { file >> (*zroe)(I,IPOIN); }
    }
   }
   else { cout << "CFmesh2Triangle::error => !LIST_STATES must be 0 or 1 ";
@@ -302,18 +300,36 @@ void CFmesh2Triangle::readCFmeshFmt()
 
 //----------------------------------------------------------------------------//
 
-void CFmesh2Triangle::resizeArrays()
+void CFmesh2Triangle::resizeVectors()
 {
-  unsigned totsize;
-  totsize = (*npoin) * (*ndim);
-  coor->resize(totsize);
-  totsize = (*npoin) * (*ndof);
-  zroe->resize(totsize);
-  totsize = (*npoin);
+  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
   nodcod->resize(totsize);
-  celnod->resize((*nvt), (*nelem));
-  celcel->resize((*nvt), (*nelem));
-  bndfac->resize(3, (*nbfac));
+  zroeVect->resize((*ndofmax) * totsize);
+  coorVect->resize((*ndim) * totsize);
+
+  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  XY = new Array2D <double> ((*ndim),
+                             (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+                             &coorVect->at(start));
+  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  zroe = new Array2D <double>((*ndofmax),
+                              (npoin->at(1)+2 * (*nshmax) * (*npshmax)),
+                              &zroeVect->at(start));
+
+  totsize = nelem->at(0) + nelem->at(1);
+  celcelVect->resize((*nvt) * totsize);
+  celnodVect->resize((*nvt) * totsize);
+
+  start = (*nvt) * nelem->at(0);
+  celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
+  celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
+
+  totsize = nbfac->at(0) + nbfac->at(1) + 4 * (*nshmax) * (*neshmax);
+  bndfacVect->resize(3 * totsize);
+
+  start = 3* (nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
+  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * (*nshmax) * (*neshmax)),
+                             &bndfacVect->at(start));
 }
 
 //----------------------------------------------------------------------------//
@@ -322,13 +338,16 @@ void CFmesh2Triangle::setNodcod()
 {
   int IPOIN, help;
 
-  for(unsigned i=0; i<(*npoin); i++) { nodcod->at(i)=0;}
+  // write new nodcode values on the vector of the shocked mesh
+  // in the fortran version this new vector is referred to index 1 (NODCOD(1))
+  // here it is pushed back to the nodcod of the background mesh
+  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
 
-  for(unsigned IFACE=0; IFACE<(*nbfac); IFACE++) {
+  for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    for(unsigned I=0; I<(*nvt)-1; I++) {
     IPOIN = (*bndfac)(I,IFACE);
-    help = nodcod->at(IPOIN-1);
-    nodcod->at(IPOIN-1) = help+1;
+    help = nodcod->at(startNodcod+IPOIN-1);
+    nodcod->at(startNodcod+IPOIN-1) = help+1;
    }
   } 
 }
@@ -337,11 +356,16 @@ void CFmesh2Triangle::setNodcod()
 
 void CFmesh2Triangle::countnbBoundaryNodes()
 {
+  // write new nodcode values on the vector of the shocked mesh
+  // in the fortran version this new vector is referred to index 1 (NODCOD(1))
+  // here it is pushed back to the nodcod of the background mesh
+  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+
   unsigned nbBoundaryNodes=0;
-  for(unsigned IPOIN=0;IPOIN<(*npoin); IPOIN++) {
-   if(nodcod->at(IPOIN)!=0) { ++nbBoundaryNodes;}
+  for(unsigned IPOIN=0;IPOIN<npoin->at(1); IPOIN++) {
+   if(nodcod->at(startNodcod+IPOIN)!=0) { ++nbBoundaryNodes;}
   }
-  (*nbpoin) = nbBoundaryNodes;
+  nbpoin->at(1) = nbBoundaryNodes;
 }
 
 //----------------------------------------------------------------------------//
@@ -356,30 +380,34 @@ void CFmesh2Triangle::writeTriangleFmt()
  
   // writing file (Triangle node file to be overwritten)
   ofstream file;
+  file.precision(18);
+
+  // take new nodcode values from the new nodcod vector of the shocked mesh
+  // in the fortran version this new vector is referred to index 1 (NODCOD(1))
+  // here it is pushed back to the nodcod of the background mesh
+  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
 
   // write on .node file
-  dummystring = fname->at(0)+".node";
-  dummystring = "triangleAfterConvert.node";
+  dummystring = fname->at(0)+".1.node";
   file.open(dummystring.c_str());
 
-  file << (*npoin) << " " << (*ndim) << " " << (*ndof) << " 1\n";
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  file << npoin->at(1) << " " << (*ndim) << " " << (*ndof) << " 1\n";
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    file << IPOIN+1 << " ";
-   for(unsigned IA=0; IA<(*ndim); IA++) { file << (*c_XY)(IA,IPOIN) << " "; }
-   for(unsigned IA=0; IA<(*ndof); IA++) { file << (*c_Zroe)(IA,IPOIN) << " "; }
-   file << nodcod->at(IPOIN) << "\n";
+   for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XY)(IA,IPOIN) << " "; }
+   for(unsigned IA=0; IA<(*ndof); IA++) { file << (*zroe)(IA,IPOIN) << " "; }
+   file << nodcod->at(startNodcod+IPOIN) << "\n";
   }
 
   file.close();
 
   // write on .poly file
-  dummystring = fname->at(0)+".poly";
-  dummystring = "triangleAfterConvert.poly";
+  dummystring = fname->at(0)+".1.poly";
   file.open(dummystring.c_str());
 
   file << "0 " << (*ndim) << " 0" << " 1\n";
-  file << (*nbfac) << " 1\n";
-  for(unsigned IFACE=0; IFACE<(*nbfac); IFACE++) {
+  file << nbfac->at(1) << " 1\n";
+  for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    NBND = namebnd.at((*bndfac)(2,IFACE)-1); // c++ indeces start from 0
    if(NBND=="InnerSup" || NBND=="InnerSub") { NBND=10; }
    file << IFACE+1 << " ";
@@ -392,31 +420,21 @@ void CFmesh2Triangle::writeTriangleFmt()
 
 //----------------------------------------------------------------------------//
 
-void CFmesh2Triangle::setAddress()
-{
-  unsigned start;
-  start = 0;
-  c_XY = new Array2D <double> ((*ndim),(*npoin),&coor->at(start));
-  c_Zroe = new Array2D <double> ((*ndof),(*npoin),&zroe->at(start));
-}
-
-//----------------------------------------------------------------------------//
-
 void CFmesh2Triangle::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  nelem = MeshData::getInstance().getData <unsigned> ("NELEM");
-  nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
-  nbpoin = MeshData::getInstance().getData <unsigned> ("NBPOIN");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
+  nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
-  nHole = MeshData::getInstance().getData <unsigned> ("NHOLE");
-  zroe = MeshData::getInstance().getData< std::vector<double> >("ZROE");
-  coor = MeshData::getInstance().getData< std::vector<double> >("COOR");
-  nodcod = MeshData::getInstance().getData< std::vector<int> >("NODCOD");
-  celnod = MeshData::getInstance().getData< Array2D<int> >("CELNOD");
-  celcel = MeshData::getInstance().getData< Array2D<int> >("CELCEL");
-  bndfac = MeshData::getInstance().getData< Array2D<int> >("BNDFAC");
-  fname = MeshData::getInstance().getData< std::vector<string> >("FNAME");
+  nhole = MeshData::getInstance().getData <vector<unsigned> > ("NHOLE");
+  zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
+  coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
+  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
+  celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
+  celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
+  bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
+  fname = MeshData::getInstance().getData <vector<string> >("FNAME");
 }
 
 //----------------------------------------------------------------------------//

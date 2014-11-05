@@ -20,7 +20,7 @@ public:
 
   /// Constructor
   ShpDpndnc(double, double, double,
-            double, double,double,
+            double, double, double,
             double, double, double);
 
   /// Destructor

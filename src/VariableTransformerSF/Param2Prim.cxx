@@ -29,6 +29,7 @@ Param2Prim::Param2Prim(const std::string& objectName) :
 
 Param2Prim::~Param2Prim()
 {
+  delete XY; delete zroe;
 }
 
 //--------------------------------------------------------------------------//
@@ -42,18 +43,27 @@ void Param2Prim::configure(OptionMap& cmap, const std::string& prefix)
 
 void Param2Prim::setAddress()
 {
-  unsigned start = 0;
-  v_Zroe = new Array2D <double> ((*ndof),(*npoin),&zroe->at(start));
-  v_XY = new Array2D <double> ((*ndim),(*npoin),&coor->at(start));
+  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
+  zroeVect->resize((*ndofmax) * totsize);
+  coorVect->resize((*ndim) * totsize);
+
+  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  XY = new Array2D <double> ((*ndim),
+                             (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+                             &coorVect->at(start));
+  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  zroe = new Array2D <double> ((*ndof),
+                               (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+                               &zroeVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
 
 void Param2Prim::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
-  coor = MeshData::getInstance().getData <vector<double> > ("COOR");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroeVect = MeshData::getInstance().getData <vector<double> > ("ZROE");
+  coorVect = MeshData::getInstance().getData <vector<double> > ("COOR");
 }
 
 //--------------------------------------------------------------------------//
@@ -62,6 +72,9 @@ void Param2Prim::setPhysicsData()
 {
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
+  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
+  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
   Rgas = PhysicsData::getInstance().getData <double> ("RgasFreeStream");
   gam = PhysicsData::getInstance().getData <double> ("GamFreeStream");
@@ -75,12 +88,12 @@ void Param2Prim::setPhysicsData()
   iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
   ix = PhysicsData::getInstance().getData <unsigned> ("IX");
   iy = PhysicsData::getInstance().getData <unsigned> ("IY");
-  mm = PhysicsData::getInstance().getData <std::vector<double> > ("MM");
-  hf = PhysicsData::getInstance().getData <std::vector<double> > ("HF");
-  thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");
-  gams = PhysicsData::getInstance().getData <std::vector<double> > ("GAMS");
+  mm = PhysicsData::getInstance().getData <vector<double> > ("MM");
+  hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
+  thev = PhysicsData::getInstance().getData <vector<double> > ("THEV");
+  gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
   typemol = 
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
+    PhysicsData::getInstance().getData <vector<string> > ("TYPEMOL");
 }
 
 //--------------------------------------------------------------------------//

@@ -74,11 +74,11 @@ void Prim2ParamTCneqDimensional::transform()
   u.resize( (*ndim) );
   T.resize(2);
 
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
 
-   for(unsigned ISP=0; ISP<(*nsp); ISP++) { rhos.at(ISP) = (*v_Zroe)(ISP,IPOIN); }
-   for(unsigned I=0; I<(*ndim); I++)      { u.at(I) = (*v_Zroe)((*nsp)+I,IPOIN); }
-   for(unsigned I=0; I<2; I++) { T.at(I) = (*v_Zroe)((*nsp)+(*ndim)+I,IPOIN); }
+   for(unsigned ISP=0; ISP<(*nsp); ISP++) { rhos.at(ISP) = (*zroe)(ISP,IPOIN); }
+   for(unsigned I=0; I<(*ndim); I++)      { u.at(I) = (*zroe)((*nsp)+I,IPOIN); }
+   for(unsigned I=0; I<2; I++) { T.at(I) = (*zroe)((*nsp)+(*ndim)+I,IPOIN); }
 
    // rho
    rho = 0;
@@ -119,17 +119,17 @@ void Prim2ParamTCneqDimensional::transform()
 
    sqrtr = sqrtr/(sqrt(*rhoref));
 
-   (*v_Zroe)((*iev),IPOIN) = sqrtr * ev / ((*uref)*(*uref));
-   (*v_Zroe)((*ix),IPOIN) = sqrtr * u.at(0) / (*uref);
-   (*v_Zroe)((*iy),IPOIN) = sqrtr * u.at(1) / (*uref);
-   (*v_Zroe)((*ie),IPOIN) = sqrtr * h / ((*uref)*(*uref));
+   (*zroe)((*iev),IPOIN) = sqrtr * ev / ((*uref)*(*uref));
+   (*zroe)((*ix),IPOIN) = sqrtr * u.at(0) / (*uref);
+   (*zroe)((*iy),IPOIN) = sqrtr * u.at(1) / (*uref);
+   (*zroe)((*ie),IPOIN) = sqrtr * h / ((*uref)*(*uref));
 
    for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-    (*v_Zroe)(ISP,IPOIN) = sqrtr * alpha.at(ISP);
+    (*zroe)(ISP,IPOIN) = sqrtr * alpha.at(ISP);
    }
   
-   (*v_XY)(0,IPOIN) = (*v_XY)(0,IPOIN) / (*Lref);
-   (*v_XY)(1,IPOIN) = (*v_XY)(1,IPOIN) / (*Lref);
+   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / (*Lref);
+   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / (*Lref);
   }
 }
 

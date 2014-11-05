@@ -45,6 +45,12 @@ int main (int argc, char** argv)
   commandln = "ln -sf "+pwdTestDir+"/sh00.dat .";
   system(commandln.c_str());
 
+  // link the coolfluid files
+  commandln = "ln -sf "+pwdTestDir+"/coolfluid-solver.xml .";
+  system(commandln.c_str());
+  commandln = "ln -sf "+pwdTestDir+"/cf00.CFcase .";
+  system(commandln.c_str());
+
   string inputFile = "input.case";
   if (!fileExists(inputFile.c_str())) {
     cout << "ERROR: file <" << inputFile << "> does not exist in current directory!\n"; abort();

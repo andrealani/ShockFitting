@@ -18,9 +18,9 @@ namespace ShockFitting {
 
 //----------------------------------------------------------------------------//
 
-ShpDpndnc::ShpDpndnc (double X,double Y,double USH,
-                      double VSH,double XI,double YI,
-                      double UI,double VI,double AI)
+ShpDpndnc::ShpDpndnc (double X, double Y, double USH,
+                      double VSH, double XI, double YI,
+                      double UI, double VI, double AI)
 {
  x=X; y=Y; ush=USH; vsh=VSH;
  xi=XI; yi=YI; ui=UI; vi=VI; ai=AI;

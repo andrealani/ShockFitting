@@ -39,6 +39,7 @@ Triangle2CFmesh::Triangle2CFmesh(const std::string& objectName) :
 
 Triangle2CFmesh::~Triangle2CFmesh()
 {
+  delete XY; delete zroe; delete celnod; delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//
@@ -85,13 +86,11 @@ void Triangle2CFmesh::configure(OptionMap& cmap, const std::string& prefix)
 
 void Triangle2CFmesh::convert()
 {
-  LogToScreen (VERBOSE, "Triangle2CFmesh::convert()\n");
+  LogToScreen (INFO, "Triangle2CFmesh::convert()\n");
 
   setMeshData();
   setPhysicsData();
   
-  setAddress();
-
   /// read triangle format file
   LogToScreen(DEBUG_MIN, "Triangle2CFmesh::reading Triangle format\n");
   readTriangleFmt();
@@ -134,69 +133,81 @@ void Triangle2CFmesh::readTriangleFmt()
   dummyfile = fname->at(0)+".1.node";
   file.open(dummyfile.c_str()); // .node file
   // read number of points
-  file >> (*npoin) >> dummy >> dummy >> dummy;
-  cout << "ReadTriangleFmt::Opening and reading " << (*npoin);
-  cout << " meshpoints from " << fname->at(0) << ".1.node" << endl;
-  // resize zroe vector of MeshData pattern
-  zroe->resize((*ndofmax) * ((*npoin) + 2 * (*nshmax) * (*npshmax)));
-  // assign start pointers for the c_Zroe and c_XY array with the new npoin
-  // values
-  setAddress();
+  file >> npoin->at(1) >> dummy >> dummy >> dummy;
+
+  // resize zroe vectors of MeshData pattern
+  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
+  zroeVect->resize((*ndofmax) * totsize);
+  coorVect->resize((*ndim) * totsize);
+
+  // assign start pointers for the zroe and XY arrays
+  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  XY = new Array2D <double> ((*ndim),
+                                  (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+                                  &coorVect->at(start));
+  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  zroe = new Array2D <double> ((*ndofmax),
+                                    (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+                                    &zroeVect->at(start));
 
   // read mesh points status
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-   file >> dummy >> (*c_XY)(0,IPOIN) >> (*c_XY)(1,IPOIN);
-   for(unsigned K=0; K<(*ndof); K++) { file >> (*c_Zroe)(K,IPOIN); }
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+   file >> dummy >> (*XY)(0,IPOIN) >> (*XY)(1,IPOIN);
+   for(unsigned K=0; K<(*ndof); K++) { file >> (*zroe)(K,IPOIN); }
    file >> dummy;
   }
   file.close();
-  cout << "ReadTriangleFmt::file node => Done!\n";
 
   dummyfile = fname->at(0)+".1.ele";
   file.open(dummyfile.c_str()); // .ele file
   // read number of elements
-  file >> (*nelem) >> dummy >> dummy;
-  cout << "ReadingTriangleFmt::Opening and reading " << (*nelem);
-  cout << " triangles from " << fname->at(0) << ".1.ele" << endl;
-  // resize arrays whit the new nelem value reas on ele file
-  celcel->resize(3,*nelem);
-  celnod->resize(3,*nelem);
+  file >> nelem->at(1) >> (*nvt) >> dummy;
+
+  // resize arrays whit the new nelem value read on ele file
+  totsize = nelem->at(0) + nelem->at(1);
+  celcelVect->resize((*nvt) * totsize);
+  celnodVect->resize((*nvt) * totsize);
+  start = (*nvt) * nelem->at(0);
+  celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
+  celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
+
   // read celnod array
-  for(unsigned IELEM=0; IELEM<(*nelem); IELEM++) {
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
    file >> dummy;
    for(unsigned J=0; J<3; J++)  { file >> (*celnod)(J,IELEM); }
   }
   file.close();
-  cout << "ReadTriangleFmt::file ele => Done!\n";
 
   dummyfile = fname->at(0)+".1.neigh";
   file.open(dummyfile.c_str()); // .neigh file
   // read celcel array
-  file >> (*nelem) >> dummy;
-  cout << "ReadTriangleFmt::Opening and reading " << (*nelem);
-  cout << " neighbours from " << fname->at(0) << ".1.neigh" << endl;
-  for(unsigned IELEM=0; IELEM<(*nelem); IELEM++) {
+  file >> nelem->at(1) >> dummy;
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
    file >> dummy;
    for(unsigned J=0; J<3; J++)  { file >> (*celcel)(J,IELEM); }
   }
   file.close();
-  cout << "ReadTriangleFmt::file neigh => Done!\n";
 
   dummyfile = fname->at(0)+".1.poly";
   file.open(dummyfile.c_str()); // .poly file
   // read number of faces
   file >> dummy >> dummy >> dummy >> dummy;
-  file >> (*nbfac);
+  file >> nbfac->at(1);
+
   // resize array with the new nbfac value read on poly file
-  bndfac->resize(3,(*nbfac) + 2 * (*nshmax) * (*neshmax));
+  totsize = nbfac->at(0) + nbfac->at(1) + 4 * (*nshmax) * (*neshmax);
+  bndfacVect->resize(3 * totsize);
+  start = 3* (nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
+  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * (*nshmax) * (*neshmax)),
+                             &bndfacVect->at(start));
+
   file.close();
-  cout << "ReadTriangleFmt::file poly => Done!\n";
 
   // fill bndfac values
   // only for element bndfac(0,*) and bndfac(1,*)
   // bndfac(2,*) will be filled after
   ibfac=0;
-  for(unsigned IELEM=0; IELEM<(*nelem); IELEM++) {
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
    for(unsigned I=0; I<3; I++) {
     if((*celcel)(I,IELEM)==-1) {
      (*celcel)(I,IELEM)=0;
@@ -209,7 +220,6 @@ void Triangle2CFmesh::readTriangleFmt()
     }
    }
   }
-  cout << "ReadTriangleFmt::There appear to be " << ibfac << " boundary faces\n";
 
   nbBoundaryfaces = ibfac;
 
@@ -217,8 +227,6 @@ void Triangle2CFmesh::readTriangleFmt()
   file.open(dummyfile.c_str()); // .edge file
   // read number of edges
   file >> nedge >> iattr;
-  cout << "ReadTriangleFmt::Opening and reading " << nedge << " faces from ";
-  cout << fname->at(0) << ".1.edge" << endl;
   if (iattr!=1) {
    cout << "ReadTriangleFmt::There should be 1 bndry marker in ";
    cout << fname->at(0) << ".1.edge while there appear to be " << iattr;
@@ -260,20 +268,12 @@ void Triangle2CFmesh::readTriangleFmt()
 nine:
    IFACE++;
    }
-   cout << "ReadTriangle::Boundary faces are " << ibfac << " ";
-   cout << nbBoundaryfaces << endl;
 
-   file.close();
-   cout << "ReadTriangleFmt::file edge => Done!\n";
+  file.close();
 
-  for(unsigned K=0; K<20; K++) {
-   if(ICLR.at(K)!=0) {
-    cout << "ReadTriangleFmt::Boundary edges colored " << K << " are ";
-    cout << ICLR.at(K) << "\n"; }
-   if (ibfac!=nbBoundaryfaces) {
-    cout << "ReadTriangleFmt::error => No matching boundary faces\n";
-    exit(1);
-   }
+  if (ibfac!=nbBoundaryfaces) {
+   cout << "ReadTriangleFmt::error => No matching boundary faces\n";
+   exit(1);
   }
 }
 
@@ -294,9 +294,10 @@ void Triangle2CFmesh::writeCFmeshFmt()
   // create Jcycl object
   Jcycl J;
 
+
   // find max value in bndfac(2,*) vector
   int maxNCl = (*bndfac)(2,0);
-  for(unsigned IBFAC=0; IBFAC<(*nbfac); IBFAC++) {
+  for(unsigned IBFAC=0; IBFAC<nbfac->at(1); IBFAC++) {
    if((*bndfac)(2,IBFAC)>maxNCl) { maxNCl = (*bndfac)(2,IBFAC); }
   }
 
@@ -305,95 +306,100 @@ void Triangle2CFmesh::writeCFmeshFmt()
   }
 
   file.open("cfin.CFmesh");
-  file.setf(ios::adjustfield);
-  file.precision(20);
 
-  file << "!NB_DIM " << (*ndim) << "\n";
-  file << "!NB_EQ " << (*ndof) << "\n";
-  file << "!NB_NODES " << (*npoin) << " 0\n";
-  file << "!NB_STATES "<< (*npoin) << " 0\n";
-  file << "!NB_ELEM " << (*nelem) << "\n";
-  file << "!NB_ELEM_TYPES " << "1\n";
-  file << "!GEOM_POLYORDER " << "1\n";
-  file << "!ELEM_TYPES " << "Triag\n";
-  file << "!NB_ELEM_PER_TYPE " << (*nelem) << "\n";
-  file << "!NB_NODES_PER_TYPE " << "3\n";
-  file << "!NB_STATES_PER_TYPE " << "3\n";
-  file << "!LIST_ELEM " << "\n";
-  for(unsigned IELEM=0; IELEM<(*nelem); IELEM++) {
-   file << (*celnod)(0,IELEM)-1 << " " << (*celnod)(1,IELEM)-1 << " ";
-   file << (*celnod)(2,IELEM)-1 << " " << (*celnod)(0,IELEM)-1 << " ";
-   file << (*celnod)(1,IELEM)-1 << " " << (*celnod)(2,IELEM)-1 << "\n";
+  file << "!NB_DIM " << setw(1) << (*ndim) << "\n";
+  file << "!NB_EQ " << setw(1) << (*ndof) << "\n";
+  file << "!NB_NODES " << setw(5) << npoin->at(1) << " 0\n";
+  file << "!NB_STATES "<< setw(5) << npoin->at(1) << " 0\n";
+  file << "!NB_ELEM " << setw(5) << nelem->at(1) << "\n";
+  file << "!NB_ELEM_TYPES 1\n";
+  file << "!GEOM_POLYORDER 1\n";
+  file << "!SOL_POLYORDER 1\n";
+  file << "!ELEM_TYPES Triag\n";
+  file << "!NB_ELEM_PER_TYPE " << setw(5) << nelem->at(1) << "\n";
+  file << "!NB_NODES_PER_TYPE 3\n";
+  file << "!NB_STATES_PER_TYPE 3\n";
+  file << "!LIST_ELEM" << "\n";
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
+   file.setf(ios::right,ios::adjustfield);
+   file << " " << setw(10) << (*celnod)(0,IELEM)-1;
+   file << " " << setw(10) << (*celnod)(1,IELEM)-1;
+   file << " " << setw(10) << (*celnod)(2,IELEM)-1;
+   file << " " << setw(10) << (*celnod)(0,IELEM)-1;
+   file << " " << setw(10) << (*celnod)(1,IELEM)-1;
+   file << " " << setw(10) << (*celnod)(2,IELEM)-1 << "\n";
   }
 
-  file << "!NB_TRSs " << BNDS << "\n";
+  file << "!NB_TRSs " << setw(3) << BNDS << "\n";
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
-   if(ICLR.at(IBC+1)>0) { ++BND; }
-   if ((IBC+1)==10) { file << "!TRS_NAME " << "10\n"; }
-   else         { file << "!TRS_NAME " << BND << "\n"; }
 
-   file << "!NB_TRs " << "1\n";
-   file << "!NB_GEOM_ENTS " << ICLR.at(IBC+1) << "\n";
-   file << "!GEOM_TYPE " << "Face\n";
-   file << "!LIST_GEOM_ENT" << "\n";
+   if(ICLR.at(IBC+1)>0) { 
+    ++BND; 
+ 
+   if ((IBC+1)==10) { file << "!TRS_NAME  10\n"; }
 
-   for(unsigned j=0; j<(*nbfac); j++) {
-    if((*bndfac)(2,j)==(IBC+1)) {
-     int ielem = (*bndfac)(0,j);
-     int ivert = (*bndfac)(1,j);
-     for(unsigned k=0; k<2; k++) {
-      ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
-      np.at(k) = ip-1;
+    else            { file << "!TRS_NAME " << setw(3) << BND << "\n"; }
+
+    file << "!NB_TRs 1\n";
+    file << "!NB_GEOM_ENTS" << setw(5) << ICLR.at(IBC+1) << "\n";
+    file << "!GEOM_TYPE Face\n";
+    file << "!LIST_GEOM_ENT" << "\n";
+
+    for(unsigned j=0; j<nbfac->at(1); j++) {
+     if((*bndfac)(2,j)==(IBC+1)) {
+      int ielem = (*bndfac)(0,j);
+      int ivert = (*bndfac)(1,j);
+      for(unsigned k=0; k<2; k++) {
+       ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
+       np.at(k) = ip-1;
+      }
+      file << setw(1) << IND2 << " " << setw(1) << IND2;
+      file << " " << setw(10) << np.at(0);
+      file << " " << setw(10) << np.at(1);
+      file << " " << setw(10) << np.at(0);
+      file << " " << setw(10) << np.at(1) << "\n";
      }
-     file << IND2 << " " << IND2 << " ";
-     file << np.at(0) << " " << np.at(1) << " ";
-     file << np.at(0) << " " << np.at(1) << "\n";
     }
    }
   }
-
-  file << "!LIST_NODE " << "\n";
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-   file << (*c_XY)(0,IPOIN) << " " << (*c_XY)(1,IPOIN) << "\n";
+  file << "!LIST_NODE" << "\n";
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+   file.precision(16);
+   file.setf(ios::scientific);
+   file << " " << setw(32) << (*XY)(0,IPOIN);
+   file << " " << setw(32) << (*XY)(1,IPOIN) << "\n";
   }
 
 
-  file << "!LIST_STATE " << LIST_STATE << "\n";
+  file << "!LIST_STATE " << setw(1) << LIST_STATE << "\n";
   if(LIST_STATE==1) {
-   for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
+   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     for(unsigned K=0; K<(*ndof); K++) {
-     file << (*c_Zroe)(K,IPOIN) << " ";}
+     file.precision(16);
+     file.setf(ios::scientific);
+     file << setw(32) << (*zroe)(K,IPOIN);}
     file << "\n";
    }
   }
 
-  file << "!END " << "\n";
-}
-
-//----------------------------------------------------------------------------//
-
-void Triangle2CFmesh::setAddress()
-{
-  unsigned start;
-  start = 0;
-  c_XY = new Array2D <double> ((*ndim),(*npoin),&coor->at(start));
-  c_Zroe = new Array2D <double> ((*ndof),(*npoin),&zroe->at(start));
+  file << "!END" << "\n";
 }
 
 //----------------------------------------------------------------------------//
 
 void Triangle2CFmesh::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  nelem = MeshData::getInstance().getData <unsigned> ("NELEM");
-  nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
-  zroe = MeshData::getInstance().getData< std::vector<double> >("ZROE");
-  coor = MeshData::getInstance().getData< std::vector<double> >("COOR");
-  celnod = MeshData::getInstance().getData< Array2D<int> >("CELNOD");
-  celcel = MeshData::getInstance().getData< Array2D<int> >("CELCEL");
-  bndfac = MeshData::getInstance().getData< Array2D<int> >("BNDFAC");
-  fname = MeshData::getInstance().getData<vector<string> >("FNAME");
+  nvt = MeshData::getInstance().getData <unsigned> ("NVT");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
+  nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
+  coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
+  celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
+  celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
+  bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
+  fname = MeshData::getInstance().getData <vector<string> >("FNAME");
 }
 
 //----------------------------------------------------------------------------//

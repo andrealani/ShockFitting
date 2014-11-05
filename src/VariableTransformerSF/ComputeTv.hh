@@ -30,7 +30,8 @@ public:
   ~ComputeTv();
 
   /// compute T values
-  void callComputeTv(double, std::vector<double>, std::vector<double>);
+  void callComputeTv(double, std::vector<double>,
+                      std::vector<double>);
 
   /// return T values
   std::vector<double> getT() const { return T; }
@@ -65,8 +66,7 @@ private: // data
   /// molecules types
   std::vector<std::string>* typemol;
   
-  double F;
-  double Fd;
+  double F, Fd;
   double tollerance;
   double tolleranceD;
   unsigned KMAX;

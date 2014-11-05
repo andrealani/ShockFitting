@@ -56,8 +56,9 @@ private: // helper functions
   /// read CFmesh format file
   void readCFmeshFmt();
 
-  /// resize vector and array with the new values read on CFmesh file
-  void resizeArrays();
+  /// resize vectors of the MeshData pattern with the new values read on CFmesh file
+  /// and assign the starting pointers for arrays 2D
+  void resizeVectors();
 
   /// fill nodcod vector
   void setNodcod();
@@ -67,9 +68,6 @@ private: // helper functions
 
   /// write Triangle format file
   void writeTriangleFmt();
-
-  /// assign start pointers of Array2D and 3D
-  void setAddress();
 
   /// assign variables used in ReadTrianleFmt to MeshData pattern
   void setMeshData();
@@ -82,44 +80,53 @@ private: // data
   /// space dimension
   unsigned* ndim;
 
-  /// number of mesh points
-  unsigned* npoin;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
   /// max number of degrees of freedom
   unsigned* ndofmax;
 
-  /// number of mesh elements
-  unsigned* nelem;
-
-  /// number of boundary faces
-  unsigned* nbfac;
-
-  /// number of boundary points
-  unsigned* nbpoin;
-
   /// number of vertices for each element
   unsigned* nvt;
-
-  /// number of holes
-  unsigned* nHole;
 
   /// max number of shocks
   unsigned* nshmax;
 
   /// max number of points for each shock
   unsigned* npshmax;
-
+  
   /// max number of edges for each shock
   unsigned* neshmax;
+  
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+  
+  /// number of mesh elements
+  std::vector<unsigned>* nelem;
+
+  /// number of boundary faces
+  std::vector<unsigned>* nbfac;
+
+  /// number of boundary points
+  std::vector<unsigned>* nbpoin;
+
+  /// number of holes
+  std::vector<unsigned>* nhole;
 
   /// mesh points status
-  std::vector <double>* zroe;
+  std::vector <double>* zroeVect;
 
   /// mesh points coordinates
-  std::vector <double>* coor;
+  std::vector <double>* coorVect;
+
+  /// vector characterizing nodes elements (assignable to MeshData)
+  std::vector<int>* celnodVect;
+
+  /// vector characterizing boundary faces (assignable to MeshData)
+  std::vector<int>* bndfacVect;
+
+  /// vector characterizing elements (assignable to MeshData)
+  std::vector<int>* celcelVect;
 
   /// code characterizing mesh points
   std::vector<int>* nodcod;
@@ -128,10 +135,10 @@ private: // data
   std::vector<std::string>* fname;
 
   /// mesh points coordinates (in array storing)
-  Array2D <double>* c_XY;
+  Array2D <double>* XY;
 
   /// mesh points status (in array storing)
-  Array2D <double>* c_Zroe;
+  Array2D <double>* zroe;
 
   /// celnod(0)(i-elem) 1° node of i-element
   /// celnod(1)(i-elem) 2° node of i-element
@@ -150,6 +157,12 @@ private: // data
 
   // vector of TRS_NAME strings
   std::vector<std::string> namebnd;
+
+  /// dummy variables to store array dimension
+  unsigned totsize;
+
+  /// dummy variable to store array starting pointer
+  unsigned start;
 
   /// command object transforming variables
   PAIR_TYPE(VariableTransformer) m_prim2param;

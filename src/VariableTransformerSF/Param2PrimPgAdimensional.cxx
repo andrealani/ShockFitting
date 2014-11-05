@@ -64,20 +64,20 @@ void Param2PrimPgAdimensional::transform()
 
   (*rhoref) = (*pref) / (*Tref) / (*Rgas);
 
-  for(unsigned IPOIN=0; IPOIN<(*npoin); IPOIN++) {
-    rho = (*v_Zroe)(0,IPOIN) * (*v_Zroe)(0,IPOIN);
-    kinetic = pow((*v_Zroe)(2,IPOIN),2)+pow((*v_Zroe)(3,IPOIN),2);
+  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+    rho = (*zroe)(0,IPOIN) * (*zroe)(0,IPOIN);
+    kinetic = pow((*zroe)(2,IPOIN),2)+pow((*zroe)(3,IPOIN),2);
     kinetic = kinetic * 0.5;
-    h = (*v_Zroe)(1,IPOIN)/(*v_Zroe)(0,IPOIN);
+    h = (*zroe)(1,IPOIN)/(*zroe)(0,IPOIN);
     help = ((*gam)-1)/(*gam);
     pres = help * (rho * h - kinetic);
-    u = (*v_Zroe)(2,IPOIN)/(*v_Zroe)(0,IPOIN);
-    v = (*v_Zroe)(3,IPOIN)/(*v_Zroe)(0,IPOIN);
+    u = (*zroe)(2,IPOIN)/(*zroe)(0,IPOIN);
+    v = (*zroe)(3,IPOIN)/(*zroe)(0,IPOIN);
 
-    (*v_Zroe)(0,IPOIN) = pres;
-    (*v_Zroe)(1,IPOIN) = u;
-    (*v_Zroe)(2,IPOIN) = v;
-    (*v_Zroe)(3,IPOIN) = pres/rho *
+    (*zroe)(0,IPOIN) = pres;
+    (*zroe)(1,IPOIN) = u;
+    (*zroe)(2,IPOIN) = v;
+    (*zroe)(3,IPOIN) = pres/rho *
                          ((*uref) * (*uref) / (*Rgas) / (*Tref));
    }
 }

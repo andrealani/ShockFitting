@@ -61,10 +61,10 @@ void VibrEnergy::callVibrEnergy(double Tv, vector<double> alpha)
 void VibrEnergy::setPhysicsData()
 {
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
-  thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");
-  mm = PhysicsData::getInstance().getData <std::vector<double> > ("MM");
+  thev = PhysicsData::getInstance().getData <vector<double> > ("THEV");
+  mm = PhysicsData::getInstance().getData <vector<double> > ("MM");
   typemol =
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
+    PhysicsData::getInstance().getData <vector<string> > ("TYPEMOL");
 }
 
 //--------------------------------------------------------------------------//

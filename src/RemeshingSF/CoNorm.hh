@@ -122,9 +122,6 @@ protected: // data
   /// max number of degrees of freedom
   unsigned* ndofmax;
 
-  /// number of mesh points
-  unsigned* npoin;
-
   /// global indeces
   unsigned* ie;
   unsigned* iev;
@@ -134,6 +131,9 @@ protected: // data
   /// heat specific ratio
   double* gref;
 
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+
   /// gas model
   std::vector<std::string>* model;
 
@@ -141,19 +141,19 @@ protected: // data
   std::vector<std::string>* mixture;
 
   /// number of shocks
-  unsigned* r_nShocks;
+  unsigned* nShocks;
 
   /// number of special points
-  unsigned* r_nSpecPoints;
+  unsigned* nSpecPoints;
 
   /// number of shock points for each shock
-  std::vector<unsigned>* r_nShockPoints;
+  std::vector<unsigned>* nShockPoints;
 
   /// type of shock
-  std::vector<std::string>* r_typeSh;
+  std::vector<std::string>* typeSh;
 
   /// type of special points
-  std::vector<std::string>* r_typeSpecPoints;
+  std::vector<std::string>* typeSpecPoints;
 
   /// mesh points status
   std::vector <double>* zroe;
@@ -168,16 +168,16 @@ protected: // data
   std::vector <double>* gams;
 
   /// shock points coordinates
-  Array3D <double>* r_XYSh;
+  Array3D <double>* XYSh;
 
   /// downstream status
-  Array3D <double>* r_ZRoeShd;
+  Array3D <double>* ZRoeShd;
 
   /// shock points normal vectors
-  Array3D <double>* r_vShNor;
+  Array3D <double>* vShNor;
 
   /// array characterizing special points
-  Array3D <unsigned>* r_SHinSPPs;
+  Array3D <unsigned>* SHinSPPs;
 };
 
 //----------------------------------------------------------------------------//

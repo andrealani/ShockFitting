@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include <fstream>
+#include <vector>
 #include "Framework/WritingMesh.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
@@ -92,12 +93,6 @@ private: // data
   /// number of element vertices (=3)
   unsigned* nvt;
 
-  /// number of mesh points
-  unsigned* npoin;
-
-  /// number of boundary faces
-  unsigned* nbfac;
-
   /// number of shock boundary faces
   unsigned* nbfacSh;
 
@@ -110,8 +105,21 @@ private: // data
   /// max number of points for each shock
   unsigned* npshmax;
 
+  /// max number of shock edges for each shock
+  unsigned* neshmax;
+
   /// number of shocks
   unsigned* w_nShocks;
+
+  /// number of mesh elements
+  std::vector<unsigned>* nelem;
+  
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+  
+  /// number of boundary faces
+  std::vector<unsigned>* nbfac;
+  
 
   /// number of Shock points for each shock
   std::vector<unsigned>* w_nShockPoints;
@@ -125,11 +133,17 @@ private: // data
   /// code characterizing mesh points
   std::vector <int>* nodcod;
 
-  /// mesh point status
-  std::vector <double>* zroe;
+  /// mesh point status (assignable to MeshData)
+  std::vector <double>* zroeVect;
 
-  /// mesh points coordinates
-  std::vector <double>* coor;
+  /// mesh points coordinates (assignable to MeshData)
+  std::vector <double>* coorVect;
+
+  /// vector characterizing boundary faces
+  std::vector<int>* bndfacVect;
+
+  /// vector characterizing  nodes elements (assignable to MeshData)
+  std::vector<int>* celnodVect;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face
@@ -163,10 +177,10 @@ private: // data
   Array3D <double>* w_XYShd;
 
   /// map vector
-  std::vector <unsigned> M02M1;
+  std::vector <unsigned>* M02M1;
 
   /// map vector
-  std::vector <unsigned> M12M0;
+  std::vector <int>* M12M0;
 
   /// dummy variables 
   unsigned TNPOIN; unsigned icount; 

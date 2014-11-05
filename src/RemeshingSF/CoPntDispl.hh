@@ -130,9 +130,6 @@ private: // data
   /// space dimension
   unsigned* ndim;
 
-  /// number of mesh points
-  unsigned* npoin;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
@@ -146,22 +143,25 @@ private: // data
   double* eps;
 
   /// number of shocks
-  unsigned* r_nShocks;
+  unsigned* nShocks;
 
   /// number of special points
-  unsigned* r_nSpecPoints;
+  unsigned* nSpecPoints;
+
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
 
   /// number of shock points for each shock
-  std::vector <unsigned>* r_nShockPoints;
+  std::vector <unsigned>* nShockPoints;
 
   /// number of shock edges for each shock
-  std::vector <unsigned>* r_nShockEdges;
+  std::vector <unsigned>* nShockEdges;
 
   /// type of shock
-  std::vector <std::string>* r_typeSh;
+  std::vector <std::string>* typeSh;
 
   /// type of special points
-  std::vector <std::string>* r_typeSpecPoints;
+  std::vector <std::string>* typeSpecPoints;
 
   /// code characterizing mesh points
   std::vector <int>* nodcod;
@@ -173,25 +173,25 @@ private: // data
   std::vector <double>* coor;
 
   /// code characterizing shock points
-  Array2D <int>* r_NodCodSh;
+  Array2D <int>* NodCodSh;
 
   /// shock points coordinates
-  Array3D <double>* r_XYSh;
+  Array3D <double>* XYSh;
 
-  /// shock points coordinates belonging to upstream zone
-  Array3D <double>* r_XYShu;
+  /// shock points coordinates belonging to the upstream zone
+  Array3D <double>* XYShu;
 
-  /// shock points coordinates belonging to downstream zone
-  Array3D <double>* r_XYShd;
+  /// shock points coordinates belonging to the downstream zone
+  Array3D <double>* XYShd;
 
   /// array characterizing special points
-  Array3D <unsigned>* r_SHinSPPs;
+  Array3D <unsigned>* SHinSPPs;
 
-  /// upstream status
-  Array3D <double>* r_ZRoeShu;
+  /// upstream state
+  Array3D <double>* ZRoeShu;
 
   /// shock points normal vectors
-  Array3D <double>* r_vShNor;
+  Array3D <double>* vShNor;
 
   /// store log file infos
   FileLogManip logfile;

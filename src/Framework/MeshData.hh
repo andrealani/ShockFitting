@@ -130,7 +130,8 @@ private: // helper functions
     shrelax = MeshData::getInstance().getData <double> ("SHRELAX");
     ibak = MeshData::getInstance().getData <unsigned> ("IBAK");
     naddholes = MeshData::getInstance().getData <unsigned> ("Naddholes");
-    caddholes = MeshData::getInstance().getData < std::vector<double> > ("CADDholes");
+    caddholes = 
+      MeshData::getInstance().getData < std::vector<double> > ("CADDholes");
     nproc = MeshData::getInstance().getData <unsigned> ("NPROC");
   }
 

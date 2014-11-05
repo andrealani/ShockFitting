@@ -19,6 +19,18 @@ namespace ShockFitting {
 
 /// This class defines a Converter, whose task is to converter a Mesh 
 /// Generator file to a file readable by the CFD solver.
+/// From/To
+/// .) Prim         : Primitive variables [p,u,v,T]
+/// .) Cons         : Conservative variables [rho,rho_u,rho_v,rho_E]
+/// .) Param        : Roe Parameter vector sqrt(rho)[1,u,v,H]
+/// Model
+/// .) Pg           : perfect gas
+/// .) Cneq         : chemical non equilibrium
+/// .) TCneq        : thermochemical non equilibrium
+/// AdditionalInfos
+/// for the Triangle->CFmesh conversion AdditionalInfos are
+/// .) Adimensional : CF output adimensional
+/// .) Dimensional  : CF output dimensional
 
 class Converter : public BaseShockFitting {
 public:

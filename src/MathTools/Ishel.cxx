@@ -21,7 +21,8 @@ Ishel::Ishel ()
 //--------------------------------------------------------------------------//
 
 Ishel::Ishel (std::vector <double> XC, std::vector <double> YC,
-               double XS1, double XS2, double YS1, double YS2)
+               double XS1, double XS2,
+               double YS1, double YS2)
 {
  xc = XC; yc = YC; xs1 = XS1; xs2 = XS2; ys1 = YS1; ys2 = YS2;
 }

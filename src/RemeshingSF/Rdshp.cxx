@@ -88,7 +88,7 @@ void Rdshp::setSNDMIN ()
 //--------------------------------------------------------------------------//
 
 void Rdshp::resetValues (double XC, double YC, double XS1,
-                       double YS1, double XS2, double YS2)
+                         double YS1, double XS2, double YS2)
 {
   xc=XC, yc=YC; xs1=XS1; ys1=YS1; xs2=XS2; ys2=YS2; 
 }

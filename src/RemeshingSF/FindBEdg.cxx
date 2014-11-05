@@ -11,6 +11,10 @@
 
 //--------------------------------------------------------------------------//
 
+using namespace std;
+
+//--------------------------------------------------------------------------//
+
 namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
@@ -23,6 +27,7 @@ FindBEdg::FindBEdg()
 
 FindBEdg::~FindBEdg()
 {
+  delete bndfac; delete XY;
 }
 
 //--------------------------------------------------------------------------//
@@ -36,9 +41,10 @@ int FindBEdg::getBEdg(double xsh, double ysh)
   setPhysicsData();
 
   setAddress();
+
   unsigned ibfac=0;
 
-  while (ibfac < *nbfac) {
+  while (ibfac < nbfac->at(0)) {
    int ibndfac1 = (*bndfac)(0,ibfac);
    int ibndfac2 = (*bndfac)(1,ibfac);
 
@@ -70,19 +76,20 @@ int FindBEdg::getBEdg(double xsh, double ysh)
 
 void FindBEdg::setAddress()
 {
-  unsigned start;
-  start = 0; 
-  XY = new Array2D <double> ((*ndim),(*npoin),&coor->at(start)); 
+  unsigned start = 0;
+  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  XY = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start)); 
+  bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
 
 void FindBEdg::setMeshData()
 {
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
-  nbfac = MeshData::getInstance().getData <unsigned> ("NBFAC");
-  coor = MeshData::getInstance().getData <std::vector<double> > ("COOR");
-  bndfac = MeshData::getInstance().getData <Array2D<int> > ("BNDFAC"); 
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  coorVect = MeshData::getInstance().getData <vector<double> > ("COOR");
+  bndfacVect = MeshData::getInstance().getData <vector<int> > ("BNDFAC"); 
 }
 
 //--------------------------------------------------------------------------//
@@ -90,6 +97,8 @@ void FindBEdg::setMeshData()
 void FindBEdg::setPhysicsData()
 {
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
+  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
+  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

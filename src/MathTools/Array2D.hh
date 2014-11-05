@@ -30,10 +30,10 @@ public:
  /// Constructor with all assigned sizes
  Array2D(const unsigned nbRows, const unsigned nbColumns)
  {
- setnRows(nbRows); setnCols(nbColumns);
- ptr = new TYPE[nRows*nCols]; ///create space for the array
- for (unsigned i=0; i<nRows*nCols; i++) {ptr[i] = 0;}; ///initialize array
- alreadyAlloc = true;
+  setnRows(nbRows); setnCols(nbColumns);
+  ptr = new TYPE[nRows*nCols]; ///create space for the array
+  for (unsigned i=0; i<nRows*nCols; i++) {ptr[i] = 0;}; ///initialize array
+  alreadyAlloc = true;
  }
 
  /// Copy Constructor

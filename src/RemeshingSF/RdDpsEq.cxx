@@ -37,6 +37,7 @@ RdDpsEq::RdDpsEq(const std::string& objectName) :
 
 RdDpsEq::~RdDpsEq()
 {
+  delete ZRoeShu; delete ZRoeShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -73,7 +74,7 @@ void RdDpsEq::remesh()
   // resize vectors and arrays
   setSize();
 
-  for (unsigned I=0; I<(*r_nShocks); I++){
+  for (unsigned I=0; I<(*nShocks); I++){
 
    // compute length of shock edge
    computeShEdgeLength(I);
@@ -105,18 +106,18 @@ void RdDpsEq::computeShEdgeLength(unsigned index)
   unsigned ish = ISH+1;
   logfile("Shock n. :", ish,"\n");
   Sh_ABSC.at(0) = 0;
-  for (unsigned IV=0; IV<r_nShockEdges->at(ISH); IV++) {
+  for (unsigned IV=0; IV<nShockEdges->at(ISH); IV++) {
    unsigned I = IV+1;
    Sh_Edge_length = 0;
    for (unsigned K=0; K<(*ndim); K++) {
     Sh_Edge_length = Sh_Edge_length +
-                     pow(((*r_XYSh)(K,IV,ISH)-(*r_XYSh)(K,I,ISH)),2);
+                     pow(((*XYSh)(K,IV,ISH)-(*XYSh)(K,I,ISH)),2);
    }
    Sh_Edge_length = sqrt(Sh_Edge_length);
    Sh_ABSC.at(I) = Sh_ABSC.at(I-1) + Sh_Edge_length;
   }
 
-  logfile("Number of points old distribution:", r_nShockPoints->at(ISH),"\n");
+  logfile("Number of points old distribution:", nShockPoints->at(ISH),"\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -124,9 +125,10 @@ void RdDpsEq::computeShEdgeLength(unsigned index)
 void RdDpsEq::computeNbDistrShPoints(unsigned index)
 {
   ISH=index;
-  nShockPoints_new = Sh_ABSC.at(r_nShockPoints->at(ISH)-1)/(*r_dxcell)+1;
+  nShockPoints_new = Sh_ABSC.at(nShockPoints->at(ISH)-1)/(*dxcell)+1;
+
   if (nShockPoints_new > (*npshmax)) {
-   cout << "Too many shock points! Increase NPSHMAX in input.case\n";
+   cout << "RdDpsEq::error => Too many shock points! Increase NPSHMAX in input.case\n";
    exit(1);}
 }
 
@@ -135,7 +137,7 @@ void RdDpsEq::computeNbDistrShPoints(unsigned index)
 void RdDpsEq::computeDistrStep(unsigned index)
 {
   ISH=index;
-  double dx = Sh_ABSC.at(r_nShockPoints->at(ISH)-1)/(nShockPoints_new-1);
+  double dx = Sh_ABSC.at(nShockPoints->at(ISH)-1)/(nShockPoints_new-1);
   Sh_ABSC_New.at(0) = 0;
   for (unsigned IV=0; IV<nShockPoints_new; IV++) {
    unsigned I = IV+1;
@@ -150,21 +152,26 @@ void RdDpsEq::computeDistrStep(unsigned index)
 void RdDpsEq::newPointsInterp(unsigned index)
 {
   ISH = index;
+
    for (unsigned K=0; K<(*ndim); K++) {
-    XYSh_New(K,0) = (*r_XYSh)(K,0,ISH);
+    XYSh_New(K,0) = (*XYSh)(K,0,ISH);
    }
+
    for (unsigned K=0; K<(*ndof); K++) {
-    ZRoeShu_New(K,0) = (*r_ZRoeShu)(K,0,ISH);
-    ZRoeShd_New(K,0) = (*r_ZRoeShd)(K,0,ISH);
+    ZRoeShu_New(K,0) = (*ZRoeShu)(K,0,ISH);
+    ZRoeShd_New(K,0) = (*ZRoeShd)(K,0,ISH);
    }
+
    for (unsigned K=0; K<(*ndim); K++) {
-    XYSh_New(K,nShockPoints_new-1) = (*r_XYSh)(K,r_nShockPoints->at(ISH)-1,ISH);
+    XYSh_New(K,nShockPoints_new-1) = (*XYSh)(K,nShockPoints->at(ISH)-1,ISH);
+
    }
+
    for (unsigned K=0; K<(*ndof); K++) {
     ZRoeShu_New(K,nShockPoints_new-1) =
-                              (*r_ZRoeShu)(K,r_nShockPoints->at(ISH)-1,ISH);
+                              (*ZRoeShu)(K,nShockPoints->at(ISH)-1,ISH);
     ZRoeShd_New(K,nShockPoints_new-1) =
-                              (*r_ZRoeShd)(K,r_nShockPoints->at(ISH)-1,ISH);
+                              (*ZRoeShd)(K,nShockPoints->at(ISH)-1,ISH);
    }
 }
 
@@ -176,7 +183,7 @@ void RdDpsEq::computeInterPoints(unsigned index)
   unsigned j1, i1;
   ISH=index;
   for(unsigned i=1; i<nShockPoints_new-1; i++) {
-   for (unsigned j=1; j<r_nShockPoints->at(ISH); j++) {
+   for (unsigned j=1; j<nShockPoints->at(ISH); j++) {
     if ( Sh_ABSC_New.at(i) >= Sh_ABSC.at(j-1) && 
          Sh_ABSC_New.at(i) <  Sh_ABSC.at(j) ) {
      ds = Sh_ABSC.at(j)-Sh_ABSC.at(j-1);
@@ -187,14 +194,14 @@ void RdDpsEq::computeInterPoints(unsigned index)
      logfile("node=",j1,"\n");
      logfile("node_new=",i1,"\n");
      for (unsigned K=0; K<(*ndim); K++) {
-      XYSh_New(K,i) = beta * (*r_XYSh)(K,j1,ISH) + alpha * (*r_XYSh)(K,j,ISH);
+      XYSh_New(K,i) = beta * (*XYSh)(K,j1,ISH) + alpha * (*XYSh)(K,j,ISH);
      }
      for (unsigned K=0; K<(*ndof); K++) {
-      ZRoeShu_New(K,i) = beta * (*r_ZRoeShu)(K,j1,ISH) + 
-                         alpha * (*r_ZRoeShu)(K,j,ISH);
-      ZRoeShd_New(K,i) = beta * (*r_ZRoeShd)(K,j1,ISH) + 
-                         alpha * (*r_ZRoeShd)(K,j,ISH); 
-      logfile("ZROESHd_j-1(",K,"=",(*r_ZRoeShd)(K,j1,ISH), "\n");
+      ZRoeShu_New(K,i) = beta * (*ZRoeShu)(K,j1,ISH) + 
+                         alpha * (*ZRoeShu)(K,j,ISH);
+      ZRoeShd_New(K,i) = beta * (*ZRoeShd)(K,j1,ISH) + 
+                         alpha * (*ZRoeShd)(K,j,ISH); 
+      logfile("ZROESHd(",K,"=",(*ZRoeShd)(K,j1,ISH), "\n");
      } // K
     } // if
    } // j
@@ -209,20 +216,20 @@ void RdDpsEq::rewriteValues(unsigned index)
   logfile("new shock point coordinates");
   for (unsigned I=0; I<nShockPoints_new; I++) {
    for(unsigned K=0; K<(*ndim); K++) {
-    (*r_XYSh)(K,I,ISH)= XYSh_New(K,I);
+    (*XYSh)(K,I,ISH)= XYSh_New(K,I);
     //logfile(K)
-    logfile((*r_XYSh)(K,I,ISH), " ");
+    logfile((*XYSh)(K,I,ISH), " ");
    }
    logfile("\n");
    for(unsigned IV=0; IV<(*ndof); IV++) {
     logfile(ZRoeShd_New(IV,I), " ");
-    (*r_ZRoeShu)(IV,I,ISH) = ZRoeShu_New(IV,I);
-    (*r_ZRoeShd)(IV,I,ISH) = ZRoeShd_New(IV,I);
+    (*ZRoeShu)(IV,I,ISH) = ZRoeShu_New(IV,I);
+    (*ZRoeShd)(IV,I,ISH) = ZRoeShd_New(IV,I);
    }
    logfile("\n");
   }
-  r_nShockPoints->at(ISH)=nShockPoints_new;
-  r_nShockEdges->at(ISH) = nShockPoints_new-1;  
+  nShockPoints->at(ISH)=nShockPoints_new;
+  nShockEdges->at(ISH) = nShockPoints_new-1;  
 }
 
 //--------------------------------------------------------------------------//
@@ -230,12 +237,12 @@ void RdDpsEq::rewriteValues(unsigned index)
 void RdDpsEq::setAddress()
 {
   unsigned start;
-  start = (*npoin)*(*ndof);
-  r_ZRoeShu = new Array3D <double> 
-              ((*ndof),(*npshmax),(*nshmax),&r_zroe->at(start));
-  start = (*npoin) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  r_ZRoeShd = new Array3D <double> 
-              ((*ndofmax),(*npshmax),(*nshmax),&r_zroe->at(start));
+  start = npoin->at(0)*(*ndof);
+  ZRoeShu = new Array3D <double> 
+              ((*ndof),(*npshmax),(*nshmax),&zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+  ZRoeShd = new Array3D <double> 
+              ((*ndofmax),(*npshmax),(*nshmax),&zroeVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -258,19 +265,19 @@ void RdDpsEq::setPhysicsData()
   ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
   nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks"); 
-  r_nShockPoints = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
-  r_nShockEdges = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
-  r_XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks"); 
+  nShockPoints = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+  nShockEdges = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
+  XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
 }
 
 //--------------------------------------------------------------------------//
 
 void RdDpsEq::setMeshData()
 {
-  r_zroe = MeshData::getInstance().getData <vector <double> >("ZROE");
-  r_dxcell = MeshData::getInstance().getData <double> ("DXCELL");
-  npoin = MeshData::getInstance().getData <unsigned> ("NPOIN");
+  zroeVect = MeshData::getInstance().getData <vector <double> >("ZROE");
+  dxcell = MeshData::getInstance().getData <double> ("DXCELL");
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
 }
 
 //--------------------------------------------------------------------------//

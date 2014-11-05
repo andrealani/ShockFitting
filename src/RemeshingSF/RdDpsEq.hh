@@ -112,12 +112,7 @@ private: // data
   unsigned* ndof;
 
   /// max nof degree of freedom
-  /// (needed to set address)
   unsigned* ndofmax;
-
-  /// number of mesh points
-  /// (needed to set address)
-  unsigned* npoin;
 
   /// max number of shocks
   /// (needed to set address)
@@ -127,28 +122,31 @@ private: // data
   unsigned* npshmax;
 
   /// number of shocks
-  unsigned* r_nShocks;
+  unsigned* nShocks;
+
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
 
   /// number of shock edges for each shock
-  std::vector <unsigned>* r_nShockEdges;
+  std::vector <unsigned>* nShockEdges;
 
   /// number of shock points for each shock
-  std::vector <unsigned>* r_nShockPoints;
+  std::vector <unsigned>* nShockPoints;
 
   /// length of the shock edges in input.case
-  double* r_dxcell;
+  double* dxcell;
 
   /// shock points coordinates
-  Array3D <double>* r_XYSh;
+  Array3D <double>* XYSh;
 
   /// upstream state
-  Array3D <double>* r_ZRoeShu;
+  Array3D <double>* ZRoeShu;
 
   /// downstream state
-  Array3D <double>* r_ZRoeShd;
+  Array3D <double>* ZRoeShd;
 
   /// mesh points status
-  std::vector <double>* r_zroe;
+  std::vector <double>* zroeVect;
 
   /// store file log infos
   FileLogManip logfile;

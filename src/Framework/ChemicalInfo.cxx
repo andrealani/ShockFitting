@@ -290,9 +290,9 @@ void ChemicalInfo::setPhysicsData()
   ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
   model =
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("MODEL");
+    PhysicsData::getInstance().getData <vector<string> > ("MODEL");
   mixture =
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("MIXTURE");
+    PhysicsData::getInstance().getData <vector<string> > ("MIXTURE");
   ie = PhysicsData::getInstance().getData <unsigned> ("IE");
   ix = PhysicsData::getInstance().getData <unsigned> ("IX");
   iy = PhysicsData::getInstance().getData <unsigned> ("IY");
@@ -300,13 +300,13 @@ void ChemicalInfo::setPhysicsData()
   nmol = PhysicsData::getInstance().getData <unsigned> ("NMOL");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
   name = 
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("NAMESP");
-  mm = PhysicsData::getInstance().getData <std::vector<double> > ("MM");
-  hf = PhysicsData::getInstance().getData <std::vector<double> > ("HF");
-  thev = PhysicsData::getInstance().getData <std::vector<double> > ("THEV");  
-  gams = PhysicsData::getInstance().getData <std::vector<double> > ("GAMS");
+    PhysicsData::getInstance().getData <vector<string> > ("NAMESP");
+  mm = PhysicsData::getInstance().getData <vector<double> > ("MM");
+  hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
+  thev = PhysicsData::getInstance().getData <vector<double> > ("THEV");  
+  gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
   typemol =
-    PhysicsData::getInstance().getData <std::vector<std::string> > ("TYPEMOL");
+    PhysicsData::getInstance().getData <vector<string> > ("TYPEMOL");
 }
 
 //--------------------------------------------------------------------------//

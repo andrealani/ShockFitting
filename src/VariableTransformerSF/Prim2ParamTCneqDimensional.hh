@@ -20,6 +20,10 @@ namespace ShockFitting {
 /// This class defines a Prim2ParamTCneqDimensional, whose task is to 
 /// transform primitive variables in dimensional Roe parameter vector
 /// variables for a TCneq model.
+/// The new values are stored in new arrays to not overwrite the old mesh status.
+/// These new values are pushed back at the end of the arrays of the old mesh
+/// in the fortran version these new arrays are referred to index "1"
+/// (ex: ZROE(1))
 
 class Prim2ParamTCneqDimensional : public Prim2Param {
 public:
