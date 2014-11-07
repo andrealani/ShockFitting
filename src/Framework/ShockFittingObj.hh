@@ -19,6 +19,7 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/WritingMesh.hh"
 #include "Framework/Converter.hh"
+#include "Framework/CopyMaker.hh"
 #include "Framework/CFDSolver.hh"
 #include "Framework/StateUpdater.hh"
 #include "RemeshingSF/CoNorm.hh"
@@ -100,6 +101,12 @@ public:
     return m_fConverter;
   }
 
+  /// get the copy maker list
+  std::vector<PAIR_TYPE(CopyMaker)>& getCopyMakerList()
+  {
+    return m_cMaker;
+  }
+
   /// get the state updater list
   std::vector<PAIR_TYPE(StateUpdater)>& getStateUpdaterList()
   {
@@ -126,9 +133,6 @@ protected:
     
 protected:
   
-  /// array of variable transformer
-//  std::vector<PAIR_TYPE(VariableTransformer)> m_vTransformer;
-
   /// array of field interpolators
   std::vector<PAIR_TYPE(FieldInterpolator)> m_fInterpolator;
   
@@ -149,6 +153,9 @@ protected:
 
   /// array of converter objects
   std::vector<PAIR_TYPE(Converter)> m_fConverter;
+
+  /// array of copy maker objects
+  std::vector<PAIR_TYPE(CopyMaker)> m_cMaker;
 
   /// array of state updater objects
   std::vector<PAIR_TYPE(StateUpdater)> m_sUpdater;

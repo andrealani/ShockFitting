@@ -78,10 +78,10 @@ void ComputeStateDps::setPhysicsData()
   nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
   npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
-  ie = PhysicsData::getInstance().getData <unsigned> ("IE");
-  iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
-  ix = PhysicsData::getInstance().getData <unsigned> ("IX");
-  iy = PhysicsData::getInstance().getData <unsigned> ("IY");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
   // this values is read in ReferenceInfo
   gref = PhysicsData::getInstance().getData <double> ("GREF");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");

@@ -283,7 +283,7 @@ void FixMshSps::setShockPointCoor(string zone, unsigned IP, unsigned ISH)
                            ysh = (*XYShu)(1,IP,ISH); }
   else if (zone=="Down") { xsh = (*XYShd)(0,IP,ISH);
                            ysh = (*XYShd)(1,IP,ISH); }
-  logfile ("xsh: ", xsh, " ysh: ", ysh);
+  logfile ("xsh: ", xsh, " ysh: ", ysh,"\n");
 }
 
 //--------------------------------------------------------------------------//

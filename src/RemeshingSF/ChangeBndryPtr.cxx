@@ -73,7 +73,6 @@ void ChangeBndryPtr::remesh()
   logfile("Subr ChangeBndryPtr; NBPOIN was = ",nbpoin->at(0),"\n");
   logfile("Subr ChangeBndryPtr; NPOIN was = ",npoin->at(0),"\n");
 
-
   for (int IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
 
    if (nodcod->at(IPOIN)==-2) {
@@ -82,13 +81,11 @@ void ChangeBndryPtr::remesh()
     // dis-actived (nodcod=-2)
     lookForNode(IPOIN);
 
-
     // remove the i-node
     unsigned ipoin = IPOIN+1; //c++indeces start from 0
     logfile("Removing node", ipoin, "belongs to edges: ");
     logfile((*nodptr)(ipos,1) , (*nodptr)(ipos,2), "\n");
     removeNode(IPOIN);
-
 
     // update the i-face=nodptr(ipos,2)
     updateIface();

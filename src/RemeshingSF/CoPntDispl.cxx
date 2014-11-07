@@ -47,8 +47,6 @@ void CoPntDispl::setup()
 {
   LogToScreen(VERBOSE, "CoPntDispl::setup() => start\n");
 
-  logfile.Open(getClassName());
-
   LogToScreen(VERBOSE, "CoPntDispl::setup() => end\n");
 }
 
@@ -56,7 +54,6 @@ void CoPntDispl::setup()
 
 void CoPntDispl::unsetup()
 {
-  logfile.Close();
   LogToScreen(VERBOSE, "CoPntDispl::unsetup()\n");
 }
 
@@ -69,6 +66,8 @@ void CoPntDispl::remesh()
   setMeshData();
   setPhysicsData();
   setAddress();
+
+  logfile.Open(getClassName());
 
   // initialize nodcodsh values to -99
   setNodCodSh();
@@ -110,6 +109,8 @@ void CoPntDispl::remesh()
       cout << "Condition not implemented\n";
       exit(1); }
   }
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//

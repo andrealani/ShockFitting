@@ -8,6 +8,7 @@
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/MeshData.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -31,6 +32,7 @@ standardShockFittingProv("StandardShockFitting");
 StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   ShockFittingObj(objectName),
   m_readInputFile1(),
+  m_meshBackup(),
   m_readInputFile2(),
   m_bndryNodePtr(),
   m_redistrEqShockPoints(),
@@ -45,15 +47,16 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_COOLFluiD(),
   m_CFmeshToTriangle(),
   m_readNewMesh(),
-  m_copyZRoe0_1(),
+  m_copyZRoe1_0(),
   m_updateSolution(),
   m_fixSpecPoints(),
-  m_copyZRoe1_0(),
+  m_copyZRoeSh0_1(),
   m_moveShPoints(),
   m_updatePhantPoints(),
   m_redistrShockPoints(),
   m_writeBackTriangleFile(),
-  m_writeShockInfo()
+  m_writeShockInfo(),
+  m_meshRestore()
 {
 }
 
@@ -85,6 +88,7 @@ void StandardShockFitting::setup()
 
 
   m_readInputFile1 = m_mGenerator[0].ptr();
+  m_meshBackup = m_cMaker[0].ptr();
   m_readInputFile2 = m_mGenerator[1].ptr();
   m_bndryNodePtr = m_fRemeshing[0].ptr();
   m_redistrEqShockPoints = m_fRemeshing[1].ptr();
@@ -99,15 +103,16 @@ void StandardShockFitting::setup()
   m_COOLFluiD = m_CFDSolver.ptr();
   m_CFmeshToTriangle = m_fConverter[1].ptr();
   m_readNewMesh = m_mGenerator[3].ptr();
-  m_copyZRoe0_1 = m_sUpdater[0].ptr();
+  m_copyZRoe1_0 = m_cMaker[1].ptr();
   m_updateSolution = m_cState.ptr();
-  m_fixSpecPoints = m_sUpdater[1].ptr(); 
-  m_copyZRoe1_0 = m_sUpdater[2].ptr();
+  m_fixSpecPoints = m_sUpdater[0].ptr(); 
+  m_copyZRoeSh0_1 = m_cMaker[2].ptr();
   m_moveShPoints = m_moveDps.ptr();
-  m_updatePhantPoints = m_sUpdater[3].ptr();
+  m_updatePhantPoints = m_sUpdater[1].ptr();
   m_redistrShockPoints = m_fRemeshing[6].ptr();
   m_writeBackTriangleFile = m_wMesh[1].ptr();
   m_writeShockInfo = m_wMesh[2].ptr();
+  m_meshRestore = m_cMaker[3].ptr();
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -129,20 +134,30 @@ void StandardShockFitting::process()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::process() => start\n");
 
+
+  vector<string>* fname = 
+   MeshData::getInstance().getData <vector <string> > ("FNAME");
+
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
   PhysicsData::getInstance().getReferenceInfo()->read();
 
   m_readInputFile1->generate();
+
   m_readInputFile2->generate();
 
   m_bndryNodePtr->remesh();
+
+  m_meshBackup->copy();
+
   m_redistrEqShockPoints->remesh();
   m_findPhantPoints->remesh();
   m_changeBndryPoints->remesh();
   m_computeNormalVector->remesh();
   m_computeShockLayer->remesh();
   m_fixMeshSpecialPoints->remesh();
+
+  fname->at(0) = "na00001";
 
   m_writeTriangleFile->write();
 
@@ -156,10 +171,13 @@ void StandardShockFitting::process()
 
   m_readNewMesh->generate();
 
-  m_copyZRoe0_1->update();
+  m_copyZRoe1_0->copy();
+
   m_updateSolution->update();
   m_fixSpecPoints->update();
-  m_copyZRoe1_0->update();
+
+  m_copyZRoeSh0_1->copy();
+
   m_moveShPoints->update();
   m_updatePhantPoints->update();
 
@@ -167,6 +185,18 @@ void StandardShockFitting::process()
 
   m_writeBackTriangleFile->write();
   m_writeShockInfo->write();
+
+  m_meshRestore->copy();
+
+/////  secondo step
+  m_findPhantPoints->remesh();
+  m_changeBndryPoints->remesh();
+  m_computeNormalVector->remesh();
+  m_computeShockLayer->remesh();
+  m_fixMeshSpecialPoints->remesh();
+ 
+  fname->at(0) = "na00002";
+
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

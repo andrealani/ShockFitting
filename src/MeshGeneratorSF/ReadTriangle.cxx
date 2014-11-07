@@ -71,12 +71,16 @@ void ReadTriangle::generate()
   setMeshData();
   setPhysicsData();
 
-  if ((*firstRead)==1) {
+  // Index (0) refers to the background mesh
+  // Index (1) refers to the shocked mesh
+  // index (2) refers to the backup mesh (only for nbpoin and nbfac)
+  if((*firstRead)==1) {
    npoin->resize(2);
-   nbfac->resize(2);
+   nbfac->resize(3);
    nelem->resize(2);
    nedge->resize(2);
    nhole->resize(2);
+   nbpoin->resize(3);
   }
 
   logfile.Open(getClassName());
@@ -461,6 +465,7 @@ void ReadTriangle::setMeshData ()
   nedge = MeshData::getInstance().getData <vector<unsigned> > ("NEDGE");
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
+  nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
   nhole = MeshData::getInstance().getData <vector<unsigned> > ("NHOLE");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");

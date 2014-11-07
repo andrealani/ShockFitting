@@ -32,12 +32,14 @@ namespace ShockFitting {
 ///
 /// "firstRead" flag is defined to properly store the mesh data
 /// if firstRead==1 the Triangle files are read for the first time and
-/// data are stored in arrays that in the fortran version are referred to
-/// index "0" (ex: ZROE(0)
-/// if firstRead==0 data are stored in new arrays in order to not overwrite
-/// the old mesh ones. In the fortran version are referred to index "1"
-/// (ex: ZROE(1)), here are pushed back to the old arrays and are addressed 
-/// by defining starting pointers.
+/// data are stored in the arrays of the background mesh
+/// in the fortran version are referred to index "0" (ex: ZROE(0)
+/// if firstRead==0 data are stored in the arrays of the shocked mesh
+/// in order to not overwrite the old mesh ones. 
+/// In the fortran version are referred to index "1"
+/// (ex: ZROE(1))
+/// here they are pushed back at the end of the arrays of the background mesh
+/// they and are addressed by defining starting pointers.
 
 class ReadTriangle : public MeshGenerator {
 public:
@@ -136,6 +138,9 @@ private: // data
 
   /// number of boundary faces
   std::vector<unsigned>* nbfac;
+
+  /// number of boundary points
+  std::vector<unsigned>* nbpoin;
 
   /// number of bodies(holes)
   std::vector<unsigned>* nhole;

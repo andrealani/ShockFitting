@@ -83,10 +83,10 @@ void Param2PrimTCneqDimensional::transform()
 
     // u, v, h, ev
     u.resize(2);
-    h = (*zroe)((*ie),IPOIN)/sqrtr * pow((*uref),2);
-    u.at(0) = (*zroe)((*ix),IPOIN)/sqrtr * (*uref);
-    u.at(1) = (*zroe)((*iy),IPOIN)/sqrtr * (*uref);
-    ev = (*zroe)((*iev),IPOIN)/sqrtr * pow((*uref),2);
+    h = (*zroe)((*IE),IPOIN)/sqrtr * pow((*uref),2);
+    u.at(0) = (*zroe)((*IX),IPOIN)/sqrtr * (*uref);
+    u.at(1) = (*zroe)((*IY),IPOIN)/sqrtr * (*uref);
+    ev = (*zroe)((*IEV),IPOIN)/sqrtr * pow((*uref),2);
 
     // kinetic energy
     kinetic = pow(u.at(0),2)+pow(u.at(1),2);
@@ -139,10 +139,10 @@ void Param2PrimTCneqDimensional::transform()
      (*zroe)(ISP,IPOIN)=rhos.at(ISP);
     }
 
-   (*zroe)((*ie),IPOIN) = u.at(0);
-   (*zroe)((*ix),IPOIN) = u.at(1);
-   (*zroe)((*iy),IPOIN) = T.at(0);
-   (*zroe)((*iev),IPOIN) = T.at(1);
+   (*zroe)((*IE),IPOIN) = u.at(0);
+   (*zroe)((*IX),IPOIN) = u.at(1);
+   (*zroe)((*IY),IPOIN) = T.at(0);
+   (*zroe)((*IEV),IPOIN) = T.at(1);
    
 
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * (*Lref);

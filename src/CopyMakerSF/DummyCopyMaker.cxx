@@ -4,15 +4,11 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include <cstdlib>
-#include "MeshGeneratorSF/Triangle.hh"
-#include "Framework/Log.hh"
-#include "Framework/MeshData.hh"
+#include "CopyMakerSF/DummyCopyMaker.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
 
-using namespace std;
 using namespace SConfig;
 
 //--------------------------------------------------------------------------//
@@ -22,51 +18,39 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<Triangle, MeshGenerator> triangleProv("Triangle");
+ObjectProvider<DummyCopyMaker, CopyMaker>
+dummyCopyMakerProv("DummyCopyMaker");
 
 //--------------------------------------------------------------------------//
 
-Triangle::Triangle(const std::string& objectName) :
-  MeshGenerator(objectName)
+DummyCopyMaker::DummyCopyMaker(const std::string& objectName) :
+  CopyMaker(objectName)
 {
 }
 
 //--------------------------------------------------------------------------//
 
-Triangle::~Triangle()
+DummyCopyMaker::~DummyCopyMaker()
 {
 }
 
 //--------------------------------------------------------------------------//
 
-void Triangle::setup()
+void DummyCopyMaker::setup()
 {
-  LogToScreen(VERBOSE, "Triangle::setup() => start\n");
-
-  LogToScreen(VERBOSE, "Triangle::setup() => end\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void Triangle::unsetup()
+void DummyCopyMaker::unsetup()
 {
-  LogToScreen(VERBOSE, "Triangle::setup()\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void Triangle::generate()
+void DummyCopyMaker::copy()
 {
-  LogToScreen(INFO,"TriangleMeshGenerator::generate()\n");
-
-  fname = MeshData::getInstance().getData<vector<string> >("FNAME");
-
-  command = "../../../src/MeshGeneratorSF/TriangleMeshGeneratorExe/triangle -nep "
-            + fname->at(0) + " > log/TriangleExe.log";
-  system(command.c_str());
-
-  if(system(command.c_str())!=0) {
-   cout << "Triangle::error => Triangle Mesh Generator execution failed\n"; }
+  std::cout << "DummyCopyMaker::copy()\n";
 }
 
 //--------------------------------------------------------------------------//

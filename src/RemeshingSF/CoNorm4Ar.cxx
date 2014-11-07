@@ -223,8 +223,8 @@ void CoNorm4Ar::setVShNorForStype()
      for (unsigned ISP=0; ISP<(*nsp); ISP++) {
       zrho = zrho + (*ZRoeShd)(ISP,I,ISH);
      }
-     ui = ((*ZRoeShd)((*ix),I,ISH)) / zrho;
-     vi = ((*ZRoeShd)((*iy),I,ISH)) / zrho;
+     ui = ((*ZRoeShd)((*IX),I,ISH)) / zrho;
+     vi = ((*ZRoeShd)((*IY),I,ISH)) / zrho;
      double dum = ui * (*vShNor)(0,I,ISH) + vi * (*vShNor)(1,I,ISH);
      if(dum>0) {++ii;}
     }
@@ -340,12 +340,12 @@ void CoNorm4Ar::recoverState(string direction, unsigned I,
   }
   rhoHf = rhoHf * zrho;
 
-  uj = (*ZRoeShd)((*ix),J,ISH)/zrho;
-  vj = (*ZRoeShd)((*iy),J,ISH)/zrho;
-  help = pow((*ZRoeShd)((*ix),J,ISH),2)+pow((*ZRoeShd)((*iy),J,ISH),2);
+  uj = (*ZRoeShd)((*IX),J,ISH)/zrho;
+  vj = (*ZRoeShd)((*IY),J,ISH)/zrho;
+  help = pow((*ZRoeShd)((*IX),J,ISH),2)+pow((*ZRoeShd)((*IY),J,ISH),2);
   // gam and gm1 are referred to the values read by PhysicsInfo
   // (it was previously read by re_inp_dat)
-  pj = (*gm1)/(*gam) * (zrho * (*ZRoeShd)((*ie),J,ISH) - 0.5 * help - rhoHf );
+  pj = (*gm1)/(*gam) * (zrho * (*ZRoeShd)((*IE),J,ISH) - 0.5 * help - rhoHf );
   aj = sqrt( (*gam) * pj/roj );
   if(direction=="forward") {
    unsigned ipoin = I+1; //c++ indeces start from 0

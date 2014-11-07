@@ -119,10 +119,10 @@ void Prim2ParamTCneqDimensional::transform()
 
    sqrtr = sqrtr/(sqrt(*rhoref));
 
-   (*zroe)((*iev),IPOIN) = sqrtr * ev / ((*uref)*(*uref));
-   (*zroe)((*ix),IPOIN) = sqrtr * u.at(0) / (*uref);
-   (*zroe)((*iy),IPOIN) = sqrtr * u.at(1) / (*uref);
-   (*zroe)((*ie),IPOIN) = sqrtr * h / ((*uref)*(*uref));
+   (*zroe)((*IEV),IPOIN) = sqrtr * ev / ((*uref)*(*uref));
+   (*zroe)((*IX),IPOIN) = sqrtr * u.at(0) / (*uref);
+   (*zroe)((*IY),IPOIN) = sqrtr * u.at(1) / (*uref);
+   (*zroe)((*IE),IPOIN) = sqrtr * h / ((*uref)*(*uref));
 
    for(unsigned ISP=0; ISP<(*nsp); ISP++) {
     (*zroe)(ISP,IPOIN) = sqrtr * alpha.at(ISP);

@@ -51,6 +51,9 @@ private:
 
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile1;
+
+  /// command object making mesh backup
+  SConfig::SharedPtr<CopyMaker> m_meshBackup;
   
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile2;
@@ -95,7 +98,7 @@ private:
   SConfig::SharedPtr<MeshGenerator> m_readNewMesh;
 
   /// command object copying Roe values
-  SConfig::SharedPtr<StateUpdater> m_copyZRoe0_1;
+  SConfig::SharedPtr<CopyMaker> m_copyZRoe1_0;
 
   /// command object updating solution
   SConfig::SharedPtr<ComputeStateDps> m_updateSolution;
@@ -104,7 +107,7 @@ private:
   SConfig::SharedPtr<StateUpdater> m_fixSpecPoints;
 
   /// command object copying Roe values
-  SConfig::SharedPtr<StateUpdater> m_copyZRoe1_0;
+  SConfig::SharedPtr<CopyMaker> m_copyZRoeSh0_1;
 
   /// command object moving shock points
   SConfig::SharedPtr<MoveDps> m_moveShPoints;
@@ -120,6 +123,9 @@ private:
 
   /// command object writing shock infos
   SConfig::SharedPtr<WritingMesh> m_writeShockInfo;
+
+  /// command object restoring mesh arrays
+  SConfig::SharedPtr<CopyMaker> m_meshRestore;
 };
 
 //--------------------------------------------------------------------------//

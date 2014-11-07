@@ -96,10 +96,10 @@ protected: // data
   unsigned* nsp;
 
   /// global indeces
-  unsigned* ix;
-  unsigned* iy;
-  unsigned* ie;
-  unsigned* iev;
+  unsigned* IX;
+  unsigned* IY;
+  unsigned* IE;
+  unsigned* IEV;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;

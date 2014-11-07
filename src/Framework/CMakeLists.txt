@@ -11,6 +11,8 @@ Compatibility.hh
 Connectivity.hh
 Converter.cxx
 Converter.hh
+CopyMaker.cxx
+CopyMaker.hh
 FieldInterpolator.cxx
 FieldInterpolator.hh
 FileLogManip.hh

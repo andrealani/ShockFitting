@@ -7,6 +7,9 @@
 #include <vector>
 #include "Binsrc.hh"
 
+
+#include<iostream>
+
 //----------------------------------------------------------------------------//
 
 Binsrc::Binsrc ()
@@ -33,8 +36,8 @@ int Binsrc::callBinsrc ()
 {
   int m,kpos;
   int nlist = klist.size();
-
   if ( kelem == klist.at(0) ){ipos = 0;}
+
   if ( nlist > 0) {
    kpos = 0;
   rep:
@@ -52,6 +55,7 @@ int Binsrc::callBinsrc ()
      }
      else {ipos = last;}
   }
+
   return ipos;
 }
 

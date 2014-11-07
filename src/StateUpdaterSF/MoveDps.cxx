@@ -69,10 +69,10 @@ void MoveDps::setPhysicsData()
   gam = PhysicsData::getInstance().getData <double> ("GAM");
   gref = PhysicsData::getInstance().getData <double> ("GREF");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
-  ix = PhysicsData::getInstance().getData <unsigned> ("IX");
-  iy = PhysicsData::getInstance().getData <unsigned> ("IY");
-  ie = PhysicsData::getInstance().getData <unsigned> ("IE");
-  iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints =
     PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");

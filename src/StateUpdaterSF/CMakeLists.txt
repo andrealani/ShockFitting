@@ -5,16 +5,12 @@ CoDc.cxx
 CoDc.hh
 ComputeStateDps.cxx
 ComputeStateDps.hh
-ComputeStateDpsAr.cxx
-ComputeStateDpsAr.hh
-ComputeStateDpsPg.cxx
-ComputeStateDpsPg.hh
-ComputeStateDpsTCneq.cxx
-ComputeStateDpsTCneq.hh
-CopyRoeValues.cxx
-CopyRoeValues.hh
-CopyRoeValues1_0.cxx
-CopyRoeValues1_0.hh
+ComputeStateDps4Ar.cxx
+ComputeStateDps4Ar.hh
+ComputeStateDps4Pg.cxx
+ComputeStateDps4Pg.hh
+ComputeStateDps4TCneq.cxx
+ComputeStateDps4TCneq.hh
 CoShock.cxx
 CoShock.hh
 FixStateSps.cxx
@@ -23,12 +19,12 @@ Interp.cxx
 Interp.hh
 MoveDps.cxx
 MoveDps.hh
-MoveDpsPg.cxx
-MoveDpsPg.hh
-MoveDpsAr.cxx
-MoveDpsAr.hh
-MoveDpsTCneq.cxx
-MoveDpsTCneq.hh
+MoveDps4Ar.cxx
+MoveDps4Ar.hh
+MoveDps4Pg.cxx
+MoveDps4Pg.hh
+MoveDps4TCneq.cxx
+MoveDps4TCneq.hh
 )
 
 LIST ( APPEND StateUpdaterSF_libs Framework SConfig MathTools )

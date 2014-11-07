@@ -9,10 +9,10 @@ CoNorm.cxx
 CoNorm.hh
 CoNorm4Ar.cxx
 CoNorm4Ar.hh
+CoNorm4Pg.cxx
+CoNorm4Pg.hh
 CoNorm4TCneq.cxx
 CoNorm4TCneq.hh
-CoNormPg.cxx
-CoNormPg.hh
 CoPntDispl.cxx
 CoPntDispl.hh
 DummyRemeshing.cxx

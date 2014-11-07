@@ -65,6 +65,10 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
 
   m_CFDSolver.name() = "COOLFluiD";
 
+  m_cMaker = vector<PAIR_TYPE(CopyMaker)>();
+  addOption("CopyMakerList",&m_cMaker,
+            "List of the names of copy maker objects");
+
   m_sUpdater = vector<PAIR_TYPE(StateUpdater)>();
   addOption("StateUpdaterList",&m_sUpdater,
             "List of the names of state updaters");
@@ -123,6 +127,9 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
                           getProvider(m_CFDSolver.name())
                           ->create(m_CFDSolver.name()));
 
+    // create the copy maker objects
+    createList<CopyMaker>(m_cMaker);
+
     // create the state updaters list
     createList<StateUpdater>(m_sUpdater);
 
@@ -174,6 +181,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   // configure the converter objects
   for (unsigned i = 0; i < m_fConverter.size(); ++i) {
    configureDeps (cmap, m_fConverter[i].ptr().get());
+  }
+
+  // configure the copy maker objects
+  for (unsigned i = 0; i < m_cMaker.size(); ++i) {
+   configureDeps (cmap, m_cMaker[i].ptr().get());
   }
 
   // configure the object calling COOLFluiD
@@ -239,6 +251,11 @@ void ShockFittingObj::setup()
   // configure the object calling COOLFluiD
   m_CFDSolver.ptr()->setup();
 
+  // configure the copy maker objects
+  for (unsigned i = 0; i < m_cMaker.size(); ++i) {
+    m_cMaker[i].ptr()->setup();
+  }
+
   // configure the state updating
   for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
     m_sUpdater[i].ptr()->setup();
@@ -299,6 +316,11 @@ void ShockFittingObj::unsetup()
   // configure the object calling COOLFluiD
   m_CFDSolver.ptr()->unsetup();
 
+  // configure the copy maker objects
+  for (unsigned i = 0; i < m_cMaker.size(); ++i) {
+    m_cMaker[i].ptr()->unsetup();
+  }
+
   // configure the state updating
   for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
     m_sUpdater[i].ptr()->unsetup();
@@ -355,6 +377,10 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <vector <int> >("NODPTR", 1);
   MeshData::getInstance().createData <vector <int> >("M12M0", 1);
   MeshData::getInstance().createData <vector <int> >("M02M1", 1);
+
+  MeshData::getInstance().createData <vector <int> >("NODCODBackup",1);
+  MeshData::getInstance().createData <Array2D <int> >("NODPTRBackup",1);
+  MeshData::getInstance().createData <Array2D <int> >("BNDFACBackup",1);
 
   MeshData::getInstance().createData <unsigned>("FirstRead",1);
   MeshData::getInstance().createData <vector<string> >("FNAME",1);
@@ -468,6 +494,10 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector <int> >("NODPTR");
   MeshData::getInstance().deleteData <vector <int> >("M12M0");
   MeshData::getInstance().deleteData <vector <unsigned> >("M02M1");
+
+  MeshData::getInstance().deleteData <vector <int> >("NODCODBackup");
+  MeshData::getInstance().deleteData <Array2D <int> >("NODPTRBackup");
+  MeshData::getInstance().deleteData <Array2D <int> >("BNDFACBackup");
 
   MeshData::getInstance().deleteData <unsigned>("FirstRead");
   MeshData::getInstance().deleteData <vector<string> >("FNAME");

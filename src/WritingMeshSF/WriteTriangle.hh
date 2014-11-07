@@ -109,7 +109,7 @@ private: // data
   unsigned* neshmax;
 
   /// number of shocks
-  unsigned* w_nShocks;
+  unsigned* nShocks;
 
   /// number of mesh elements
   std::vector<unsigned>* nelem;
@@ -119,13 +119,12 @@ private: // data
   
   /// number of boundary faces
   std::vector<unsigned>* nbfac;
-  
 
   /// number of Shock points for each shock
-  std::vector<unsigned>* w_nShockPoints;
+  std::vector<unsigned>* nShockPoints;
 
   /// number of shock edges for each shock
-  std::vector<unsigned>* w_nShockEdges;
+  std::vector<unsigned>* nShockEdges;
 
   /// coordinates of addiotnal hole points
   std::vector<double>* caddholes;  
@@ -156,25 +155,25 @@ private: // data
   Array2D <int>* celnod;
 
   /// mesh points coordinates (in array storing)
-  Array2D <double>* w_XY;
+  Array2D <double>* XY;
 
   /// code characterizing shock points
-  Array2D <int>* w_NodCodSh;
+  Array2D <int>* NodCodSh;
 
   /// upstream shock points status
-  Array3D <double>* w_ZRoeShu;
+  Array3D <double>* ZRoeShu;
 
   /// downstream shock points status
-  Array3D <double>* w_ZRoeShd;
+  Array3D <double>* ZRoeShd;
 
   /// shock points coordinates
-  Array3D <double>* w_XYSh;
+  Array3D <double>* XYSh;
 
   /// shock points coordinates belonging to upstream zone
-  Array3D <double>* w_XYShu;
+  Array3D <double>* XYShu;
 
   /// shock points coordinates belonging to downstream zone
-  Array3D <double>* w_XYShd;
+  Array3D <double>* XYShd;
 
   /// map vector
   std::vector <unsigned>* M02M1;

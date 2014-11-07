@@ -80,10 +80,10 @@ void CoNorm::setPhysicsData()
   hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
   gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
   Rs = PhysicsData::getInstance().getData <vector<double> > ("RS");
-  ie = PhysicsData::getInstance().getData <unsigned> ("IE");
-  iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
-  ix = PhysicsData::getInstance().getData <unsigned> ("IX");
-  iy = PhysicsData::getInstance().getData <unsigned> ("IY");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints =
       PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");

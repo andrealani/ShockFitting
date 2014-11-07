@@ -222,8 +222,8 @@ void CoNorm4TCneq::setVShNorForStype()
      for(unsigned ISP=0; ISP<(*nsp); ISP++) {
       zrho = zrho + (*ZRoeShd)(ISP,I,ISH);
      }
-     ui = (*ZRoeShd)((*ix),I,ISH)/zrho;
-     vi = (*ZRoeShd)((*iy),I,ISH)/zrho;
+     ui = (*ZRoeShd)((*IX),I,ISH)/zrho;
+     vi = (*ZRoeShd)((*IY),I,ISH)/zrho;
      dum = ui * (*vShNor)(0,I,ISH) + vi * (*vShNor)(1,I,ISH);
      if (dum>0) {++ii;}
     }
@@ -348,11 +348,11 @@ void CoNorm4TCneq::recoverState(string direction, unsigned I,
   gammam = 1+ gamm1;
   gm1oga = gamm1/gammam;
 
-  uj = (*ZRoeShd)((*ix),J,ISH)/zrho;
-  vj = (*ZRoeShd)((*iy),J,ISH)/zrho;
-  help = pow((*ZRoeShd)((*ix),J,ISH),2)+pow((*ZRoeShd)((*iy),J,ISH),2);
-  pj = gm1oga* (zrho*(*ZRoeShd)((*ie),J,ISH)-
-       0.5 * help - rhoHf - zrho * (*ZRoeShd)((*iev),J,ISH));
+  uj = (*ZRoeShd)((*IX),J,ISH)/zrho;
+  vj = (*ZRoeShd)((*IY),J,ISH)/zrho;
+  help = pow((*ZRoeShd)((*IX),J,ISH),2)+pow((*ZRoeShd)((*IY),J,ISH),2);
+  pj = gm1oga* (zrho*(*ZRoeShd)((*IE),J,ISH)-
+       0.5 * help - rhoHf - zrho * (*ZRoeShd)((*IEV),J,ISH));
   aj = sqrt(gammam*pj/roj);
 
   if(direction=="forward") {  

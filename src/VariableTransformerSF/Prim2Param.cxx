@@ -82,10 +82,10 @@ void Prim2Param::setPhysicsData()
   uref = PhysicsData::getInstance().getData <double> ("UREF");
   rhoref = PhysicsData::getInstance().getData <double> ("RHOREF");
   Lref = PhysicsData::getInstance().getData <double> ("LREF");
-  ie = PhysicsData::getInstance().getData <unsigned> ("IE");
-  iev = PhysicsData::getInstance().getData <unsigned> ("IEV");
-  ix = PhysicsData::getInstance().getData <unsigned> ("IX");
-  iy = PhysicsData::getInstance().getData <unsigned> ("IY");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
   mm = PhysicsData::getInstance().getData <vector<double> > ("MM");
   hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
   thev = PhysicsData::getInstance().getData <vector<double> > ("THEV");

@@ -89,10 +89,10 @@ protected: // data
   unsigned* nsp;
 
   /// global indeces
-  unsigned* ie;
-  unsigned* iev;
-  unsigned* ix;
-  unsigned* iy;
+  unsigned* IE;
+  unsigned* IEV;
+  unsigned* IX;
+  unsigned* IY;
 
   /// heat specific ratio
   double* gref;
