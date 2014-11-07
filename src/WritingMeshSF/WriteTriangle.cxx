@@ -29,7 +29,6 @@ ObjectProvider<WriteTriangle, WritingMesh> writeTriangleProv("WriteTriangle");
 WriteTriangle::WriteTriangle(const std::string& objectName) :
   WritingMesh(objectName)
 {
-  TNPOIN=0; ICHECK=0; nHoles=0;
 }
 
 //--------------------------------------------------------------------------//
@@ -66,7 +65,7 @@ void WriteTriangle::write()
   setAddress();
 
   string dummyfile;
-//  fname->at(0) = "na00001";
+  fname->at(0) = "na00001";
 
   // write node file
   dummyfile = fname->at(0)+".node";
@@ -78,6 +77,8 @@ void WriteTriangle::write()
 
   M02M1->resize(ilist+1); // c++ indeces start from 0
   M12M0->resize(ilist+1); // c++ indeces start from 0
+
+  TNPOIN = 0;
 
   // set map vector for nodcod
   setMapVectorForNodcod();
@@ -208,6 +209,8 @@ void WriteTriangle::writeDownstreamStatus()
 void WriteTriangle::writeBndfac()
 {
   int IBC;
+
+  ICHECK = 0;
   for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) {
    IBC = (*bndfac)(2,IFACE);
    if(IBC>0) { ++ICHECK; }
@@ -216,11 +219,8 @@ void WriteTriangle::writeBndfac()
 
   ICHECK=0;
 
-
   for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) { 
    IBC = (*bndfac)(2,IFACE);
-
-
 
    if(IBC>0) {
     ++ICHECK; 
@@ -237,6 +237,7 @@ void WriteTriangle::writeBndfac()
 
 void WriteTriangle::computenbHoles()
 {
+  nHoles = 0;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    nHoles = nHoles + nShockPoints->at(ISH)-2;
   }

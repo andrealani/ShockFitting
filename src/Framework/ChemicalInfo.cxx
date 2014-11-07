@@ -62,10 +62,6 @@ void ChemicalInfo::setup()
 {
   LogToScreen(VERBOSE, "ChemicalInfo::setup() => start\n");
 
-  setPhysicsData();
-
-  logfile.Open(getClassName());
-
   LogToScreen(VERBOSE, "ChemicalInfo::setup() => end\n");
 }
 
@@ -74,8 +70,6 @@ void ChemicalInfo::setup()
 void ChemicalInfo::unsetup()
 {
   LogToScreen(VERBOSE, "ChemicalInfo::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -83,6 +77,10 @@ void ChemicalInfo::unsetup()
 void ChemicalInfo::read()
 {
   LogToScreen(INFO, "ChemicalInfo::read()\n");
+
+  setPhysicsData();
+
+  logfile.Open(getClassName());
 
   setModel();
 
@@ -118,6 +116,9 @@ void ChemicalInfo::read()
    logfile("Model not implemented");
    exit(1);
   }
+
+  logfile.Close();
+
 }
 
 //--------------------------------------------------------------------------//

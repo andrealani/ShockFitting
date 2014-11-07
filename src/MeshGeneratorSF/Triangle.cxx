@@ -50,7 +50,7 @@ void Triangle::setup()
 
 void Triangle::unsetup()
 {
-  LogToScreen(VERBOSE, "Triangle::setup()\n");
+  LogToScreen(VERBOSE, "Triangle::unsetup()\n");
 }
 
 //--------------------------------------------------------------------------//

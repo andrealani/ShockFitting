@@ -59,10 +59,6 @@ void ReferenceInfo::setup()
 {
   LogToScreen(VERBOSE, "ReferenceInfo::setup() => start\n");
 
-  setPhysicsData();
-
-  logfile.Open(getClassName());
-
   LogToScreen(VERBOSE, "ReferenceInfo::setup() => end\n");
 }
 
@@ -71,8 +67,6 @@ void ReferenceInfo::setup()
 void ReferenceInfo::unsetup()
 {
   LogToScreen(VERBOSE, "ReferenceInfo::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -81,9 +75,15 @@ void ReferenceInfo::read()
 {
   LogToScreen(INFO, "ReferenceInfo::read()\n");
 
+  setPhysicsData();
+
+  logfile.Open(getClassName());
+
   setReferenceParam();
 
   if (model->at(0)=="TCneq") {TCneqAdim();}
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//

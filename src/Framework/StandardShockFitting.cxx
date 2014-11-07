@@ -134,10 +134,6 @@ void StandardShockFitting::process()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::process() => start\n");
 
-
-  vector<string>* fname = 
-   MeshData::getInstance().getData <vector <string> > ("FNAME");
-
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
   PhysicsData::getInstance().getReferenceInfo()->read();
@@ -157,15 +153,13 @@ void StandardShockFitting::process()
   m_computeShockLayer->remesh();
   m_fixMeshSpecialPoints->remesh();
 
-  fname->at(0) = "na00001";
-
   m_writeTriangleFile->write();
 
   m_callTriangle->generate();
 
   m_triangleToCFmesh->convert();
 
-//  m_COOLFluiD->call();
+  m_COOLFluiD->call();
 
   m_CFmeshToTriangle->convert();
 
@@ -187,16 +181,6 @@ void StandardShockFitting::process()
   m_writeShockInfo->write();
 
   m_meshRestore->copy();
-
-/////  secondo step
-  m_findPhantPoints->remesh();
-  m_changeBndryPoints->remesh();
-  m_computeNormalVector->remesh();
-  m_computeShockLayer->remesh();
-  m_fixMeshSpecialPoints->remesh();
- 
-  fname->at(0) = "na00002";
-
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

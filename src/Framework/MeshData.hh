@@ -4,11 +4,8 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-//#ifndef ShockFitting_MeshData_hh
-//#define ShockFitting_MeshData_hh
-
-#ifndef MeshData_hh
-#define MeshData_hh
+#ifndef ShockFitting_MeshData_hh
+#define ShockFitting_MeshData_hh
 
 //--------------------------------------------------------------------------//
 
@@ -20,7 +17,7 @@
 
 //--------------------------------------------------------------------------//
 
-//namespace Shockfitting {
+namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
@@ -201,7 +198,7 @@ private: // data (read from input file)
 
 //--------------------------------------------------------------------------//
 
-//} // namespace ShockFitting
+} // namespace ShockFitting
 
 //--------------------------------------------------------------------------//
 

@@ -66,8 +66,6 @@ void PhysicsInfo::setup()
 {
   LogToScreen(VERBOSE, "PhysicsInfo::setup() => start\n");
 
-  setPhysicsData();
-
   LogToScreen(VERBOSE, "PhysicsInfo::setup() => end\n");
 }
 
@@ -83,6 +81,8 @@ void PhysicsInfo::unsetup()
 void PhysicsInfo::read()
 {
   LogToScreen(INFO, "PhysicsInfo::read()\n");
+
+  setPhysicsData();
 
   *ndim = m_ndim;
   *gam = m_gam;

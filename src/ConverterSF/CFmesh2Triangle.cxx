@@ -124,7 +124,10 @@ void CFmesh2Triangle::readCFmeshFmt()
 
   // reading file
   ifstream file;
-  file.open("cfout.CFmesh_prova");
+
+  string cfoutCFmesh = "cfout.CFmesh_prova";
+
+  file.open(string(cfoutCFmesh).c_str());
 
   // read number of the first dummy strings
   do {
@@ -132,7 +135,7 @@ void CFmesh2Triangle::readCFmeshFmt()
    if (skipver == "!NB_DIM") { file.close(); break; }
    ++LSKIP; } while(skipver != "!NB_DIM");
 
-  file.open("cfout.CFmesh_prova");
+  file.open(string(cfoutCFmesh).c_str());
   // read !COOLFLUID_VERSION coolfluidVersion
   // read !COOLFLUID_SVNVERSION coolfluidSvnVersion
   // read !CFMESH_FORMAT_VERSIONE cfmeshFmtversion
@@ -196,7 +199,7 @@ void CFmesh2Triangle::readCFmeshFmt()
 
   // read mesh points coordinates, mesh points status, the mesh connectivity,
   // the boundary structure and the solution from CFmesh file
-  file.open("cfout.CFmesh_prova");
+  file.open(string(cfoutCFmesh).c_str());
 
   // read !COOLFLUID_VERSION coolfluidVersion
   // read !COOLFLUID_SVNVERSION coolfluidSvnVersion
@@ -207,7 +210,8 @@ void CFmesh2Triangle::readCFmeshFmt()
    if (skipver == "!NB_DIM") { file.close(); break; }
    ++LSKIP; } while(skipver != "!NB_DIM");
 
-  file.open("cfout.CFmesh_prova");
+
+  file.open(string(cfoutCFmesh).c_str());
   ISKIP=0;
   // read !NB_DIM ndim
   // read !NB_EQ ndof
