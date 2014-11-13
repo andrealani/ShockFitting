@@ -10,6 +10,7 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Isortrx.hh"
 #include "MathTools/Binsrc.hh"
@@ -67,7 +68,6 @@ void BndryNodePtr::remesh()
   logfile.Open(getClassName());
 
   setMeshData();
-  setPhysicsData();
 
   setBndryNodePtr();
 
@@ -195,7 +195,9 @@ void BndryNodePtr::getnbBndryPoints()
 void BndryNodePtr::setAddress()
 {
   unsigned start = 0;
-  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  unsigned totsize = nbfac->at(0) + 2 *
+                                    PhysicsInfo::getnbShMax() *
+                                    PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(start));
 }
@@ -211,14 +213,6 @@ void BndryNodePtr::setMeshData()
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   nodptrVect = MeshData::getInstance().getData <vector<int> >("NODPTR");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
-}
-
-//--------------------------------------------------------------------------//
-
-void BndryNodePtr::setPhysicsData()
-{
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

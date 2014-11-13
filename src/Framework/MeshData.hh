@@ -31,20 +31,12 @@ public:
   virtual void setup()
   { 
     setMeshData();
-    *eps = m_eps;
-    *sndmin = m_sndmin;
-    *dxcell = m_dxcell;
-    *shrelax = m_shrelax;
-    *ibak = m_ibak;
-    *naddholes = m_naddholes;
-    if ( (*naddholes) != 0 ) {
-     caddholes->resize( 2 * (*naddholes) );
+    if ( m_naddholes != 0 ) {
+     caddholes->resize( 2 * m_naddholes );
      for (unsigned i=0; i<caddholes->size(); i++) {
      caddholes->at(i) = m_caddholes.at(i);}
     }
     else {caddholes->resize(1); caddholes->at(0)=m_caddholes.at(0);}
-    *nproc = m_nproc;
-
   }
 
   /// Unset up this object before its first use
@@ -65,6 +57,13 @@ public:
    m_mapName2ArrayMD[name] = (void*)(dataArray);
   }
 
+  template <typename ARRAYMD>
+  void createData(const std::string& name)
+  {
+   ARRAYMD* dataArray = new ARRAYMD();
+   m_mapName2ArrayMD[name] = (void*)(dataArray);
+  }
+
   /// delete data with a given size, type and name
   template <typename ARRAYMD>
    void deleteData(const std::string& name)
@@ -75,34 +74,73 @@ public:
   /// get the name of the parent
   std::string getParentName() const {return std::string("MeshData");}
 
+  /// get the number of starting step
+  unsigned getnbBegin() const { return m_nbegin; }
+
+  /// get the number of steps
+  unsigned getnbSteps() const { return m_nsteps; }
+
+  /// get the number of processors
+  unsigned getnbProcessors() const { return m_nproc; }
+
+  /// set the i-step
+  void setIstep(unsigned istep) { m_istep = istep; }
+
+  /// get the i-step
+  unsigned getIstep() const { return m_istep; }
+
+  /// get number of iterations before saving solution
+  unsigned getnbIbak() const { return m_ibak; }
+
+  /// get distance between two shock faces
+  double getEPS() const { return m_eps; }
+
+  /// get the max non dimensional distance of phantom nodes
+  double getSNDMIN() const { return m_sndmin; }
+
+  /// get the length of the shock edges
+  double getDXCELL() const {return m_dxcell; }
+
+  /// get the relax coefficient of the shock points integration
+  double getSHRELAX() const { return m_shrelax; }
+
+  /// get the bumber of additional holes
+  unsigned getnbAddHoles() const { return m_naddholes; }
+
 private:
 
   MeshData() : SConfig::ConfigObject("MeshData") 
   {
     m_eps = 0;
     addOption("EPS",&m_eps,
-            "Distance between two shock faces");
+             "Distance between two shock faces");
     m_sndmin = 0;
     addOption("SNDMIN",&m_sndmin,
-            "Max non dimensional distance of phantom nodes");
+             "Max non dimensional distance of phantom nodes");
     m_dxcell = 0;
     addOption("DXCELL",&m_dxcell,
-            "Length of the shock edges");
+             "Length of the shock edges");
     m_shrelax = 0;
     addOption("SHRELAX",&m_shrelax,
-            "Relax Coefficient of shock points integration");
+             "Relax Coefficient of shock points integration");
     m_ibak = 1;
     addOption("IBAK",&m_ibak,
-            "Number of iterations before saving solution",true);
+             "Number of iterations before saving solution",true);
     m_naddholes = 0;
     addOption("Naddholes",&m_naddholes,
-            "Number of hole points");
+             "Number of hole points");
     m_caddholes = std::vector <double>();
     addOption("CADDholes",&m_caddholes,
-            "Holes points coordinates");
+             "Holes points coordinates");
     m_nproc = 1;
     addOption("NPROC",&m_nproc,
-            "Number of processor");
+             "Number of processor");
+    m_nbegin = 0;
+    addOption("NBegin",&m_nbegin,
+              "Number of starting step");
+    m_nsteps = 1;
+    addOption("NSteps",&m_nsteps,
+              "Number of steps");
    }
   
    MeshData(MeshData&) : SConfig::ConfigObject("MeshData") {}
@@ -121,15 +159,8 @@ private: // helper functions
 
   void setMeshData()
   {
-    eps = MeshData::getInstance().getData <double> ("EPS");
-    sndmin = MeshData::getInstance().getData <double> ("SNDMIN");
-    dxcell = MeshData::getInstance().getData <double> ("DXCELL");
-    shrelax = MeshData::getInstance().getData <double> ("SHRELAX");
-    ibak = MeshData::getInstance().getData <unsigned> ("IBAK");
-    naddholes = MeshData::getInstance().getData <unsigned> ("Naddholes");
     caddholes = 
       MeshData::getInstance().getData < std::vector<double> > ("CADDholes");
-    nproc = MeshData::getInstance().getData <unsigned> ("NPROC");
   }
 
 private: // data
@@ -153,6 +184,12 @@ private: // data (read from input file)
   /// number of iterations before saving solution
   unsigned m_ibak;
 
+  /// number of strating step
+  unsigned m_nbegin;
+
+  /// number of steps
+  unsigned m_nsteps;
+
   /// number of hole points
   unsigned m_naddholes;
 
@@ -162,38 +199,12 @@ private: // data (read from input file)
   /// number of processor
   unsigned m_nproc;
 
-  /// distance between two shock faces
-  /// (assignable to MeshData)
-  double* eps;
-
-  /// max non dimensional distance of phantom nodes
-  /// (assignable to MeshData)
-  double* sndmin;
-
-  /// length of the shock edges
-  /// (assignable to MeshData)
-  double* dxcell;
-
-  /// relax coefficient for shock points integration
-  /// (assignable to MeshData)
-  double* shrelax;
-
-  /// number of iterations before saving solution
-  /// (assignable to MeshData)
-  unsigned* ibak;
-
-  /// number of hole points
-  /// (assignable to MeshData)
-  unsigned* naddholes;
+  /// current executing step
+  unsigned m_istep;
 
   /// hole points coordinates
   /// (assignable to MeshData)
   std::vector <double>* caddholes;
-
-  /// number of processor
-  /// (assignable to MeshData)
-  unsigned* nproc;
-
 };
 
 //--------------------------------------------------------------------------//

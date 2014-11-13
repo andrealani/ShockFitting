@@ -57,15 +57,6 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
   /// number of mesh points
   std::vector<unsigned>* npoin;
 

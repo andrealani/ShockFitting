@@ -7,6 +7,7 @@
 #include "Framework/ChemicalInfo.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -52,6 +53,18 @@ ChemicalInfo::ChemicalInfo(const std::string& objectName) :
 
 //--------------------------------------------------------------------------//
 
+string ChemicalInfo::m_model="dummymodel";
+
+//--------------------------------------------------------------------------//
+
+string ChemicalInfo::m_mixture="dummymixture";
+
+//--------------------------------------------------------------------------//
+
+double ChemicalInfo::m_Qref=0;
+
+//--------------------------------------------------------------------------//
+
 ChemicalInfo::~ChemicalInfo()
 {
 }
@@ -82,7 +95,7 @@ void ChemicalInfo::read()
 
   logfile.Open(getClassName());
 
-  setModel();
+  logfile("Thermodynamic model: ",m_model, "\n");
 
   if (m_model == "PG") {
    (*nsp) = 1; (*ndof)=4;
@@ -91,7 +104,8 @@ void ChemicalInfo::read()
 
   else if (m_model == "Cneq" || m_model == "TCneq") {
 
-   setMixture(); 
+   logfile("File mixture data: ",getInputFiles(),"\n");
+
    file.open(getInputFiles().c_str());
 
    setMixtureFileName();
@@ -129,24 +143,6 @@ std::string ChemicalInfo::getInputFiles() const
   assert(m_inputFile.size()==1);
   string name = m_inputFile[0];
   return name;
-}
-
-//--------------------------------------------------------------------------//
-
-void ChemicalInfo::setModel()
-{
-  model->resize(1);
-  model->at(0) = m_model;
-  logfile("Thermodynamic model: ",m_model, "\n");
-}
-
-//--------------------------------------------------------------------------//
-
-void ChemicalInfo::setMixture() 
-{
-  mixture->resize(1);
-  mixture->at(0) = m_mixture;
-  logfile("File mixture data: ",getInputFiles(),"\n");
 }
 
 //--------------------------------------------------------------------------//
@@ -203,7 +199,7 @@ void ChemicalInfo::setFormEnthalp()
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    file >> hf->at(ISP);
    logfile(hf->at(ISP)," ");
-   if (mixture->at(0)=="ar4") { hf->at(ISP) = hf->at(ISP)/(m_Qref*m_Qref);}
+   if (m_mixture=="ar4") { hf->at(ISP) = hf->at(ISP)/(m_Qref*m_Qref);}
   }
 }
 
@@ -275,8 +271,10 @@ void ChemicalInfo::setGlobalIndex()
 
 void ChemicalInfo::setnbDof()
 {
-  if (m_model=="Cneq") { (*ndof)=(*nsp)+(*ndim)+1; }
-  else if (m_model =="TCneq") { (*ndof)=(*nsp)+(*ndim)+2; }
+  if (m_model=="Cneq") 
+   { (*ndof)=(*nsp)+PhysicsInfo::getnbDim()+1; }
+  else if (m_model =="TCneq") 
+   { (*ndof)=(*nsp)+PhysicsInfo::getnbDim()+2; }
   else {
    logfile("Model not implemented");
    exit(1);
@@ -288,12 +286,7 @@ void ChemicalInfo::setnbDof()
 
 void ChemicalInfo::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  model =
-    PhysicsData::getInstance().getData <vector<string> > ("MODEL");
-  mixture =
-    PhysicsData::getInstance().getData <vector<string> > ("MIXTURE");
   ie = PhysicsData::getInstance().getData <unsigned> ("IE");
   ix = PhysicsData::getInstance().getData <unsigned> ("IX");
   iy = PhysicsData::getInstance().getData <unsigned> ("IY");

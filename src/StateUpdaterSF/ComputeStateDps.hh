@@ -70,20 +70,8 @@ protected: // functions
 
 protected: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
-
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shock points
-  unsigned* npshmax;
 
   /// number of species
   unsigned* nsp;

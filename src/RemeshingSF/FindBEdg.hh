@@ -41,9 +41,6 @@ private: // helper functions
   /// assign values used in FindBEdg to MeshData pattern
   void setMeshData();
 
-  /// assign values used in FindBEdg to PhysicsData pattern
-  void setPhysicsData();
-
   /// assign start pointers of Array2D and 3D
   void setAddress();
 
@@ -52,15 +49,6 @@ private: // data
   /// value computed by class
   double s;
 
-  /// space dimension
-  unsigned* ndim;
-
-  /// max number of shocks
-  unsigned* nshmax;
-  
-  /// max number of shock edges
-  unsigned* neshmax;
-  
   /// number of boundar faces
   std::vector<unsigned>* nbfac;
 

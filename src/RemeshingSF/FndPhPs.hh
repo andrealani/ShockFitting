@@ -74,23 +74,17 @@ private: // helper functions
   
 protected: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of vertices of a cell (=3);
   unsigned* nvt;
 
   /// number of shocks
-  unsigned* r_nShocks;
+  unsigned* nShocks;
 
   /// number of phantom points
-  unsigned* r_nPhanPoints;
+  unsigned* nPhanPoints;
 
   /// number of boundary phantom points
-  unsigned* r_nBoundPhanPoints;
-
-  /// Max non dimensional distance of phantom nodes
-  double* SNDmin;
+  unsigned* nBoundPhanPoints;
 
   /// number of elements in the mesh
   std::vector<unsigned>* nelem;
@@ -102,7 +96,7 @@ protected: // data
   std::vector<unsigned>* nedge;
 
   /// number of shock edges for each shock
-  std::vector <unsigned>* r_nShockEdges;
+  std::vector <unsigned>* nShockEdges;
 
   /// code characterizing mesh points
   std::vector <int>* nodcod;
@@ -122,7 +116,7 @@ protected: // data
   Array2D <int>* celnod;
 
   /// shock points coordinates
-  Array3D <double>* r_XYSh;
+  Array3D <double>* XYSh;
 
   /// dummy variable used as index
   unsigned ISH;

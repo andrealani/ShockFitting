@@ -9,6 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
+#include <sstream>
 #include "SConfig/StringManip.hh"
 #include "Framework/Connectivity.hh"
 #include "Framework/FileLogManip.hh"
@@ -106,20 +107,8 @@ private: // helper functions
 
 private: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// max number of degrees of freedom
   unsigned* ndofmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shock elements for each shock
-  unsigned* neshmax;
 
   /// number of degrees of freedom
   unsigned* ndof;
@@ -193,7 +182,7 @@ private: // data
   Array2D <int>* edgptr;
 
   /// name of the reading current file
-  std::vector<std::string>* fname;
+  std::stringstream* fname;
 
   /// bool checking if the fname is already read from the input.case
   /// firstRead=1 not already read from the input.case

@@ -47,7 +47,16 @@ public:
 
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}
-  
+ 
+  /// get model name
+  static std::string getModel() { return m_model; }
+
+  /// get mixture name
+  static std::string getMixture() { return m_mixture; }
+
+  /// get reference speed
+  static double getQref() { return m_Qref; }
+ 
 protected:
   
   /// Configures the options for this object.
@@ -69,14 +78,8 @@ private: // helper functions
   /// resize vectors
   void setSize();
 
-  /// set gas model
-  void setModel();
-
   /// set mixture name in the mixture file
   void setMixtureFileName();
-
-  /// set gas mixture
-  void setMixture();
 
   /// set global indeces
   void setGlobalIndex();
@@ -112,7 +115,7 @@ private: // data
 
   /// reference speed
   /// used only if MODEL = Cneq && MIXTURE= ar4
-  double m_Qref;
+  static double m_Qref;
 
   /// global index
   unsigned m_IE;
@@ -127,16 +130,13 @@ private: // data
   unsigned m_IEV;
 
   /// model
-  std::string m_model;
+  static std::string m_model;
 
   /// mixture
-  std::string m_mixture;
+  static std::string m_mixture;
 
   /// file reads the mixture data
   std::vector<std::string> m_inputFile;
-
-  /// space dimension
-  unsigned* ndim;
 
   /// number of degrees of freedom
   unsigned* ndof;
@@ -155,12 +155,6 @@ private: // data
 
   /// global index (assignable to PhysicsData) 
   unsigned* iev;
-
-  ///  model (assignable to PhysicsData)
-  std::vector <std::string>* model;
-
-  /// mixture (assignable to PhysicsData)
-  std::vector <std::string>* mixture;
 
   /// number of the chemical species
   unsigned* nsp;

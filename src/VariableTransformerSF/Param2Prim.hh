@@ -81,44 +81,11 @@ protected: // functions
 
 protected: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shock points for each shock
-  unsigned* npshmax;
-
   /// number of species
   unsigned* nsp;
-
-  /// gas constant (value read by ReferenceInfo)
-  double* Rgas;
-
-  /// heat specific ratio (value read by ReferenceInfo)
-  double* gam;
-
-  /// freestream temperature
-  double* Tref;
-
-  /// freestream pressure  
-  double* pref;
-
-  /// reference density 
-  double* rhoref;
-
-  /// freestream velocity
-  double* uref;
-
-  /// reference length
-  double* Lref;
 
   /// global indeces
   unsigned* IX;

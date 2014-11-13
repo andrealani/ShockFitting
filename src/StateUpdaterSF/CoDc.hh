@@ -52,9 +52,6 @@ private: // helper functions
 
 private: // data
 
-  /// gas model
-  std::vector<std::string>* model;
-
   /// specific heat ratio
    double* gam;
 

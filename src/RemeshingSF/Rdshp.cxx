@@ -52,8 +52,6 @@ void Rdshp::callRdshp ()
   double xi, yi;
   double rlsh2, rlsh3, rl2;
 
-  setSNDMIN();
-
   rdshp = -1;
   a(0,0) = (ys2-ys1);
   a(0,1) = (xs1-xs2);
@@ -68,7 +66,10 @@ void Rdshp::callRdshp ()
   yi = x.at(1);
 
   rlsh2 = (xs1-xs2)*(xs1-xs2)+(ys1-ys2)*(ys1-ys2);
-  rlsh3=((1.0+(*SNDmin))*(1.0+(*SNDmin))+(*SNDmin)*(*SNDmin))*rlsh2;
+  rlsh3=((1.0+(MeshData::getInstance().getSNDMIN())) * 
+         (1.0+MeshData::getInstance().getSNDMIN()) +
+         (MeshData::getInstance().getSNDMIN()) * 
+         (MeshData::getInstance().getSNDMIN()))*rlsh2;
   rl2 = (xs1-xi)*(xs1-xi)+(ys1-yi)*(ys1-yi)+
         (xs2-xi)*(xs2-xi)+(ys2-yi)*(ys2-yi);
   if (rlsh3 < rl2) {return;}
@@ -76,13 +77,6 @@ void Rdshp::callRdshp ()
   rdshp = rdshp/rlsh2;
   rdshp = sqrt(rdshp);
   return;
-}
-
-//--------------------------------------------------------------------------//
-
-void Rdshp::setSNDMIN ()
-{
-  SNDmin = MeshData::getInstance().getData <double>("SNDMIN");
 }
 
 //--------------------------------------------------------------------------//

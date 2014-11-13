@@ -10,6 +10,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -117,8 +118,8 @@ void CoPntDispl::remesh()
 
 void CoPntDispl::setNodCodSh()
 {
-  for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) {
+  for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     (*NodCodSh)(I,ISH) = -99;
    }
   }
@@ -132,10 +133,14 @@ void CoPntDispl::addSecondShockLayer()
    for(unsigned i=0; i<nShockPoints->at(ish); i++) {
     dx = (*vShNor)(0,i,ish);
     dy = (*vShNor)(1,i,ish);
-    (*XYShu)(0,i,ish) = (*XYSh)(0,i,ish) + 0.5 * (*eps) * dx;
-    (*XYShu)(1,i,ish) = (*XYSh)(1,i,ish) + 0.5 * (*eps) * dy;
-    (*XYShd)(0,i,ish) = (*XYSh)(0,i,ish) - 0.5 * (*eps) * dx;
-    (*XYShd)(1,i,ish) = (*XYSh)(1,i,ish) - 0.5 * (*eps) * dy;
+    (*XYShu)(0,i,ish) = (*XYSh)(0,i,ish) + 
+                        0.5 * (MeshData::getInstance().getEPS()) * dx;
+    (*XYShu)(1,i,ish) = (*XYSh)(1,i,ish) + 
+                        0.5 * (MeshData::getInstance().getEPS()) * dy;
+    (*XYShd)(0,i,ish) = (*XYSh)(0,i,ish) - 
+                        0.5 * (MeshData::getInstance().getEPS()) * dx;
+    (*XYShd)(1,i,ish) = (*XYSh)(1,i,ish) - 
+                        0.5 * (MeshData::getInstance().getEPS()) * dy;
 
     (*NodCodSh)(i,ish) = 10;
    }
@@ -152,10 +157,10 @@ void CoPntDispl::setCoorForIPXorOPXorWPNRX(unsigned ISPPNTS)
   dy = (*vShNor)(1,IP.at(0),ISH.at(0));
 
   (*XYShu)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0))
-                                    + 0.5 * (*eps)/dx;
+                                    + 0.5 * (MeshData::getInstance().getEPS())/dx;
   (*XYShu)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
   (*XYShd)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0))
-                                    - 0.5 * (*eps)/dx;
+                                    - 0.5 * (MeshData::getInstance().getEPS())/dx;
   (*XYShd)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0));
 }
 
@@ -170,10 +175,10 @@ void CoPntDispl::setCoorForIPYorOPYorWPNRY(unsigned ISPPNTS)
 
   (*XYShu)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
   (*XYShu)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0)) 
-                                   + 0.5 * (*eps)/dy;
+                                   + 0.5 * (MeshData::getInstance().getEPS())/dy;
   (*XYShd)(0,IP.at(0),ISH.at(0)) = (*XYSh)(0,IP.at(0),ISH.at(0));
   (*XYShd)(1,IP.at(0),ISH.at(0)) = (*XYSh)(1,IP.at(0),ISH.at(0)) 
-                                   - 0.5 * (*eps)/dy;
+                                   - 0.5 * (MeshData::getInstance().getEPS())/dy;
 }
 
 //--------------------------------------------------------------------------//
@@ -229,16 +234,20 @@ void CoPntDispl::superimposeDiscPoints(string discState1, unsigned IP1,
                                        unsigned ISH2)
 {
   Array3D <double>* XYSh1 = 
-    new Array3D <double>(*ndim,*npshmax,*nshmax);
+    new Array3D <double>(PhysicsInfo::getnbDim(),
+                         PhysicsInfo::getnbShPointsMax(),
+                         PhysicsInfo::getnbShMax());
   Array3D <double>* XYSh2 = 
-    new Array3D <double>(*ndim,*npshmax,*nshmax);
+    new Array3D <double>(PhysicsInfo::getnbDim(),
+                         PhysicsInfo::getnbShPointsMax(),
+                         PhysicsInfo::getnbShMax());
 
   if (discState1=="up")   {XYSh1 = XYShu;}
   if (discState1=="down") {XYSh1 = XYShd;}
   if (discState2=="up")   {XYSh2 = XYShu;}
   if (discState2=="down") {XYSh2 = XYShd;}
 
-  for(unsigned K=0; K<(*ndim); K++) {
+  for(unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
    dum = 0.5 * ((*XYSh1)(K,IP1,ISH1)+(*XYSh2)(K,IP2,ISH2));
    (*XYSh1)(K,IP1,ISH1) = dum;
    (*XYSh2)(K,IP2,ISH2) = dum;
@@ -256,11 +265,11 @@ void CoPntDispl::setCoorForRRX(unsigned ISPPNTS)
 
   for (unsigned i=0; i<2; i++) {
    (*XYShu)(0,IP.at(i),ISH.at(i)) = (*XYSh)(0,IP.at(i),ISH.at(i)) 
-				    + 0.5 * (*eps)/dx;
+				    + 0.5 * (MeshData::getInstance().getEPS())/dx;
    (*XYShu)(1,IP.at(i),ISH.at(i)) = (*XYSh)(1,IP.at(i),ISH.at(i)); 
 
    (*XYShd)(0,IP.at(i),ISH.at(i)) = (*XYSh)(0,IP.at(i),ISH.at(i))
-                                    - 0.5 * (*eps)/dx;
+                                    - 0.5 * (MeshData::getInstance().getEPS())/dx;
    (*XYShd)(1,IP.at(i),ISH.at(i)) = (*XYSh)(1,IP.at(i),ISH.at(i));
   }
 
@@ -516,11 +525,11 @@ void CoPntDispl::moveDiscontinuity(unsigned IP, unsigned ISH)
   tx = tx/dum;
   ty = ty/dum;
 
-  (*XYShu)(0,IP,ISH) = (*XYShu)(0,IP,ISH) + (*eps) * tx;
-  (*XYShu)(1,IP,ISH) = (*XYShu)(1,IP,ISH) + (*eps) * ty;
+  (*XYShu)(0,IP,ISH) = (*XYShu)(0,IP,ISH) + (MeshData::getInstance().getEPS())*tx;
+  (*XYShu)(1,IP,ISH) = (*XYShu)(1,IP,ISH) + (MeshData::getInstance().getEPS())*ty;
 
-  (*XYShd)(0,IP,ISH) = (*XYShd)(0,IP,ISH) + (*eps) * tx;
-  (*XYShd)(1,IP,ISH) = (*XYShd)(1,IP,ISH) + (*eps) * ty;
+  (*XYShd)(0,IP,ISH) = (*XYShd)(0,IP,ISH) + (MeshData::getInstance().getEPS())*tx;
+  (*XYShd)(1,IP,ISH) = (*XYShd)(1,IP,ISH) + (MeshData::getInstance().getEPS())*ty;
 }
 
 //--------------------------------------------------------------------------//
@@ -542,16 +551,30 @@ void CoPntDispl::setAddress()
 {
   unsigned start;
   start = npoin->at(0);
-  NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
+  NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &nodcod->at(start));
   start = npoin->at(0)*(*ndof);
   ZRoeShu =
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
-  start = npoin->at(0) * (*ndim);
+    new Array3D <double> ((*ndof),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroe->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim();
   XYShu =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coor->at(start));
-  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
+    new Array3D <double> (PhysicsInfo::getnbDim(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &coor->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim() + 
+          PhysicsInfo::getnbShPointsMax() * 
+          PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDim();
   XYShd =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coor->at(start));
+    new Array3D <double> (PhysicsInfo::getnbDim(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &coor->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -559,7 +582,6 @@ void CoPntDispl::setAddress()
 void CoPntDispl::setMeshData()
 {
   npoin = MeshData::getInstance().getData <vector<unsigned> >("NPOIN");
-  eps = MeshData::getInstance().getData <double> ("EPS");
   nodcod = MeshData::getInstance().getData <vector<int> > ("NODCOD");
   zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
   coor = MeshData::getInstance().getData <vector<double> > ("COOR");
@@ -569,10 +591,7 @@ void CoPntDispl::setMeshData()
 
 void CoPntDispl::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nSpecPoints = 
         PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");

@@ -9,6 +9,7 @@
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //--------------------------------------------------------------------------//
@@ -95,8 +96,9 @@ void ReSdwInfo::readShockInfo()
   // initialize NODCODSH which is part of NODCOD
   // If the code -99 is used this means no shock point
   // If the code 10 is used this means shock point
-  for (unsigned ISH=0; ISH < (*nshmax); ISH++) {
-    for (unsigned K=0; K < (*npshmax); K++) {(*NodCodSh)(K,ISH) = -99;}
+  for (unsigned ISH=0; ISH < PhysicsInfo::getnbShMax(); ISH++) {
+    for (unsigned K=0; K < PhysicsInfo::getnbShPointsMax(); K++)
+     {(*NodCodSh)(K,ISH) = -99;}
   }
   logfile("Open sh00.dat\n");
 
@@ -112,7 +114,7 @@ void ReSdwInfo::readShockInfo()
 
    (*nShockEdges)[ISH] = (*nShockPoints)[ISH]-1;
    for (unsigned K=0; K < (*nShockPoints)[ISH]; K++) {
-    for (unsigned I=0; I < (*ndim); I++) {
+    for (unsigned I=0; I <PhysicsInfo::getnbDim(); I++) {
      file >> (*XYSh)(I,K,ISH);
      logfile((*XYSh)(I,K,ISH)," ");
     }
@@ -247,14 +249,20 @@ void ReSdwInfo::setSHinSPPs(unsigned NSHE, unsigned ISPPNTS)
 
 void ReSdwInfo::setSize()
 {
-  nShockPoints->resize((*nshmax));
-  nShockEdges->resize((*nshmax));
+  nShockPoints->resize(PhysicsInfo::getnbShMax());
+  nShockEdges->resize(PhysicsInfo::getnbShMax());
   typeSpecPoints->resize((*nSpecPoints));
-  typeSh->resize((*nshmax));
-  XYSh->resize((*ndim),(*npshmax),(*nshmax));
-  ZRoeShuOld->resize((*ndofmax),(*npshmax),(*nshmax));
-  ZRoeShdOld->resize((*ndof),(*npshmax),(*nshmax));
-  SHinSPPs->resize(2,5,(*nspmax));
+  typeSh->resize(PhysicsInfo::getnbShMax());
+  XYSh->resize(PhysicsInfo::getnbDim(),
+               PhysicsInfo::getnbShPointsMax(),
+               PhysicsInfo::getnbShMax());
+  ZRoeShuOld->resize(PhysicsInfo::getnbDofMax(),
+                     PhysicsInfo::getnbShPointsMax(),
+                     PhysicsInfo::getnbShMax());
+  ZRoeShdOld->resize((*ndof),
+                     PhysicsInfo::getnbShPointsMax(),
+                     PhysicsInfo::getnbShMax());
+  SHinSPPs->resize(2,5,PhysicsInfo::getnbSpecPointsMax());
 }
 
 //--------------------------------------------------------------------------//
@@ -263,13 +271,24 @@ void ReSdwInfo::setAddress()
 {
   unsigned start;
   start = npoin->at(0);
-  NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
+  NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &nodcod->at(start));
   start = npoin->at(0)*(*ndof);
   ZRoeShu = 
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+    new Array3D <double> ((*ndof),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroe->at(start));
+  start = npoin->at(0) * (*ndof) + 
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          (*ndof);
   ZRoeShd = 
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
+    new Array3D <double> ((*ndof),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroe->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -286,11 +305,6 @@ void ReSdwInfo::setMeshData()
 void ReSdwInfo::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  nspmax = PhysicsData::getInstance().getData <unsigned> ("NSPMAX");
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints = 
      PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");

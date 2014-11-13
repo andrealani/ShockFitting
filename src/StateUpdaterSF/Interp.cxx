@@ -8,6 +8,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Area.hh"
 #include "MathTools/Jcycl.hh"
 #include "MathTools/MinMax.hh"
@@ -83,11 +84,12 @@ void Interp::update()
   // NOT the one on the background mesh
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for(unsigned IPOIN=0; IPOIN<nShockPoints->at(ISH); IPOIN++)  {
-    I1 = ISH * (*npshmax) + IPOIN; // c++ indeces start from 0
+    I1 = ISH * PhysicsInfo::getnbShMax() + IPOIN; //c++ indeces start from 0
     JPOIN = M02M12->at(I1);
     (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
     (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
-    I2 = I1 + (*nshmax) * (*npshmax);
+    I2 = I1 + PhysicsInfo::getnbShMax() *
+              PhysicsInfo::getnbShMax();
     JPOIN = M02M12->at(I2);
     (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
     (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
@@ -109,7 +111,8 @@ void Interp::update()
     logfile("Found in cell ",getCell()," ",getIfound(), "\n");
     if(getIfound()!=0) {
      logfile("Search failed for vertex ", IPOIN, "\n");
-     for(unsigned I=0; I<(*ndim); I++) { logfile((*XYBkg)(I,IPOIN), " "); }
+     for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)
+      { logfile((*XYBkg)(I,IPOIN), " "); }
      logfile ("\ncell no. is ",getCell(),"\n");
      exit(1);
     }
@@ -210,32 +213,53 @@ void Interp::setAddress()
 {
   unsigned start;
   start = 0;
-  XYBkg = new Array2D<double>((*ndim) , 
-                              npoin->at(0) + 2 * (*nshmax) * (*npshmax), 
+  XYBkg = new Array2D<double>(PhysicsInfo::getnbDim() , 
+                              npoin->at(0) + 2 *
+                              PhysicsInfo::getnbShPointsMax() *
+                              PhysicsInfo::getnbShMax(), 
                               &coorVect->at(start));
-  zBkg = new Array2D<double>((*ndofmax) ,
-                              npoin->at(0) + 2 * (*nshmax) * (*npshmax),
+  zBkg = new Array2D<double>(PhysicsInfo::getnbDofMax() ,
+                              npoin->at(0) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax(),
                               &zroeVect->at(start));
-  start = (*ndim) * (npoin->at(0)-1 + 2 * (*nshmax) * (*npshmax));
-  XY = new Array2D <double> ((*ndim),
-                             (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+  start = PhysicsInfo::getnbDim() *
+          (npoin->at(0)-1 + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
                              &coorVect->at(start));
-  start = (*ndofmax) * (npoin->at(0)-1 + 2 * (*nshmax) * (*npshmax));
-  zroe = new Array2D <double>((*ndofmax),
-                              (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+  start = PhysicsInfo::getnbDofMax() * 
+          (npoin->at(0)-1 + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  zroe = new Array2D <double>(PhysicsInfo::getnbDofMax(),
+                              (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
                               &zroeVect->at(start));
   start = (*nvt) * nelem->at(0);
   celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
   // XYShu and XYShd have the starting pointers referred to shocked mesh
-  start = npoin->at(0) * (*ndim) +
-          (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  XYShu = new Array3D <double> ((*ndim),(*npshmax),(*nshmax),
+  start = npoin->at(0) * PhysicsInfo::getnbDim() +
+          PhysicsInfo::getnbDim() *
+          (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  XYShu = new Array3D <double> (PhysicsInfo::getnbDim(),
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
-  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim) + 
-          (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  XYShd = new Array3D <double> ((*ndim),(*npshmax),(*nshmax),
+  start = npoin->at(0) * PhysicsInfo::getnbDim() +
+          PhysicsInfo::getnbDim() * 
+          (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  XYShd = new Array3D <double> (PhysicsInfo::getnbDim(),
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
-  M02M12 = new vector<int>(2 * (*nshmax) * (*npshmax));
+  M02M12 = new vector<int>(2 * PhysicsInfo::getnbShMax() *
+                               PhysicsInfo::getnbShPointsMax());
   for(unsigned i=0; i<M02M12->size(); i++) {
    M02M12->at(i) = M02M1->at(i+npoin->at(0)+1);
   }
@@ -261,11 +285,7 @@ void Interp::setMeshData()
 
 void Interp::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints =
    PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");

@@ -5,8 +5,9 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "ConverterSF/CFmesh2Triangle.hh"
-#include "Framework/PhysicsData.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Jcycl.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/Factory.hh"
@@ -119,13 +120,17 @@ void CFmesh2Triangle::readCFmeshFmt()
   // boundary colours
   unsigned NCLR;
 
+  // space dimensions read from CFmesh file
+  unsigned ndim;
+
   // vector of GEOM_ENTS
   vector<unsigned> nFacB;
 
   // reading file
   ifstream file;
 
-  string cfoutCFmesh = "cfout.CFmesh_prova";
+
+  string cfoutCFmesh = "cfout.CFmesh";
 
   file.open(string(cfoutCFmesh).c_str());
 
@@ -141,12 +146,15 @@ void CFmesh2Triangle::readCFmeshFmt()
   // read !CFMESH_FORMAT_VERSIONE cfmeshFmtversion
   while(ISKIP<(LSKIP)) { file >> skipver >> dummy;
                           ++ISKIP;      }
-  file >> dummy >> (*ndim);                   // read !NB_DIM    ndim
-  file >> dummy >> (*ndof);                   // read !NB_EQ     ndof
-  file >> dummy >> npoin->at(1) >> dummy;     // read !NB_NODES  npoin 0
-  file >> dummy >> dummy >> dummy;            // read !NB_STATES nbstates 0
-  file >> dummy >> nelem->at(1);              // read !NB_ELEM   nelem
-  file >> dummy >> dummy;                     // read !NB_ELEM_TYPES nbelemTypes
+  file >> dummy >> ndim;                              // read !NB_DIM    ndim
+  file >> dummy >> (*ndof);                           // read !NB_EQ     ndof
+  file >> dummy >> npoin->at(1) >> dummy;             // read !NB_NODES  npoin 0
+  file >> dummy >> dummy >> dummy;                    // read !NB_STATES nbstates 0
+  file >> dummy >> nelem->at(1);                      // read !NB_ELEM   nelem
+  file >> dummy >> dummy;                             // read !NB_ELEM_TYPES nbelemTypes
+
+  PhysicsInfo::setnbDim(ndim);
+
   // read !GEOM_POLYORDER   geomPolyOrder
   // read !SOL_POLYORDER    solPolyOrder
   // read !ELEM_TYPES       Triag
@@ -190,7 +198,7 @@ void CFmesh2Triangle::readCFmeshFmt()
    nbfac->at(1) = nFacB.at(IFACE) + nbfac->at(1);
   }
 
-  (*nvt) = (*ndim) + 1;
+  (*nvt) = PhysicsInfo::getnbDim() + 1;
   nhole->at(1) = 0; 
 
   // resize vectors of MeshData pattern with the new values read on CFmesh file
@@ -306,18 +314,28 @@ void CFmesh2Triangle::readCFmeshFmt()
 
 void CFmesh2Triangle::resizeVectors()
 {
-  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
+  totsize = npoin->at(0) + npoin->at(1) + 
+            4 * PhysicsInfo::getnbShMax() *
+                PhysicsInfo::getnbShPointsMax();
   nodcod->resize(totsize);
-  zroeVect->resize((*ndofmax) * totsize);
-  coorVect->resize((*ndim) * totsize);
+  zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
+  coorVect->resize(PhysicsInfo::getnbDim() * totsize);
 
-  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  XY = new Array2D <double> ((*ndim),
-                             (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+  start = PhysicsInfo::getnbDim() * 
+          (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax());
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 * 
+                             PhysicsInfo::getnbShMax() * 
+                             PhysicsInfo::getnbShPointsMax()),
                              &coorVect->at(start));
-  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  zroe = new Array2D <double>((*ndofmax),
-                              (npoin->at(1)+2 * (*nshmax) * (*npshmax)),
+  start = PhysicsInfo::getnbDofMax() *
+          (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax());
+  zroe = new Array2D <double>(PhysicsInfo::getnbDofMax(),
+                              (npoin->at(1)+2 * 
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
                               &zroeVect->at(start));
 
   totsize = nelem->at(0) + nelem->at(1);
@@ -328,11 +346,14 @@ void CFmesh2Triangle::resizeVectors()
   celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
   celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
 
-  totsize = nbfac->at(0) + nbfac->at(1) + 4 * (*nshmax) * (*neshmax);
+  totsize = nbfac->at(0) + nbfac->at(1) + 
+            4 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax();
   bndfacVect->resize(3 * totsize);
 
-  start = 3* (nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
-  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * (*nshmax) * (*neshmax)),
+  start = 3* (nbfac->at(0) + 
+            2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
+  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShEdgesMax()),
                              &bndfacVect->at(start));
 }
 
@@ -345,7 +366,8 @@ void CFmesh2Triangle::setNodcod()
   // write new nodcode values on the vector of the shocked mesh
   // in the fortran version this new vector is referred to index 1 (NODCOD(1))
   // here it is pushed back to the nodcod of the background mesh
-  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+  unsigned startNodcod = 
+    npoin->at(0) + 2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
 
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    for(unsigned I=0; I<(*nvt)-1; I++) {
@@ -363,7 +385,8 @@ void CFmesh2Triangle::countnbBoundaryNodes()
   // write new nodcode values on the vector of the shocked mesh
   // in the fortran version this new vector is referred to index 1 (NODCOD(1))
   // here it is pushed back to the nodcod of the background mesh
-  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+  unsigned startNodcod = 
+   npoin->at(0) + 2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
 
   unsigned nbBoundaryNodes=0;
   for(unsigned IPOIN=0;IPOIN<npoin->at(1); IPOIN++) {
@@ -389,27 +412,31 @@ void CFmesh2Triangle::writeTriangleFmt()
   // take new nodcode values from the new nodcod vector of the shocked mesh
   // in the fortran version this new vector is referred to index 1 (NODCOD(1))
   // here it is pushed back to the nodcod of the background mesh
-  unsigned startNodcod = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+  unsigned startNodcod = 
+   npoin->at(0) +2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
 
   // write on .node file
-  dummystring = fname->at(0)+".1.node";
+  dummystring = fname->str()+".1.node";
   file.open(dummystring.c_str());
 
-  file << npoin->at(1) << " " << (*ndim) << " " << (*ndof) << " 1\n";
+  file << npoin->at(1) << " " << PhysicsInfo::getnbDim();
+  file <<  " " << (*ndof) << " 1\n";
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    file << IPOIN+1 << " ";
-   for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XY)(IA,IPOIN) << " "; }
-   for(unsigned IA=0; IA<(*ndof); IA++) { file << (*zroe)(IA,IPOIN) << " "; }
+   for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++)
+    { file << (*XY)(IA,IPOIN) << " "; }
+   for(unsigned IA=0; IA<(*ndof); IA++) 
+    { file << (*zroe)(IA,IPOIN) << " "; }
    file << nodcod->at(startNodcod+IPOIN) << "\n";
   }
 
   file.close();
 
   // write on .poly file
-  dummystring = fname->at(0)+".1.poly";
+  dummystring = fname->str()+".1.poly";
   file.open(dummystring.c_str());
 
-  file << "0 " << (*ndim) << " 0" << " 1\n";
+  file << "0 " << PhysicsInfo::getnbDim() << " 0" << " 1\n";
   file << nbfac->at(1) << " 1\n";
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    NBND = namebnd.at((*bndfac)(2,IFACE)-1); // c++ indeces start from 0
@@ -438,19 +465,14 @@ void CFmesh2Triangle::setMeshData()
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
-  fname = MeshData::getInstance().getData <vector<string> >("FNAME");
+  fname = MeshData::getInstance().getData <stringstream>("FNAME");
 }
 
 //----------------------------------------------------------------------------//
 
 void CFmesh2Triangle::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //----------------------------------------------------------------------------//

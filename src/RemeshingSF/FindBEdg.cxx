@@ -8,6 +8,7 @@
 #include "RemeshingSF/FindBEdg.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -38,7 +39,6 @@ int FindBEdg::getBEdg(double xsh, double ysh)
   const double tollerance = 1e-10;
 
   setMeshData();
-  setPhysicsData();
 
   setAddress();
 
@@ -77,8 +77,12 @@ int FindBEdg::getBEdg(double xsh, double ysh)
 void FindBEdg::setAddress()
 {
   unsigned start = 0;
-  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
-  XY = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start)); 
+  unsigned totsize = nbfac->at(0) + 2 * 
+                     PhysicsInfo::getnbShMax() *
+                     PhysicsInfo::getnbShEdgesMax();
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             npoin->at(0),
+                             &coorVect->at(start)); 
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
 }
 
@@ -90,15 +94,6 @@ void FindBEdg::setMeshData()
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   coorVect = MeshData::getInstance().getData <vector<double> > ("COOR");
   bndfacVect = MeshData::getInstance().getData <vector<int> > ("BNDFAC"); 
-}
-
-//--------------------------------------------------------------------------//
-
-void FindBEdg::setPhysicsData()
-{
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

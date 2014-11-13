@@ -46,7 +46,7 @@ private:
   std::string command;
 
   /// name of current file
-  std::vector<std::string>* fname;
+  std::stringstream* fname;
 
 };
 

@@ -60,9 +60,6 @@ private: // helper functions
 
 private: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
@@ -79,7 +76,7 @@ private: // data
   std::vector<int>* nodcod;
 
   /// name of the current output file
-  std::vector<std::string>* fnameBack;
+  std::string* fnameBack;
 
   /// mesh points state (in array storing)
   Array2D<double>* Zroe;

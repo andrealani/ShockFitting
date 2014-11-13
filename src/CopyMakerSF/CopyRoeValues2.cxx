@@ -8,6 +8,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -66,7 +67,8 @@ void CopyRoeValues2::copy()
   setAddress();
 
   unsigned IB;
-  unsigned ILIST = 2 * (*nshmax) * (*npshmax);
+  unsigned ILIST = 2 * PhysicsInfo::getnbShMax() * 
+                       PhysicsInfo::getnbShPointsMax();
   unsigned m_npoin0 = npoin->at(0)+1;
 
   for(unsigned IPOIN=0; IPOIN<ILIST; IPOIN++) {
@@ -84,11 +86,16 @@ void CopyRoeValues2::copy()
 void CopyRoeValues2::setAddress()
 {
   zroe0 = new Array2D<double>((*ndof),
-                              (npoin->at(0) + 2 * (*nshmax) * (*npshmax)),
+                              (npoin->at(0) + 2 * 
+                               PhysicsInfo::getnbShPointsMax() * 
+                               PhysicsInfo::getnbShMax()),
                               &zroeVect->at(0));
-  start = (*ndof) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
+  start = (*ndof) * (npoin->at(0) + 2 * 
+           PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax());
   zroe1 = new Array2D<double>((*ndof),
-                              (npoin->at(1)+ 2 * (*nshmax) * (*npshmax)),
+                              (npoin->at(1)+ 2 *
+                               PhysicsInfo::getnbShPointsMax() *
+                               PhysicsInfo::getnbShMax()),
                               &zroeVect->at(start));
 }
 
@@ -106,9 +113,6 @@ void CopyRoeValues2::setMeshData()
 void CopyRoeValues2::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
 }
 
 //--------------------------------------------------------------------------//

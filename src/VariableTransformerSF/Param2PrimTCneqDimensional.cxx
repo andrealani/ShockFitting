@@ -7,6 +7,7 @@
 #include "VariableTransformerSF/Param2PrimTCneqDimensional.hh"
 #include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
+#include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "VariableTransformerSF/ComputeTv.hh"
 
@@ -79,14 +80,15 @@ void Param2PrimTCneqDimensional::transform()
     rhos.resize(*nsp);
     for (unsigned ISP=0; ISP<(*nsp); ISP++) {
      alpha.at(ISP) = (*zroe)(ISP,IPOIN)/sqrtr;
-     rhos.at(ISP) = (*zroe)(ISP,IPOIN) * sqrtr * (*rhoref); }     
+     rhos.at(ISP) = (*zroe)(ISP,IPOIN) * sqrtr * ReferenceInfo::getrhoref(); }     
 
     // u, v, h, ev
     u.resize(2);
-    h = (*zroe)((*IE),IPOIN)/sqrtr * pow((*uref),2);
-    u.at(0) = (*zroe)((*IX),IPOIN)/sqrtr * (*uref);
-    u.at(1) = (*zroe)((*IY),IPOIN)/sqrtr * (*uref);
-    ev = (*zroe)((*IEV),IPOIN)/sqrtr * pow((*uref),2);
+    h = (*zroe)((*IE),IPOIN)/sqrtr * pow(ReferenceInfo::geturef(),2);
+    u.at(0) = (*zroe)((*IX),IPOIN)/sqrtr * ReferenceInfo::geturef();
+    u.at(1) = (*zroe)((*IY),IPOIN)/sqrtr * ReferenceInfo::geturef();
+    ev = (*zroe)((*IEV),IPOIN)/sqrtr * 
+         pow(ReferenceInfo::geturef(),2);
 
     // kinetic energy
     kinetic = pow(u.at(0),2)+pow(u.at(1),2);
@@ -98,7 +100,8 @@ void Param2PrimTCneqDimensional::transform()
      // pow((*uref),2) is used because of the hf dimensionalization
      // done by the ReferenceInfo object
      // in ReferenceInfo hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
-     hftot = hftot + alpha.at(ISP) * hf->at(ISP)*pow((*uref),2);
+     hftot = hftot + alpha.at(ISP) * hf->at(ISP)*
+             pow(ReferenceInfo::geturef(),2);
     }
 
     // roto-traslation enthalpy
@@ -145,8 +148,8 @@ void Param2PrimTCneqDimensional::transform()
    (*zroe)((*IEV),IPOIN) = T.at(1);
    
 
-   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * (*Lref);
-   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) * (*Lref);
+   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * ReferenceInfo::getLref();
+   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) * ReferenceInfo::getLref();
   }
 }  
 

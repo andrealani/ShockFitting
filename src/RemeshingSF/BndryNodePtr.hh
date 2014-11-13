@@ -66,19 +66,10 @@ private: // helper functions
   /// assign values used in BndryNodePtr to MeshData pattern
   void setMeshData();
 
-  /// assign values used in BndryNodePtr to PhysicsData pattern
-  void setPhysicsData();
-
 private: //data
 
   /// number of freezed points
   unsigned* nfpoin;
-
-  /// max number of shocks
-  unsigned* nshmax;
-  
-  /// max number of shock edges
-  unsigned* neshmax;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;

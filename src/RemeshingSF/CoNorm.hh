@@ -98,29 +98,11 @@ protected: // data
   std::vector<unsigned> ISH;
   std::vector<unsigned> IP;
 
-  /// heat specific ratio
-  double* gam;
-
-  /// gm1 = gam-1
-  double* gm1;
-
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
   /// number of species
   unsigned* nsp;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
 
   /// global indeces
   unsigned* IE;
@@ -133,12 +115,6 @@ protected: // data
 
   /// number of mesh points
   std::vector<unsigned>* npoin;
-
-  /// gas model
-  std::vector<std::string>* model;
-
-  /// gas mixture
-  std::vector<std::string>* mixture;
 
   /// number of shocks
   unsigned* nShocks;

@@ -32,9 +32,6 @@ public:
 
 private: // helper function
 
-  /// assign global variable SNDMIN to MeshData data
-  void setSNDMIN();
-
   /// assign external values to private data
   void resetValues(double XC, double YC, double XS1,
                    double YS1, double XS2, double YS2);
@@ -43,9 +40,6 @@ private: // helper function
   void callRdshp ();
 
 private: // data
-
-  /// max normalized distance of phantom point
-  double* SNDmin;
 
   /// coordinates of cell vertex
   double xc, yc;

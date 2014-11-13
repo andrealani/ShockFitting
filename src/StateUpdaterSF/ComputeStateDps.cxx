@@ -6,6 +6,7 @@
 
 #include "StateUpdaterSF/ComputeStateDps.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //----------------------------------------------------------------------------//
@@ -47,17 +48,28 @@ void ComputeStateDps::setAddress()
   unsigned start;
   start = npoin->at(0)*(*ndof);
   ZroeShu =
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+    new Array3D <double> ((*ndof),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          (*ndof);
   ZroeShd =
-    new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroeVect->at(start));
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
 }
 
 //----------------------------------------------------------------------------//
 
 void ComputeStateDps::setDiscSpeedSize()
 {
-  WSh->resize((*ndim),(*npshmax),(*nshmax));
+  WSh->resize(PhysicsInfo::getnbDim(),
+              PhysicsInfo::getnbShPointsMax(),
+              PhysicsInfo::getnbShMax());
 }
 
 //----------------------------------------------------------------------------//
@@ -72,11 +84,7 @@ void ComputeStateDps::setMeshData()
 
 void ComputeStateDps::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
   IE = PhysicsData::getInstance().getData <unsigned> ("IE");
   IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");

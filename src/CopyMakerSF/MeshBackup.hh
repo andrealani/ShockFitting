@@ -48,19 +48,10 @@ private: // helper functions
   /// assign variables used in MeshBackup to MeshData pattern
   void setMeshData();
 
-  /// assign variables used in MeshBackup to PhysicsData pattern
-  void setPhysicsData();
-
   /// assign starting pointers for Array2D
   void setAddress();
 
 private: // data
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of edges for each shock
-  unsigned* neshmax;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;

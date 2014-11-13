@@ -11,6 +11,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/FileLogManip.hh"
 #include "MathTools/Array2D.hh"
 
@@ -109,13 +110,14 @@ void ReadTriangle::ReadNode()
 
   file.open(getNodeFile().c_str());
   file >> m_npoin >> dim >> states >> iattr;
-  if (dim != (*ndim) || states > (*ndofmax)) {
+  if (dim != PhysicsInfo::getnbDim() || states > PhysicsInfo::getnbDofMax()) {
    logfile("WARNING !!!!!");
    logfile("WARNING !!!!!");
    logfile("WARNING !!!!!");
    logfile("NDIM: ", dim, " NDOF: ", states, " in file ");
    logfile(getNodeFile().c_str(),"\n");
-   logfile("NDIM: ", *ndof, " NDOF: ", *ndofmax, " in PhysicData\n");
+   logfile("NDIM: ", *ndof, " NDOF: ", PhysicsInfo::getnbDofMax(),
+           " in PhysicData\n");
    logfile("WARNING !!!!!");
    exit(1);
   }
@@ -137,40 +139,55 @@ void ReadTriangle::ReadNode()
   totsize = 0;
   if      ((*firstRead)==1) {
    
-   totsize0 = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+   totsize0 = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                 PhysicsInfo::getnbShPointsMax();
    nodcod->resize(totsize0);
-   coorVect->resize((*ndim) * totsize0);
-   zroeVect->resize((*ndofmax) * totsize0);
-   coor = new Array2D<double>( (*ndim) , totsize0, &coorVect->at(0) );
-   zroe = new Array2D<double>( (*ndofmax) , totsize0, &zroeVect->at(0) );
+   coorVect->resize(PhysicsInfo::getnbDim() * totsize0);
+   zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize0);
+   coor = new Array2D<double>(PhysicsInfo::getnbDim() , 
+                              totsize0, &coorVect->at(0) );
+   zroe = new Array2D<double>( PhysicsInfo::getnbDofMax(),
+                               totsize0, &zroeVect->at(0) );
   }
   else if  ((*firstRead)==0) {
    
-  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
-  zroeVect->resize((*ndofmax) * totsize);
-  coorVect->resize((*ndim) * totsize);
-  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  coor = new Array2D <double> ((*ndim),
-                               (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+  totsize = npoin->at(0) + npoin->at(1) + 4 *
+            PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
+  zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
+  coorVect->resize(PhysicsInfo::getnbDim() * totsize);
+  start = PhysicsInfo::getnbDim() *
+         (npoin->at(0) + 2 *
+          PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  coor = new Array2D <double> (PhysicsInfo::getnbDim(),
+                               (npoin->at(1) + 2 *
+                               PhysicsInfo::getnbShMax() *
+                               PhysicsInfo::getnbShPointsMax()),
                                &coorVect->at(start));
-  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  zroe = new Array2D <double>((*ndofmax),
-                              (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
+  start = PhysicsInfo::getnbDofMax() * 
+          (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax());
+  zroe = new Array2D <double>(PhysicsInfo::getnbDofMax(),
+                              (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
                               &zroeVect->at(start));
   }
 
   // fill zroe, coor and nodcod
   for (unsigned IPOIN=0; IPOIN < m_npoin; IPOIN++) {
    file >> idum;
-  for(unsigned IA=0; IA < (*ndim); IA++) {
+  for(unsigned IA=0; IA <PhysicsInfo::getnbDim(); IA++) {
    file >> (*coor)(IA,IPOIN);
   }
   for(unsigned IA=0; IA < (*ndof); IA++) {
    file >> (*zroe)(IA,IPOIN);
   }
-  if      ((*firstRead)==1)       { file >> nodcod->at(IPOIN); }
-  else if ((*firstRead)==0)       { start = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
-                                    file >> nodcod->at(IPOIN+start); }
+  if      ((*firstRead)==1)       
+   { file >> nodcod->at(IPOIN); }
+  else if ((*firstRead)==0)       
+   { start = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShPointsMax();
+     file >> nodcod->at(IPOIN+start); }
  }
  file.close();
 
@@ -205,17 +222,22 @@ void ReadTriangle::ReadPoly()
   // according to firstRead flag  
   if      ((*firstRead)==1) {
 
-   totsize0 = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+   totsize0 = nbfac->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                 PhysicsInfo::getnbShEdgesMax();
    bndfacVect->resize(3 * totsize0);
    bndfac = new Array2D<int> (3,totsize0,&bndfacVect->at(0));
   }
 
   else if ((*firstRead)==0) { 
 
-   totsize = nbfac->at(0) + nbfac->at(1) + 4 * (*nshmax) * (*neshmax);
+   totsize = nbfac->at(0) + nbfac->at(1) + 4 *PhysicsInfo::getnbShMax() *
+                                           PhysicsInfo::getnbShEdgesMax();
    bndfacVect->resize(3 * totsize);
-   start = 3* (nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
-   bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * (*nshmax) * (*neshmax)),
+   start = 3* (nbfac->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                  PhysicsInfo::getnbShEdgesMax());
+   bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 *
+                                PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShEdgesMax()),
                               &bndfacVect->at(start));
   }
 
@@ -377,8 +399,9 @@ void ReadTriangle::ReadEdge()
 std::string ReadTriangle::getInputFiles() const
 {
   if((*firstRead)==1) { assert(m_inputFile.size()==1);
-                        fname->at(0) = m_inputFile[0]; }
-  return fname->at(0);
+                        fname->str(string());
+                        *fname <<  m_inputFile[0]; }
+  return fname->str();
 }
 
 //--------------------------------------------------------------------------//
@@ -474,7 +497,7 @@ void ReadTriangle::setMeshData ()
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   edgptrVect = MeshData::getInstance().getData <vector<int> >("EDGPTR");
-  fname = MeshData::getInstance().getData <vector<string> >("FNAME");
+  fname = MeshData::getInstance().getData <stringstream>("FNAME");
   firstRead = MeshData::getInstance().getData <unsigned> ("FirstRead");
 }
 
@@ -483,11 +506,6 @@ void ReadTriangle::setMeshData ()
 void ReadTriangle::setPhysicsData ()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

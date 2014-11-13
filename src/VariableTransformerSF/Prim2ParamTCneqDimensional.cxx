@@ -7,6 +7,8 @@
 #include "VariableTransformerSF/Prim2ParamTCneqDimensional.hh"
 #include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsInfo.hh"
+#include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "VariableTransformerSF/VibrEnergy.hh"
 
@@ -71,14 +73,17 @@ void Prim2ParamTCneqDimensional::transform()
 
   rhos.resize( (*nsp) );
   alpha.resize( (*nsp) );
-  u.resize( (*ndim) );
+  u.resize(PhysicsInfo::getnbDim());
   T.resize(2);
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
 
-   for(unsigned ISP=0; ISP<(*nsp); ISP++) { rhos.at(ISP) = (*zroe)(ISP,IPOIN); }
-   for(unsigned I=0; I<(*ndim); I++)      { u.at(I) = (*zroe)((*nsp)+I,IPOIN); }
-   for(unsigned I=0; I<2; I++) { T.at(I) = (*zroe)((*nsp)+(*ndim)+I,IPOIN); }
+   for(unsigned ISP=0; ISP<(*nsp); ISP++)
+    { rhos.at(ISP) = (*zroe)(ISP,IPOIN); }
+   for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)   
+    { u.at(I) = (*zroe)((*nsp)+I,IPOIN); }
+   for(unsigned I=0; I<2; I++) 
+    { T.at(I) = (*zroe)((*nsp)+PhysicsInfo::getnbDim()+I,IPOIN); }
 
    // rho
    rho = 0;
@@ -98,7 +103,8 @@ void Prim2ParamTCneqDimensional::transform()
     // pow((*uref),2) is used because of the hf dimensionalization
     // done by the ReferenceInfo object
     // in ReferenceInfo hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
-    hftot = hftot + alpha.at(ISP) * hf->at(ISP) * pow((*uref),2);
+    hftot = hftot + alpha.at(ISP) * hf->at(ISP) * 
+            pow(ReferenceInfo::geturef(),2);
 
    }
 
@@ -117,19 +123,21 @@ void Prim2ParamTCneqDimensional::transform()
    // total energy
    h = Cp * T.at(0) + ev + hftot + kinetic;
 
-   sqrtr = sqrtr/(sqrt(*rhoref));
+   sqrtr = sqrtr/sqrt(ReferenceInfo::getrhoref());
 
-   (*zroe)((*IEV),IPOIN) = sqrtr * ev / ((*uref)*(*uref));
-   (*zroe)((*IX),IPOIN) = sqrtr * u.at(0) / (*uref);
-   (*zroe)((*IY),IPOIN) = sqrtr * u.at(1) / (*uref);
-   (*zroe)((*IE),IPOIN) = sqrtr * h / ((*uref)*(*uref));
+   (*zroe)((*IEV),IPOIN) = sqrtr * ev / 
+               (ReferenceInfo::geturef()*ReferenceInfo::geturef());
+   (*zroe)((*IX),IPOIN) = sqrtr * u.at(0) / ReferenceInfo::geturef();
+   (*zroe)((*IY),IPOIN) = sqrtr * u.at(1) / ReferenceInfo::geturef();
+   (*zroe)((*IE),IPOIN) = sqrtr * h / 
+               (ReferenceInfo::geturef()*ReferenceInfo::geturef());
 
    for(unsigned ISP=0; ISP<(*nsp); ISP++) {
     (*zroe)(ISP,IPOIN) = sqrtr * alpha.at(ISP);
    }
   
-   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / (*Lref);
-   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / (*Lref);
+   (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / ReferenceInfo::getLref();
+   (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / ReferenceInfo::getLref();
   }
 }
 

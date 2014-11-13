@@ -93,32 +93,14 @@ private: // helper functions
 
 private: // data
 
-  /// space dimensions
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
-
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
 
   /// number of shocks
   unsigned* nShocks;
 
   /// number of special points
   unsigned* nSpecPoints;
-
-  /// specific heat ratio (this value is read in PhysicsInfo)
-  double* gam;
-
-  /// @param gm1 = gam-1
-  double* gm1;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;

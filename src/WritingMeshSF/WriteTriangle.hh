@@ -10,6 +10,8 @@
 //--------------------------------------------------------------------------//
 
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 #include "Framework/WritingMesh.hh"
 #include "MathTools/Array2D.hh"
@@ -81,32 +83,14 @@ private: // helper functions
 
 private: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned*  ndof;
-
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
 
   /// number of element vertices (=3)
   unsigned* nvt;
 
   /// number of shock boundary faces
   unsigned* nbfacSh;
-
-  /// number of additional hole points
-  unsigned* naddholes;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
-  /// max number of shock edges for each shock
-  unsigned* neshmax;
 
   /// number of shocks
   unsigned* nShocks;
@@ -195,7 +179,7 @@ private: // data
   std::ofstream file;
 
   /// name of current file
-  std::vector<std::string>* fname;
+  std::stringstream* fname;
 };
 
 //--------------------------------------------------------------------------//

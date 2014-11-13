@@ -5,6 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "StateUpdaterSF/CoDc.hh"
+#include "Framework/ChemicalInfo.hh"
 #include "Framework/PhysicsData.hh"
 #include "MathTools/Solg.hh"
 
@@ -129,11 +130,11 @@ double CoDc::fDc(unsigned index, vector<double> y)
 
 void CoDc::setPhysicsData()
 {
-  model = PhysicsData::getInstance().getData < vector<string> > ("MODEL");
-  if(model->at(0)=="PG") {
-   gam = PhysicsData::getInstance().getData <double >("GAM");
+  if(ChemicalInfo::getModel()=="PG") {
+   *gam = PhysicsInfo::getGam();
   }
-  else if (model->at(0) == "Cneq" || model->at(0)=="TCneq") {
+  else if (ChemicalInfo::getModel() == "Cneq" ||
+           ChemicalInfo::getModel() == "TCneq") {
    gam = PhysicsData::getInstance().getData <double >("GREF");
   }
 }

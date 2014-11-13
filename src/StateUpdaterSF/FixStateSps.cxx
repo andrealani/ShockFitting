@@ -8,6 +8,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -179,7 +180,8 @@ void FixStateSps::fixIPXandIPYspecPoints(unsigned ISPPNTS)
   }
 
   // set the shock speed to 0
-  for(unsigned I=0; I<(*ndim); I++) { (*WSh)(I,IP.at(0),ISH.at(0))=0; }
+  for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) 
+   { (*WSh)(I,IP.at(0),ISH.at(0))=0; }
 }
 
 //--------------------------------------------------------------------------//
@@ -398,22 +400,32 @@ void FixStateSps::setShockIndeces(unsigned nbDiscontinuities, unsigned ISPPNTS)
 void FixStateSps::setAddress()
 {
   unsigned start;
-  start = npoin->at(0) * (*ndim);
-  XYShu =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),
-                               &coorVect->at(start));
-  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
-  XYShd =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),
+  start = npoin->at(0) * PhysicsInfo::getnbDim();
+  XYShu = new Array3D <double> (PhysicsInfo::getnbDim(),
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &coorVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim() + 
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDim();
+  XYShd = new Array3D <double> (PhysicsInfo::getnbDim(),
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
   start = npoin->at(0)*(*ndof);
-  ZroeShu =
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),
-                                &zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZroeShd =
-    new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),
-                                &zroeVect->at(start));
+  ZroeShu = new Array3D <double> ((*ndof),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          (*ndof);
+  ZroeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(), 
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -430,12 +442,6 @@ void FixStateSps::setMeshData()
 void FixStateSps::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  gam = PhysicsData::getInstance().getData <double> ("GAM");
-  gm1 = PhysicsData::getInstance().getData <double> ("GM1");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nSpecPoints =
       PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");

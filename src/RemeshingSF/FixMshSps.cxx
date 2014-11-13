@@ -10,6 +10,7 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
 #include "RemeshingSF/FindBEdg.hh"
@@ -108,18 +109,20 @@ void FixMshSps::remesh()
 
 void FixMshSps::createShockNodesList()
 {
-  ISHPlistu.resize((*npshmax),(*nshmax));
-  ISHPlistd.resize((*npshmax),(*nshmax));
+  ISHPlistu.resize(PhysicsInfo::getnbShPointsMax(),
+                   PhysicsInfo::getnbShMax());
+  ISHPlistd.resize(PhysicsInfo::getnbShPointsMax(),
+                   PhysicsInfo::getnbShMax());
   unsigned ilist = npoin->at(0);
-  for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) {
+  for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++ilist;
     ISHPlistu(I,ISH) = ilist;
    }
   }
 
-  for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) { 
+  for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) { 
     ++ilist;
     ISHPlistd(I,ISH) = ilist;
    }
@@ -378,15 +381,26 @@ void FixMshSps::setAddress()
 {
   unsigned start;
   start = 0;
-  XY = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start));
-  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(), npoin->at(0),
+                             &coorVect->at(start));
+  unsigned totsize = nbfac->at(0) + 2 *
+                     PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
-  start = npoin->at(0) * (*ndim);
+  start = npoin->at(0) * PhysicsInfo::getnbDim();
   XYShu =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coorVect->at(start));
-  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
+    new Array3D <double> (PhysicsInfo::getnbDim(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &coorVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim() +
+          PhysicsInfo::getnbShPointsMax() * 
+          PhysicsInfo::getnbShMax() * 
+          PhysicsInfo::getnbDim();
   XYShd =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coorVect->at(start));
+    new Array3D <double> (PhysicsInfo::getnbDim(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &coorVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -406,10 +420,6 @@ void FixMshSps::setMeshData()
 
 void FixMshSps::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nSpecPoints = PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
   nShockPoints = 

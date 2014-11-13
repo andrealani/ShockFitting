@@ -62,17 +62,8 @@ private: // helper functions
 
 private: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shock points fro each shock
-  unsigned* npshmax;
 
   /// number oer shocks
   unsigned* nShocks;

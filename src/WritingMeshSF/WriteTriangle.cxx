@@ -8,6 +8,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -65,15 +66,24 @@ void WriteTriangle::write()
   setAddress();
 
   string dummyfile;
-  fname->at(0) = "na00001";
+
+  fname->str(string());
+
+  unsigned nbDig = 0;
+  unsigned dummyIstep = MeshData::getInstance().getIstep();
+
+  while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
+  *fname << setw(7-nbDig) << setfill('0') << left << string("na").c_str();
+  *fname << MeshData::getInstance().getIstep();
 
   // write node file
-  dummyfile = fname->at(0)+".node";
+  dummyfile = fname->str()+".node";
   file.open(dummyfile.c_str());
 
   file.precision(20);
 
-  ilist = npoin->at(0) + 2 * (*nshmax) * (*npshmax);
+  ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                             PhysicsInfo::getnbShPointsMax();
 
   M02M1->resize(ilist+1); // c++ indeces start from 0
   M12M0->resize(ilist+1); // c++ indeces start from 0
@@ -93,7 +103,7 @@ void WriteTriangle::write()
 
   ilist = TNPOIN;
 
-  file << ilist << " " << *ndim << " " << *ndof << " 1\n";
+ file <<ilist<< " " << PhysicsInfo::getnbDim() << " " << *ndof << " 1\n";
   
   // write mesh points coordinates and status on Triangle file
   writeMeshVariables();
@@ -109,10 +119,10 @@ void WriteTriangle::write()
   file.close();
 
   // write poly file
-  dummyfile = fname->at(0)+".poly";
+  dummyfile = fname->str()+".poly";
   file.open(dummyfile.c_str());
 
-  file << "0 " << (*ndim) << " 0 1 \n";
+  file << "0 " << PhysicsInfo::getnbDim()  << " 0 1 \n";
   
   // set map vector for bndfac and write bndfac on poly file
   writeBndfac();
@@ -138,8 +148,8 @@ void WriteTriangle::setMapVectorForNodcod()
 
 void WriteTriangle::setMapVectorForNodcodSh()
 {
-  for (unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) {
+  for (unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++icount;
 
     if ((*NodCodSh)(I,ISH)==10) { ++TNPOIN;
@@ -157,7 +167,7 @@ void WriteTriangle::writeMeshVariables()
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if(nodcod->at(IPOIN)>=0) {
     file << M02M1->at(IPOIN+1) << "  "; // c++ indeces start from 0
-    for(unsigned IA=0; IA<(*ndim); IA++) {
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
      file << (*XY)(IA,IPOIN) << "  ";}
     for(unsigned IA=0; IA<(*ndof); IA++) {
      file << zroeVect->at(h) << "  "; h++; }
@@ -170,12 +180,12 @@ void WriteTriangle::writeMeshVariables()
 
 void WriteTriangle::writeUpstreamStatus()
 {
-  for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) {
+  for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++icount;
     if((*NodCodSh)(I,ISH)==10) {
      file << M02M1->at(icount) << "  ";
-     for(unsigned IA=0; IA<(*ndim); IA++) {
+     for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
      file << (*XYShu)(IA,I,ISH) << "  ";}
      for(unsigned IA=0; IA<(*ndof); IA++) {
      file << (*ZRoeShu)(IA,I,ISH) << "  ";}
@@ -189,12 +199,12 @@ void WriteTriangle::writeUpstreamStatus()
 
 void WriteTriangle::writeDownstreamStatus()
 {
-  for(unsigned ISH=0; ISH<(*nshmax); ISH++) {
-   for(unsigned I=0; I<(*npshmax); I++) {
+  for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
      icount++;
     if((*NodCodSh)(I,ISH)==10) {
      file << M02M1->at(icount) << "  ";
-     for(unsigned IA=0; IA<(*ndim); IA++) {
+     for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
      file << (*XYShd)(IA,I,ISH) << "  ";}
      for(unsigned IA=0; IA<(*ndof); IA++) {
      file << (*ZRoeShd)(IA,I,ISH) << "  ";}
@@ -242,7 +252,7 @@ void WriteTriangle::computenbHoles()
    nHoles = nHoles + nShockPoints->at(ISH)-2;
   }
 
-  file << nHoles + (*naddholes) << endl;
+  file << nHoles + MeshData::getInstance().getnbAddHoles() << endl;
 
   unsigned iHole=0;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
@@ -253,7 +263,7 @@ void WriteTriangle::computenbHoles()
    }
   }
 
-  for (unsigned I=0; I<(*naddholes); I++) {
+  for (unsigned I=0; I<MeshData::getInstance().getnbAddHoles(); I++) {
    file << iHole+I << "  ";
    for(unsigned j=0; j<2; j++) { file << caddholes->at(j) << " ";}
   }
@@ -265,24 +275,40 @@ void WriteTriangle::setAddress()
 {
   unsigned start; unsigned totsize;
   start = 0;
-  XY = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start));
-  totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(), npoin->at(0),
+                             &coorVect->at(start));
+  totsize = nbfac->at(0) + 2 *
+                           PhysicsInfo::getnbShMax() *
+                           PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
   celnod = new Array2D<int> ((*nvt), nelem->at(0), &celnodVect->at(start)); 
   start = npoin->at(0);
-  NodCodSh = new Array2D <int> ((*npshmax),(*nshmax),&nodcod->at(start));
+  NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &nodcod->at(start));
   start = npoin->at(0) * (*ndof);
-  ZRoeShu = 
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZRoeShd = 
-    new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroeVect->at(start));
-  start = npoin->at(0) * (*ndim);
-  XYShu =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coorVect->at(start));
-  start = npoin->at(0) * (*ndim) + (*npshmax) * (*nshmax) * (*ndim);
-  XYShd =
-    new Array3D <double> ((*ndim),(*npshmax),(*nshmax),&coorVect->at(start));
+  ZRoeShu = new Array3D <double> ((*ndof),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
+  ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim() ;
+  XYShu = new Array3D <double> (PhysicsInfo::getnbDim() ,
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &coorVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDim()  +
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDim() ;
+  XYShd = new Array3D <double> (PhysicsInfo::getnbDim() ,
+                                PhysicsInfo::getnbShPointsMax(),
+                                PhysicsInfo::getnbShMax(),
+                                &coorVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -294,7 +320,6 @@ void WriteTriangle::setMeshData()
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   nbfacSh = MeshData::getInstance().getData<unsigned>("NBFACSH");
-  naddholes = MeshData::getInstance().getData<unsigned>("Naddholes");
   caddholes = 
     MeshData::getInstance().getData <vector<double> > ("CADDholes");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
@@ -302,7 +327,7 @@ void WriteTriangle::setMeshData()
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
-  fname = MeshData::getInstance().getData <vector <string> > ("FNAME");
+  fname = MeshData::getInstance().getData <stringstream> ("FNAME");
   M12M0 = MeshData::getInstance().getData <vector <int> > ("M12M0");
   M02M1 = MeshData::getInstance().getData <vector <unsigned> > ("M02M1");
 }
@@ -311,12 +336,7 @@ void WriteTriangle::setMeshData()
 
 void WriteTriangle::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints =
      PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");

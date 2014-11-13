@@ -105,21 +105,8 @@ private: // data
   /// new shock length edge
   std::vector <double> Sh_ABSC_New;
 
-  /// space dimension
-  unsigned* ndim;
-
   /// nof degree of freedom
   unsigned* ndof;
-
-  /// max nof degree of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  /// (needed to set address)
-  unsigned* nshmax;
-
-  /// max nof points for each shock
-  unsigned* npshmax;
 
   /// number of shocks
   unsigned* nShocks;
@@ -132,9 +119,6 @@ private: // data
 
   /// number of shock points for each shock
   std::vector <unsigned>* nShockPoints;
-
-  /// length of the shock edges in input.case
-  double* dxcell;
 
   /// shock points coordinates
   Array3D <double>* XYSh;

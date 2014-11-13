@@ -4,6 +4,8 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <iomanip>
+#include <sstream>
 #include "Framework/StandardShockFitting.hh"
 #include "Framework/IOFunctions.hh"
 #include "Framework/Log.hh"
@@ -134,6 +136,21 @@ void StandardShockFitting::process()
 {
   LogToScreen(VERBOSE, "StandardShockFitting::process() => start\n");
 
+  // string for system command execution
+  string execmd;
+
+  // current file name
+  stringstream* fname = MeshData::getInstance().getData <stringstream> ("FNAME");
+
+  // name of the back file
+  string* fnameback = MeshData::getInstance().getData <string> ("FNAMEBACK");
+
+  ostringstream backdir;
+  unsigned dummyIstep; 
+
+  cout << "\n---------------- Shock Fitting Solver ----------------\n\n";
+  cout << "________________ StandardShockFitting ________________\n\n";
+
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
   PhysicsData::getInstance().getReferenceInfo()->read();
@@ -147,40 +164,116 @@ void StandardShockFitting::process()
   m_meshBackup->copy();
 
   m_redistrEqShockPoints->remesh();
-  m_findPhantPoints->remesh();
-  m_changeBndryPoints->remesh();
-  m_computeNormalVector->remesh();
-  m_computeShockLayer->remesh();
-  m_fixMeshSpecialPoints->remesh();
 
-  m_writeTriangleFile->write();
+  cout << "\n______________________________________________________\n\n";
+  cout << "StandardShockFitting::entering in the first step";
+  cout << "\n______________________________________________________\n\n";
 
-  m_callTriangle->generate();
+  for(unsigned I=MeshData::getInstance().getnbBegin();
+    I<MeshData::getInstance().getnbSteps(); I++) {
 
-  m_triangleToCFmesh->convert();
+   MeshData::getInstance().setIstep(I+1);
 
-  m_COOLFluiD->call();
+   cout << "StandardShockFitting::step number => ";
+   cout << MeshData::getInstance().getIstep() << endl;
+   cout << "______________________________________________________\n\n";
 
-  m_CFmeshToTriangle->convert();
+   m_findPhantPoints->remesh();
+   m_changeBndryPoints->remesh();
+   m_computeNormalVector->remesh();
+   m_computeShockLayer->remesh();
+   m_fixMeshSpecialPoints->remesh();
 
-  m_readNewMesh->generate();
+   m_writeTriangleFile->write();
 
-  m_copyZRoe1_0->copy();
+   m_callTriangle->generate();
 
-  m_updateSolution->update();
-  m_fixSpecPoints->update();
+   m_triangleToCFmesh->convert();
 
-  m_copyZRoeSh0_1->copy();
+   cout << "______________________________________________________\n\n";
 
-  m_moveShPoints->update();
-  m_updatePhantPoints->update();
+   m_COOLFluiD->call();
 
-  m_redistrShockPoints->remesh();
+   // change COOLFluiD output file name
+   if(MeshData::getInstance().getnbProcessors()==1) {
+    execmd = "cp -f cfout-P0.CFmesh cfout.CFmesh"; system(execmd.c_str());
+    if(system(execmd.c_str())!=0) {
+    cout << "StandardShockFitting::error => CFmesh file doesn't exist\n";
+    exit(1); }
+    execmd = "rm -f cfout-P0.CFmesh"; system(execmd.c_str());
+   }
+   else if (MeshData::getInstance().getnbProcessors()>1) {
+    execmd = "cp -f cfout-P?.CFmesh cfout.CFmesh"; system(execmd.c_str());
+    if(system(execmd.c_str())!=0) {
+     cout << "StandardShockFitting::error => CFmesh file doesn't exist\n";
+     exit(1); }
+    execmd = "rm -f cfout-P?.CFmesh"; system(execmd.c_str());
+   }
 
-  m_writeBackTriangleFile->write();
-  m_writeShockInfo->write();
+   cout << "______________________________________________________\n\n";
 
-  m_meshRestore->copy();
+   m_CFmeshToTriangle->convert();
+
+   m_readNewMesh->generate();
+
+   m_copyZRoe1_0->copy();
+
+   m_updateSolution->update();
+
+   m_fixSpecPoints->update();
+
+   m_copyZRoeSh0_1->copy();
+
+   m_moveShPoints->update();
+   m_updatePhantPoints->update();
+
+   m_redistrShockPoints->remesh();
+
+   m_writeBackTriangleFile->write();
+   m_writeShockInfo->write();
+
+   m_meshRestore->copy();
+
+   // create the directory to backup files
+   backdir.str(string());
+   unsigned nbDig=0;
+   dummyIstep = I+1;
+   while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
+   backdir << setw(9-nbDig) << setfill('0') << left << string("step").c_str() << I+1;
+
+   if(I%MeshData::getInstance().getnbIbak()==0) {
+    execmd = "mkdir " + backdir.str();
+    system(execmd.c_str());
+
+    execmd = "mv -f shocknor.dat sh99.dat cfout.CFmesh " + fname->str() + ".* "
+             + *fnameback + ".node " + backdir.str();
+    system(execmd.c_str());
+
+    if (MeshData::getInstance().getnbProcessors()==1) {
+     execmd = "cp -f cfout-P0.plt cf" + backdir.str().substr(4,9) + ".plt";
+    }
+    else if (MeshData::getInstance().getnbProcessors()>1) {
+     execmd = "rename out cf"+backdir.str().substr(4,9)+" cfout-P?.plt";
+     system(execmd.c_str());
+     execmd = "mv -f cf*.plt " + backdir.str();
+    }
+
+    system(execmd.c_str());
+   }
+
+   else {
+    execmd = "rm -f shocknor.dat "+ fname->str() +".* ";
+    execmd = execmd + *fnameback+".node sh99.dat ";
+    system(execmd.c_str());
+   }
+
+   execmd = "cut -c1- residual.dat >> convergenza.dat";
+   system(execmd.c_str());
+
+  }
+
+  cout << "______________________________________________________\n";
+  cout << "______________________________________________________\n";
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

@@ -5,6 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "StateUpdaterSF/CoShock.hh"
+#include "Framework/ChemicalInfo.hh"
 #include "Framework/PhysicsData.hh"
 #include "MathTools/Solg.hh"
 
@@ -111,11 +112,11 @@ double CoShock::fShock (unsigned index, vector <double> y)
 
 void CoShock::setPhysicsData()
 {
-  model = PhysicsData::getInstance().getData < vector<string> > ("MODEL");
-  if(model->at(0)=="PG") {
+  if(ChemicalInfo::getModel() == "PG") {
    gam = PhysicsData::getInstance().getData <double >("GAM");
   }
-  else if (model->at(0) == "Cneq" || model->at(0)=="TCneq") {
+  else if (ChemicalInfo::getModel() == "Cneq" ||
+           ChemicalInfo::getModel() =="TCneq") {
    gam = PhysicsData::getInstance().getData <double >("GREF");
   }
 }

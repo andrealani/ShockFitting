@@ -7,7 +7,7 @@
 #include "CopyMakerSF/MeshRestoring.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
-#include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -62,7 +62,6 @@ void MeshRestoring::copy()
   LogToScreen(INFO,"MeshRestoring::copy()\n");
 
   setMeshData();
-  setPhysicsData();
 
   setAddress();
 
@@ -96,7 +95,9 @@ void MeshRestoring::copy()
 
 void MeshRestoring::setAddress()
 {
-  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  unsigned totsize = nbfac->at(0) + 2 *
+                     PhysicsInfo::getnbShMax() *
+                     PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(0));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(0));
 }
@@ -117,14 +118,6 @@ void MeshRestoring::setMeshData()
      MeshData::getInstance().getData <Array2D<int> >("NODPTRBackup");
   bndfacBackup =
      MeshData::getInstance().getData <Array2D<int> >("BNDFACBackup");
-}
-
-//--------------------------------------------------------------------------//
-
-void MeshRestoring::setPhysicsData()
-{
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

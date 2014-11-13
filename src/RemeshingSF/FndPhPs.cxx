@@ -9,6 +9,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/Remeshing.hh"
 #include "MathTools/Array3D.hh"
 #include "MathTools/Array2D.hh"
@@ -81,8 +82,8 @@ void FndPhPs::remesh()
    if (nodcod->at(i)==-1 || nodcod->at(i)==-2) {cont++;}
   }
 
-  for (unsigned iSh=0; iSh < (*r_nShocks); iSh++) {
-   for(unsigned iElemSh=0; iElemSh < r_nShockEdges->at(iSh); iElemSh++) {
+  for (unsigned iSh=0; iSh < (*nShocks); iSh++) {
+   for(unsigned iElemSh=0; iElemSh < nShockEdges->at(iSh); iElemSh++) {
     for (unsigned iElem=0; iElem < nelem->at(0); iElem++) {
 
      if(cellCrossed(iSh,iElemSh,iElem)) {
@@ -125,10 +126,10 @@ bool FndPhPs::cellCrossed(unsigned ISH_index, unsigned ielemsh_index,
   }
 
 
-  xs1 = (*r_XYSh)(0,ielemsh,ISH);
-  ys1 = (*r_XYSh)(1,ielemsh,ISH);
-  xs2 = (*r_XYSh)(0,ielemsh+1,ISH);
-  ys2 = (*r_XYSh)(1,ielemsh+1,ISH);
+  xs1 = (*XYSh)(0,ielemsh,ISH);
+  ys1 = (*XYSh)(1,ielemsh,ISH);
+  xs2 = (*XYSh)(0,ielemsh+1,ISH);
+  ys2 = (*XYSh)(1,ielemsh+1,ISH);
 
 
   Ishel isCellCrossed (xc,yc,xs1,xs2,ys1,ys2);
@@ -161,45 +162,45 @@ void FndPhPs::writeElem3926 ()
 
 void FndPhPs::setPhanPoints()
 {
-  if(d.at(0)>0 && d.at(0)<(*SNDmin) && nodcod->at(n.at(0))==0) {
-   nodcod->at(n.at(0))=-1;
-  }
-  if(d.at(0)>0 && d.at(0)<(*SNDmin) && nodcod->at(n.at(0))>0) {
-   nodcod->at(n.at(0))=-2;
-  }
-  if(d.at(1)>0 && d.at(1)<(*SNDmin) && nodcod->at(n.at(1))==0) {
-   nodcod->at(n.at(1))=-1;
-  }
-  if(d.at(1)>0 && d.at(1)<(*SNDmin) && nodcod->at(n.at(1))>0) {
-   nodcod->at(n.at(1))=-2;
-  }
-  if(d.at(2)>0 && d.at(2)<(*SNDmin) && nodcod->at(n.at(2))==0) {
-   nodcod->at(n.at(2))=-1;
-  }
-  if(d.at(2)>0 && d.at(2)<(*SNDmin) && nodcod->at(n.at(2))>0) {
-   nodcod->at(n.at(2))=-2;
-  }
+  if(d.at(0)>0 && d.at(0)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(0))==0)
+    { nodcod->at(n.at(0))=-1; }
+  if(d.at(0)>0 && d.at(0)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(0))>0) 
+    { nodcod->at(n.at(0))=-2; }
+  if(d.at(1)>0 && d.at(1)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(1))==0)
+    { nodcod->at(n.at(1))=-1; }
+  if(d.at(1)>0 && d.at(1)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(1))>0) 
+    { nodcod->at(n.at(1))=-2; }
+  if(d.at(2)>0 && d.at(2)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(2))==0) 
+    { nodcod->at(n.at(2))=-1; }
+  if(d.at(2)>0 && d.at(2)<(MeshData::getInstance().getSNDMIN()) 
+     && nodcod->at(n.at(2))>0)  
+    { nodcod->at(n.at(2))=-2; }
 }
 
 //--------------------------------------------------------------------------//
 
 void FndPhPs::countPhanPoints()
 {
-  *r_nPhanPoints = 0; *r_nBoundPhanPoints = 0;
+  *nPhanPoints = 0; *nBoundPhanPoints = 0;
   for (unsigned K=0; K<npoin->at(0); K++) {
   unsigned inod = K+1; // c++ indeces start from 0
    if (nodcod->at(K)==-1 || nodcod->at(K)==-2) {
-     *r_nPhanPoints = *r_nPhanPoints + 1; }
+     *nPhanPoints = *nPhanPoints + 1; }
    if (nodcod->at(K)==-2) { 
-     *r_nBoundPhanPoints = *r_nBoundPhanPoints + 1; }
+     *nBoundPhanPoints = *nBoundPhanPoints + 1; }
    if (nodcod->at(K)==-1) { logfile ("Node ", inod, "has become a phantom\n");}
    if (nodcod->at(K)==-2) {
     logfile ("Node ", inod, "on the boundary has become a phantom\n");}
   } 
   logfile ("Number of Phantom nodes (incl. those on the bndry)",
-           *r_nPhanPoints, "\n");
-  if (*r_nBoundPhanPoints > 0) {
-   logfile("Uh! Oh! there are ", *r_nBoundPhanPoints,
+           *nPhanPoints, "\n");
+  if (*nBoundPhanPoints > 0) {
+   logfile("Uh! Oh! there are ", *nBoundPhanPoints,
            "phantom nodes on the boundary");
   }
 }
@@ -217,7 +218,9 @@ void FndPhPs::setIndex(unsigned ISH_index, unsigned ielemsh_index,
 void FndPhPs::setAddress()
 {
   unsigned start = 0;
-  xy = new Array2D <double> ((*ndim),npoin->at(0),&coorVect->at(start));
+  xy = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             npoin->at(0),
+                             &coorVect->at(start));
   celnod = new Array2D <int> ((*nvt), nelem->at(0), &celnodVect->at(start));
 }
 
@@ -225,11 +228,10 @@ void FndPhPs::setAddress()
 
 void FndPhPs::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  r_nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks"); 
-  r_nShockEdges =
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks"); 
+  nShockEdges =
       PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
-  r_XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
+  XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH");
 }
 
 //--------------------------------------------------------------------------//
@@ -240,13 +242,12 @@ void FndPhPs::setMeshData()
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
-  r_nPhanPoints = MeshData::getInstance().getData <unsigned> ("nPhanPoints");
-  r_nBoundPhanPoints = 
+  nPhanPoints = MeshData::getInstance().getData <unsigned> ("nPhanPoints");
+  nBoundPhanPoints = 
              MeshData::getInstance().getData <unsigned> ("nBoundPhanPoints");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
   celnodVect = MeshData::getInstance().getData < vector<int> >("CELNOD");
-  SNDmin = MeshData::getInstance().getData<double >("SNDMIN");
 }
 
 //--------------------------------------------------------------------------//

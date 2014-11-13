@@ -52,6 +52,30 @@ public:
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}
 
+  /// get the reference temperature
+  static double getTref() { return m_Tref; }
+
+  /// get the reference pressure
+  static double getpref() { return m_pref; }
+
+  /// get the reference speed
+  static double geturef() { return m_uref; }
+
+  /// get the reference length
+  static double getLref() { return m_Lref; }
+
+  /// get the reference density
+  static double getrhoref() { return m_rhoref; }
+
+  /// get the isoentropic coefficient of the gas
+  static double getgam() { return m_gam; }
+
+  /// get the gas constant
+  static double getRgas() { return m_Rgas; }
+
+  /// set rhoref
+  static void setrhoref(double rhoref) { m_rhoref = rhoref; }
+
 protected:
 
   /// Configures the options for this object.
@@ -71,7 +95,7 @@ private: // helper functions
   void TCneqAdim();
 
   /// set @param: rhoref
-  void setRhoRef();
+  void setm_rhoref();
 
   /// set @params: R, alpha and Cv
   void setAlpha_Rgas_Cv();
@@ -88,46 +112,28 @@ private: // helper functions
 private: // data
 
   /// isoentropic coefficient of the gas
-  double m_gam;
+  static double m_gam;
 
   /// gas constant (J/kg/K)
-  double m_Rgas;
+  static double m_Rgas;
 
   /// reference temperature (K)
-  double m_Tref;
+  static double m_Tref;
 
   /// reference pressure (p)
-  double m_pref;
+  static double m_pref;
 
   /// freestream speed (m/s)
-  double m_uref;
+  static double m_uref;
+
+  /// reference density
+  static double m_rhoref;
 
   /// species densities
   std::vector <double> m_rhor;
 
   /// reference length
-  double m_Lref;
-
-  /// freestream pressure (assignable to PhysicsData)
-  double* pref;
-
-  /// gas constant (assignable to PhysicsData)
-  double* RFreeStream;
-
-  /// heat specific ratio (assignable to PhysicsData)
-  double* gFreeStream;
-
-  /// freestream temperature (assignable to PhysicsData)
-  double* Tref;
-
-  /// freestream velocity (assignable to PhysicsData)
-  double* uref;
-
-  /// reference density (assignable to PhysicsData)
-  double* rhoref;
-
-  /// reference length (assignable to PhysicsData)
-  double* Lref;
+  static double m_Lref;
 
   /// heat specific ratio (assignable to PhysicsData)
   double* gref;
@@ -137,9 +143,6 @@ private: // data
 
   /// number of species
   unsigned* nsp;
-
-  /// gas model
-  std::vector <std::string>* model;
 
   /// species molecular weights
   std::vector <double>* mm;

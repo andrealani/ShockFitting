@@ -8,6 +8,7 @@
 #include "RemeshingSF/CoNorm4TCneq.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
@@ -304,6 +305,7 @@ void CoNorm4TCneq::writeTecPlotFile()
 {
   ofstream tecfile;
   tecfile.open("shocknor.dat");
+  tecfile.precision(16);
 
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
    tecfile << "TITLE = Shock normals\n";
@@ -312,12 +314,16 @@ void CoNorm4TCneq::writeTecPlotFile()
    tecfile << "N = " << nShockPoints->at(ISH);
    tecfile << ", E = " << nShockPoints->at(ISH)-1 << "\n";
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for (unsigned K=0; K<(*ndim); K++) {tecfile << (*XYSh)(K,I,ISH) << " ";}
+    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
+     {tecfile << (*XYSh)(K,I,ISH) << " ";}
+    tecfile << "\n";
     tecfile << 1 << " " << 1 << " ";
-    for (unsigned K=0; K<(*ndim); K++) {tecfile << (*vShNor)(K,I,ISH) << " ";}
+    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) 
+     {tecfile << (*vShNor)(K,I,ISH) << " ";}
+   tecfile << "\n";
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
-    tecfile << I << " " << I+1 << " " << I << "\n";
+    tecfile << I+1 << " " << I+2 << " " << I+1 << "\n";
    }
   }
 }

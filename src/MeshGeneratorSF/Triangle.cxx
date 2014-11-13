@@ -59,14 +59,15 @@ void Triangle::generate()
 {
   LogToScreen(INFO,"TriangleMeshGenerator::generate()\n");
 
-  fname = MeshData::getInstance().getData<vector<string> >("FNAME");
+  fname = MeshData::getInstance().getData <stringstream>("FNAME");
 
   command = "../../../src/MeshGeneratorSF/TriangleMeshGeneratorExe/triangle -nep "
-            + fname->at(0) + " > log/TriangleExe.log";
+            + fname->str() + " > log/TriangleExe.log";
   system(command.c_str());
 
   if(system(command.c_str())!=0) {
-   cout << "Triangle::error => Triangle Mesh Generator execution failed\n"; }
+   cout << "Triangle::error => Triangle Mesh Generator execution failed\n";
+   exit(1); }
 }
 
 //--------------------------------------------------------------------------//

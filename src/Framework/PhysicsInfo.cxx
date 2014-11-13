@@ -6,7 +6,6 @@
 
 #include "Framework/PhysicsInfo.hh"
 #include "Framework/Log.hh"
-#include "Framework/PhysicsData.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -56,6 +55,42 @@ PhysicsInfo::PhysicsInfo(const std::string& objectName) :
 
 //--------------------------------------------------------------------------//
 
+unsigned PhysicsInfo::m_ndim=1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_ndofmax=1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_nshmax=1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_npshmax=1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_neshmax = 1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_naddholesmax = 1;
+
+//--------------------------------------------------------------------------//
+
+unsigned PhysicsInfo::m_nspmax = 1;
+
+//--------------------------------------------------------------------------//
+
+double PhysicsInfo::m_gam = 1;
+
+//--------------------------------------------------------------------------//
+
+double PhysicsInfo::m_gm1 = 1;
+
+//--------------------------------------------------------------------------//
+
 PhysicsInfo::~PhysicsInfo()
 {
 }
@@ -82,32 +117,7 @@ void PhysicsInfo::read()
 {
   LogToScreen(INFO, "PhysicsInfo::read()\n");
 
-  setPhysicsData();
-
-  *ndim = m_ndim;
-  *gam = m_gam;
-  *gm1 = *gam-1;
-  *ndofmax = m_ndofmax;
-  *npshmax = m_npshmax;
-  *nshmax = m_nshmax;
-  *neshmax = m_neshmax;
-  *nspmax = m_nspmax;
-  *naddholesmax = m_naddholesmax;
-}
-
-//--------------------------------------------------------------------------//
-
-void PhysicsInfo::setPhysicsData()
-{
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
-  gam = PhysicsData::getInstance().getData <double> ("GAM");
-  gm1 = PhysicsData::getInstance().getData <double> ("GM1");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
-  nspmax = PhysicsData::getInstance().getData <unsigned> ("NSPMAX");
-  naddholesmax = PhysicsData::getInstance().getData <unsigned> ("NADDHOLESMAX");
+  m_gm1 = m_gam-1;
 }
 
 //--------------------------------------------------------------------------//

@@ -6,6 +6,7 @@
 
 #include "StateUpdaterSF/MoveDps.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //----------------------------------------------------------------------------//
@@ -43,8 +44,11 @@ void MoveDps::configure(OptionMap& cmap, const std::string& prefix)
 void MoveDps::setAddress()
 {
   unsigned start;
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZroeSh = new Array3D <double> ((*ndof),(*npshmax),(*nshmax),
+  start = npoin->at(0) * (*ndof) + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
+  ZroeSh = new Array3D <double> ((*ndof),
+                                 PhysicsInfo::getnbShPointsMax(),
+                                 PhysicsInfo::getnbShMax(),
                                  &zroeVect->at(start));
 }
 
@@ -52,9 +56,6 @@ void MoveDps::setAddress()
 
 void MoveDps::setMeshData()
 {
-  sndmin = MeshData::getInstance().getData <double> ("SNDMIN");
-  dxcell = MeshData::getInstance().getData <double> ("DXCELL");
-  shrelax = MeshData::getInstance().getData <double> ("SHRELAX");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroeVect = MeshData::getInstance().getData <vector <double> > ("ZROE");
 }
@@ -64,9 +65,6 @@ void MoveDps::setMeshData()
 void MoveDps::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  gam = PhysicsData::getInstance().getData <double> ("GAM");
   gref = PhysicsData::getInstance().getData <double> ("GREF");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
   IX = PhysicsData::getInstance().getData <unsigned> ("IX");

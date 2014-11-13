@@ -11,6 +11,7 @@
 
 #include <iomanip>
 #include <string>
+#include <sstream>
 #include "Framework/Converter.hh"
 #include "MathTools/Array2D.hh"
 #include "VariableTransformerSF/Param2Prim.hh"
@@ -73,26 +74,11 @@ private: // helper functions
 
 private: // data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// max number of degrees of freedom
-  unsigned* ndofmax;
-
   /// number of vertices
   unsigned* nvt;
-
-  /// max number of shock
-  unsigned* nshmax;
-  
-  /// max number of points for each shock
-  unsigned* npshmax;
-  
-  /// max number of edges for each shock
-  unsigned* neshmax;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;
@@ -119,7 +105,7 @@ private: // data
   std::vector<int>* bndfacVect;
 
   /// name of the current file
-  std::vector<std::string>* fname;
+  std::stringstream* fname;
 
   /// mesh points coordinates (in array storing)
   Array2D <double>* XY;

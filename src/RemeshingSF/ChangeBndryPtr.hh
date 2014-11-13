@@ -65,16 +65,7 @@ private: // helper functions
   /// assign values used in ChangeBndryPtr to MeshData pattern
   void setMeshData();
 
-  /// assign values used in ChangeBndryPtr to PhysicsData pattern
-  void setPhysicsData();
-
 private: // data
-
-  /// max number of shocks
-  unsigned* nshmax;
- 
-  /// max number of shock edges
-  unsigned* neshmax;
 
   /// number of points in the mesh
   std::vector<unsigned>* npoin;

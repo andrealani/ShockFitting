@@ -6,6 +6,7 @@
 
 #include "VariableTransformerSF/Prim2ParamPgAdimensional.hh"
 #include "Framework/Log.hh"
+#include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -64,16 +65,20 @@ void Prim2ParamPgAdimensional::transform()
 
   double sqrtr;
 
-  (*rhoref) = (*pref) / (*Tref) / (*Rgas);
+  double rhoref = ReferenceInfo::getpref() / ReferenceInfo::getTref() /
+                  ReferenceInfo::getRgas();
+
+  ReferenceInfo::setrhoref(rhoref);
 
   for(unsigned IPOIN=0;IPOIN<npoin->at(1); IPOIN++) {
-   rho = (*zroe)(0,IPOIN) / (*zroe)(3,IPOIN) / (*Rgas)/ (*Tref) *
-         (*uref) * (*uref);
+   rho = (*zroe)(0,IPOIN) / (*zroe)(3,IPOIN) /
+         ReferenceInfo::getRgas()/ ReferenceInfo::getTref() *
+         ReferenceInfo::geturef() * ReferenceInfo::geturef();
    sqrtr = sqrt(rho);
    kinetic = pow((*zroe)(1,IPOIN),2)+pow((*zroe)(2,IPOIN),2);
    kinetic = kinetic*0.5;
-   help = (*gam)/((*gam)-1);
-   h = help * (*Rgas) * (*zroe)(3,IPOIN) + kinetic;
+   help = ReferenceInfo::getgam()/(ReferenceInfo::getgam()-1);
+   h = help * ReferenceInfo::getRgas() * (*zroe)(3,IPOIN) + kinetic;
 
    (*zroe)(3,IPOIN) = sqrtr * (*zroe)(2,IPOIN);
    (*zroe)(2,IPOIN) = sqrtr * (*zroe)(1,IPOIN);

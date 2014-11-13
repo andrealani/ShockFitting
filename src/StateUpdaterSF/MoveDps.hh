@@ -68,26 +68,8 @@ protected: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shock points for each shock
-  unsigned* npshmax;
-
   /// number of shocks
   unsigned* nShocks;
-
-  /// relax coefficient for shock points integration
-  double* shrelax;
-
-  /// length of the shock edges
-  double* dxcell;
-
-  /// max non dimensional distance of phantom nodes
-  double* sndmin;
-
-  /// specific heat ratio (this values is read by PhysicsInfo)
-  double* gam;
 
   /// specific heat ratio (for Cneq and TCneq models)
   double* gref;

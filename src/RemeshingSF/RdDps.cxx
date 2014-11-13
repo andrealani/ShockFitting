@@ -10,6 +10,7 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -73,7 +74,7 @@ void RdDps::remesh()
 
   logfile.Open(getClassName().c_str());
 
-  ShEdgeLgth.resize((*npshmax));
+  ShEdgeLgth.resize(PhysicsInfo::getnbShPointsMax());
 
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    ileMin = 0; ileMax = 0;
@@ -82,12 +83,12 @@ void RdDps::remesh()
    // compute length of shock edge
    for(unsigned IV=0; IV<nShockEdges->at(ISH); IV++) {
     ShEdgeLgth.at(IV) = 0;
-    for(unsigned I=0; I<(*ndim); I++) {
+    for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
      ShEdgeLgth.at(IV) = ShEdgeLgth.at(IV) + 
                          pow(((*XYSh)(I,IV,ISH)-(*XYSh)(I,IV+1,ISH)),2);
     }
     ShEdgeLgth.at(IV) = sqrt(ShEdgeLgth.at(IV));
-    dum = ShEdgeLgth.at(IV)/(*dxcell);
+    dum = ShEdgeLgth.at(IV)/(MeshData::getInstance().getDXCELL());
 
     if (dum<0.5) {
      if (lenRelMin>dum) { lenRelMin = dum;
@@ -114,7 +115,7 @@ void RdDps::remesh()
     if (ileMin==nShockEdges->at(ISH))                    { npc = ileMin; }
 
     for(unsigned IV=npc; IV<nShockPoints->at(ISH); IV++) {
-     for(unsigned I=0; I<(*ndim); I++) {
+     for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
       (*XYSh)(I,IV-1,ISH) = (*XYSh)(I,IV,ISH);
      }
      for(unsigned I=0; I<(*ndof); I++) {
@@ -142,7 +143,7 @@ void RdDps::remesh()
 
     double npi = ileMax;
     for(unsigned IV=nShockPoints->at(ISH)-1;IV>npi+1;IV--) {
-     for(unsigned I=0; I<(*ndim); I++) {
+     for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
       (*XYSh)(I,IV+1,ISH) = (*XYSh)(I,IV,ISH);
      }
      for(unsigned I=0; I<(*ndof); I++) {
@@ -150,7 +151,7 @@ void RdDps::remesh()
       (*ZroeShd)(I,IV+1,ISH) = (*ZroeShd)(I,IV,ISH);
      }
     }
-    for(unsigned I=0; I<(*ndim); I++) {
+    for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
      (*XYSh)(I,npi+1,ISH) = 0.5*((*XYSh)(I,npi,ISH)+(*XYSh)(I,npi+2,ISH));
     }
     for(unsigned I=0; I<(*ndof); I++) {
@@ -181,17 +182,25 @@ void RdDps::setAddress()
   unsigned start;
   start = npoin->at(0)*(*ndof);
   ZroeShu = new Array3D <double> 
-              ((*ndof),(*npshmax),(*nshmax),&zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
+              ((*ndof),
+               PhysicsInfo::getnbShPointsMax(),
+               PhysicsInfo::getnbShMax(),
+               &zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          (*ndof);
   ZroeShd = new Array3D <double> 
-              ((*ndofmax),(*npshmax),(*nshmax),&zroeVect->at(start));
+              (PhysicsInfo::getnbDofMax(),
+               PhysicsInfo::getnbShPointsMax(),
+               PhysicsInfo::getnbShMax(),
+               &zroeVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
 
 void RdDps::setMeshData()
 {
-  dxcell = MeshData::getInstance().getData <double>("DXCELL");
   zroeVect = MeshData::getInstance().getData <vector <double> >("ZROE");
   npoin  = MeshData::getInstance().getData <vector<unsigned> >("NPOIN"); 
 }
@@ -200,11 +209,7 @@ void RdDps::setMeshData()
 
 void RdDps::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints = 
     PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");

@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <sstream>
 #include "Framework/ShockFittingObj.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
@@ -358,14 +359,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <vector<unsigned> > ("NBPOIN", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NHOLE", 1);
 
-  MeshData::getInstance().createData <double> ("EPS",1);
-  MeshData::getInstance().createData <double> ("SNDMIN",1);
-  MeshData::getInstance().createData <double> ("DXCELL",1);
-  MeshData::getInstance().createData <double> ("SHRELAX",1);
-  MeshData::getInstance().createData <unsigned> ("IBAK",1);
-  MeshData::getInstance().createData <unsigned> ("Naddholes",1);
   MeshData::getInstance().createData <vector<double> > ("CADDholes",1);
-  MeshData::getInstance().createData <unsigned> ("NPROC",1);
 
   MeshData::getInstance().createData <vector <int> >("NODCOD", 1);
   MeshData::getInstance().createData <vector <double> >("ZROE", 1);
@@ -383,8 +377,8 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <Array2D <int> >("BNDFACBackup",1);
 
   MeshData::getInstance().createData <unsigned>("FirstRead",1);
-  MeshData::getInstance().createData <vector<string> >("FNAME",1);
-  MeshData::getInstance().createData <vector<string> >("FNAMEBACK",1);
+  MeshData::getInstance().createData <stringstream>("FNAME");
+  MeshData::getInstance().createData <string>("FNAMEBACK");
 
   MeshData::getInstance().setup();
 }
@@ -393,22 +387,8 @@ void ShockFittingObj::createMeshData()
 
 void ShockFittingObj::createPhysicsData()
 {
-  
-  PhysicsData::getInstance().createData <unsigned> ("NDIM", 1);
-  // these two values are read by PhysicsInfo object
-  PhysicsData::getInstance().createData <double> ("GAM", 1);
-  PhysicsData::getInstance().createData <double> ("GM1", 1);
   PhysicsData::getInstance().createData <unsigned> ("NDOF", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NDOFMAX", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NSHMAX", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NPSHMAX", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NSPMAX", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NESHMAX", 1);
-  PhysicsData::getInstance().createData <unsigned> ("NADDHOLESMAX", 1);
-  PhysicsData::getInstance().createData 
-                          <vector<string> > ("MODEL", 1);
-  PhysicsData::getInstance().createData 
-                          <vector<string> > ("MIXTURE", 1);
+
   PhysicsData::getInstance().createData <unsigned> ("NMOL",1);
   PhysicsData::getInstance().createData <unsigned> ("IE",1);
   PhysicsData::getInstance().createData <unsigned> ("IX",1);
@@ -426,14 +406,7 @@ void ShockFittingObj::createPhysicsData()
                           <vector<string> > ("TYPEMOL",1);
   PhysicsData::getInstance().createData <vector<double> > ("RS",1);
 
-  // these two values are read by ReferenceInfo object
-  PhysicsData::getInstance().createData <double> ("RgasFreeStream",1);
-  PhysicsData::getInstance().createData <double> ("GamFreeStream",1);
-  PhysicsData::getInstance().createData <double> ("PREF",1);
-  PhysicsData::getInstance().createData <double> ("TREF",1);
-  PhysicsData::getInstance().createData <double> ("UREF",1);
-  PhysicsData::getInstance().createData <double> ("RHOREF",1);
-  PhysicsData::getInstance().createData <double> ("LREF",1);
+  // these two values are set in ReferenceInfo object
   PhysicsData::getInstance().createData <double> ("GREF",1);
   PhysicsData::getInstance().createData <double> ("GM1REF",1);
 
@@ -475,14 +448,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector<unsigned> > ("NBPOIN");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NHOLE");
 
-  MeshData::getInstance().deleteData <double> ("EPS");
-  MeshData::getInstance().deleteData <double> ("SNDMIN");
-  MeshData::getInstance().deleteData <double> ("DXCELL");
-  MeshData::getInstance().deleteData <double> ("SHRELAX");
-  MeshData::getInstance().deleteData <unsigned> ("IBAK");
-  MeshData::getInstance().deleteData <unsigned> ("Naddholes");
   MeshData::getInstance().deleteData <vector<double> > ("CADDholes");
-  MeshData::getInstance().deleteData <unsigned> ("NPROC");
 
   MeshData::getInstance().deleteData <vector <int> >("NODCOD");
   MeshData::getInstance().deleteData <vector <double> >("ZROE");
@@ -500,8 +466,8 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <Array2D <int> >("BNDFACBackup");
 
   MeshData::getInstance().deleteData <unsigned>("FirstRead");
-  MeshData::getInstance().deleteData <vector<string> >("FNAME");
-  MeshData::getInstance().deleteData <vector<string> >("FNAMEBACK");
+  MeshData::getInstance().deleteData <stringstream >("FNAME");
+  MeshData::getInstance().deleteData <string >("FNAMEBACK");
 
   MeshData::getInstance().unsetup();
 }
@@ -512,20 +478,7 @@ void ShockFittingObj::deletePhysicsData()
 {
   PhysicsData::getInstance().unsetup();
   
-  PhysicsData::getInstance().deleteData <unsigned> ("NDIM");
   PhysicsData::getInstance().deleteData <unsigned> ("NDOF");
-  PhysicsData::getInstance().deleteData <unsigned> ("NDOFMAX");
-  PhysicsData::getInstance().deleteData <unsigned> ("NSHMAX");
-  PhysicsData::getInstance().deleteData <unsigned> ("NPSHMAX");
-  PhysicsData::getInstance().deleteData <unsigned> ("NSPMAX");
-  PhysicsData::getInstance().deleteData <unsigned> ("NESHMAX");
-  PhysicsData::getInstance().deleteData <unsigned> ("NADDHOLESMAX");
-  // these values are read by PhysicsInfo object
-  PhysicsData::getInstance().deleteData <double> ("GAM");
-  PhysicsData::getInstance().deleteData <double> ("GM1");
-
-  PhysicsData::getInstance().deleteData <vector<string> > ("MODEL");
-  PhysicsData::getInstance().deleteData <vector<string> > ("MIXTURE");
 
   PhysicsData::getInstance().deleteData <unsigned> ("NMOL");
   PhysicsData::getInstance().deleteData <unsigned> ("IE");
@@ -542,14 +495,7 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <vector<string> > ("TYPEMOL");
   PhysicsData::getInstance().deleteData <vector<double> > ("RS");
 
-  // these values are read by ReferenceInfo object
-  PhysicsData::getInstance().deleteData <double> ("RgasFreeStream");
-  PhysicsData::getInstance().deleteData <double> ("GamFreeStream");
-  PhysicsData::getInstance().deleteData <double> ("PREF");
-  PhysicsData::getInstance().deleteData <double> ("TREF");
-  PhysicsData::getInstance().deleteData <double> ("UREF");
-  PhysicsData::getInstance().deleteData <double> ("RHOREF");
-  PhysicsData::getInstance().deleteData <double> ("LREF");
+  // these values are set in ReferenceInfo object
   PhysicsData::getInstance().deleteData <double> ("GREF");
   PhysicsData::getInstance().deleteData <double> ("GM1REF");
 

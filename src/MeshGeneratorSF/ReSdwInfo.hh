@@ -72,23 +72,8 @@ private: // helper functions
 
 private: //data
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degree of freedom
   unsigned* ndof;
-
-  /// max number of degree of freedom
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
-  /// max number of special points
-  unsigned* nspmax;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;

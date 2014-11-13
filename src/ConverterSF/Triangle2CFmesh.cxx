@@ -6,6 +6,7 @@
 
 #include "ConverterSF/Triangle2CFmesh.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 #include "MathTools/Jcycl.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -126,29 +127,35 @@ void Triangle2CFmesh::readTriangleFmt()
   Jcycl J;
 
   // set ICLR vector to 0 value
-  ICLR.resize(20,0);
+  ICLR.assign(20,0);
 
   string dummyfile;
 
-  dummyfile = fname->at(0)+".1.node";
+  dummyfile = fname->str()+".1.node";
   file.open(dummyfile.c_str()); // .node file
   // read number of points
   file >> npoin->at(1) >> dummy >> dummy >> dummy;
 
   // resize zroe vectors of MeshData pattern
-  totsize = npoin->at(0) + npoin->at(1) + 4 * (*nshmax) * (*npshmax);
-  zroeVect->resize((*ndofmax) * totsize);
-  coorVect->resize((*ndim) * totsize);
+  totsize = npoin->at(0) + npoin->at(1) + 
+            4 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
+  zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
+  coorVect->resize(PhysicsInfo::getnbDim() * totsize);
 
   // assign start pointers for the zroe and XY arrays
-  start = (*ndim) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  XY = new Array2D <double> ((*ndim),
-                                  (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
-                                  &coorVect->at(start));
-  start = (*ndofmax) * (npoin->at(0) + 2 * (*nshmax) * (*npshmax));
-  zroe = new Array2D <double> ((*ndofmax),
-                                    (npoin->at(1) + 2 * (*nshmax) * (*npshmax)),
-                                    &zroeVect->at(start));
+  start = PhysicsInfo::getnbDim() *
+         (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 * 
+                             PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax()),
+                             &coorVect->at(start));
+  start = PhysicsInfo::getnbDofMax() *
+          (npoin->at(0) + 2 *
+          PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
+                              (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax()),
+                               &zroeVect->at(start));
 
   // read mesh points status
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
@@ -158,7 +165,7 @@ void Triangle2CFmesh::readTriangleFmt()
   }
   file.close();
 
-  dummyfile = fname->at(0)+".1.ele";
+  dummyfile = fname->str()+".1.ele";
   file.open(dummyfile.c_str()); // .ele file
   // read number of elements
   file >> nelem->at(1) >> (*nvt) >> dummy;
@@ -178,7 +185,7 @@ void Triangle2CFmesh::readTriangleFmt()
   }
   file.close();
 
-  dummyfile = fname->at(0)+".1.neigh";
+  dummyfile = fname->str()+".1.neigh";
   file.open(dummyfile.c_str()); // .neigh file
   // read celcel array
   file >> nelem->at(1) >> dummy;
@@ -188,17 +195,21 @@ void Triangle2CFmesh::readTriangleFmt()
   }
   file.close();
 
-  dummyfile = fname->at(0)+".1.poly";
+  dummyfile = fname->str()+".1.poly";
   file.open(dummyfile.c_str()); // .poly file
   // read number of faces
   file >> dummy >> dummy >> dummy >> dummy;
   file >> nbfac->at(1);
 
   // resize array with the new nbfac value read on poly file
-  totsize = nbfac->at(0) + nbfac->at(1) + 4 * (*nshmax) * (*neshmax);
+  totsize = nbfac->at(0) + nbfac->at(1) + 
+            4 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax();
   bndfacVect->resize(3 * totsize);
-  start = 3* (nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
-  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * (*nshmax) * (*neshmax)),
+  start = 3 * (nbfac->at(0) + 
+          2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
+  bndfac = new Array2D<int> (3,(nbfac->at(1) +
+                             2 * PhysicsInfo::getnbShMax() *
+                             PhysicsInfo::getnbShEdgesMax()),
                              &bndfacVect->at(start));
 
   file.close();
@@ -223,13 +234,13 @@ void Triangle2CFmesh::readTriangleFmt()
 
   nbBoundaryfaces = ibfac;
 
-  dummyfile = fname->at(0)+".1.edge";
+  dummyfile = fname->str()+".1.edge";
   file.open(dummyfile.c_str()); // .edge file
   // read number of edges
   file >> nedge >> iattr;
   if (iattr!=1) {
    cout << "ReadTriangleFmt::There should be 1 bndry marker in ";
-   cout << fname->at(0) << ".1.edge while there appear to be " << iattr;
+   cout << fname->str() << ".1.edge while there appear to be " << iattr;
    cout << "\n Run Triangle with -e\n";
    exit(1);
   }
@@ -307,7 +318,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
 
   file.open("cfin.CFmesh");
 
-  file << "!NB_DIM " << setw(1) << (*ndim) << "\n";
+  file << "!NB_DIM " << setw(1) << PhysicsInfo::getnbDim() << "\n";
   file << "!NB_EQ " << setw(1) << (*ndof) << "\n";
   file << "!NB_NODES " << setw(5) << npoin->at(1) << " 0\n";
   file << "!NB_STATES "<< setw(5) << npoin->at(1) << " 0\n";
@@ -399,19 +410,14 @@ void Triangle2CFmesh::setMeshData()
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
-  fname = MeshData::getInstance().getData <vector<string> >("FNAME");
+  fname = MeshData::getInstance().getData <stringstream>("FNAME");
 }
 
 //----------------------------------------------------------------------------//
 
 void Triangle2CFmesh::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //----------------------------------------------------------------------------//

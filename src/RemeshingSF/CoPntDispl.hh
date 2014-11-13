@@ -127,20 +127,8 @@ private: // data
   /// dummy variables used for shocks families setting
   double f1, f3;
 
-  /// space dimension
-  unsigned* ndim;
-
   /// number of degrees of freedom
   unsigned* ndof;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of points for each shock
-  unsigned* npshmax;
-
-  /// distance between two shock faces
-  double* eps;
 
   /// number of shocks
   unsigned* nShocks;

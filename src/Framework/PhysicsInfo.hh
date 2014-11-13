@@ -43,6 +43,36 @@ public:
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}
 
+  /// get the space dimensions
+  static unsigned getnbDim() { return m_ndim; }
+
+  /// get the max number of degrees of freedom
+  static unsigned getnbDofMax() { return m_ndofmax; }
+
+  /// get the max number of shocks
+  static unsigned getnbShMax() { return m_nshmax; }
+
+  /// get the max number of shock points for each shock
+  static unsigned getnbShPointsMax() { return m_npshmax; }
+
+  /// get the max number of edges for each shock
+  static unsigned getnbShEdgesMax() { return m_neshmax; }
+
+  /// get the max number of holes
+  static unsigned getnbHolesMax() { return m_naddholesmax; }
+
+  /// get the max number of special points
+  static unsigned getnbSpecPointsMax() { return m_nspmax; }
+
+  /// get the heat specific ratio
+  static double getGam() {return m_gam; }
+
+  /// get @param gm1=gam-1
+  static double getGm1() { return m_gm1; }
+
+  /// set the space dimensions
+  static void setnbDim(unsigned ndim) { m_ndim = ndim; }
+
 protected:
 
   /// Configures the options for this object.
@@ -50,72 +80,34 @@ protected:
   /// @param args is the ConfigArgs with the arguments to be parsed.
   virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
 
-private: // helper functions
-
-  /// assign values read by PhysicsInfo to PhysicsData
-  void setPhysicsData();
-
 private: //data
 
   /// space dimension
-  unsigned m_ndim;
+  static unsigned m_ndim;
 
   /// heat specific ratio
-  double m_gam;
+  static double m_gam;
 
   /// max number of degree of freedom
-  unsigned m_ndofmax;
+  static unsigned m_ndofmax;
 
   /// max number of shocks
-  unsigned m_nshmax;
+  static unsigned m_nshmax;
 
   /// max number of shock points for each shock
-  unsigned m_npshmax;
+  static unsigned m_npshmax;
 
   /// max number of shock edges for each shock
-  unsigned m_neshmax;
+  static unsigned m_neshmax;
 
   /// max number of special points
-  unsigned m_nspmax;
+  static unsigned m_nspmax;
 
   /// max number of holes
-  unsigned m_naddholesmax;
-
-  /// space dimension 
-  ///(assignable to PhysicsData)
-  unsigned* ndim;
-
-  /// heat specific ratio
-  /// assignable to PhysicsData
-  double* gam;
+  static unsigned m_naddholesmax;
 
   /// @param gm1 = gam -1
-  double* gm1;
-
-  /// max number of degree of freedom
-  /// (assignable to PhysicsData)
-  unsigned* ndofmax;
-
-  /// max number of shocks
-  /// (assignable to PhysicsData)
-  unsigned* nshmax;
-
-  /// max number of shock points for each shock
-  /// (assignable to PhysicsData)
-  unsigned* npshmax;
-
-  /// max number of shock edges for each shock
-  /// (assignable to PhysicsData)
-  unsigned* neshmax;
-
-  /// max number of special points
-  /// (assignable to PhysicsData)
-  unsigned* nspmax;
-
-  /// max number of holes
-  /// (assignable to PhysicsData)
-  unsigned* naddholesmax;
-
+  static double m_gm1;
 };
 
 //--------------------------------------------------------------------------//

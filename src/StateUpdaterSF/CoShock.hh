@@ -53,9 +53,6 @@ private: // data
   /// heat specific ratio
   double* gam;
 
-  /// gas model
-  std::vector<std::string>* model;
-
   /// vector stores downstream status
   std::vector<double>x1;
 

@@ -64,6 +64,14 @@ public:
     m_mapName2ArrayPD[name] = (void*)(dataArray);
   }
 
+  /// create data with a give type and name
+  template <typename ARRAYPD>
+  void createData(const std::string& name)
+  {
+   ARRAYPD* dataArray = new ARRAYPD();
+   m_mapName2ArrayPD[name] = (void*)(dataArray);
+  }
+
   /// delete data with a given size, type and name
   template <typename ARRAYPD>
   void deleteData(const std::string& name)

@@ -6,6 +6,7 @@
 
 #include "RemeshingSF/CoNorm.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //----------------------------------------------------------------------------//
@@ -42,16 +43,23 @@ void CoNorm::configure(OptionMap& cmap, const std::string& prefix)
 
 void CoNorm::setAddress()
 {
-  unsigned start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZRoeShd =
-    new Array3D <double> ((*ndofmax),(*npshmax),(*nshmax),&zroe->at(start));
+  unsigned start = npoin->at(0) * (*ndof) +
+                   PhysicsInfo::getnbShPointsMax() *
+                   PhysicsInfo::getnbShMax() *
+                   (*ndof);
+  ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroe->at(start));
 }
 
 //----------------------------------------------------------------------------//
 
 void CoNorm::setSize()
 {
-  vShNor->resize((*ndim),(*npshmax),(*nshmax));
+  vShNor->resize(PhysicsInfo::getnbDim(),
+                 PhysicsInfo::getnbShPointsMax(),
+                 PhysicsInfo::getnbShMax());
 }
 
 //----------------------------------------------------------------------------//
@@ -66,17 +74,9 @@ void CoNorm::setMeshData()
 
 void CoNorm::setPhysicsData()
 {
-  gam = PhysicsData::getInstance().getData <double> ("GAM");
-  gm1 = PhysicsData::getInstance().getData <double> ("GM1");
   gref = PhysicsData::getInstance().getData <double> ("GREF");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
-  model = PhysicsData::getInstance().getData <vector<string> > ("MODEL");
-  mixture = PhysicsData::getInstance().getData <vector<string> > ("MIXTURE");
   hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
   gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
   Rs = PhysicsData::getInstance().getData <vector<double> > ("RS");

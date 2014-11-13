@@ -9,6 +9,7 @@
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //--------------------------------------------------------------------------//
@@ -87,9 +88,12 @@ void WriteSdwInfo::write()
    logfile ("nb of points ",nShockPoints->at(ISH), "\n");
 
    for(unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XYSh)(IA,I,ISH) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) { file << (*ZroeShd)(IA,I,ISH) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) { file << (*ZroeShu)(IA,I,ISH) << " "; }
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
+     { file << (*XYSh)(IA,I,ISH) << " "; }
+    for(unsigned IA=0; IA<(*ndof); IA++) 
+     { file << (*ZroeShd)(IA,I,ISH) << " "; }
+    for(unsigned IA=0; IA<(*ndof); IA++) 
+     { file << (*ZroeShu)(IA,I,ISH) << " "; }
     file << "\n";
    }
   }
@@ -199,11 +203,16 @@ void WriteSdwInfo::setAddress()
 {
   unsigned start;
   start = npoin->at(0)*(*ndof);
-  ZroeShu = 
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZroeShd = 
-    new Array3D <double> ((*ndof),(*npshmax),(*nshmax),&zroe->at(start));
+  ZroeShu = new Array3D <double> ((*ndof),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroe->at(start));
+  start = npoin->at(0) * (*ndof) + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
+  ZroeShd = new Array3D <double> ((*ndof),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroe->at(start));
 }
 
 //--------------------------------------------------------------------------//
@@ -218,10 +227,7 @@ void WriteSdwInfo::setMeshData()
 
 void WriteSdwInfo::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
   nShockPoints =
      PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");

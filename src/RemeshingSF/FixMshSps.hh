@@ -110,18 +110,6 @@ private: // data
   Array2D <unsigned> ISHPlistu;
   Array2D <unsigned> ISHPlistd; 
 
-  /// space dimension
-  unsigned* ndim;
-
-  /// max number of shocks
-  unsigned* nshmax;
-
-  /// max number of shoc points for each shock
-  unsigned* npshmax;
-
-  /// max number of shock edges
-  unsigned* neshmax;
-
   /// number of shock boundary faces
   unsigned* nbfacSh;
 

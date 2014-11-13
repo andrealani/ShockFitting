@@ -7,7 +7,7 @@
 #include "CopyMakerSF/MeshBackup.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
-#include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -62,12 +62,12 @@ void MeshBackup::copy()
   LogToScreen(INFO,"MeshBackup::copy()\n");
 
   setMeshData();
-  setPhysicsData();
 
   setAddress();
 
   // set size of the backup bndfac
-  bndfacBackup->resize(3,nbfac->at(0) + 2 * (*nshmax) * (*neshmax));
+  bndfacBackup->resize(3,nbfac->at(0) + 2 *
+                       PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
 
   // set size of the backup nodptr
   nodptrBackup->resize(nbpoin->at(0),3);
@@ -107,7 +107,8 @@ void MeshBackup::copy()
 
 void MeshBackup::setAddress()
 {
-  unsigned totsize = nbfac->at(0) + 2 * (*nshmax) * (*neshmax);
+  unsigned totsize = nbfac->at(0) + 2 *
+                     PhysicsInfo::getnbShMax()*PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(0));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(0));
 }
@@ -128,14 +129,6 @@ void MeshBackup::setMeshData()
      MeshData::getInstance().getData <Array2D<int> >("NODPTRBackup");
   bndfacBackup = 
      MeshData::getInstance().getData <Array2D<int> >("BNDFACBackup");
-}
-
-//--------------------------------------------------------------------------//
-
-void MeshBackup::setPhysicsData()
-{
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  neshmax = PhysicsData::getInstance().getData <unsigned> ("NESHMAX");
 }
 
 //--------------------------------------------------------------------------//

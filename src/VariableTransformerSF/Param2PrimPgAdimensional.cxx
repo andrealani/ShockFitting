@@ -6,6 +6,7 @@
 
 #include "VariableTransformerSF/Param2PrimPgAdimensional.hh"
 #include "Framework/Log.hh"
+#include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -62,14 +63,17 @@ void Param2PrimPgAdimensional::transform()
   setMeshData();
   setAddress();
 
-  (*rhoref) = (*pref) / (*Tref) / (*Rgas);
+  double rhoref = ReferenceInfo::getpref() / ReferenceInfo::getTref() /
+                  ReferenceInfo::getRgas();
+
+  ReferenceInfo::setrhoref(rhoref);
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     rho = (*zroe)(0,IPOIN) * (*zroe)(0,IPOIN);
     kinetic = pow((*zroe)(2,IPOIN),2)+pow((*zroe)(3,IPOIN),2);
     kinetic = kinetic * 0.5;
     h = (*zroe)(1,IPOIN)/(*zroe)(0,IPOIN);
-    help = ((*gam)-1)/(*gam);
+    help = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam();
     pres = help * (rho * h - kinetic);
     u = (*zroe)(2,IPOIN)/(*zroe)(0,IPOIN);
     v = (*zroe)(3,IPOIN)/(*zroe)(0,IPOIN);
@@ -78,7 +82,8 @@ void Param2PrimPgAdimensional::transform()
     (*zroe)(1,IPOIN) = u;
     (*zroe)(2,IPOIN) = v;
     (*zroe)(3,IPOIN) = pres/rho *
-                         ((*uref) * (*uref) / (*Rgas) / (*Tref));
+                         (ReferenceInfo::geturef() * ReferenceInfo::geturef() /
+                         ReferenceInfo::getRgas() / ReferenceInfo::getTref());
    }
 }
 

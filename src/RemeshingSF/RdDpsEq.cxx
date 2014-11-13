@@ -10,6 +10,7 @@
 #include "Framework/Remeshing.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/MeshData.hh"
 
 //--------------------------------------------------------------------------//
@@ -109,7 +110,7 @@ void RdDpsEq::computeShEdgeLength(unsigned index)
   for (unsigned IV=0; IV<nShockEdges->at(ISH); IV++) {
    unsigned I = IV+1;
    Sh_Edge_length = 0;
-   for (unsigned K=0; K<(*ndim); K++) {
+   for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
     Sh_Edge_length = Sh_Edge_length +
                      pow(((*XYSh)(K,IV,ISH)-(*XYSh)(K,I,ISH)),2);
    }
@@ -125,9 +126,10 @@ void RdDpsEq::computeShEdgeLength(unsigned index)
 void RdDpsEq::computeNbDistrShPoints(unsigned index)
 {
   ISH=index;
-  nShockPoints_new = Sh_ABSC.at(nShockPoints->at(ISH)-1)/(*dxcell)+1;
+  nShockPoints_new = Sh_ABSC.at(nShockPoints->at(ISH)-1) /
+                     (MeshData::getInstance().getDXCELL())+1;
 
-  if (nShockPoints_new > (*npshmax)) {
+  if (nShockPoints_new > PhysicsInfo::getnbShPointsMax()) {
    cout << "RdDpsEq::error => Too many shock points! Increase NPSHMAX in input.case\n";
    exit(1);}
 }
@@ -153,7 +155,7 @@ void RdDpsEq::newPointsInterp(unsigned index)
 {
   ISH = index;
 
-   for (unsigned K=0; K<(*ndim); K++) {
+   for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
     XYSh_New(K,0) = (*XYSh)(K,0,ISH);
    }
 
@@ -162,7 +164,7 @@ void RdDpsEq::newPointsInterp(unsigned index)
     ZRoeShd_New(K,0) = (*ZRoeShd)(K,0,ISH);
    }
 
-   for (unsigned K=0; K<(*ndim); K++) {
+   for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
     XYSh_New(K,nShockPoints_new-1) = (*XYSh)(K,nShockPoints->at(ISH)-1,ISH);
 
    }
@@ -193,7 +195,7 @@ void RdDpsEq::computeInterPoints(unsigned index)
      j1 = j-1; i1 = i-1;
      logfile("node=",j1,"\n");
      logfile("node_new=",i1,"\n");
-     for (unsigned K=0; K<(*ndim); K++) {
+     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
       XYSh_New(K,i) = beta * (*XYSh)(K,j1,ISH) + alpha * (*XYSh)(K,j,ISH);
      }
      for (unsigned K=0; K<(*ndof); K++) {
@@ -215,7 +217,7 @@ void RdDpsEq::rewriteValues(unsigned index)
   ISH=index;
   logfile("new shock point coordinates");
   for (unsigned I=0; I<nShockPoints_new; I++) {
-   for(unsigned K=0; K<(*ndim); K++) {
+   for(unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
     (*XYSh)(K,I,ISH)= XYSh_New(K,I);
     //logfile(K)
     logfile((*XYSh)(K,I,ISH), " ");
@@ -238,33 +240,39 @@ void RdDpsEq::setAddress()
 {
   unsigned start;
   start = npoin->at(0)*(*ndof);
-  ZRoeShu = new Array3D <double> 
-              ((*ndof),(*npshmax),(*nshmax),&zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + (*npshmax) * (*nshmax) * (*ndof);
-  ZRoeShd = new Array3D <double> 
-              ((*ndofmax),(*npshmax),(*nshmax),&zroeVect->at(start));
+  ZRoeShu = new Array3D <double> ((*ndof),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
+  start = npoin->at(0) * (*ndof) +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          (*ndof);
+  ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
 }
 
 //--------------------------------------------------------------------------//
 
 void RdDpsEq::setSize()
 {
-  XYSh_New.resize( (*ndim) , (*npshmax) );
-  ZRoeShu_New.resize( (*ndof) , (*npshmax) );
-  ZRoeShd_New.resize( (*ndof) , (*npshmax) );
-  Sh_ABSC.resize( (*npshmax) );
-  Sh_ABSC_New.resize( (*npshmax) );
+  XYSh_New.resize(PhysicsInfo::getnbDim(),
+                  PhysicsInfo::getnbShPointsMax() );
+  ZRoeShu_New.resize((*ndof) ,
+                     PhysicsInfo::getnbShPointsMax() );
+  ZRoeShd_New.resize((*ndof),
+                     PhysicsInfo::getnbShPointsMax() );
+  Sh_ABSC.resize(PhysicsInfo::getnbShPointsMax());
+  Sh_ABSC_New.resize(PhysicsInfo::getnbShPointsMax());
 }
 
 //--------------------------------------------------------------------------//
 
 void RdDpsEq::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
-  ndofmax = PhysicsData::getInstance().getData <unsigned> ("NDOFMAX");
-  nshmax = PhysicsData::getInstance().getData <unsigned> ("NSHMAX");
-  npshmax = PhysicsData::getInstance().getData <unsigned> ("NPSHMAX");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks"); 
   nShockPoints = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
   nShockEdges = PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
@@ -276,7 +284,6 @@ void RdDpsEq::setPhysicsData()
 void RdDpsEq::setMeshData()
 {
   zroeVect = MeshData::getInstance().getData <vector <double> >("ZROE");
-  dxcell = MeshData::getInstance().getData <double> ("DXCELL");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
 }
 

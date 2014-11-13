@@ -8,6 +8,7 @@
 #include "RemeshingSF/CoNorm4Ar.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
@@ -313,9 +314,13 @@ void CoNorm4Ar::writeTecPlotFile()
    tecfile << "N = " << nShockPoints->at(ISH);
    tecfile << ", E = " << nShockPoints->at(ISH)-1 << "\n";
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for (unsigned K=0; K<(*ndim); K++) {tecfile << (*XYSh)(K,I,ISH) << " ";}
+    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
+     {tecfile << (*XYSh)(K,I,ISH) << " ";}
+    tecfile << "\n";
     tecfile << 1 << " " << 1 << " ";
-    for (unsigned K=0; K<(*ndim); K++) {tecfile << (*vShNor)(K,I,ISH) << " ";}
+    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
+     {tecfile << (*vShNor)(K,I,ISH) << " ";}
+    tecfile << "\n";
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
     tecfile << I << " " << I+1 << " " << I << "\n";
@@ -343,10 +348,9 @@ void CoNorm4Ar::recoverState(string direction, unsigned I,
   uj = (*ZRoeShd)((*IX),J,ISH)/zrho;
   vj = (*ZRoeShd)((*IY),J,ISH)/zrho;
   help = pow((*ZRoeShd)((*IX),J,ISH),2)+pow((*ZRoeShd)((*IY),J,ISH),2);
-  // gam and gm1 are referred to the values read by PhysicsInfo
-  // (it was previously read by re_inp_dat)
-  pj = (*gm1)/(*gam) * (zrho * (*ZRoeShd)((*IE),J,ISH) - 0.5 * help - rhoHf );
-  aj = sqrt( (*gam) * pj/roj );
+  pj = PhysicsInfo::getGm1() / PhysicsInfo::getGam() * 
+       (zrho * (*ZRoeShd)((*IE),J,ISH) - 0.5 * help - rhoHf );
+  aj = sqrt(PhysicsInfo::getGam() * pj/roj );
   if(direction=="forward") {
    unsigned ipoin = I+1; //c++ indeces start from 0
    unsigned ish = ISH+1; //c++ indeces start from 0

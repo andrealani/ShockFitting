@@ -7,6 +7,7 @@
 #include "WritingMeshSF/WriteBackTriangle.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -64,33 +65,39 @@ void WriteBackTriangle::write()
 
   setAddress();
 
-  fnameBack->at(0) = "na99";
-  string dummyfile = fnameBack->at(0)+".node";
+  *fnameBack = "na99";
+  string dummyfile = *fnameBack+".node";
   file.open(dummyfile.c_str());
   file.precision(20);
 
   unsigned ilist = npoin->at(0);
   unsigned iPoin;
 
-  file << ilist << "  " << *ndim << "  " << *ndof << "  1\n";
+  file <<ilist<< "  " << PhysicsInfo::getnbDim() << "  " << *ndof << "  1\n";
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    iPoin = IPOIN+1;
    if      (nodcod->at(IPOIN)==-1) {
     file << iPoin << " ";
-    for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) { file << (*Zroe)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++)
+     { file << (*XY)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<(*ndof); IA++) 
+     { file << (*Zroe)(IA,IPOIN) << " "; }
     file << "0\n";
    }
    else if (nodcod->at(IPOIN)==-1) {
     file << iPoin << " ";
-    for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) { file << (*Zroe)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
+     { file << (*XY)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<(*ndof); IA++) 
+     { file << (*Zroe)(IA,IPOIN) << " "; }
     file << "2\n";
    }
    else {
     file << iPoin << " ";
-    for(unsigned IA=0; IA<(*ndim); IA++) { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) { file << (*Zroe)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
+     { file << (*XY)(IA,IPOIN) << " "; }
+    for(unsigned IA=0; IA<(*ndof); IA++) 
+     { file << (*Zroe)(IA,IPOIN) << " "; }
     file << nodcod->at(IPOIN) << "\n";
    }
   }
@@ -103,7 +110,8 @@ void WriteBackTriangle::write()
 void WriteBackTriangle::setAddress()
 {
   Zroe = new Array2D<double>((*ndof),npoin->at(0),&zroeVect->at(0));
-  XY = new Array2D<double>((*ndim),npoin->at(0),&coorVect->at(0));
+  XY = new Array2D<double>(PhysicsInfo::getnbDim(), npoin->at(0),
+                           &coorVect->at(0));
 }
 
 //--------------------------------------------------------------------------//
@@ -114,14 +122,13 @@ void WriteBackTriangle::setMeshData()
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
-  fnameBack = MeshData::getInstance().getData <vector<string> >("FNAMEBACK");
+  fnameBack = MeshData::getInstance().getData <string>("FNAMEBACK");
 }
 
 //--------------------------------------------------------------------------//
 
 void WriteBackTriangle::setPhysicsData()
 {
-  ndim = PhysicsData::getInstance().getData <unsigned> ("NDIM");
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
 }
 
