@@ -1,0 +1,170 @@
+.ShockFittingObj = StandardShockFitting
+
+
+###----------------------- MeshData ------------------------
+ # distance between two shock faces
+  .StandardShockFitting.MeshData.EPS = 0.20e-12                      
+
+ # max non dimensional distance of phantom nodes
+  .StandardShockFitting.MeshData.SNDMIN = 0.05                        
+
+ # length of the shock edges
+  .StandardShockFitting.MeshData.DXCELL = 0.0006                    
+
+ # relax coefficient of shock points integration
+  .StandardShockFitting.MeshData.SHRELAX = 0.9
+
+ # number of iterations before saving solution
+  .StandardShockFitting.MeshData.IBAK = 1                
+
+ # number of hole points
+  .StandardShockFitting.MeshData.Naddholes = 0            
+
+ # hole points coordinates
+  .StandardShockFitting.MeshData.CADDholes = 0 
+
+ # number of processor
+  .StandardShockFitting.MeshData.NPROC = 1            
+
+ # beginning step
+  .StandardShockFitting.MeshData.NBegin = 0
+
+ # number of step
+  .StandardShockFitting.MeshData.NSteps = 1
+###----------------------------------------------------------
+
+
+###----------------------- PhysicsData-----------------------
+
+ ##--- PhysicsInfo
+  # space dimension
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NDIM = 2       
+
+  # max number of degrees of freedom
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NDOFMAX = 6       
+
+  # max number of shocks
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NSHMAX = 5               
+
+  # max number of shock points for each shock
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NPSHMAX = 1000                      
+
+  # max number of shock edges for each shock (NPSHMAX-1)
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NESHMAX = 999                       
+
+  # max number of holes
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NADDHOLESMAX = 10               
+
+  # max number of special points
+    .StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12                        
+
+  # specific heat ratio
+    .StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.4 
+ ##------
+
+
+ ##--- ChemicalInfo
+  # gas model (PG, Cneq, TCneq)
+    .StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = TCneq                 
+
+  # mixture name (only if model=Cneq or model=TCneq
+    .StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = nitrogen2                
+                                         
+  # mixture file (look at data_template.dat)
+    .StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = nitrogen2.dat                
+  # reference speed (only if model=Cneq and mixture=Ar4)
+    .StandardShockFitting.PhysicsData.ChemicalInfo.Qref = /                            
+
+  # global indeces
+    .StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0                    
+    .StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1                      
+    .StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2                         
+    .StandardShockFitting.PhysicsData.ChemicalInfo.IEV = 3                             
+ ##------
+
+
+ ##--- ReferenceInfo
+  # isoentropic coefficient of the gas
+    .StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4            
+
+  # gas constant (J/kg/K)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287               
+
+  # reference temperature (K)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833                    
+
+  # freestream pressure (p)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65              
+
+  # reference speed (m/s)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594                 
+
+  # species densities
+    .StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = 0.00036354 0.00461646
+
+  # reference length
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1  
+ ##------
+
+###----------------------------------------------------------
+
+
+##--- List of mesh generator objects
+ .StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo Triangle ReadTriangle
+
+# processing file
+   .StandardShockFitting.ReadTriangle.InputFiles = na00.1 
+
+# file types (in default order)
+   .StandardShockFitting.ReadTriangle.FileTypes = node poly ele neigh edge
+
+# shock points informations file
+  .StandardShockFitting.ReSdwInfo.InputFiles = sh00.dat
+##------
+
+
+##--- List of remeshing objects
+.StandardShockFitting.RemeshingList = BndryNodePtr RdDpsEq FndPhPs ChangeBndryPtr \
+                                       CoPntDispl FixMshSps RdDps
+# object computing normal vector
+ .StandardShockFitting.CoNorm = CoNorm4TCneq
+##------
+
+
+##--- List of writing mesh objects
+ .StandardShockFitting.WritingMeshList = WriteTriangle WriteBackTriangle WriteSdwInfo
+##------
+
+
+##--- List of converters
+.StandardShockFitting.ConverterList = Triangle2CFmesh CFmesh2Triangle
+
+ # Converter features
+  .StandardShockFitting.Triangle2CFmesh.From = Param
+  .StandardShockFitting.Triangle2CFmesh.To = Prim
+  .StandardShockFitting.Triangle2CFmesh.Model = TCneq
+  .StandardShockFitting.Triangle2CFmesh.AdditionalInfo = Dimensional
+
+ # Converter features
+  .StandardShockFitting.CFmesh2Triangle.From = Prim
+  .StandardShockFitting.CFmesh2Triangle.To = Param
+  .StandardShockFitting.CFmesh2Triangle.Model = TCneq
+  .StandardShockFitting.CFmesh2Triangle.AdditionalInfo = Dimensional
+##------
+
+
+##--- List of copy maker objects
+.StandardShockFitting.CopyMakerList = MeshBackup CopyRoeValues1 \
+                                       CopyRoeValues2 MeshRestoring
+##------
+
+
+## List of state updater objects
+.StandardShockFitting.StateUpdaterList = FixStateSps Interp
+
+# object compute mesh points states
+ .StandardShockFitting.ComputeStateDps = ComputeStateDps4TCneq
+
+# object moving discontinuities
+ .StandardShockFitting.MoveDps = MoveDps4TCneq
+##
