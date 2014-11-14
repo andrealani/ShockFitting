@@ -66,7 +66,6 @@ void Param2PrimTCneqDimensional::transform()
   setMeshData();
   setAddress();
 
-  cout.precision(10);
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     // zrho and rho
@@ -106,7 +105,6 @@ void Param2PrimTCneqDimensional::transform()
 
     // roto-traslation enthalpy
     double htr = h - kinetic - hftot - ev;
-
     // roto-translation specific heat
     double Cp = 0;
     for(unsigned ISP=0; ISP<(*nsp); ISP++) {
@@ -138,6 +136,7 @@ void Param2PrimTCneqDimensional::transform()
     else { cout << "ConverterSF::Parm2Prim4TCneq::error => NMOL = 0\n";
            exit(1); }
 
+
     for(unsigned ISP=0; ISP<(*nsp); ISP++) {
      (*zroe)(ISP,IPOIN)=rhos.at(ISP);
     }
@@ -146,7 +145,6 @@ void Param2PrimTCneqDimensional::transform()
    (*zroe)((*IX),IPOIN) = u.at(1);
    (*zroe)((*IY),IPOIN) = T.at(0);
    (*zroe)((*IEV),IPOIN) = T.at(1);
-   
 
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * ReferenceInfo::getLref();
    (*XY)(1,IPOIN) = (*XY)(1,IPOIN) * ReferenceInfo::getLref();

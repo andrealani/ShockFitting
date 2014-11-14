@@ -59,23 +59,26 @@ void COOLFluiD::call()
 {
   LogToScreen(INFO,"COOLFluiD::call()\n");
 
-  command = "module load cf2-2013.9/solver-openmpi > log/coolfluid.log";
-  system(command.c_str());
+  command.str(string());
+  command << "module load cf2-2013.9/solver-openmpi > log/coolfluid.log";
+  system(command.str().c_str());
 
   if(MeshData::getInstance().getnbProcessors()==1) {
    LogToScreen(DEBUG_MIN,"COOLFluiD::running sequential\n");
-   command = "coolfluid-solver --scase ./cf00.CFcase > log/coolfluid.log";
+   command.str(string());
+   command << "coolfluid-solver --scase ./cf00.CFcase > log/coolfluid.log";
   }
 
   else if (MeshData::getInstance().getnbProcessors()>1) {
    LogToScreen(DEBUG_MIN,"COOLFluiD::running parallel\n");
-   command = "mpi run -np " + MeshData::getInstance().getnbProcessors();
-   command = command + " coolfluid-solver --scase ./cf00.CFcase > log/coolfluid.log";
+   command.str(string());
+   command << "  mpirun -np " << MeshData::getInstance().getnbProcessors() ;
+   command << " coolfluid-solver --scase ./cf00.CFcase > log/coolfluid.log";
   }
 
-  system(command.c_str());
+  system(command.str().c_str());
 
-  if(system(command.c_str())!=0) {
+  if(system(command.str().c_str())!=0) {
    cout << "COOLFluiD::error => COOLFluiD has return an error code\n"; 
    exit(1); }
 

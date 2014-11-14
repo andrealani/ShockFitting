@@ -9,10 +9,10 @@
 
 //--------------------------------------------------------------------------//
 
-#include <fstream>
-#include <iomanip>
-#include <sstream>
+#include <stdio.h>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 #include "Framework/WritingMesh.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
@@ -141,6 +141,9 @@ private: // data
   /// mesh points coordinates (in array storing)
   Array2D <double>* XY;
 
+  /// mesh points state (in array storing)
+  Array2D <double>* Zroe;
+
   /// code characterizing shock points
   Array2D <int>* NodCodSh;
 
@@ -176,7 +179,7 @@ private: // data
   unsigned ilist;
 
   /// ofstream variables to write triangle fmt file
-  std::ofstream file;
+  FILE* file;
 
   /// name of current file
   std::stringstream* fname;

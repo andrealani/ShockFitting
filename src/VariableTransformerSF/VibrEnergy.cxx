@@ -32,9 +32,9 @@ VibrEnergy::~VibrEnergy()
 
 void VibrEnergy::callVibrEnergy(double Tv, vector<double> alpha)
 {
-  vector<double> evs(*nsp);
-
   setPhysicsData();
+
+  vector<double> evs(*nsp);
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    if      (typemol->at(ISP)=="A") {

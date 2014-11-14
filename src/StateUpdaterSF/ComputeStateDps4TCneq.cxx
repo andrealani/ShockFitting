@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <fstream>
 #include "StateUpdaterSF/ComputeStateDps4TCneq.hh"
 #include "Framework/Log.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -70,6 +71,7 @@ void ComputeStateDps4TCneq::update()
 
   setDiscSpeedSize();
 
+
   // create object of CoShock class
   CoShock computenewStateForShock;
 
@@ -105,25 +107,13 @@ void ComputeStateDps4TCneq::update()
 
     // initialize discontinuity speed
     WS = 0.0;
-/*
-cout << "------------------------------------" << endl;
-cout << "valle prima" << endl;
-for(unsigned i=0; i<4; i++) {cout << xd.at(i) << " ";}
-cout << "monte prima" << endl;
-for(unsigned i=0; i<4; i++) {cout << xu.at(i) << " ";}
-*/
+
     if(typeSh->at(ISH)=="S") {
      computenewStateForShock.callCoShock(xd,xu,R2(IV,ISH));
      xd = computenewStateForShock.getnewDownValues();
      WS = computenewStateForShock.getnewDiscSpeed();
     } 
-/*
-cout << "valle dopo" << endl;
-for(unsigned i=0; i<4; i++) {cout << xd.at(i) << " ";}
-cout << "monte dopo" << endl;
-for(unsigned i=0; i<4; i++) {cout << xu.at(i) << " ";}
-cout << "shock speed " << WS << endl;
-*/
+
     if(typeSh->at(ISH)=="D") {
      computenewStateForDc.callCoDc(xd,xu);
      xd = computenewStateForDc.getnewDownValues();

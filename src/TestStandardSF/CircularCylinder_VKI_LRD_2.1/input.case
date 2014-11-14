@@ -14,9 +14,6 @@
  # relax coefficient of shock points integration
   .StandardShockFitting.MeshData.SHRELAX = 0.9
 
- # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 1                
-
  # number of hole points
   .StandardShockFitting.MeshData.Naddholes = 0            
 
@@ -24,13 +21,16 @@
   .StandardShockFitting.MeshData.CADDholes = 0 
 
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 1            
+  .StandardShockFitting.MeshData.NPROC = 1           
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
 
  # number of step
   .StandardShockFitting.MeshData.NSteps = 1
+
+ # number of iterations before saving solution
+  .StandardShockFitting.MeshData.IBAK = 10
 ###----------------------------------------------------------
 
 

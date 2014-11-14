@@ -9,7 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
-#include <string>
+#include <sstream>
 #include "Framework/CFDSolver.hh"
 
 //--------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ public:
 private: // data
 
   /// string for system command
-  std::string command;
+  std::stringstream command;
 };
 
 //--------------------------------------------------------------------------//

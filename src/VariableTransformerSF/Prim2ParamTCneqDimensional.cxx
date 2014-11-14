@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <fstream>
 #include "VariableTransformerSF/Prim2ParamTCneqDimensional.hh"
 #include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
@@ -108,7 +109,7 @@ void Prim2ParamTCneqDimensional::transform()
 
    }
 
-   /// call for vibrational energy
+   // call for vibrational energy
    computeVbEnergy.callVibrEnergy(T.at(1),alpha);
 
    ev = computeVbEnergy.getEv();  

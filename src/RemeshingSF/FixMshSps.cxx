@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <iomanip>
 #include "RemeshingSF/FixMshSps.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "Framework/Log.hh"

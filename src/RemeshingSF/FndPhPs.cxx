@@ -49,10 +49,6 @@ void FndPhPs::setup()
 {
   LogToScreen(VERBOSE, "FndPhPs::setup() => start\n");
 
-  setMeshData();
-  setPhysicsData();
-  logfile.Open(getClassName());
-
   LogToScreen(VERBOSE, "FndPhPs::setup() => end\n");
 }
 
@@ -70,6 +66,10 @@ void FndPhPs::unsetup()
 void FndPhPs::remesh()
 {
   LogToScreen(INFO, "FndPhPs::remesh()\n");
+
+  setMeshData();
+  setPhysicsData();
+  logfile.Open(getClassName());
 
   setAddress();
   xc.resize(3);

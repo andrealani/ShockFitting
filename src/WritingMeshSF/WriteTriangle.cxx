@@ -78,9 +78,7 @@ void WriteTriangle::write()
 
   // write node file
   dummyfile = fname->str()+".node";
-  file.open(dummyfile.c_str());
-
-  file.precision(20);
+  file = fopen(dummyfile.c_str(),"w");
 
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                              PhysicsInfo::getnbShPointsMax();
@@ -103,7 +101,7 @@ void WriteTriangle::write()
 
   ilist = TNPOIN;
 
- file <<ilist<< " " << PhysicsInfo::getnbDim() << " " << *ndof << " 1\n";
+  fprintf(file,"%u %s %u %s %u %s",ilist," ",PhysicsInfo::getnbDim()," ",*ndof," 1\n");
   
   // write mesh points coordinates and status on Triangle file
   writeMeshVariables();
@@ -116,13 +114,13 @@ void WriteTriangle::write()
   // write downstream shock points coordinates and status on Triangle file
   writeDownstreamStatus();
 
-  file.close();
+  fclose(file);
 
   // write poly file
   dummyfile = fname->str()+".poly";
-  file.open(dummyfile.c_str());
+  file = fopen(dummyfile.c_str(),"w");
 
-  file << "0 " << PhysicsInfo::getnbDim()  << " 0 1 \n";
+  fprintf(file,"%s %u %s", "0 ",PhysicsInfo::getnbDim()," 0 1 \n");
   
   // set map vector for bndfac and write bndfac on poly file
   writeBndfac();
@@ -130,7 +128,7 @@ void WriteTriangle::write()
   // compute number of holes
   computenbHoles();
 
-  file.close();
+  fclose(file);
 }
 
 //--------------------------------------------------------------------------//
@@ -163,15 +161,14 @@ void WriteTriangle::setMapVectorForNodcodSh()
 
 void WriteTriangle::writeMeshVariables()
 {
-  unsigned h = 0;
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if(nodcod->at(IPOIN)>=0) {
-    file << M02M1->at(IPOIN+1) << "  "; // c++ indeces start from 0
+    fprintf(file,"%u %s",M02M1->at(IPOIN+1),"  "); // c++ indeces start from 0
     for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
-     file << (*XY)(IA,IPOIN) << "  ";}
+     fprintf(file,"%.16f %s",(*XY)(IA,IPOIN),"  ");}
     for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << zroeVect->at(h) << "  "; h++; }
-    file << nodcod->at(IPOIN) << endl;
+     fprintf(file,"%.16f %s",(*Zroe)(IA,IPOIN),"  ");}
+    fprintf(file,"%u %s",nodcod->at(IPOIN),"\n");
    }
   }
 }
@@ -184,12 +181,12 @@ void WriteTriangle::writeUpstreamStatus()
    for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++icount;
     if((*NodCodSh)(I,ISH)==10) {
-     file << M02M1->at(icount) << "  ";
+     fprintf(file,"%u %s",M02M1->at(icount),"  ");
      for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
-     file << (*XYShu)(IA,I,ISH) << "  ";}
+     fprintf(file,"%0.16f %s",(*XYShu)(IA,I,ISH),"  ");}
      for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << (*ZRoeShu)(IA,I,ISH) << "  ";}
-     file << (*NodCodSh)(I,ISH) << endl;
+     fprintf(file,"%0.16f %s",(*ZRoeShu)(IA,I,ISH)," ");}
+     fprintf(file,"%u %s",(*NodCodSh)(I,ISH),"\n");
     }
    }
   }
@@ -203,12 +200,12 @@ void WriteTriangle::writeDownstreamStatus()
    for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
      icount++;
     if((*NodCodSh)(I,ISH)==10) {
-     file << M02M1->at(icount) << "  ";
+     fprintf(file,"%u %s",M02M1->at(icount),"  ");
      for(unsigned IA=0; IA<PhysicsInfo::getnbDim() ; IA++) {
-     file << (*XYShd)(IA,I,ISH) << "  ";}
+     fprintf(file, "%0.16f %s",(*XYShd)(IA,I,ISH),"  ");}
      for(unsigned IA=0; IA<(*ndof); IA++) {
-     file << (*ZRoeShd)(IA,I,ISH) << "  ";}
-     file << (*NodCodSh)(I,ISH) << endl;
+     fprintf(file,"%0.16f %s",(*ZRoeShd)(IA,I,ISH),"  ");}
+     fprintf(file,"%u %s",(*NodCodSh)(I,ISH),"\n");
     }
    }
   }
@@ -225,7 +222,7 @@ void WriteTriangle::writeBndfac()
    IBC = (*bndfac)(2,IFACE);
    if(IBC>0) { ++ICHECK; }
   }
-  file << ICHECK << "  1" << endl;
+  fprintf(file,"%u %s",ICHECK,"  1\n");
 
   ICHECK=0;
 
@@ -234,11 +231,11 @@ void WriteTriangle::writeBndfac()
 
    if(IBC>0) {
     ++ICHECK; 
-    file << ICHECK  << "  ";
+    fprintf(file,"%u %s",ICHECK,"  ");
     for(unsigned IA=0; IA<2; IA++) {
-     file << M02M1->at((*bndfac)(IA,IFACE)) << "  ";
+     fprintf(file,"%u %s",M02M1->at((*bndfac)(IA,IFACE)),"  ");
     }
-   file << IBC << endl;
+   fprintf(file,"%i %s",IBC,"\n");
    }
   }
 }
@@ -252,20 +249,20 @@ void WriteTriangle::computenbHoles()
    nHoles = nHoles + nShockPoints->at(ISH)-2;
   }
 
-  file << nHoles + MeshData::getInstance().getnbAddHoles() << endl;
+  fprintf(file, "%u %s",nHoles + MeshData::getInstance().getnbAddHoles(),"\n");
 
   unsigned iHole=0;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for(unsigned I=1; I<nShockPoints->at(ISH)-1; I++) {
     ++iHole;
-    file << iHole << "  ";
-    file << (*XYSh)(0,I,ISH) << "  " << (*XYSh)(1,I,ISH) << endl;
+    fprintf(file,"%u %s",iHole,"  ");
+    fprintf(file,"%.16f %s %.16f %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
    }
   }
 
   for (unsigned I=0; I<MeshData::getInstance().getnbAddHoles(); I++) {
-   file << iHole+I << "  ";
-   for(unsigned j=0; j<2; j++) { file << caddholes->at(j) << " ";}
+   fprintf(file,"%u %s",iHole+I,"  ");
+   for(unsigned j=0; j<2; j++) { fprintf(file,"%.16f %s",caddholes->at(j)," ");}
   }
 }
 
@@ -277,6 +274,7 @@ void WriteTriangle::setAddress()
   start = 0;
   XY = new Array2D <double> (PhysicsInfo::getnbDim(), npoin->at(0),
                              &coorVect->at(start));
+  Zroe = new Array2D <double> (*ndof, npoin->at(0),&zroeVect->at(0));
   totsize = nbfac->at(0) + 2 *
                            PhysicsInfo::getnbShMax() *
                            PhysicsInfo::getnbShEdgesMax();

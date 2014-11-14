@@ -4,7 +4,6 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include <fstream>
 #include "RemeshingSF/CoNorm4TCneq.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
@@ -96,6 +95,7 @@ void CoNorm4TCneq::remesh()
    }
   }
 
+
   // compute normal vectors for typeSh="S"
   setVShNorForStype();
 
@@ -183,7 +183,7 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    setTauIm1ToZero();
    setTauIm2ToZero();
   }
-
+  
   // evaluate dependency
   // if I is the first point it is computed in forward direction
   if (I!=0 && I!= nShockPoints->at(ISH)-1) {
@@ -205,10 +205,10 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
   logfile("\n", ipoin, "tau ", taux, "   ", tauy);
   logfile("           ", depim1, " ", depip1, "\n\n");
   logfile ("\n            --------------          \n");
+
   tau = sqrt(taux*taux+tauy*tauy);
   taux = taux/tau;
   tauy = tauy/tau;
-
 }
 
 //----------------------------------------------------------------------------//
@@ -228,12 +228,13 @@ void CoNorm4TCneq::setVShNorForStype()
      dum = ui * (*vShNor)(0,I,ISH) + vi * (*vShNor)(1,I,ISH);
      if (dum>0) {++ii;}
     }
-    if (ii < nShockPoints->at(ISH)/2 - 1) { break; }
+    if (ii > nShockPoints->at(ISH)/2) {
      for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
       (*vShNor)(0,I,ISH) = -(*vShNor)(0,I,ISH);
       (*vShNor)(1,I,ISH) = -(*vShNor)(1,I,ISH);
-     } // I
-   } // if typeSh->at(ISH)=="S"
+     }
+    }
+   } // I
   } // for
 }
 
@@ -338,10 +339,10 @@ void CoNorm4TCneq::recoverState(string direction, unsigned I,
    zrho = zrho + (*ZRoeShd)(ISP,J,ISH);
   }
   roj = zrho*zrho;
-
   double rhoHf = 0; double Rg = 0; double Cv = 0;
   for (unsigned ISP=0; ISP<(*nsp); ISP++) {
-   rhoHf = rhoHf + (*ZRoeShd)(ISP,J,ISH) * hf->at(ISP);
+   if(direction=="forward") { rhoHf = rhoHf + (*ZRoeShd)(ISP,J,ISH) * hf->at(ISP); }
+   if(direction=="backward") { rhoHf = (*ZRoeShd)(ISP,J,ISH) * hf->at(ISP); }
    Rg = Rg + (*ZRoeShd)(ISP,J,ISH)*Rs->at(ISP);
    Cv = Cv + (*ZRoeShd)(ISP,J,ISH)*Rs->at(ISP)/(gams->at(ISP)-1);
   }

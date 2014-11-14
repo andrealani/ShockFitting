@@ -139,7 +139,6 @@ private: // data
 
   /// command object transforming variables
   PAIR_TYPE(VariableTransformer) m_param2prim;
-
 };
 
 //----------------------------------------------------------------------------//

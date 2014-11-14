@@ -189,7 +189,6 @@ void StandardShockFitting::process()
    m_callTriangle->generate();
 
    m_triangleToCFmesh->convert();
-
    cout << "______________________________________________________\n\n";
 
    m_COOLFluiD->call();
@@ -209,6 +208,7 @@ void StandardShockFitting::process()
      exit(1); }
     execmd = "rm -f cfout-P?.CFmesh"; system(execmd.c_str());
    }
+
 
    cout << "______________________________________________________\n\n";
 
@@ -234,6 +234,8 @@ void StandardShockFitting::process()
 
    m_meshRestore->copy();
 
+   cout << "______________________________________________________\n\n";
+
    // create the directory to backup files
    backdir.str(string());
    unsigned nbDig=0;
@@ -241,7 +243,7 @@ void StandardShockFitting::process()
    while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
    backdir << setw(9-nbDig) << setfill('0') << left << string("step").c_str() << I+1;
 
-   if(I%MeshData::getInstance().getnbIbak()==0) {
+   if((I+1)%MeshData::getInstance().getnbIbak()==0) {
     execmd = "mkdir " + backdir.str();
     system(execmd.c_str());
 

@@ -35,7 +35,7 @@ public:
     system(command.c_str());
     namefile = "./log/" + namefile + ".log";
     filelog.open(namefile.c_str());
-    filelog.precision(18);
+    filelog.precision(16);
   }
   /// close file .log
   void Close() {filelog.close();}

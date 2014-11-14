@@ -110,7 +110,6 @@ void CoPntDispl::remesh()
       cout << "Condition not implemented\n";
       exit(1); }
   }
-
   logfile.Close();
 }
 

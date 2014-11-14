@@ -88,8 +88,8 @@ void Interp::update()
     JPOIN = M02M12->at(I1);
     (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
     (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
-    I2 = I1 + PhysicsInfo::getnbShMax() *
-              PhysicsInfo::getnbShMax();
+
+    I2 = I1 + PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShMax();
     JPOIN = M02M12->at(I2);
     (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
     (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
@@ -105,7 +105,6 @@ void Interp::update()
        || (nodcod->at(IPOIN)==-2)  ) {  // boundary phantom nodes
     logfile("Trying to locate ", m_IPOIN);
     logfile("(",(*XYBkg)(0,IPOIN),",",(*XYBkg)(1,IPOIN),")\n");
-
     finder(IPOIN);
 
     logfile("Found in cell ",getCell()," ",getIfound(), "\n");
