@@ -98,7 +98,6 @@ void MoveDps4TCneq::update()
     dum = (MeshData::getInstance().getSHRELAX()) *
           (MeshData::getInstance().getDXCELL())  *
           (MeshData::getInstance().getSNDMIN()) /(a+WShMod);
-
     if(dt>dum) { dt = dum; }
    }
   }

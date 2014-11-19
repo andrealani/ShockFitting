@@ -21,16 +21,16 @@
   .StandardShockFitting.MeshData.CADDholes = 0 
 
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 1           
+  .StandardShockFitting.MeshData.NPROC = 4           
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
 
  # number of step
-  .StandardShockFitting.MeshData.NSteps = 1
+  .StandardShockFitting.MeshData.NSteps = 150
 
  # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 10
+  .StandardShockFitting.MeshData.IBAK = 1
 ###----------------------------------------------------------
 
 

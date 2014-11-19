@@ -57,8 +57,6 @@ void FndPhPs::setup()
 void FndPhPs::unsetup()
 {
   LogToScreen(VERBOSE, "FndPhPs::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -111,6 +109,8 @@ void FndPhPs::remesh()
   } // iSh
 
   countPhanPoints();
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//

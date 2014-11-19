@@ -83,6 +83,8 @@ void WriteTriangle::write()
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                              PhysicsInfo::getnbShPointsMax();
 
+  // M02M1 and M12M0 are filled with indeces that start 
+  // from 1 to NPOIN+2*NSHMAX*NPSHMAX+1
   M02M1->resize(ilist+1); // c++ indeces start from 0
   M12M0->resize(ilist+1); // c++ indeces start from 0
 

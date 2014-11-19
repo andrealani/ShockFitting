@@ -60,7 +60,7 @@ void COOLFluiD::call()
   LogToScreen(INFO,"COOLFluiD::call()\n");
 
   command.str(string());
-  command << "module load cf2-2013.9/solver-openmpi > log/coolfluid.log";
+//  command << "module load cf2-2013.9/solver-openmpi > log/coolfluid.log";
   system(command.str().c_str());
 
   if(MeshData::getInstance().getnbProcessors()==1) {

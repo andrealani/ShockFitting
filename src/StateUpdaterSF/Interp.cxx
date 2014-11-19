@@ -86,25 +86,26 @@ void Interp::update()
    for(unsigned IPOIN=0; IPOIN<nShockPoints->at(ISH); IPOIN++)  {
     I1 = ISH * PhysicsInfo::getnbShMax() + IPOIN; //c++ indeces start from 0
     JPOIN = M02M12->at(I1);
-    (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
-    (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
-
-    I2 = I1 + PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShMax();
+    (*XY)(0,JPOIN-1) = (*XYSh)(0,IPOIN,ISH); // c++ indeces start from 0
+    (*XY)(1,JPOIN-1) = (*XYSh)(1,IPOIN,ISH); // c++ indeces start from 0
+    I2 = I1 + PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax();
     JPOIN = M02M12->at(I2);
-    (*XY)(0,JPOIN) = (*XYSh)(0,IPOIN,ISH);
-    (*XY)(1,JPOIN) = (*XYSh)(1,IPOIN,ISH);
+    (*XY)(0,JPOIN-1) = (*XYSh)(0,IPOIN,ISH); // c++ indeces start from 0
+    (*XY)(1,JPOIN-1) = (*XYSh)(1,IPOIN,ISH); // c++ indeces start from 0
    }
   }
 
-  // interpolate background grid nodes bu using shocked grid connectivity
+  // interpolate background grid nodes using shocked grid connectivity
   // the interpolation is necessary only for the phantom nodes
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    unsigned m_IPOIN = IPOIN+1;
 
-   if (   (nodcod->at(IPOIN)==-1)    // internal phantom nodes
-       || (nodcod->at(IPOIN)==-2)  ) {  // boundary phantom nodes
+   // nodcod = -1 internal phantom nodes
+   // nodcod = -2 boudnary phantom nodes
+   if (   (nodcod->at(IPOIN)==-1) || (nodcod->at(IPOIN)==-2)  ) {  
     logfile("Trying to locate ", m_IPOIN);
     logfile("(",(*XYBkg)(0,IPOIN),",",(*XYBkg)(1,IPOIN),")\n");
+
     finder(IPOIN);
 
     logfile("Found in cell ",getCell()," ",getIfound(), "\n");
@@ -117,13 +118,15 @@ void Interp::update()
     }
    }
    else {
-    JPOIN = M02M1->at(IPOIN)+1;
+    // M02M1 is filled with indeces that start from 1
+    // M02M1(1:NPOIN+2*NSHMAX*NPSHMAX)
+    JPOIN = M02M1->at(m_IPOIN);
     if (JPOIN==0) { 
      cout << "Interp::error => something wrong for " <<  JPOIN <<"\n";
     }
 
     for(unsigned I=0; I<(*ndof); I++) {
-     (*zBkg)(I,IPOIN) = (*zroe)(I,JPOIN);
+     (*zBkg)(I,IPOIN) = (*zroe)(I,JPOIN-1); // c++ indeces start form 0
     }
    }
   }
@@ -163,8 +166,8 @@ void Interp::finder(unsigned IPOIN)
   for(IELEM=0; IELEM<nelem->at(1); IELEM++) {
    for(unsigned IV=0; IV<3; IV++) {
     I = (*celnod)(IV,IELEM); // global code number
-    xp.at(IV) = (*XY)(0,I);
-    yp.at(IV) = (*XY)(1,I);
+    xp.at(IV) = (*XY)(0,I-1);
+    yp.at(IV) = (*XY)(1,I-1);
    }
    xp.at(3) = x0;  // node to be located
    yp.at(3) = y0;  // node to be located
@@ -181,6 +184,7 @@ void Interp::finder(unsigned IPOIN)
     boundedArea.computeArea(xp,yp,idxs);
     a.at(IV) = boundedArea.getArea() * help;
    }
+
    s = m.min(a.at(0), a.at(1), a.at(2));
    t = m.max(a.at(0), a.at(1), a.at(2));
 
@@ -191,7 +195,7 @@ void Interp::finder(unsigned IPOIN)
      I = (*celnod)(IV,IELEM);
      help = a.at(IV);
      for(unsigned ivar=0; ivar<(*ndof); ivar++) {
-      (*zBkg)(ivar,IPOIN) = (*zBkg)(ivar,IPOIN) + help * (*zroe)(ivar,I);
+      (*zBkg)(ivar,IPOIN) = (*zBkg)(ivar,IPOIN) + help * (*zroe)(ivar,I-1);
      }
     }
     ielem = IELEM+1; // c++ indeces start from 0
@@ -223,7 +227,7 @@ void Interp::setAddress()
                               PhysicsInfo::getnbShPointsMax(),
                               &zroeVect->at(start));
   start = PhysicsInfo::getnbDim() *
-          (npoin->at(0)-1 + 2 *
+          (npoin->at(0) + 2 *
            PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
   XY = new Array2D <double> (PhysicsInfo::getnbDim(),
                              (npoin->at(1) + 2 *
@@ -231,7 +235,7 @@ void Interp::setAddress()
                               PhysicsInfo::getnbShPointsMax()),
                              &coorVect->at(start));
   start = PhysicsInfo::getnbDofMax() * 
-          (npoin->at(0)-1 + 2 *
+          (npoin->at(0) + 2 *
            PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
   zroe = new Array2D <double>(PhysicsInfo::getnbDofMax(),
                               (npoin->at(1) + 2 *
@@ -257,6 +261,10 @@ void Interp::setAddress()
                                 PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
+  // M02M1 is filled with the indeces that start from 1
+  // M02M1(1:NPOIN(0)+2*NSHMAX*NPSHMAX)
+  // M02M1 is filled wth the indeces that start from 0
+  // M02M12(0:2*NSHMAX*NPSHMAX-1)
   M02M12 = new vector<int>(2 * PhysicsInfo::getnbShMax() *
                                PhysicsInfo::getnbShPointsMax());
   for(unsigned i=0; i<M02M12->size(); i++) {

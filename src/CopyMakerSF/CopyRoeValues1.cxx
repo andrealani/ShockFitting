@@ -69,7 +69,9 @@ void CopyRoeValues1::copy()
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    for(unsigned IA=0; IA<(*ndof); IA++) {
-    (*zroe0)(IA,M12M0->at(IPOIN)) = (*zroe1)(IA,IPOIN);
+    // M12M0 has filled with indeces that start from 1
+    // M12M0(1:2*NSHMAX*NPSHMAX)
+    (*zroe0)(IA,M12M0->at(IPOIN+1)-1) = (*zroe1)(IA,IPOIN);
    }
   }
 }

@@ -201,7 +201,8 @@ void FixStateSps::fixOPXandOPYspecPoints(unsigned ISPPNTS)
    (*WSh)(1,IP.at(0),ISH.at(0)) = 0;             }
   else if (typeSpecPoints->at(ISPPNTS) == "OPY") {
    (*WSh)(0,IP.at(0),ISH.at(0)) = 0;
-   (*WSh)(1,IP.at(0),ISH.at(0)) = WS/dy;         }  
+   (*WSh)(1,IP.at(0),ISH.at(0)) = WS/dy;       
+  }  
 }
 
 //--------------------------------------------------------------------------//

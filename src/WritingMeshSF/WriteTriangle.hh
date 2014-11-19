@@ -178,7 +178,7 @@ private: // data
   /// dummy variables for size map vectors setting
   unsigned ilist;
 
-  /// ofstream variables to write triangle fmt file
+  /// variable writing the triangle fmt file
   FILE* file;
 
   /// name of current file

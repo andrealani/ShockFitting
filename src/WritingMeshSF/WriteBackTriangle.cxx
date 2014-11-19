@@ -67,42 +67,41 @@ void WriteBackTriangle::write()
 
   *fnameBack = "na99";
   string dummyfile = *fnameBack+".node";
-  file.open(dummyfile.c_str());
-  file.precision(20);
+  file = fopen(dummyfile.c_str(),"w");
 
   unsigned ilist = npoin->at(0);
   unsigned iPoin;
 
-  file <<ilist<< "  " << PhysicsInfo::getnbDim() << "  " << *ndof << "  1\n";
+  fprintf(file, "%u %s %u %s %u %s",ilist,"  ",PhysicsInfo::getnbDim(),"  ",*ndof,"  1\n");
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    iPoin = IPOIN+1;
    if      (nodcod->at(IPOIN)==-1) {
-    file << iPoin << " ";
-    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++)
-     { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) 
-     { file << (*Zroe)(IA,IPOIN) << " "; }
-    file << "0\n";
+    fprintf(file,"%u %s",iPoin," ");
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) { 
+     fprintf(file,"%.16f %s",(*XY)(IA,IPOIN),"  ");}
+    for(unsigned IA=0; IA<(*ndof); IA++) { 
+     fprintf(file,"%.16f %s",(*Zroe)(IA,IPOIN),"  ");}
+    fprintf(file,"%s","0\n");
    }
-   else if (nodcod->at(IPOIN)==-1) {
-    file << iPoin << " ";
-    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
-     { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) 
-     { file << (*Zroe)(IA,IPOIN) << " "; }
-    file << "2\n";
+   else if (nodcod->at(IPOIN)==-2) {
+    fprintf(file,"%u %s",iPoin," ");
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) { 
+     fprintf(file,"%.16f %s",(*XY)(IA,IPOIN),"  ");}
+    for(unsigned IA=0; IA<(*ndof); IA++) {  
+     fprintf(file,"%.16f %s",(*Zroe)(IA,IPOIN),"  ");}
+    fprintf(file,"%s","2\n");
    }
    else {
-    file << iPoin << " ";
-    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
-     { file << (*XY)(IA,IPOIN) << " "; }
-    for(unsigned IA=0; IA<(*ndof); IA++) 
-     { file << (*Zroe)(IA,IPOIN) << " "; }
-    file << nodcod->at(IPOIN) << "\n";
+    fprintf(file,"%u %s",iPoin," ");
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) { 
+     fprintf(file,"%.16f %s",(*XY)(IA,IPOIN),"  ");}
+    for(unsigned IA=0; IA<(*ndof); IA++) {  
+     fprintf(file,"%.16f %s",(*Zroe)(IA,IPOIN),"  ");}
+    fprintf(file,"%u %s",nodcod->at(IPOIN), "\n");
    }
   }
   
-  file.close();  
+  fclose(file);  
 }
 
 //--------------------------------------------------------------------------//

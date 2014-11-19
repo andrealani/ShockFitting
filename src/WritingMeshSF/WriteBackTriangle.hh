@@ -9,7 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
-#include <fstream>
+#include <stdio.h>
 #include <vector>
 #include "Framework/WritingMesh.hh"
 #include "MathTools/Array2D.hh"
@@ -84,8 +84,8 @@ private: // data
   /// mesh points coordinates (in array storing)
   Array2D<double>* XY;
 
-  /// fstream variable writing node file
-  std::ofstream file;
+  /// variable writing on node file
+  FILE* file;
 };
 
 //--------------------------------------------------------------------------//

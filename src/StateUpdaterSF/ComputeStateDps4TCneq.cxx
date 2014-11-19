@@ -4,7 +4,6 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include <fstream>
 #include "StateUpdaterSF/ComputeStateDps4TCneq.hh"
 #include "Framework/Log.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -108,6 +107,7 @@ void ComputeStateDps4TCneq::update()
     // initialize discontinuity speed
     WS = 0.0;
 
+
     if(typeSh->at(ISH)=="S") {
      computenewStateForShock.callCoShock(xd,xu,R2(IV,ISH));
      xd = computenewStateForShock.getnewDownValues();
@@ -132,6 +132,7 @@ void ComputeStateDps4TCneq::update()
     // compute downstream variables and assing the new values 
     // to Zroe array (for the shock case)
     computeDownState(IV, ISH);
+
  
     // compute upstream variables and assing the new values 
     // to Zroe array (for the shock case)
@@ -231,10 +232,10 @@ void ComputeStateDps4TCneq::computeDownState(unsigned IV, unsigned ISH)
   double z1, z2, z3, z4, z5, kine, enthalpy;
 
   z1 = sqrt(xd.at(0));
-  kine = 0.5 * (pow(xd.at(2),2)+pow(xd.at(3),2));
+  kine = 0.5 * (xd.at(2)*xd.at(2)+xd.at(3)*xd.at(3));
   double hfv = 0;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-   hfv = hfv + alphad.at(ISP) * hf->at(ISP);
+   hfv = hfv + alphau.at(ISP) * hf->at(ISP);
   }
   enthalpy = (*gref)/((*gref)-1) * xd.at(1)/xd.at(0) + kine + hfv + evd;
   z2 = z1*enthalpy;
@@ -243,7 +244,7 @@ void ComputeStateDps4TCneq::computeDownState(unsigned IV, unsigned ISH)
   z5 = z1 * evd;
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-   zsv.at(ISP) = alphad.at(ISP)*z1;
+   zsv.at(ISP) = alphau.at(ISP)*z1;
   }
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {

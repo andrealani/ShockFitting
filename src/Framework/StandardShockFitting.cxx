@@ -189,6 +189,7 @@ void StandardShockFitting::process()
    m_callTriangle->generate();
 
    m_triangleToCFmesh->convert();
+
    cout << "______________________________________________________\n\n";
 
    m_COOLFluiD->call();
@@ -209,7 +210,6 @@ void StandardShockFitting::process()
     execmd = "rm -f cfout-P?.CFmesh"; system(execmd.c_str());
    }
 
-
    cout << "______________________________________________________\n\n";
 
    m_CFmeshToTriangle->convert();
@@ -225,6 +225,7 @@ void StandardShockFitting::process()
    m_copyZRoeSh0_1->copy();
 
    m_moveShPoints->update();
+
    m_updatePhantPoints->update();
 
    m_redistrShockPoints->remesh();
@@ -243,7 +244,7 @@ void StandardShockFitting::process()
    while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
    backdir << setw(9-nbDig) << setfill('0') << left << string("step").c_str() << I+1;
 
-   if((I+1)%MeshData::getInstance().getnbIbak()==0) {
+   if((I)%MeshData::getInstance().getnbIbak()==0) {
     execmd = "mkdir " + backdir.str();
     system(execmd.c_str());
 
@@ -256,7 +257,6 @@ void StandardShockFitting::process()
     }
     else if (MeshData::getInstance().getnbProcessors()>1) {
      execmd = "rename out cf"+backdir.str().substr(4,9)+" cfout-P?.plt";
-     system(execmd.c_str());
      execmd = "mv -f cf*.plt " + backdir.str();
     }
 

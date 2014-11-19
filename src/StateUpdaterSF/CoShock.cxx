@@ -54,7 +54,7 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
 
   dum = 1;
 
-  while (dum > pow(10,(-7))) {
+  while (dum > pow(10,-7)) {
    for (unsigned i=0; i<4; i++) { yn.at(i)=yn1.at(i); }
 
    // compute the jacobian matrix
@@ -63,7 +63,7 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
     for (unsigned j=0; j<4; j++) {
      for (unsigned k=0; k<4; k++) { yn1.at(k) = yn.at(k); }
      dyn1 = abs(yn1.at(j))*0.01;
-     if (dyn1 <= pow(10,(-8))) {dyn1 = pow(10,(-7));}
+     if (dyn1 <= pow(10,(-7))) {dyn1 = pow(10,(-7));}
      yn1.at(j) = yn.at(j)-dyn1;
      dum1 = fShock(i, yn1);
      yn1.at(j) = yn.at(j)+dyn1;
@@ -92,20 +92,25 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
 double CoShock::fShock (unsigned index, vector <double> y)
 {
   double  gm1 = (*gam)-1;
+  double f;
   if (index==0){
-   return y.at(0)*(y.at(2) - y.at(3)) - x2.at(0) * (x2.at(2) - y.at(3));}
+   f = y.at(0)*(y.at(2) - y.at(3)) - x2.at(0) * (x2.at(2) - y.at(3)); }
   else if (index==1) {
-   return y.at(1) + y.at(0) * pow((y.at(2) - y.at(3)),2)-
-          x2.at(1) - x2.at(0) * pow((x2.at(2) - y.at(3)),2);}
+   f = y.at(1) + y.at(0) *((y.at(2) - y.at(3))*(y.at(2) - y.at(3))) - 
+       + x2.at(1) - x2.at(0) * ((x2.at(2) - y.at(3))*(x2.at(2) - y.at(3)));}
   else if (index==2) {
-   return (*gam)/gm1 * y.at(1)/y.at(0) + 0.5 * pow((y.at(2) - y.at(3)),2)
-          - (*gam)/gm1 * x2.at(1)/x2.at(0) - 0.5 * pow((x2.at(2) - y.at(3)),2);} 
+   f = (*gam)/gm1 * y.at(1)/y.at(0) + 
+       0.5 * ((y.at(2) - y.at(3)) * (y.at(2) - y.at(3))) -
+       + (*gam)/gm1 * x2.at(1)/x2.at(0) - 
+       + 0.5 * ((x2.at(2) - y.at(3))* (x2.at(2) - y.at(3))); }
   else if (index==3) {
-   return sqrt((*gam) * y.at(1)/y.at(0)) + gm1/2 * y.at(2) - R2;}
+   f = sqrt((*gam) * y.at(1)/y.at(0)) + gm1/2 * y.at(2) - R2;}
   else {
    cout << "ComputeStateDps::error => index error in private member fShock ";
    cout << "of class CoShock\n";
    exit(1);}
+
+  return f;
 }
 
 //----------------------------------------------------------------------------//
