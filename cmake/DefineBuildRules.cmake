@@ -20,6 +20,9 @@ IF(UNIX)
     # respect c 89 standard (same as -std=c89)
     SF_ADD_C_FLAGS("-ansi")
 
+    # enable dynamic loading
+    SF_ADD_CXX_FLAGS("-ldl")
+
 #IF(SF_ENABLE_MUTATIONPP)
     # use new features from c++0x
 #    SF_ADD_CXX_FLAGS("-std=c++0x")

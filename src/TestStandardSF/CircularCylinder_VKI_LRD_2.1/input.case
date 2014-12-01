@@ -1,5 +1,8 @@
 .ShockFittingObj = StandardShockFitting
 
+# version 'original'
+# version 'optimized' (calling triangle mesh generator library without in/out files)
+.StandardShockFitting.Version = original
 
 ###----------------------- MeshData ------------------------
  # distance between two shock faces
@@ -21,16 +24,16 @@
   .StandardShockFitting.MeshData.CADDholes = 0 
 
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 4           
+  .StandardShockFitting.MeshData.NPROC = 1          
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
 
  # number of step
-  .StandardShockFitting.MeshData.NSteps = 150
+  .StandardShockFitting.MeshData.NSteps = 10000
 
  # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 1
+  .StandardShockFitting.MeshData.IBAK = 100
 ###----------------------------------------------------------
 
 
@@ -110,7 +113,8 @@
 
 
 ##--- List of mesh generator objects
- .StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo Triangle ReadTriangle
+ .StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo \
+                                           TriangleExe ReadTriangle Tricall
 
 # processing file
    .StandardShockFitting.ReadTriangle.InputFiles = na00.1 
@@ -144,6 +148,8 @@
   .StandardShockFitting.Triangle2CFmesh.To = Prim
   .StandardShockFitting.Triangle2CFmesh.Model = TCneq
   .StandardShockFitting.Triangle2CFmesh.AdditionalInfo = Dimensional
+   # 'single' or 'splitted'
+  .StandardShockFitting.Triangle2CFmesh.ShockBoundary = single
 
  # Converter features
   .StandardShockFitting.CFmesh2Triangle.From = Prim

@@ -9,6 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
+#include <fstream>
 #include "RemeshingSF/CoNorm.hh"
 #include "Framework/FileLogManip.hh"
 

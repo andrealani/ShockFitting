@@ -322,7 +322,7 @@ void CoNorm4Pg::recoverState(string direction, unsigned J, unsigned ISH)
   uj = (*ZRoeShd)(2,J,ISH)/(*ZRoeShd)(0,J,ISH);
   vj = (*ZRoeShd)(3,J,ISH)/(*ZRoeShd)(0,J,ISH);
   roj = (*ZRoeShd)(0,J,ISH)*(*ZRoeShd)(0,J,ISH);
-  help = ((*ZRoeShd)(2,J,ISH),2)+pow((*ZRoeShd)(3,J,ISH),2);
+  help = pow((*ZRoeShd)(2,J,ISH),2)+pow((*ZRoeShd)(3,J,ISH),2);
   pj = PhysicsInfo::getGm1() / PhysicsInfo::getGam() *
        ((*ZRoeShd)(0,J,ISH)*(*ZRoeShd)(1,J,ISH)-0.5*help);
   aj = sqrt(PhysicsInfo::getGam()*pj/roj);

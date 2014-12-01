@@ -105,6 +105,8 @@ void ReSdwInfo::readShockInfo()
   file >> (*nShocks);
   logfile("Found n. ",(*nShocks)," shock/discontinuities\n");
 
+  file.precision(18);
+
   for (unsigned ISH=0; ISH < (*nShocks); ISH++) {
    unsigned iShock = ISH+1; // c++ indeces start from 0
    logfile("Shock/Discontinuity n. ",iShock,"\n");
@@ -274,18 +276,18 @@ void ReSdwInfo::setAddress()
   NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
                                 &nodcod->at(start));
-  start = npoin->at(0)*(*ndof);
+  start = npoin->at(0)*PhysicsInfo::getnbDofMax();
   ZRoeShu = 
-    new Array3D <double> ((*ndof),
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &zroe->at(start));
-  start = npoin->at(0) * (*ndof) + 
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() + 
           PhysicsInfo::getnbShPointsMax() *
           PhysicsInfo::getnbShMax() *
-          (*ndof);
+          PhysicsInfo::getnbDofMax();
   ZRoeShd = 
-    new Array3D <double> ((*ndof),
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &zroe->at(start));

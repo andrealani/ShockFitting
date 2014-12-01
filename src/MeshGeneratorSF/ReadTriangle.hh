@@ -119,7 +119,7 @@ private: // data
   /// number of mesh points
   std::vector<unsigned>* npoin;
 
-  /// number of edge in the mesh
+  /// number of edges in the mesh
   std::vector<unsigned>* nedge;
 
   /// number of elements in the mesh

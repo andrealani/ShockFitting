@@ -105,15 +105,15 @@ void WriteTriangle::write()
 
   fprintf(file,"%u %s %u %s %u %s",ilist," ",PhysicsInfo::getnbDim()," ",*ndof," 1\n");
   
-  // write mesh points coordinates and status on Triangle file
+  // write mesh points coordinates and states on Triangle file
   writeMeshVariables();
 
   icount = npoin->at(0);
 
-  // write upstream shock points coordinates and status on Triangle file
+  // write upstream shock points coordinates and states on Triangle file
   writeUpstreamStatus();
 
-  // write downstream shock points coordinates and status on Triangle file
+  // write downstream shock points coordinates and states on Triangle file
   writeDownstreamStatus();
 
   fclose(file);
@@ -225,7 +225,6 @@ void WriteTriangle::writeBndfac()
    if(IBC>0) { ++ICHECK; }
   }
   fprintf(file,"%u %s",ICHECK,"  1\n");
-
   ICHECK=0;
 
   for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) { 
@@ -252,19 +251,18 @@ void WriteTriangle::computenbHoles()
   }
 
   fprintf(file, "%u %s",nHoles + MeshData::getInstance().getnbAddHoles(),"\n");
-
   unsigned iHole=0;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for(unsigned I=1; I<nShockPoints->at(ISH)-1; I++) {
     ++iHole;
     fprintf(file,"%u %s",iHole,"  ");
-    fprintf(file,"%.16f %s %.16f %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
+    fprintf(file,"%.15E %s %.15E %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
    }
   }
 
   for (unsigned I=0; I<MeshData::getInstance().getnbAddHoles(); I++) {
    fprintf(file,"%u %s",iHole+I,"  ");
-   for(unsigned j=0; j<2; j++) { fprintf(file,"%.16f %s",caddholes->at(j)," ");}
+   for(unsigned j=0; j<2; j++) { fprintf(file,"%.15E %s",caddholes->at(j)," ");}
   }
 }
 
@@ -276,7 +274,8 @@ void WriteTriangle::setAddress()
   start = 0;
   XY = new Array2D <double> (PhysicsInfo::getnbDim(), npoin->at(0),
                              &coorVect->at(start));
-  Zroe = new Array2D <double> (*ndof, npoin->at(0),&zroeVect->at(0));
+  Zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),npoin->at(0),
+                               &zroeVect->at(start));
   totsize = nbfac->at(0) + 2 *
                            PhysicsInfo::getnbShMax() *
                            PhysicsInfo::getnbShEdgesMax();
@@ -286,13 +285,14 @@ void WriteTriangle::setAddress()
   NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
                                 &nodcod->at(start));
-  start = npoin->at(0) * (*ndof);
-  ZRoeShu = new Array3D <double> ((*ndof),
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  ZRoeShu = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) + 
-          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
   ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),

@@ -72,4 +72,6 @@ protected: // data
   
 } // namespace ShockFitting
 
+//--------------------------------------------------------------------------//
+
 #endif // ShockFitting_VariableTransformer_hh

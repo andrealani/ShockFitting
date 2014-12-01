@@ -49,6 +49,9 @@ protected:
 
 private:
 
+  /// Standard Shock Fitting Version
+  std::string m_version;
+
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile1;
 
@@ -84,6 +87,9 @@ private:
 
   /// command object generating new mesh
   SConfig::SharedPtr<MeshGenerator> m_callTriangle;
+
+  /// command object caling triangle library without input file
+  SConfig::SharedPtr<MeshGenerator> m_callTriangleLib;
 
   /// command object converting file format from Triangle to CFmesh
   SConfig::SharedPtr<Converter> m_triangleToCFmesh;

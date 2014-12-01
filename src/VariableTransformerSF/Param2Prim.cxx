@@ -60,7 +60,7 @@ void Param2Prim::setAddress()
   start = PhysicsInfo::getnbDofMax() * 
           (npoin->at(0) + 2 *
            PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
-  zroe = new Array2D <double> ((*ndof),
+  zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
                                (npoin->at(1) + 2 *
                                 PhysicsInfo::getnbShMax() *
                                 PhysicsInfo::getnbShPointsMax()),

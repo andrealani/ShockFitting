@@ -4,13 +4,14 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#ifndef ShockFitting_COOLFluiD_hh
-#define ShockFitting_COOLFluiD_hh
+#ifndef ShockFitting_TriangleExe_hh
+#define ShockFitting_TriangleExe_hh
 
 //--------------------------------------------------------------------------//
 
-#include <sstream>
-#include "Framework/CFDSolver.hh"
+#include <vector>
+#include <string>
+#include "Framework/MeshGenerator.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -18,38 +19,41 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines a COOLFluiD, whose task is to call COOLFluiD software
+/// This class defines a TriangleExe, whose task is to call Triangle
+/// Mesh Generator.
 
-class COOLFluiD : public CFDSolver {
+class TriangleExe : public MeshGenerator {
 public:
 
   /// Constructor
-  COOLFluiD(const std::string& objectName);
+  TriangleExe(const std::string& objectName);
 
   /// Destructor
-  virtual ~COOLFluiD();
+  virtual ~TriangleExe();
 
   /// Set up this object before its first use
   virtual void setup();
 
-  /// Unset up this object after its last use
+  /// Unset up this object before its last use
   virtual void unsetup();
 
-  /// command variables transformation
-  virtual void call();
+  /// generate the new mesh
+  virtual void generate();
 
-private: // data
+private:
 
-  /// string for system command
-  std::stringstream command;
+  /// dummy string
+  std::string command;
+
+  /// name of current file
+  std::stringstream* fname;
+
 };
 
 //--------------------------------------------------------------------------//
 
-} // namespace ShockFitting
+} // namespace ShockFitting_TriangleExe_hh
 
 //--------------------------------------------------------------------------//
 
-#endif // ShockFitting_COOLFluiD_hh
-
-
+#endif // ShockFitting_TriangleExe_hh

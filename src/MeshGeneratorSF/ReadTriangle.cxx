@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <sstream>
 #include "MeshGeneratorSF/ReadTriangle.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "Framework/IOFunctions.hh"
@@ -109,6 +110,8 @@ void ReadTriangle::ReadNode()
   unsigned idum;
 
   file.open(getNodeFile().c_str());
+  file.precision(18);
+
   file >> m_npoin >> dim >> states >> iattr;
   if (dim != PhysicsInfo::getnbDim() || states > PhysicsInfo::getnbDofMax()) {
    logfile("WARNING !!!!!");
@@ -172,6 +175,7 @@ void ReadTriangle::ReadNode()
                               PhysicsInfo::getnbShPointsMax()),
                               &zroeVect->at(start));
   }
+
 
   // fill zroe, coor and nodcod
   for (unsigned IPOIN=0; IPOIN < m_npoin; IPOIN++) {

@@ -74,6 +74,7 @@ void RdDps::remesh()
 
   logfile.Open(getClassName().c_str());
 
+
   ShEdgeLgth.resize(PhysicsInfo::getnbShPointsMax());
 
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
@@ -103,24 +104,24 @@ void RdDps::remesh()
    if (nShockPoints->at(ISH)<=3) { ileMin = 0;
                                    ileMax = 0; }
    if (ileMin != 0) {
-    ileMin = 4;
     logfile("Before\n ");
     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
      iShPoint = IV+1;
-     logfile(IV," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
+     logfile(iShPoint," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
     }
-    double npc = ileMin;
-    if (ShEdgeLgth.at(ileMin-2)>ShEdgeLgth.at(ileMin))   { npc = ileMin+1; }
-    if (ileMin==1)                                       { npc = 2; }
-    if (ileMin==nShockEdges->at(ISH))                    { npc = ileMin; }
+    unsigned npc = ileMin;
+
+    if (ShEdgeLgth.at(ileMin-2)>ShEdgeLgth.at(ileMin)  )   { npc = ileMin+1; }
+    if (ileMin==1)                                         { npc = 2; }
+    if (ileMin==nShockEdges->at(ISH))                      { npc = ileMin; }
 
     for(unsigned IV=npc; IV<nShockPoints->at(ISH); IV++) {
      for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
-      (*XYSh)(I,IV-1,ISH) = (*XYSh)(I,IV,ISH);
+      (*XYSh)(I,IV-1,ISH) = (*XYSh)(I,IV,ISH); // c++ indeces start from 0
      }
      for(unsigned I=0; I<(*ndof); I++) {
-      (*ZroeShu)(I,IV-1,ISH) = (*ZroeShu)(I,IV,ISH);
-      (*ZroeShd)(I,IV-1,ISH) = (*ZroeShd)(I,IV,ISH);
+      (*ZroeShu)(I,IV-1,ISH) = (*ZroeShu)(I,IV,ISH); // c++ indeces start from 0
+      (*ZroeShd)(I,IV-1,ISH) = (*ZroeShd)(I,IV,ISH); // c++ indeces start from 0
      }
     }
 
@@ -141,20 +142,22 @@ void RdDps::remesh()
      logfile(iShPoint," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
     }
 
-    double npi = ileMax;
+    unsigned npi = ileMax;
     for(unsigned IV=nShockPoints->at(ISH)-1;IV>npi+1;IV--) {
      for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
-      (*XYSh)(I,IV+1,ISH) = (*XYSh)(I,IV,ISH);
+      (*XYSh)(I,IV+1,ISH) = (*XYSh)(I,IV,ISH); // c++ indeces start from 0
      }
      for(unsigned I=0; I<(*ndof); I++) {
-      (*ZroeShu)(I,IV+1,ISH) = (*ZroeShu)(I,IV,ISH);
-      (*ZroeShd)(I,IV+1,ISH) = (*ZroeShd)(I,IV,ISH);
+      (*ZroeShu)(I,IV+1,ISH) = (*ZroeShu)(I,IV,ISH); // c++ indeces start from 0
+      (*ZroeShd)(I,IV+1,ISH) = (*ZroeShd)(I,IV,ISH); // c++ indeces start from 0
      }
     }
     for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
-     (*XYSh)(I,npi+1,ISH) = 0.5*((*XYSh)(I,npi,ISH)+(*XYSh)(I,npi+2,ISH));
+     // c++ indeces start from 0 
+     (*XYSh)(I,npi,ISH) = 0.5*((*XYSh)(I,npi-1,ISH)+(*XYSh)(I,npi+1,ISH));
     }
     for(unsigned I=0; I<(*ndof); I++) {
+     // c++ indeces start from 0
      (*ZroeShu)(I,npi,ISH) = 
         0.5 * ( (*ZroeShu)(I,npi-1,ISH) + (*ZroeShu)(I,npi+1,ISH) );
      (*ZroeShd)(I,npi,ISH) = 
@@ -180,16 +183,16 @@ void RdDps::remesh()
 void RdDps::setAddress()
 {
   unsigned start;
-  start = npoin->at(0)*(*ndof);
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
   ZroeShu = new Array3D <double> 
-              ((*ndof),
+              (PhysicsInfo::getnbDofMax(),
                PhysicsInfo::getnbShPointsMax(),
                PhysicsInfo::getnbShMax(),
                &zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) +
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
           PhysicsInfo::getnbShPointsMax() *
           PhysicsInfo::getnbShMax() *
-          (*ndof);
+          PhysicsInfo::getnbDofMax();
   ZroeShd = new Array3D <double> 
               (PhysicsInfo::getnbDofMax(),
                PhysicsInfo::getnbShPointsMax(),

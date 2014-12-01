@@ -46,16 +46,16 @@ void ComputeStateDps::configure(OptionMap& cmap, const std::string& prefix)
 void ComputeStateDps::setAddress()
 {
   unsigned start;
-  start = npoin->at(0)*(*ndof);
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
   ZroeShu =
-    new Array3D <double> ((*ndof),
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) +
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
           PhysicsInfo::getnbShPointsMax() *
           PhysicsInfo::getnbShMax() *
-          (*ndof);
+          PhysicsInfo::getnbDofMax();
   ZroeShd =
     new Array3D <double> (PhysicsInfo::getnbDofMax(),
                           PhysicsInfo::getnbShPointsMax(),

@@ -103,9 +103,11 @@ void CFmesh2Triangle::convert()
   // Roe parameter vector variables
   m_prim2param.ptr()->transform(); 
 
-  // write Triangle format files
-  LogToScreen(DEBUG_MIN, "CFmesh2Triangle::writing Triangle format\n");
-  writeTriangleFmt(); 
+  if (MeshData::getInstance().getVersion()=="original") {
+   // write Triangle format files
+   LogToScreen(DEBUG_MIN, "CFmesh2Triangle::writing Triangle format\n");
+   writeTriangleFmt(); 
+  }
 }
 
 //----------------------------------------------------------------------------//
@@ -135,6 +137,7 @@ void CFmesh2Triangle::readCFmeshFmt()
   string cfoutCFmesh = "cfout.CFmesh";
 
   file.open(string(cfoutCFmesh).c_str());
+  file.precision(16);
 
   // read number of the first dummy strings
   do {
@@ -310,6 +313,7 @@ void CFmesh2Triangle::readCFmeshFmt()
   // count number of boundary points
   countnbBoundaryNodes();
 
+  file.close();
 }
 
 //----------------------------------------------------------------------------//
@@ -352,7 +356,7 @@ void CFmesh2Triangle::resizeVectors()
             4 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax();
   bndfacVect->resize(3 * totsize);
 
-  start = 3* (nbfac->at(0) + 
+  start = 3 * (nbfac->at(0) + 
             2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
   bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * PhysicsInfo::getnbShMax() *
                                 PhysicsInfo::getnbShEdgesMax()),
@@ -441,7 +445,7 @@ void CFmesh2Triangle::writeTriangleFmt()
   fprintf(file,"%u %s",nbfac->at(1)," 1\n");
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    NBND = namebnd.at((*bndfac)(2,IFACE)-1); // c++ indeces start from 0
-   if(NBND=="InnerSup" || NBND=="InnerSub") { NBND=10; }
+   if(NBND=="InnerSup" || NBND=="InnerSub") { NBND="10"; }
    fprintf(file,"%u %s",IFACE+1," ");
    fprintf(file,"%i %s %i",(*bndfac)(0,IFACE)," ",(*bndfac)(1,IFACE));
    fprintf(file,"%s %s %s"," ",NBND.c_str()," \n");

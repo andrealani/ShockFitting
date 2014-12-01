@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <fstream>
 #include "VariableTransformerSF/Prim2ParamPgDimensional.hh"
 #include "Framework/Log.hh"
 #include "Framework/ReferenceInfo.hh"
@@ -73,14 +74,16 @@ void Prim2ParamPgDimensional::transform()
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    rho = (*zroe)(0,IPOIN) / (*zroe)(3,IPOIN) / ReferenceInfo::getRgas();
    sqrtr = sqrt(rho / ReferenceInfo::getrhoref());
-   kinetic = pow((*zroe)(1,IPOIN),2) + pow((*zroe)(2,IPOIN),2);
+   kinetic = (*zroe)(1,IPOIN) * (*zroe)(1,IPOIN) +
+             (*zroe)(2,IPOIN) * (*zroe)(2,IPOIN);
    kinetic = kinetic*0.5;
    help = ReferenceInfo::getgam()/(ReferenceInfo::getgam()-1);
    h = help * ReferenceInfo::getRgas() * (*zroe)(3,IPOIN) + kinetic;
 
    (*zroe)(3,IPOIN) = sqrtr * (*zroe)(2,IPOIN) / ReferenceInfo::geturef();
    (*zroe)(2,IPOIN) = sqrtr * (*zroe)(1,IPOIN) / ReferenceInfo::geturef();
-   (*zroe)(1,IPOIN) = sqrtr * h / pow(ReferenceInfo::geturef(),2);
+   (*zroe)(1,IPOIN) = sqrtr * h / (ReferenceInfo::geturef() *
+                                   ReferenceInfo::geturef());
    (*zroe)(0,IPOIN) = sqrtr;
   } 
 }

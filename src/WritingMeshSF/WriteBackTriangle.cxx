@@ -108,7 +108,9 @@ void WriteBackTriangle::write()
 
 void WriteBackTriangle::setAddress()
 {
-  Zroe = new Array2D<double>((*ndof),npoin->at(0),&zroeVect->at(0));
+  Zroe = new Array2D<double>(PhysicsInfo::getnbDofMax(),
+                             npoin->at(0),
+                             &zroeVect->at(0));
   XY = new Array2D<double>(PhysicsInfo::getnbDim(), npoin->at(0),
                            &coorVect->at(0));
 }

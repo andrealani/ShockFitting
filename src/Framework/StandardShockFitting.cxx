@@ -45,6 +45,7 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_fixMeshSpecialPoints(),
   m_writeTriangleFile(),
   m_callTriangle(),
+  m_callTriangleLib(),
   m_triangleToCFmesh(),
   m_COOLFluiD(),
   m_CFmeshToTriangle(),
@@ -60,6 +61,9 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_writeShockInfo(),
   m_meshRestore()
 {
+  m_version = 1;
+  addOption("Version",&m_version,
+            "Current version of the StandardShockFitting");
 }
 
 //--------------------------------------------------------------------------//
@@ -101,6 +105,7 @@ void StandardShockFitting::setup()
   m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
   m_callTriangle = m_mGenerator[2].ptr();
+  m_callTriangleLib = m_mGenerator[4].ptr();
   m_triangleToCFmesh = m_fConverter[0].ptr();
   m_COOLFluiD = m_CFDSolver.ptr();
   m_CFmeshToTriangle = m_fConverter[1].ptr();
@@ -148,15 +153,23 @@ void StandardShockFitting::process()
   ostringstream backdir;
   unsigned dummyIstep; 
 
+  // set the Shock Fitting version
+  MeshData::getInstance().setVersion(m_version);
+
   cout << "\n---------------- Shock Fitting Solver ----------------\n\n";
   cout << "________________ StandardShockFitting ________________\n\n";
+
+  cout << "StandardShockFitting.Version = " << m_version << "\n";
+  cout << "______________________________________________________\n\n";
+
+  cout << "          StandardShockFitting::pre-processing  \n";
+  cout << "-----------------------------------------------------------\n\n";
 
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
   PhysicsData::getInstance().getReferenceInfo()->read();
 
   m_readInputFile1->generate();
-
   m_readInputFile2->generate();
 
   m_bndryNodePtr->remesh();
@@ -165,18 +178,18 @@ void StandardShockFitting::process()
 
   m_redistrEqShockPoints->remesh();
 
-  cout << "\n______________________________________________________\n\n";
-  cout << "StandardShockFitting::entering in the first step";
-  cout << "\n______________________________________________________\n\n";
+  cout << "\n-----------------------------------------------------------\n\n";
+  cout << "          StandardShockFitting::starting the time loop   \n";
+  cout << "-----------------------------------------------------------\n\n";
 
   for(unsigned I=MeshData::getInstance().getnbBegin();
     I<MeshData::getInstance().getnbSteps(); I++) {
 
    MeshData::getInstance().setIstep(I+1);
 
-   cout << "StandardShockFitting::step number => ";
-   cout << MeshData::getInstance().getIstep() << endl;
-   cout << "______________________________________________________\n\n";
+   cout << "          StandardShockFitting::step number => ";
+   cout << MeshData::getInstance().getIstep() << "   \n";
+   cout << "-----------------------------------------------------------\n \n";
 
    m_findPhantPoints->remesh();
    m_changeBndryPoints->remesh();
@@ -184,9 +197,15 @@ void StandardShockFitting::process()
    m_computeShockLayer->remesh();
    m_fixMeshSpecialPoints->remesh();
 
-   m_writeTriangleFile->write();
+   if      (m_version=="original")  { m_writeTriangleFile->write();
+                                      m_callTriangle->generate();    }
 
-   m_callTriangle->generate();
+   else if (m_version=="optimized") { m_callTriangleLib->generate(); }
+
+   else { cout << "\nStandardShockFitting::error => only 'original' and ";
+          cout << "'optimized' versions are supported\n";
+          cout << "                               Check the input.case\n";  
+          exit(1);  }
 
    m_triangleToCFmesh->convert();
 
@@ -214,12 +233,11 @@ void StandardShockFitting::process()
 
    m_CFmeshToTriangle->convert();
 
-   m_readNewMesh->generate();
+   if       (m_version=="original")  { m_readNewMesh->generate(); }
 
    m_copyZRoe1_0->copy();
 
    m_updateSolution->update();
-
    m_fixSpecPoints->update();
 
    m_copyZRoeSh0_1->copy();
@@ -231,6 +249,7 @@ void StandardShockFitting::process()
    m_redistrShockPoints->remesh();
 
    m_writeBackTriangleFile->write();
+
    m_writeShockInfo->write();
 
    m_meshRestore->copy();

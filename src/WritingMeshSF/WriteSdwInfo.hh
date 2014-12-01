@@ -9,7 +9,6 @@
 
 //--------------------------------------------------------------------------//
 
-#include <fstream>
 #include <vector>
 #include "Framework/FileLogManip.hh"
 #include "Framework/WritingMesh.hh"
@@ -101,8 +100,8 @@ private: // data
   /// array characterizing special points
   Array3D <unsigned>* SHinSPPs;
 
-  /// fstream variable writing on sh99 file
-  std::ofstream file;
+  /// variable writing on sh99 file
+  FILE* file;
 
   /// store log file infos
   FileLogManip logfile;

@@ -73,36 +73,35 @@ void WriteSdwInfo::write()
 
   logfile("Opening file sh99.dat\n");
 
-  file.open(string("sh99.dat").c_str());
-  file.precision(15);
+  file = fopen("sh99.dat","w");
 
-  file << (*nShocks) << "\n";
+  fprintf(file,"%u %s",(*nShocks), "\n");
   logfile("nb. ",(*nShocks), " shock/discontinuities\n");
 
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    iShock = ISH+1;
 
    logfile("Shock/Discontinuity nb. ", iShock, "\n");
-   file << nShockPoints->at(ISH) << " " << typeSh->at(ISH) << "\n";
+   fprintf(file,"%u %s %s %s",nShockPoints->at(ISH)," ",(typeSh->at(ISH)).c_str(),"\n");
    logfile("Kind of discontinuity: ", typeSh->at(ISH), "\n");
    logfile ("nb of points ",nShockPoints->at(ISH), "\n");
 
    for(unsigned I=0; I<nShockPoints->at(ISH); I++) {
     for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) 
-     { file << (*XYSh)(IA,I,ISH) << " "; }
+     { fprintf(file,"%17.15E %s",(*XYSh)(IA,I,ISH)," "); }
     for(unsigned IA=0; IA<(*ndof); IA++) 
-     { file << (*ZroeShd)(IA,I,ISH) << " "; }
+     { fprintf(file,"%17.15E %s",(*ZroeShd)(IA,I,ISH)," "); }
     for(unsigned IA=0; IA<(*ndof); IA++) 
-     { file << (*ZroeShu)(IA,I,ISH) << " "; }
-    file << "\n";
+     { fprintf(file,"%17.15E %s",(*ZroeShu)(IA,I,ISH)," "); }
+    fprintf(file,"%s","\n");
    }
   }
 
-  file << (*nSpecPoints) << "\n";
+  fprintf(file,"%u %s",(*nSpecPoints),"\n");
   logfile("\nnSpecPoints: ",(*nSpecPoints), "\n");
 
   for(unsigned ISPPNTS=0; ISPPNTS<(*nSpecPoints); ISPPNTS++) {
-   file << typeSpecPoints->at(ISPPNTS) << "\n";
+   fprintf(file,"%s %s",(typeSpecPoints->at(ISPPNTS)).c_str(),"\n");
    logfile("Type Special Point: ",typeSpecPoints->at(ISPPNTS), "\n");
 
    // internal special point: triple point
@@ -182,7 +181,7 @@ void WriteSdwInfo::write()
           exit(1); }
   }
 
-  file.close();
+  fclose(file);
 
   logfile.Close();
 }
@@ -192,7 +191,8 @@ void WriteSdwInfo::write()
 void WriteSdwInfo::writeSHinSPPs(unsigned NSHE, unsigned ISPPNTS)
 { 
   for (unsigned K=0; K<NSHE; K++) { 
-   file << (*SHinSPPs)(0,K,ISPPNTS) << " "<< (*SHinSPPs)(1,K,ISPPNTS) << "\n";
+   fprintf(file,"%i %s",(*SHinSPPs)(0,K,ISPPNTS)," ");
+   fprintf(file,"%i %s",(*SHinSPPs)(1,K,ISPPNTS),"\n");
    logfile((*SHinSPPs)(0,K,ISPPNTS)," ",(*SHinSPPs)(1,K,ISPPNTS),"\n" );
   }
 }
@@ -202,14 +202,15 @@ void WriteSdwInfo::writeSHinSPPs(unsigned NSHE, unsigned ISPPNTS)
 void WriteSdwInfo::setAddress()
 {
   unsigned start;
-  start = npoin->at(0)*(*ndof);
-  ZroeShu = new Array3D <double> ((*ndof),
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  ZroeShu = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroe->at(start));
-  start = npoin->at(0) * (*ndof) + 
-          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
-  ZroeShd = new Array3D <double> ((*ndof),
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
+  ZroeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroe->at(start));

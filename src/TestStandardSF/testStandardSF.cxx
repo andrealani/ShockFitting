@@ -10,21 +10,23 @@ int main (int argc, char** argv)
   cout << "### Creating coupling tool in federate [" << federateID << "]\n";
   SF_create_(&federateID);
 
-  // (0) CircularCylinder_UnDiFiv_1.2
-  // (1) CircularCylinder_VKI_LRD_UnDiFiv_2.1 
-  // (2) CircularCylinder_VKI_UnDiFiv_2.1 
+  // (0) CircularCylinder_Unibas_N_inv_M20_2.0 : perfect gas
+  // (1) CircularCylinder_VKI_LRD_2.1 : TCneq
   const unsigned nbTest = 4;
   vector<string> testDir(nbTest);
-  testDir.at(0) = "CircularCylinder_1.2";
-  testDir.at(1) = "CircularCylinder_VKI_2.1";
-  testDir.at(2) = "CircularCylinder_VKI_LRD_2.1";
-  testDir.at(3) = "CircularCylinder_VKI_LDA_2.1";
+  testDir.at(0) = "CircularCylinder_Unibas_N_inv_M20_2.0";
+  testDir.at(1) = "CircularCylinder_VKI_LRD_2.1";
 
-  const unsigned i = 2; // number of executing test
+  const unsigned i = 0; // number of executing test
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
   string commandcp = "cp "+pwdTestDir+"/input.case .";
   system(commandcp.c_str());
+
+  if(i==1) {
+  string commandcp = "cp "+pwdTestDir+"/cylRDS.inter .";
+  system(commandcp.c_str());
+  }
 
   // link the I/O files 
   string commandln = "ln -sf "+pwdTestDir+"/na00.1.node .";
@@ -38,7 +40,7 @@ int main (int argc, char** argv)
   commandln = "ln -sf "+pwdTestDir+"/na00.1.edge .";
   system(commandln.c_str());
 
-  if(i==1 || i==2 || i==3) {
+  if(i==1) {
      commandln = "ln -sf "+pwdTestDir+"/nitrogen2.dat .";
      system(commandln.c_str());
   }
@@ -57,6 +59,13 @@ int main (int argc, char** argv)
   }
 
   SF_configure_(&federateID, (char*)inputFile.c_str(), &argc, &argv);
+
+cout << "-------------------------------------------" << endl;
+cout << "--------------------------------------------" << endl;
+cout << endl <<"Processing test " << testDir.at(i) << endl << endl;
+cout << "-------------------------------------------" << endl;
+cout << "-------------------------------------------" << endl;
+
 
   SF_process_(&federateID);
 

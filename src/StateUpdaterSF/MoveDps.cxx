@@ -44,9 +44,10 @@ void MoveDps::configure(OptionMap& cmap, const std::string& prefix)
 void MoveDps::setAddress()
 {
   unsigned start;
-  start = npoin->at(0) * (*ndof) + 
-          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() * (*ndof);
-  ZroeSh = new Array3D <double> ((*ndof),
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
+  ZroeSh = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                  PhysicsInfo::getnbShPointsMax(),
                                  PhysicsInfo::getnbShMax(),
                                  &zroeVect->at(start));

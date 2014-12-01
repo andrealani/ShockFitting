@@ -371,6 +371,8 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <vector <int> >("NODPTR", 1);
   MeshData::getInstance().createData <vector <int> >("M12M0", 1);
   MeshData::getInstance().createData <vector <int> >("M02M1", 1);
+  MeshData::getInstance().createData <vector <unsigned> >("M02M1", 1);
+  MeshData::getInstance().createData <vector <int> >("ICLR", 1);
 
   MeshData::getInstance().createData <vector <int> >("NODCODBackup",1);
   MeshData::getInstance().createData <Array2D <int> >("NODPTRBackup",1);
@@ -460,6 +462,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector <int> >("NODPTR");
   MeshData::getInstance().deleteData <vector <int> >("M12M0");
   MeshData::getInstance().deleteData <vector <unsigned> >("M02M1");
+  MeshData::getInstance().deleteData <vector <int> >("ICLR");
 
   MeshData::getInstance().deleteData <vector <int> >("NODCODBackup");
   MeshData::getInstance().deleteData <Array2D <int> >("NODPTRBackup");

@@ -168,8 +168,9 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    onePointBackward(J,ISH);
 
    // recover status for the backward point
-   ipoin = J+1; // c++ indeces start from 0
    recoverState("backward",I,J,ISH);
+
+   ipoin = J+1; // c++ indeces start from 0
 
    if (I>1) {
     // two points backward
@@ -197,6 +198,8 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
 
   if(I==0) {depim1=0; depip1=1; lm12=1;}
   if(I==nShockPoints->at(ISH)-1) {depim1=1; depip1=0; lp12=1.0;}
+
+
 
   taux = (depim1*tauxim1*lp12+depip1*tauxip1*lm12);
   tauy = (depim1*tauyim1*lp12+depip1*tauyip1*lm12);
@@ -304,27 +307,26 @@ void CoNorm4TCneq::setVShNorForTP(unsigned ISPPNTS)
 
 void CoNorm4TCneq::writeTecPlotFile()
 {
-  ofstream tecfile;
-  tecfile.open("shocknor.dat");
-  tecfile.precision(16);
+  FILE* tecfile;
+  tecfile = fopen("shocknor.dat", "w");
 
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   tecfile << "TITLE = Shock normals\n";
-   tecfile << "VARIABLES = X Y Z(1) Z(2) NX NY\n";
-   tecfile << "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ";
-   tecfile << "N = " << nShockPoints->at(ISH);
-   tecfile << ", E = " << nShockPoints->at(ISH)-1 << "\n";
+   fprintf(tecfile, "%s", "TITLE = Shock normals\n");
+   fprintf(tecfile, "%s", "VARIABLES = X Y Z(1) Z(2) NX NY\n");
+   fprintf(tecfile, "%s", "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ");
+   fprintf(tecfile,"%s %u", "N = ",nShockPoints->at(ISH));
+   fprintf(tecfile,"%s %u %s",", E = ", nShockPoints->at(ISH)-1,"\n");
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
-     {tecfile << (*XYSh)(K,I,ISH) << " ";}
-    tecfile << "\n";
-    tecfile << 1 << " " << 1 << " ";
+     {fprintf(tecfile,"%0.17f %s", (*XYSh)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
+    fprintf(tecfile,"%u %s %u %s",1, " ", 1," ");
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) 
-     {tecfile << (*vShNor)(K,I,ISH) << " ";}
-   tecfile << "\n";
+     {fprintf(tecfile, "%0.15f %s",(*vShNor)(K,I,ISH)," ");}
+   fprintf(tecfile,"%s","\n");
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
-    tecfile << I+1 << " " << I+2 << " " << I+1 << "\n";
+    fprintf(tecfile,"%u %s %u %s %u %s",I+1," ",I+2," ",I+1,"\n");
    }
   }
 }
@@ -358,8 +360,9 @@ void CoNorm4TCneq::recoverState(string direction, unsigned I,
   uj = (*ZRoeShd)((*IX),J,ISH)/zrho;
   vj = (*ZRoeShd)((*IY),J,ISH)/zrho;
   help = pow((*ZRoeShd)((*IX),J,ISH),2)+pow((*ZRoeShd)((*IY),J,ISH),2);
-  pj = gm1oga* (zrho*(*ZRoeShd)((*IE),J,ISH)-
-       0.5 * help - rhoHf - zrho * (*ZRoeShd)((*IEV),J,ISH));
+  pj = gm1oga * ( zrho * ((*ZRoeShd)((*IE),J,ISH)) -
+                  0.5e0 * help - rhoHf -
+                  zrho * ((*ZRoeShd)((*IEV),J,ISH)));
   aj = sqrt(gammam*pj/roj);
 
   if(direction=="forward") {  

@@ -140,7 +140,6 @@ void CoPntDispl::addSecondShockLayer()
                         0.5 * (MeshData::getInstance().getEPS()) * dx;
     (*XYShd)(1,i,ish) = (*XYSh)(1,i,ish) - 
                         0.5 * (MeshData::getInstance().getEPS()) * dy;
-
     (*NodCodSh)(i,ish) = 10;
    }
   }

@@ -85,14 +85,14 @@ void CopyRoeValues2::copy()
 
 void CopyRoeValues2::setAddress()
 {
-  zroe0 = new Array2D<double>((*ndof),
+  zroe0 = new Array2D<double>(PhysicsInfo::getnbDofMax(),
                               (npoin->at(0) + 2 * 
                                PhysicsInfo::getnbShPointsMax() * 
                                PhysicsInfo::getnbShMax()),
                               &zroeVect->at(0));
-  start = (*ndof) * (npoin->at(0) + 2 * 
+  start = PhysicsInfo::getnbDofMax() * (npoin->at(0) + 2 * 
            PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax());
-  zroe1 = new Array2D<double>((*ndof),
+  zroe1 = new Array2D<double>(PhysicsInfo::getnbDofMax(),
                               (npoin->at(1)+ 2 *
                                PhysicsInfo::getnbShPointsMax() *
                                PhysicsInfo::getnbShMax()),

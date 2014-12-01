@@ -107,6 +107,12 @@ public:
   /// get the bumber of additional holes
   unsigned getnbAddHoles() const { return m_naddholes; }
 
+  /// get the Shock Fitting Version
+  std::string getVersion() const { return m_version; }
+
+  /// set the Shock Fitting Version
+  void setVersion(std::string i_version) { m_version = i_version; }
+
 private:
 
   MeshData() : SConfig::ConfigObject("MeshData") 
@@ -166,6 +172,11 @@ private: // helper functions
 private: // data
 
   std::map<std::string, void*> m_mapName2ArrayMD;
+
+private: // data
+ 
+  /// Shock Fitting version 
+  std::string m_version;
 
 private: // data (read from input file)
 

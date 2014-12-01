@@ -77,12 +77,15 @@ void Prim2ParamTCneqDimensional::transform()
   u.resize(PhysicsInfo::getnbDim());
   T.resize(2);
 
+
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
 
    for(unsigned ISP=0; ISP<(*nsp); ISP++)
     { rhos.at(ISP) = (*zroe)(ISP,IPOIN); }
+
    for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)   
     { u.at(I) = (*zroe)((*nsp)+I,IPOIN); }
+
    for(unsigned I=0; I<2; I++) 
     { T.at(I) = (*zroe)((*nsp)+PhysicsInfo::getnbDim()+I,IPOIN); }
 
@@ -106,7 +109,6 @@ void Prim2ParamTCneqDimensional::transform()
     // in ReferenceInfo hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
     hftot = hftot + alpha.at(ISP) * hf->at(ISP) * 
             pow(ReferenceInfo::geturef(),2);
-
    }
 
    // call for vibrational energy

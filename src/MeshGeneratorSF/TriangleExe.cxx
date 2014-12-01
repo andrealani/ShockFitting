@@ -4,7 +4,8 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include "CFDSolverSF/COOLFluiD.hh"
+#include <cstdlib>
+#include "MeshGeneratorSF/TriangleExe.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -21,63 +22,52 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<COOLFluiD, CFDSolver>
- coolFluiDProv("COOLFluiD");
+ObjectProvider<TriangleExe, MeshGenerator> triangleExeProv("TriangleExe");
 
 //--------------------------------------------------------------------------//
 
-COOLFluiD::COOLFluiD(const std::string& objectName) :
- CFDSolver(objectName)
+TriangleExe::TriangleExe(const std::string& objectName) :
+  MeshGenerator(objectName)
 {
 }
 
 //--------------------------------------------------------------------------//
 
-COOLFluiD::~COOLFluiD()
+TriangleExe::~TriangleExe()
 {
 }
 
 //--------------------------------------------------------------------------//
 
-void COOLFluiD::setup()
+void TriangleExe::setup()
 {
-  LogToScreen(VERBOSE,"COOLFluiD::setup() => start\n");
+  LogToScreen(VERBOSE, "TriangleExe::setup() => start\n");
 
-  LogToScreen(VERBOSE,"COOLFluiD::setup() => end\n");
+  LogToScreen(VERBOSE, "TriangleExe::setup() => end\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void COOLFluiD::unsetup()
+void TriangleExe::unsetup()
 {
-  LogToScreen(VERBOSE,"COOLFluiD::unsetup()\n");
+  LogToScreen(VERBOSE, "TriangleExe::unsetup()\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void COOLFluiD::call()
+void TriangleExe::generate()
 {
-  LogToScreen(INFO,"COOLFluiD::call()\n");
+  LogToScreen(INFO,"TriangleExe::generate()\n");
 
-  if(MeshData::getInstance().getnbProcessors()==1) {
-   LogToScreen(DEBUG_MIN,"COOLFluiD::running sequential\n");
-   command.str(string());
-   command << "coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
-  }
+  fname = MeshData::getInstance().getData <stringstream>("FNAME");
 
-  else if (MeshData::getInstance().getnbProcessors()>1) {
-   LogToScreen(DEBUG_MIN,"COOLFluiD::running parallel\n");
-   command.str(string());
-   command << "  mpirun -np " << MeshData::getInstance().getnbProcessors() ;
-   command << " coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
-  }
+  command = "/data/deamicis/ShockFitting.git/trunk/src/MeshGeneratorSF/TriLibrary/triangle -nep "
+            + fname->str() + " > log/TriangleExe.log";
+  system(command.c_str());
 
-  system(command.str().c_str());
-
-  if(system(command.str().c_str())!=0) {
-   cout << "COOLFluiD::error => COOLFluiD has return an error code\n"; 
+  if(system(command.c_str())!=0) {
+   cout << "TriangleExe::error => Triangle Mesh Generator execution failed\n";
    exit(1); }
-
 }
 
 //--------------------------------------------------------------------------//

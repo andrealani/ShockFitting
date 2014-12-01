@@ -31,6 +31,9 @@ namespace ShockFitting {
 /// These new values are pushed back at the end of the arrays of the old mesh
 /// in the fortran version these new arrays are referred to index "1"
 /// (ex: ZROE(1))
+/// According to the Standard ShockFitting version ('original' or 
+/// 'optimized') the reading and the writing objects are (or not) 
+/// demanded to operate
 
 class Triangle2CFmesh : public Converter {
 public:
@@ -104,6 +107,9 @@ private: // data
   /// vector characterizing boundary faces (assignable to MeshData)
   std::vector<int>* bndfacVect;
 
+  /// vector storing boundary edges colours
+  std::vector<int>* ICLR;
+
   /// name of the current file
   std::stringstream* fname;
 
@@ -134,8 +140,8 @@ private: // data
   /// dummy variable to store array starting pointer
   unsigned start;
 
-  /// dummy vector used to store boundary edges colours
-  std::vector<int> ICLR;
+  /// string for the additional info on the shock boundary
+  std::string m_boundary;
 
   /// command object transforming variables
   PAIR_TYPE(VariableTransformer) m_param2prim;

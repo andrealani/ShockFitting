@@ -33,6 +33,10 @@ triangle2CFmeshProv("Triangle2CFmesh");
 Triangle2CFmesh::Triangle2CFmesh(const std::string& objectName) :
   Converter(objectName)
 {
+  m_boundary = 1;
+  addOption("ShockBoundary", &m_boundary,
+            "Additional info on the shock boundary: single or splitted");
+
   m_param2prim.name() = "DummyVariableTransformer";
 }
 
@@ -92,9 +96,11 @@ void Triangle2CFmesh::convert()
   setMeshData();
   setPhysicsData();
   
-  /// read triangle format file
-  LogToScreen(DEBUG_MIN, "Triangle2CFmesh::reading Triangle format\n");
-  readTriangleFmt();
+  if (MeshData::getInstance().getVersion()==("original")) {
+   /// read triangle format file
+   LogToScreen(DEBUG_MIN, "Triangle2CFmesh::reading Triangle format\n");
+   readTriangleFmt();
+  }
 
   /// make the tansformation from Roe parameter vector variables
   /// to primitive dimensional variables for CFmesh format
@@ -110,9 +116,9 @@ void Triangle2CFmesh::convert()
 void Triangle2CFmesh::readTriangleFmt()
 {
   // dummy variables
-  int dummy, iattr, ielem, ivert;
+  unsigned dummy, iattr;
   unsigned ibfac, IFACE, I;
-  int in1, in2, n1, n2, IBC;
+  int in1, in2, n1, n2, IBC, ielem, ivert;
 
   // number of boundary faces
   unsigned nbBoundaryfaces;
@@ -127,7 +133,7 @@ void Triangle2CFmesh::readTriangleFmt()
   Jcycl J;
 
   // set ICLR vector to 0 value
-  ICLR.assign(20,0);
+  ICLR->assign(20,0);
 
   string dummyfile;
 
@@ -143,21 +149,25 @@ void Triangle2CFmesh::readTriangleFmt()
   coorVect->resize(PhysicsInfo::getnbDim() * totsize);
 
   // assign start pointers for the zroe and XY arrays
-  start = PhysicsInfo::getnbDim() *
-         (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  start = PhysicsInfo::getnbDim() * 
+          (npoin->at(0) + 2 * 
+           PhysicsInfo::getnbShMax() *
+           PhysicsInfo::getnbShPointsMax());
   XY = new Array2D <double> (PhysicsInfo::getnbDim(),
                              (npoin->at(1) + 2 * 
-                             PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax()),
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
                              &coorVect->at(start));
   start = PhysicsInfo::getnbDofMax() *
           (npoin->at(0) + 2 *
           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
   zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
                               (npoin->at(1) + 2 *
-                              PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax()),
+                               PhysicsInfo::getnbShMax() *
+                               PhysicsInfo::getnbShPointsMax()),
                                &zroeVect->at(start));
 
-  // read mesh points status
+  // read mesh points state
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    file >> dummy >> (*XY)(0,IPOIN) >> (*XY)(1,IPOIN);
    for(unsigned K=0; K<(*ndof); K++) { file >> (*zroe)(K,IPOIN); }
@@ -250,7 +260,7 @@ void Triangle2CFmesh::readTriangleFmt()
   while(IFACE<nedge) {
      file >> dummy >> n1 >> n2 >> IBC;
      // if a boundary faces, look for the parent element in bndfac
-     if(IBC==0) { ++ICLR.at(IBC); }
+     if(IBC==0) { ICLR->at(IBC) = ICLR->at(IBC)+1; }
      else {
       ++ibfac;
       I=0;
@@ -267,7 +277,7 @@ void Triangle2CFmesh::readTriangleFmt()
                                  cout << " " << (*bndfac)(2,I) << "\n";    
                                  exit(1);                                  }
         (*bndfac)(2,I) = IBC;
-        ICLR.at(IBC) = ICLR.at(IBC) + 1;
+        ICLR->at(IBC) = ICLR->at(IBC) + 1;
         goto nine;
        } // if (in1==n1 && in2==n2) || (in1==n2 && in2==n1)
       I++;
@@ -297,14 +307,47 @@ void Triangle2CFmesh::writeCFmeshFmt()
   // @param LIST_STATE = 1 there is a list of states
   unsigned  LIST_STATE=1;
   int ip;
-  vector <int> np(2);
+  vector <unsigned> np(2);
 
   // writing file
-  ofstream file;
+  FILE* file;
 
   // create Jcycl object
   Jcycl J;
 
+  // allocate the arrays if the version is optimized one
+  if (MeshData::getInstance().getVersion()==("optimized")) {
+
+   // assign start pointers for the zroe and XY arrays
+   start = PhysicsInfo::getnbDim() *
+          (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() *
+           PhysicsInfo::getnbShPointsMax());
+   XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
+                             &coorVect->at(start));
+   start = PhysicsInfo::getnbDofMax() *
+           (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+   zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
+                               (npoin->at(1) + 2 *
+                                PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShPointsMax()),
+                                &zroeVect->at(start));
+   // assign starting pointers for the celcel and celnod arrays
+   start = (*nvt) * nelem->at(0);
+   celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
+   celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
+   // assign the starting pointers for the bndfac array
+   start = 3 * (nbfac->at(0) +
+           2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
+   bndfac = new Array2D<int> (3,(nbfac->at(1) +
+                              2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShEdgesMax()),
+                              &bndfacVect->at(start));
+   } 
 
   // find max value in bndfac(2,*) vector
   int maxNCl = (*bndfac)(2,0);
@@ -313,88 +356,185 @@ void Triangle2CFmesh::writeCFmeshFmt()
   }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
-   if(ICLR.at(IBC+1)>0) { ++BNDS; }
+   if(ICLR->at(IBC+1)>0) { ++BNDS; }
   }
 
-  file.open("cfin.CFmesh");
+  // compute number of shock elements
+  int nbSh = ICLR->at(10) + 2;  
 
-  file << "!NB_DIM " << setw(1) << PhysicsInfo::getnbDim() << "\n";
-  file << "!NB_EQ " << setw(1) << (*ndof) << "\n";
-  file << "!NB_NODES " << setw(5) << npoin->at(1) << " 0\n";
-  file << "!NB_STATES "<< setw(5) << npoin->at(1) << " 0\n";
-  file << "!NB_ELEM " << setw(5) << nelem->at(1) << "\n";
-  file << "!NB_ELEM_TYPES 1\n";
-  file << "!GEOM_POLYORDER 1\n";
-  file << "!SOL_POLYORDER 1\n";
-  file << "!ELEM_TYPES Triag\n";
-  file << "!NB_ELEM_PER_TYPE " << setw(5) << nelem->at(1) << "\n";
-  file << "!NB_NODES_PER_TYPE 3\n";
-  file << "!NB_STATES_PER_TYPE 3\n";
-  file << "!LIST_ELEM" << "\n";
+  unsigned minSh=npoin->at(1); unsigned maxSh=0;
+  for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
+   if((*bndfac)(2,IFACE)==10) {
+    int elem = (*bndfac)(0,IFACE);
+    int vert = (*bndfac)(1,IFACE);
+    for(unsigned k=0; k<2; k++) {
+     ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+     np.at(k) = ip-1;
+     if (np.at(k) < minSh) { minSh = np.at(k); }
+     if (np.at(k) > maxSh) { maxSh = np.at(k); }
+    } // for k<2
+   } // if (*bndfac)(2,IFACE)==10
+  } // for IFACE<nbfac->at(0)
+
+
+  file = fopen("cfin.CFmesh", "w");
+
+  fprintf(file,"%s %1u %s","!NB_DIM",PhysicsInfo::getnbDim(),"\n");
+  fprintf(file,"%s %1u %s","!NB_EQ",(*ndof),"\n");
+  fprintf(file,"%s %5u %s","!NB_NODES",npoin->at(1) ,"0\n");
+  fprintf(file,"%s %5u %s","!NB_STATES",npoin->at(1),"0\n");
+  fprintf(file,"%s %5u %s","!NB_ELEM",nelem->at(1),"\n");
+  fprintf(file,"%s","!NB_ELEM_TYPES 1\n");
+  fprintf(file,"%s","!GEOM_POLYORDER 1\n");
+  fprintf(file,"%s","!SOL_POLYORDER 1\n");
+  fprintf(file,"%s","!ELEM_TYPES Triag\n");
+  fprintf(file,"%s %5u %s","!NB_ELEM_PER_TYPE",nelem->at(1),"\n");
+  fprintf(file,"%s","!NB_NODES_PER_TYPE 3\n");
+  fprintf(file,"%s","!NB_STATES_PER_TYPE 3\n");
+  fprintf(file,"%s","!LIST_ELEM\n");
   for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
-   file.setf(ios::right,ios::adjustfield);
-   file << " " << setw(10) << (*celnod)(0,IELEM)-1;
-   file << " " << setw(10) << (*celnod)(1,IELEM)-1;
-   file << " " << setw(10) << (*celnod)(2,IELEM)-1;
-   file << " " << setw(10) << (*celnod)(0,IELEM)-1;
-   file << " " << setw(10) << (*celnod)(1,IELEM)-1;
-   file << " " << setw(10) << (*celnod)(2,IELEM)-1 << "\n";
+   fprintf(file,"%11i",(*celnod)(0,IELEM)-1);
+   fprintf(file,"%11i",(*celnod)(1,IELEM)-1);
+   fprintf(file,"%11i",(*celnod)(2,IELEM)-1);
+   fprintf(file,"%11i",(*celnod)(0,IELEM)-1);
+   fprintf(file,"%11i",(*celnod)(1,IELEM)-1);
+   fprintf(file,"%11i %s",(*celnod)(2,IELEM)-1,"\n");
   }
 
-  file << "!NB_TRSs " << setw(3) << BNDS << "\n";
+  if (m_boundary == "single") {
+   fprintf(file,"%s %3u %s","!NB_TRSs",BNDS,"\n"); 
+  }
+
+  else if (m_boundary == "splitted") {
+   fprintf(file,"%s %3u %s","!NB_TRSs",BNDS+1,"\n");
+  }
+
+  else {
+   cout << "Triangle2CFmesh::error => Shock Boundary condition ";
+   cout << "should be 'single' or 'splitted' \n";
+   cout << "                          Check the input.case\n";
+  }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
 
-   if(ICLR.at(IBC+1)>0) { 
+   if(ICLR->at(IBC+1)>0) { 
     ++BND; 
- 
-   if ((IBC+1)==10) { file << "!TRS_NAME  10\n"; }
+    if((IBC+1)==10) {
+     if (m_boundary == "single") {
+      fprintf(file,"%s","!TRS_NAME  10\n");
+      fprintf(file,"%s","!NB_TRs 1\n");
+      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",ICLR->at(IBC+1),"\n");
+      fprintf(file,"%s","!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT\n");
 
-    else            { file << "!TRS_NAME " << setw(3) << BND << "\n"; }
+      for(unsigned j=0; j<nbfac->at(1); j++) {
+       if((*bndfac)(2,j)==(IBC+1)) {
+        int elem = (*bndfac)(0,j);
+        int vert = (*bndfac)(1,j);
+        for(unsigned k=0; k<2; k++) {
+         ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+         np.at(k) = ip-1;
+        }
+        fprintf(file,"%1i %1i",IND2,IND2);
+        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+       } // if (*bndfac)(2,j)==(IBC+1)
+      } // for j<nbfac->at(1)
+     } // if m_boundary = single
 
-    file << "!NB_TRs 1\n";
-    file << "!NB_GEOM_ENTS" << setw(5) << ICLR.at(IBC+1) << "\n";
-    file << "!GEOM_TYPE Face\n";
-    file << "!LIST_GEOM_ENT" << "\n";
+     if (m_boundary == "splitted") {
+      
+      // Supersonic boundary
+      fprintf(file,"%s","!TRS_NAME  InnerSup\n");
+      fprintf(file,"%s","!NB_TRs 1\n");
+      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",nbSh/2-1,"\n");
+      fprintf(file,"%s","!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT\n");
 
-    for(unsigned j=0; j<nbfac->at(1); j++) {
-     if((*bndfac)(2,j)==(IBC+1)) {
-      int ielem = (*bndfac)(0,j);
-      int ivert = (*bndfac)(1,j);
-      for(unsigned k=0; k<2; k++) {
-       ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
-       np.at(k) = ip-1;
-      }
-      file << setw(1) << IND2 << " " << setw(1) << IND2;
-      file << " " << setw(10) << np.at(0);
-      file << " " << setw(10) << np.at(1);
-      file << " " << setw(10) << np.at(0);
-      file << " " << setw(10) << np.at(1) << "\n";
-     }
-    }
-   }
-  }
-  file << "!LIST_NODE" << "\n";
+      for(unsigned j=0; j<nbfac->at(1); j++) {
+       if((*bndfac)(2,j)==(IBC+1)) {
+        int elem = (*bndfac)(0,j);
+        int vert = (*bndfac)(1,j);
+        for(unsigned k=0; k<2; k++) {
+         ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+         np.at(k) = ip-1;
+        }
+        if ((np.at(0) >= minSh) && (np.at(0) <  (minSh+nbSh/2)) &&
+            (np.at(1) >= minSh) && (np.at(1) <  (minSh+nbSh/2))) {
+        fprintf(file,"%1i %1i",IND2,IND2);
+        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+        } // if np conditions
+       } // if (*bndfac)(2,j)==(IBC+1)
+      } // for j<nbfac->at(1)
+
+      // Subsonic boundary
+      fprintf(file,"%s","!TRS_NAME  InnerSub\n");
+      fprintf(file,"%s","!NB_TRs 1\n");
+      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",nbSh/2-1,"\n");
+      fprintf(file,"%s","!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT\n");
+
+      for(unsigned j=0; j<nbfac->at(1); j++) {
+       if((*bndfac)(2,j)==(IBC+1)) {
+        int elem = (*bndfac)(0,j);
+        int vert = (*bndfac)(1,j);
+        for(unsigned k=0; k<2; k++) {
+         ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+         np.at(k) = ip-1;
+        }
+        if ((np.at(0) > (maxSh-nbSh/2)) && (np.at(0) <= maxSh) &&
+            (np.at(1) > (maxSh-nbSh/2)) && (np.at(1) <= maxSh)) {
+        fprintf(file,"%1i %1i",IND2,IND2);
+        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+        } // if np conditions
+       } // if (*bndfac)(2,j)==(IBC+1)
+      } // for j<nbfac->at(1)
+
+     } // if m_boundary = splitted
+    } // if IBC==10
+
+    else            { 
+     fprintf(file,"%s %3u %s","!TRS_NAME",BND,"\n");
+     fprintf(file,"%s","!NB_TRs 1\n");
+     fprintf(file,"%s %5i %s","!NB_GEOM_ENTS",ICLR->at(IBC+1),"\n");
+     fprintf(file,"%s","!GEOM_TYPE Face\n");
+     fprintf(file,"%s","!LIST_GEOM_ENT\n");
+
+     for(unsigned j=0; j<nbfac->at(1); j++) {
+      if((*bndfac)(2,j)==(IBC+1)) {
+       int ielem = (*bndfac)(0,j);
+       int ivert = (*bndfac)(1,j);
+       for(unsigned k=0; k<2; k++) {
+        ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
+        np.at(k) = ip-1;
+       }
+       fprintf(file,"%1i %1i",IND2,IND2);
+       fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+      } // if (*bndfac)(2,j)==(IBC+1)
+     } // for j<nbfac->at(1)
+    } // else (ICLR(IBC+1)!=10)
+
+   } // if ICLR.at(IBC+1)>0
+  } // for IBC<maxNCl
+
+
+  fprintf(file,"%s","!LIST_NODE\n");
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-   file.precision(16);
-   file.setf(ios::scientific);
-   file << " " << setw(32) << (*XY)(0,IPOIN);
-   file << " " << setw(32) << (*XY)(1,IPOIN) << "\n";
+   fprintf(file,"%33.16E %33.16E %s",(*XY)(0,IPOIN),(*XY)(1,IPOIN),"\n");
   }
 
 
-  file << "!LIST_STATE " << setw(1) << LIST_STATE << "\n";
+  fprintf(file,"%s %1u %s","!LIST_STATE",LIST_STATE,"\n");
   if(LIST_STATE==1) {
    for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     for(unsigned K=0; K<(*ndof); K++) {
-     file.precision(16);
-     file.setf(ios::scientific);
-     file << setw(32) << (*zroe)(K,IPOIN);}
-    file << "\n";
+     fprintf(file,"%33.16E",(*zroe)(K,IPOIN));}
+    fprintf(file,"%s","\n");
    }
   }
 
-  file << "!END" << "\n";
+  fprintf(file,"%s","!END\n");
+
+  fclose(file);
 }
 
 //----------------------------------------------------------------------------//
@@ -411,6 +551,7 @@ void Triangle2CFmesh::setMeshData()
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   fname = MeshData::getInstance().getData <stringstream>("FNAME");
+  ICLR = MeshData::getInstance().getData <vector<int> >("ICLR");
 }
 
 //----------------------------------------------------------------------------//

@@ -183,7 +183,6 @@ private: // data
 
   /// store log file infos
   FileLogManip logfile;
-
 };
 
 //--------------------------------------------------------------------------//

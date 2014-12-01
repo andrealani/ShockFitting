@@ -69,7 +69,6 @@ private: // data
 
   /// working vector used to store downstream values
   std::vector<double> xd;
-
 };
 
 //--------------------------------------------------------------------------//

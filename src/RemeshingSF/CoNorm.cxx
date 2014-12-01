@@ -43,10 +43,10 @@ void CoNorm::configure(OptionMap& cmap, const std::string& prefix)
 
 void CoNorm::setAddress()
 {
-  unsigned start = npoin->at(0) * (*ndof) +
+  unsigned start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
                    PhysicsInfo::getnbShPointsMax() *
                    PhysicsInfo::getnbShMax() *
-                   (*ndof);
+                   PhysicsInfo::getnbDofMax();
   ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),

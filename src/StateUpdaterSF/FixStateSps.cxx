@@ -414,15 +414,15 @@ void FixStateSps::setAddress()
                                 PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
-  start = npoin->at(0)*(*ndof);
-  ZroeShu = new Array3D <double> ((*ndof),
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  ZroeShu = new Array3D <double> (PhysicsInfo::getnbDofMax(),
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroeVect->at(start));
-  start = npoin->at(0) * (*ndof) +
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
           PhysicsInfo::getnbShPointsMax() *
           PhysicsInfo::getnbShMax() *
-          (*ndof);
+          PhysicsInfo::getnbDofMax();
   ZroeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(), 
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),

@@ -7,6 +7,7 @@
 #include "StateUpdaterSF/CoShock.hh"
 #include "Framework/ChemicalInfo.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Solg.hh"
 
 //----------------------------------------------------------------------------//
@@ -118,7 +119,8 @@ double CoShock::fShock (unsigned index, vector <double> y)
 void CoShock::setPhysicsData()
 {
   if(ChemicalInfo::getModel() == "PG") {
-   gam = PhysicsData::getInstance().getData <double >("GAM");
+   gam = new double; 
+  *gam = PhysicsInfo::getGam();
   }
   else if (ChemicalInfo::getModel() == "Cneq" ||
            ChemicalInfo::getModel() =="TCneq") {

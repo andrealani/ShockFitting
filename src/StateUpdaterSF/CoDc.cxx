@@ -7,6 +7,7 @@
 #include "StateUpdaterSF/CoDc.hh"
 #include "Framework/ChemicalInfo.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "MathTools/Solg.hh"
 
 //----------------------------------------------------------------------------//
@@ -131,6 +132,7 @@ double CoDc::fDc(unsigned index, vector<double> y)
 void CoDc::setPhysicsData()
 {
   if(ChemicalInfo::getModel()=="PG") {
+   gam = new double;
    *gam = PhysicsInfo::getGam();
   }
   else if (ChemicalInfo::getModel() == "Cneq" ||
