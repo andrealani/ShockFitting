@@ -118,7 +118,7 @@ void Triangle2CFmesh::readTriangleFmt()
   // dummy variables
   unsigned dummy, iattr;
   unsigned ibfac, IFACE, I;
-  int in1, in2, n1, n2, IBC, ielem, ivert;
+  int in1, in2, n1, n2, help, IBC, ielem, ivert;
 
   // number of boundary faces
   unsigned nbBoundaryfaces;
@@ -260,7 +260,8 @@ void Triangle2CFmesh::readTriangleFmt()
   while(IFACE<nedge) {
      file >> dummy >> n1 >> n2 >> IBC;
      // if a boundary faces, look for the parent element in bndfac
-     if(IBC==0) { ICLR->at(IBC) = ICLR->at(IBC)+1; }
+     if(IBC==0) { help = ICLR->at(IBC);
+                  ICLR->at(IBC) = help +1; }
      else {
       ++ibfac;
       I=0;
@@ -277,7 +278,8 @@ void Triangle2CFmesh::readTriangleFmt()
                                  cout << " " << (*bndfac)(2,I) << "\n";    
                                  exit(1);                                  }
         (*bndfac)(2,I) = IBC;
-        ICLR->at(IBC) = ICLR->at(IBC) + 1;
+        help = ICLR->at(IBC);
+        ICLR->at(IBC) = help + 1;
         goto nine;
        } // if (in1==n1 && in2==n2) || (in1==n2 && in2==n1)
       I++;
@@ -347,7 +349,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
                               2 * PhysicsInfo::getnbShMax() *
                               PhysicsInfo::getnbShEdgesMax()),
                               &bndfacVect->at(start));
-   } 
+  } 
 
   // find max value in bndfac(2,*) vector
   int maxNCl = (*bndfac)(2,0);
@@ -379,34 +381,34 @@ void Triangle2CFmesh::writeCFmeshFmt()
 
   file = fopen("cfin.CFmesh", "w");
 
-  fprintf(file,"%s %1u %s","!NB_DIM",PhysicsInfo::getnbDim(),"\n");
-  fprintf(file,"%s %1u %s","!NB_EQ",(*ndof),"\n");
-  fprintf(file,"%s %5u %s","!NB_NODES",npoin->at(1) ,"0\n");
+  fprintf(file,"%s %1u","!NB_DIM",PhysicsInfo::getnbDim());
+  fprintf(file,"%s %1u","\n!NB_EQ",(*ndof));
+  fprintf(file,"%s %5u %s","\n!NB_NODES",npoin->at(1) ,"0\n");
   fprintf(file,"%s %5u %s","!NB_STATES",npoin->at(1),"0\n");
-  fprintf(file,"%s %5u %s","!NB_ELEM",nelem->at(1),"\n");
-  fprintf(file,"%s","!NB_ELEM_TYPES 1\n");
+  fprintf(file,"%s %5u","!NB_ELEM",nelem->at(1));
+  fprintf(file,"%s","\n!NB_ELEM_TYPES 1\n");
   fprintf(file,"%s","!GEOM_POLYORDER 1\n");
   fprintf(file,"%s","!SOL_POLYORDER 1\n");
   fprintf(file,"%s","!ELEM_TYPES Triag\n");
-  fprintf(file,"%s %5u %s","!NB_ELEM_PER_TYPE",nelem->at(1),"\n");
-  fprintf(file,"%s","!NB_NODES_PER_TYPE 3\n");
+  fprintf(file,"%s %5u","!NB_ELEM_PER_TYPE",nelem->at(1));
+  fprintf(file,"%s","\n!NB_NODES_PER_TYPE 3\n");
   fprintf(file,"%s","!NB_STATES_PER_TYPE 3\n");
-  fprintf(file,"%s","!LIST_ELEM\n");
+  fprintf(file,"%s","!LIST_ELEM");
   for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
-   fprintf(file,"%11i",(*celnod)(0,IELEM)-1);
+   fprintf(file,"%s %10i","\n",(*celnod)(0,IELEM)-1);
    fprintf(file,"%11i",(*celnod)(1,IELEM)-1);
    fprintf(file,"%11i",(*celnod)(2,IELEM)-1);
    fprintf(file,"%11i",(*celnod)(0,IELEM)-1);
    fprintf(file,"%11i",(*celnod)(1,IELEM)-1);
-   fprintf(file,"%11i %s",(*celnod)(2,IELEM)-1,"\n");
+   fprintf(file,"%11i",(*celnod)(2,IELEM)-1);
   }
 
   if (m_boundary == "single") {
-   fprintf(file,"%s %3u %s","!NB_TRSs",BNDS,"\n"); 
+   fprintf(file,"%s %3u","\n!NB_TRSs",BNDS); 
   }
 
   else if (m_boundary == "splitted") {
-   fprintf(file,"%s %3u %s","!NB_TRSs",BNDS+1,"\n");
+   fprintf(file,"%s %3u","\n!NB_TRSs",BNDS+1);
   }
 
   else {
@@ -421,11 +423,11 @@ void Triangle2CFmesh::writeCFmeshFmt()
     ++BND; 
     if((IBC+1)==10) {
      if (m_boundary == "single") {
-      fprintf(file,"%s","!TRS_NAME  10\n");
+      fprintf(file,"%s","\n!TRS_NAME  10\n");
       fprintf(file,"%s","!NB_TRs 1\n");
-      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",ICLR->at(IBC+1),"\n");
-      fprintf(file,"%s","!GEOM_TYPE Face\n");
-      fprintf(file,"%s","!LIST_GEOM_ENT\n");
+      fprintf(file,"%s %4u","!NB_GEOM_ENTS",ICLR->at(IBC+1));
+      fprintf(file,"%s","\n!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT");
 
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -435,8 +437,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
          ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
          np.at(k) = ip-1;
         }
+        fprintf(file,"%s","\n");
         fprintf(file,"%1i %1i",IND2,IND2);
-        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+        fprintf(file,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
      } // if m_boundary = single
@@ -444,11 +447,11 @@ void Triangle2CFmesh::writeCFmeshFmt()
      if (m_boundary == "splitted") {
       
       // Supersonic boundary
-      fprintf(file,"%s","!TRS_NAME  InnerSup\n");
+      fprintf(file,"%s","\n!TRS_NAME  InnerSup\n");
       fprintf(file,"%s","!NB_TRs 1\n");
-      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",nbSh/2-1,"\n");
-      fprintf(file,"%s","!GEOM_TYPE Face\n");
-      fprintf(file,"%s","!LIST_GEOM_ENT\n");
+      fprintf(file,"%s %4u","!NB_GEOM_ENTS",nbSh/2-1);
+      fprintf(file,"%s","\n!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT");
 
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -460,18 +463,19 @@ void Triangle2CFmesh::writeCFmeshFmt()
         }
         if ((np.at(0) >= minSh) && (np.at(0) <  (minSh+nbSh/2)) &&
             (np.at(1) >= minSh) && (np.at(1) <  (minSh+nbSh/2))) {
+        fprintf(file,"%s","\n");
         fprintf(file,"%1i %1i",IND2,IND2);
-        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+        fprintf(file,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
       // Subsonic boundary
-      fprintf(file,"%s","!TRS_NAME  InnerSub\n");
+      fprintf(file,"%s","\n!TRS_NAME  InnerSub\n");
       fprintf(file,"%s","!NB_TRs 1\n");
-      fprintf(file,"%s %5u %s","!NB_GEOM_ENTS",nbSh/2-1,"\n");
-      fprintf(file,"%s","!GEOM_TYPE Face\n");
-      fprintf(file,"%s","!LIST_GEOM_ENT\n");
+      fprintf(file,"%s %4u","!NB_GEOM_ENTS",nbSh/2-1);
+      fprintf(file,"%s","\n!GEOM_TYPE Face\n");
+      fprintf(file,"%s","!LIST_GEOM_ENT");
 
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -483,8 +487,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
         }
         if ((np.at(0) > (maxSh-nbSh/2)) && (np.at(0) <= maxSh) &&
             (np.at(1) > (maxSh-nbSh/2)) && (np.at(1) <= maxSh)) {
+        fprintf(file,"%s","\n");
         fprintf(file,"%1i %1i",IND2,IND2);
-        fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+        fprintf(file,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
@@ -493,11 +498,11 @@ void Triangle2CFmesh::writeCFmeshFmt()
     } // if IBC==10
 
     else            { 
-     fprintf(file,"%s %3u %s","!TRS_NAME",BND,"\n");
-     fprintf(file,"%s","!NB_TRs 1\n");
-     fprintf(file,"%s %5i %s","!NB_GEOM_ENTS",ICLR->at(IBC+1),"\n");
-     fprintf(file,"%s","!GEOM_TYPE Face\n");
-     fprintf(file,"%s","!LIST_GEOM_ENT\n");
+     fprintf(file,"%s %3u","\n!TRS_NAME",BND);
+     fprintf(file,"%s","\n!NB_TRs 1\n");
+     fprintf(file,"%s %4i","!NB_GEOM_ENTS",ICLR->at(IBC+1));
+     fprintf(file,"%s","\n!GEOM_TYPE Face\n");
+     fprintf(file,"%s","!LIST_GEOM_ENT");
 
      for(unsigned j=0; j<nbfac->at(1); j++) {
       if((*bndfac)(2,j)==(IBC+1)) {
@@ -507,8 +512,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
         ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
         np.at(k) = ip-1;
        }
+       fprintf(file,"%s","\n");
        fprintf(file,"%1i %1i",IND2,IND2);
-       fprintf(file,"%11i %10i %10i %10i %s",np.at(0),np.at(1),np.at(0),np.at(1),"\n");
+       fprintf(file,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
       } // if (*bndfac)(2,j)==(IBC+1)
      } // for j<nbfac->at(1)
     } // else (ICLR(IBC+1)!=10)
@@ -517,13 +523,16 @@ void Triangle2CFmesh::writeCFmeshFmt()
   } // for IBC<maxNCl
 
 
-  fprintf(file,"%s","!LIST_NODE\n");
+  fprintf(file,"%s","\n!LIST_NODE\n");
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-   fprintf(file,"%33.16E %33.16E %s",(*XY)(0,IPOIN),(*XY)(1,IPOIN),"\n");
+   for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) {
+    fprintf(file,"%33.16E",(*XY)(IA,IPOIN)); }
+   fprintf(file,"%s","\n");
   }
 
 
-  fprintf(file,"%s %1u %s","!LIST_STATE",LIST_STATE,"\n");
+  fprintf(file,"%s %1u","!LIST_STATE",LIST_STATE);
+  fprintf(file,"%s","\n");
   if(LIST_STATE==1) {
    for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     for(unsigned K=0; K<(*ndof); K++) {

@@ -60,9 +60,9 @@ void TriangleExe::generate()
   LogToScreen(INFO,"TriangleExe::generate()\n");
 
   fname = MeshData::getInstance().getData <stringstream>("FNAME");
-
   command = "/data/deamicis/ShockFitting.git/trunk/src/MeshGeneratorSF/TriLibrary/triangle -nep "
             + fname->str() + " > log/TriangleExe.log";
+
   system(command.c_str());
 
   if(system(command.c_str())!=0) {

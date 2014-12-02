@@ -156,14 +156,14 @@ void StandardShockFitting::process()
   // set the Shock Fitting version
   MeshData::getInstance().setVersion(m_version);
 
-  cout << "\n---------------- Shock Fitting Solver ----------------\n\n";
-  cout << "________________ StandardShockFitting ________________\n\n";
+  cout << "\n---------------- Shock Fitting Solver ------------------\n\n";
+  cout << "________________ StandardShockFitting __________________\n\n";
 
   cout << "StandardShockFitting.Version = " << m_version << "\n";
-  cout << "______________________________________________________\n\n";
+  cout << "________________________________________________________\n\n";
 
   cout << "          StandardShockFitting::pre-processing  \n";
-  cout << "-----------------------------------------------------------\n\n";
+  cout << "--------------------------------------------------------\n\n";
 
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
@@ -178,9 +178,9 @@ void StandardShockFitting::process()
 
   m_redistrEqShockPoints->remesh();
 
-  cout << "\n-----------------------------------------------------------\n\n";
+  cout << "\n-------------------------------------------------------\n\n";
   cout << "          StandardShockFitting::starting the time loop   \n";
-  cout << "-----------------------------------------------------------\n\n";
+  cout << "-------------------------------------------------------\n\n";
 
   for(unsigned I=MeshData::getInstance().getnbBegin();
     I<MeshData::getInstance().getnbSteps(); I++) {
@@ -189,7 +189,7 @@ void StandardShockFitting::process()
 
    cout << "          StandardShockFitting::step number => ";
    cout << MeshData::getInstance().getIstep() << "   \n";
-   cout << "-----------------------------------------------------------\n \n";
+   cout << "-------------------------------------------------------\n \n";
 
    m_findPhantPoints->remesh();
    m_changeBndryPoints->remesh();
@@ -209,7 +209,7 @@ void StandardShockFitting::process()
 
    m_triangleToCFmesh->convert();
 
-   cout << "______________________________________________________\n\n";
+   cout << "________________________________________________________\n\n";
 
    m_COOLFluiD->call();
 
@@ -229,7 +229,7 @@ void StandardShockFitting::process()
     execmd = "rm -f cfout-P?.CFmesh"; system(execmd.c_str());
    }
 
-   cout << "______________________________________________________\n\n";
+   cout << "________________________________________________________\n\n";
 
    m_CFmeshToTriangle->convert();
 
@@ -254,7 +254,7 @@ void StandardShockFitting::process()
 
    m_meshRestore->copy();
 
-   cout << "______________________________________________________\n\n";
+   cout << "________________________________________________________\n\n";
 
    // create the directory to backup files
    backdir.str(string());
@@ -293,8 +293,8 @@ void StandardShockFitting::process()
 
   }
 
-  cout << "______________________________________________________\n";
-  cout << "______________________________________________________\n";
+  cout << "________________________________________________________\n";
+  cout << "________________________________________________________\n";
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

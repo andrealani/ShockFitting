@@ -1,7 +1,8 @@
 .ShockFittingObj = StandardShockFitting
 
 # version 'original'
-# version 'optimized' (calling triangle mesh generator library without in/out files)
+# version 'optimized' calling triangle mesh generator 
+#                     library without in/out files
 .StandardShockFitting.Version = original
 
 ###----------------------- MeshData ------------------------

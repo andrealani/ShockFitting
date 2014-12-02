@@ -324,6 +324,12 @@ void CFmesh2Triangle::resizeVectors()
             4 * PhysicsInfo::getnbShMax() *
                 PhysicsInfo::getnbShPointsMax();
   nodcod->resize(totsize);
+  unsigned startNodcod = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                            PhysicsInfo::getnbShPointsMax();
+  // initialize nodcod of the shocked mesh
+  for(unsigned I=startNodcod; I<totsize; I++) {
+   nodcod->at(I) = 0; }
+
   zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
   coorVect->resize(PhysicsInfo::getnbDim() * totsize);
 
@@ -372,8 +378,8 @@ void CFmesh2Triangle::setNodcod()
   // write new nodcode values on the vector of the shocked mesh
   // in the fortran version this new vector is referred to index 1 (NODCOD(1))
   // here it is pushed back to the nodcod of the background mesh
-  unsigned startNodcod = 
-    npoin->at(0) + 2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
+  unsigned startNodcod = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                            PhysicsInfo::getnbShPointsMax();
 
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    for(unsigned I=0; I<(*nvt)-1; I++) {
