@@ -2,20 +2,20 @@
 
 # version 'original'
 # version 'optimized' (calling triangle mesh generator library without in/out files)
-.StandardShockFitting.Version = original
+.StandardShockFitting.Version = optimized
 
 ###----------------------- MeshData ------------------------
  # distance between two shock faces
-  .StandardShockFitting.MeshData.EPS = 0.20e-12                      
+  .StandardShockFitting.MeshData.EPS = 0.20e-10                      
 
  # max non dimensional distance of phantom nodes
-  .StandardShockFitting.MeshData.SNDMIN = 0.05                        
+  .StandardShockFitting.MeshData.SNDMIN = 0.1                        
 
  # length of the shock edges
-  .StandardShockFitting.MeshData.DXCELL = 0.0006                    
+  .StandardShockFitting.MeshData.DXCELL = 0.15                    
 
  # relax coefficient of shock points integration
-  .StandardShockFitting.MeshData.SHRELAX = 0.9
+  .StandardShockFitting.MeshData.SHRELAX = 0.4
 
  # number of hole points
   .StandardShockFitting.MeshData.Naddholes = 0            
@@ -24,7 +24,7 @@
   .StandardShockFitting.MeshData.CADDholes = 0 
 
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 1          
+  .StandardShockFitting.MeshData.NPROC = 1           
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
@@ -68,13 +68,14 @@
 
  ##--- ChemicalInfo
   # gas model (PG, Cneq, TCneq)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = TCneq                 
+    .StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = PG                 
 
-  # mixture name (only if model=Cneq or model=TCneq
-    .StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = nitrogen2                
+  # mixture name (only if model=Cneq or model=TCneq)
+    .StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = /                
                                          
-  # mixture file (look at data_template.dat)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = nitrogen2.dat                
+  # mixture file (only if model=Cneq or model=TCneq, look at data_template.dat)
+    .StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = /
+                
   # reference speed (only if model=Cneq and mixture=Ar4)
     .StandardShockFitting.PhysicsData.ChemicalInfo.Qref = /                            
 
@@ -91,22 +92,22 @@
     .StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4            
 
   # gas constant (J/kg/K)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287               
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287.0e0               
 
   # reference temperature (K)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833                    
+    .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 273.14e0                    
 
   # freestream pressure (p)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65              
+    .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 100000e0              
 
   # reference speed (m/s)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594                 
+    .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 6623.94e0                
 
-  # species densities
-    .StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = 0.00036354 0.00461646
+  # species densities (only if model=TCneq or model=Cneq)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = /
 
-  # reference length
-    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1  
+  # reference length (only if model=TCneq)
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = /  
  ##------
 
 ###----------------------------------------------------------
@@ -114,7 +115,8 @@
 
 ##--- List of mesh generator objects
  .StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo \
-                                           TriangleExe ReadTriangle Tricall
+                                           TriangleExe ReadTriangle \
+                                           Tricall
 
 # processing file
    .StandardShockFitting.ReadTriangle.InputFiles = na00.1 
@@ -131,7 +133,7 @@
 .StandardShockFitting.RemeshingList = BndryNodePtr RdDpsEq FndPhPs ChangeBndryPtr \
                                        CoPntDispl FixMshSps RdDps
 # object computing normal vector
- .StandardShockFitting.CoNorm = CoNorm4TCneq
+ .StandardShockFitting.CoNorm = CoNorm4Pg
 ##------
 
 
@@ -146,15 +148,16 @@
  # Converter features
   .StandardShockFitting.Triangle2CFmesh.From = Param
   .StandardShockFitting.Triangle2CFmesh.To = Prim
-  .StandardShockFitting.Triangle2CFmesh.Model = TCneq
+  .StandardShockFitting.Triangle2CFmesh.Model = Pg
   .StandardShockFitting.Triangle2CFmesh.AdditionalInfo = Dimensional
-   # 'single' or 'splitted'
-  .StandardShockFitting.Triangle2CFmesh.ShockBoundary = single
+   # 'single' for a single shock boundary 
+   # 'splitted' for a shock boundary splitted in InnerSub and InnerSup
+  .StandardShockFitting.Triangle2CFmesh.ShockBoundary = splitted
 
  # Converter features
   .StandardShockFitting.CFmesh2Triangle.From = Prim
   .StandardShockFitting.CFmesh2Triangle.To = Param
-  .StandardShockFitting.CFmesh2Triangle.Model = TCneq
+  .StandardShockFitting.CFmesh2Triangle.Model = Pg
   .StandardShockFitting.CFmesh2Triangle.AdditionalInfo = Dimensional
 ##------
 
@@ -169,8 +172,8 @@
 .StandardShockFitting.StateUpdaterList = FixStateSps Interp
 
 # object compute mesh points states
- .StandardShockFitting.ComputeStateDps = ComputeStateDps4TCneq
+ .StandardShockFitting.ComputeStateDps = ComputeStateDps4Pg
 
 # object moving discontinuities
- .StandardShockFitting.MoveDps = MoveDps4TCneq
+ .StandardShockFitting.MoveDps = MoveDps4Pg
 ##

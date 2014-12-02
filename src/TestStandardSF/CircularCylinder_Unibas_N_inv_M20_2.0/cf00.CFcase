@@ -1,0 +1,114 @@
+# COOLFluiD CFcase file
+#
+# Comments begin with "#"
+# Meta Comments begin with triple "#"
+#
+### Residual = -8.58798
+
+#
+
+# Simulation Modules
+Simulator.Modules.Libs = libPetscI libCFmeshFileWriter libCFmeshFileReader libTecplotWriter  libNavierStokes libFluctSplit libFluctSplitSystem libNewtonMethod libFluctSplitNavierStokes libForwardEuler libTHOR2CFmesh libGambit2CFmesh
+
+# Simulation Parameters
+Simulator.Paths.WorkingDir = ./
+Simulator.Paths.ResultsDir = ./
+#Simulator.Paths.ResultsDir = ./cfdir
+
+Simulator.SubSystem.Default.PhysicalModelType = Euler2D
+Simulator.SubSystem.Euler2D.refValues = 100000. 6623.94 6623.94. 273.14
+Simulator.SubSystem.Euler2D.refLength = 1.0
+
+# you can choose to solve adimensional
+#Simulator.SubSystem.Euler2D.DiffTerm.Reynolds = 76000.
+#Simulator.SubSystem.Euler2D.ConvTerm.tempRef = 298.15
+#Simulator.SubSystem.Euler2D.ConvTerm.machInf = 0.35
+
+Simulator.SubSystem.OutputFormat        = Tecplot CFmesh
+
+Simulator.SubSystem.CFmesh.FileName     = cfout.CFmesh
+Simulator.SubSystem.CFmesh.SaveRate = 1
+Simulator.SubSystem.CFmesh.AppendTime = false 
+Simulator.SubSystem.CFmesh.AppendIter = false
+
+Simulator.SubSystem.Tecplot.FileName    = cfout.plt
+Simulator.SubSystem.Tecplot.Data.outputVar = Puvt
+Simulator.SubSystem.Tecplot.Data.SurfaceTRS = 1 2 3 4 InnerSup InnerSub 
+Simulator.SubSystem.Tecplot.SaveRate = 1
+Simulator.SubSystem.Tecplot.AppendTime = false
+Simulator.SubSystem.Tecplot.AppendIter = false
+
+Simulator.SubSystem.StopCondition          = MaxNumberSteps
+Simulator.SubSystem.MaxNumberSteps.nbSteps = 1
+
+#Simulator.SubSystem.StopCondition       = Norm
+#Simulator.SubSystem.Norm.valueNorm      = -6.0
+
+Simulator.SubSystem.Default.listTRS = InnerCells 1 2 3 4 InnerSup InnerSub
+#InnerSup InnerSub
+
+Simulator.SubSystem.MeshCreator = CFmeshFileReader
+Simulator.SubSystem.CFmeshFileReader.Data.FileName = cfin.CFmesh
+# cyl.CFmesh
+
+Simulator.SubSystem.ConvergenceMethod = FwdEuler
+Simulator.SubSystem.FwdEuler.Data.CFL.Value = 0.5
+# Simulator.SubSystem.NewtonIterator.Data.CFL.ComputeCFL = Function
+# Simulator.SubSystem.NewtonIterator.Data.CFL.Function.Def = if(i<700,0.5,min(1e3,cfl*1.01))
+# the following can be used with SysN
+#Simulator.SubSystem.NewtonIterator.Data.CFL.Function.Def = if(i<10,0.3,min(1e4,cfl*1.02))
+# Simulator.SubSystem.NewtonIterator.AbsoluteNormAndMaxIter.MaxIter = 1
+
+#Simulator.SubSystem.FwdEuler.UpdateSol = StdUpdateSol
+# this imposes RHS=0 for states on the inner TRS
+#Simulator.SubSystem.FwdEuler.StdUpdateSol.TrsWithNullRHS = InnerSub
+
+Simulator.SubSystem.SpaceMethod = FluctuationSplit
+# Simulator.SubSystem.FluctuationSplit.ComputeRHS = RhsJacob
+# Simulator.SubSystem.FluctuationSplit.ComputeTimeRHS = PseudoSteadyTimeRhs
+# Simulator.SubSystem.FluctuationSplit.Data.JacobianStrategy = Numerical
+
+Simulator.SubSystem.FluctuationSplit.Data.FluctSplitStrategy = RD
+Simulator.SubSystem.FluctuationSplit.Data.SysSplitter = SysN
+#Simulator.SubSystem.FluctuationSplit.Data.SysSplitter = SysLDA
+
+#! Set the following to true when restarting a simulation:                                                       
+
+#Simulator.SubSystem.FluctuationSplit.Data.SysSplitter = SysBx
+#Simulator.SubSystem.FluctuationSplit.Data.SysBx.Shockdetector = Gnoffo
+#Simulator.SubSystem.FluctuationSplit.Data.IntegratorQuadrature = GaussLegendre
+#Simulator.SubSystem.FluctuationSplit.Data.IntegratorOrder = P3
+
+Simulator.SubSystem.FluctuationSplit.Restart    = true     
+Simulator.SubSystem.FluctuationSplit.Data.SolutionVar  = Cons
+Simulator.SubSystem.FluctuationSplit.Data.UpdateVar  = Puvt
+Simulator.SubSystem.FluctuationSplit.Data.DistribVar = Cons
+Simulator.SubSystem.FluctuationSplit.Data.LinearVar  = Roe
+
+# -------------------------------------------------------------------#
+#                                                                    #
+#              Initial states &  Boundary Conditions                 #
+#                                                                    #
+#--------------------------------------------------------------------#
+
+Simulator.SubSystem.FluctuationSplit.InitComds = InitState InitState
+Simulator.SubSystem.FluctuationSplit.InitNames = InField SinField
+
+Simulator.SubSystem.FluctuationSplit.InField.applyTRS = InnerCells
+Simulator.SubSystem.FluctuationSplit.InField.Vars = x y
+Simulator.SubSystem.FluctuationSplit.InField.Def = 100000. -6623.94 0. 273.14
+
+
+Simulator.SubSystem.FluctuationSplit.SinField.applyTRS = 1
+Simulator.SubSystem.FluctuationSplit.SinField.Vars = x y 
+Simulator.SubSystem.FluctuationSplit.SinField.Def = 100000. -6623.94 0. 273.14
+ 
+Simulator.SubSystem.FluctuationSplit.BcComds =  WeakSlipWallEuler2D SuperInlet
+Simulator.SubSystem.FluctuationSplit.BcNames = 	Wall SInlet
+
+Simulator.SubSystem.FluctuationSplit.Wall.applyTRS = 3
+
+Simulator.SubSystem.FluctuationSplit.SInlet.applyTRS = 1
+Simulator.SubSystem.FluctuationSplit.SInlet.Vars = x y
+Simulator.SubSystem.FluctuationSplit.SInlet.Def = 100000. -6623.94 0. 273.14
+
