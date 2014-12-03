@@ -22,13 +22,7 @@
 #include "Framework/MeshGenerator.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
-
-extern "C"
-{
-  #include "TriLibrary/triangle.h"
-  void triangulate(char *triswitches, struct triangulateio *in,
-                   struct triangulateio *out, struct triangulateio *voronoi);
-}
+#include "TriLibrary/triangle.h"
 
 //--------------------------------------------------------------------------//
 

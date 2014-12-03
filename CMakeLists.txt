@@ -131,6 +131,11 @@ FIND_PACKAGE(MPI)
 ADD_DEFINITIONS  ( -DSF_HAVE_CONFIG_H )
 INCLUDE_DIRECTORIES ( ${ShockFitting_BINARY_DIR} )
 
+SET(SF_HAVE_TRILIBRARY 1 CACHE BOOL "Definition of symbol for compiling Triangle as a library")
+ADD_DEFINITIONS  ( -DNO_TIMER )
+ADD_DEFINITIONS  ( -DANSI_DECLARATORS )
+ADD_DEFINITIONS  ( -DTRILIBRARY )
+
 # check for subversion support
 #INCLUDE(CheckSvnVersion)
 

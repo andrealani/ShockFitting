@@ -12,6 +12,10 @@ StateUpdaterSF
 VariableTransformerSF
 )
 
+IF (SF_HAVE_TRILIBRARY) 
+LIST ( APPEND TestStandardSF_libs triangleLib TriangleSF )
+ENDIF()
+
 SF_ADD_PLUGIN_APP ( TestStandardSF )
 
 ###############################################################################

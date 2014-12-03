@@ -18,10 +18,13 @@ IF(UNIX)
     SF_ADD_C_FLAGS  ("-pipe")
     SF_ADD_CXX_FLAGS("-pipe")
     # respect c 89 standard (same as -std=c89)
+
+#   IF ( NOT TRILIBRARY )
     SF_ADD_C_FLAGS("-ansi")
+#   ENDIF()
 
     # enable dynamic loading
-    SF_ADD_CXX_FLAGS("-ldl")
+    # SF_ADD_CXX_FLAGS("-ldl")
 
 #IF(SF_ENABLE_MUTATIONPP)
     # use new features from c++0x

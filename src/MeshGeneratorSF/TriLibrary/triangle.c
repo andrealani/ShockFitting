@@ -11244,7 +11244,7 @@ FILE *polyfile;
 #ifdef TRILIBRARY
   vertexindex = 0;
   attribindex = 0;
-//#else /* not TRILIBRARY */
+#else /* not TRILIBRARY */
   if (b->vararea) {
     /* Open an .area file, check for consistency with the .ele file. */
     if (!b->quiet) {

@@ -93,5 +93,8 @@
   #endif
 #endif
 
+#cmakedefine SF_HAVE_TRILIBRARY      
+#cmakedefine ANSI_DECLARATORS
+#cmakedefine NO_TIMER
 
 #endif // !ShockFitting_SFconfig_hh

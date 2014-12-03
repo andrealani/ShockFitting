@@ -279,11 +279,21 @@ struct triangulateio {
   int numberofedges;                                             /* Out only */
 };
 
-//#ifdef ANSI_DECLARATORS
+#ifdef ANSI_DECLARATORS
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 void triangulate(char *, struct triangulateio *, struct triangulateio *,
                  struct triangulateio *);
+
+
 void trifree(int *memptr);
-//#else /* not ANSI_DECLARATORS */
-//void triangulate();
-//void trifree();
-//#endif /* not ANSI_DECLARATORS */
+#ifdef __cplusplus
+}
+#endif
+#else /* not ANSI_DECLARATORS */
+void triangulate();
+void trifree();
+#endif /* not ANSI_DECLARATORS */
+
