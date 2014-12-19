@@ -64,6 +64,40 @@ void MoveDps4TCneq::update()
 
   setAddress();
 
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/mvdps.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/mvdps.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/mvdps.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening mvdps.var" << endl;
+}
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeSh)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*WSh)(k,I,ISH);}
+}}
+var.close();
+
+
+*/
+
   double ZRHO;
   double RHOHF;
 
@@ -116,6 +150,16 @@ void MoveDps4TCneq::update()
   }
 
   logfile.Close();
+
+FILE* output;
+output =fopen("CheckC/mvdps.check","w");
+
+  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
+    for(unsigned I=0; I<2; I++) {
+     fprintf(output,"%32.16F %s",(*XYSh)(I,IV,ISH), " ");}
+     fprintf(output,"%s","\n");}}
+fclose(output);
 }
 
 //----------------------------------------------------------------------------//

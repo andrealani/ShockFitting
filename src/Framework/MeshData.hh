@@ -112,6 +112,9 @@ public:
 
   /// set the Shock Fitting Version
   void setVersion(std::string i_version) { m_version = i_version; }
+ 
+  /// get the COOLFluiD output file
+  bool withP0() { return m_coolfluidCFmesh; }
 
 private:
 
@@ -138,6 +141,9 @@ private:
     m_caddholes = std::vector <double>();
     addOption("CADDholes",&m_caddholes,
              "Holes points coordinates");
+    m_coolfluidCFmesh = true;
+    addOption("WithP0",&m_coolfluidCFmesh,
+             "Coolfluid output file");
     m_nproc = 1;
     addOption("NPROC",&m_nproc,
              "Number of processor");
@@ -203,6 +209,9 @@ private: // data (read from input file)
 
   /// number of hole points
   unsigned m_naddholes;
+
+  /// coolfluid output file
+  bool m_coolfluidCFmesh;
 
   /// hole points coordinates
   std::vector <double> m_caddholes; 

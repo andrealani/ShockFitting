@@ -8,6 +8,7 @@
 #include "RemeshingSF/CoNorm4Pg.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
+#include "Framework/MeshData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -69,15 +70,39 @@ void CoNorm4Pg::remesh()
 
   setSize();
 
+/*ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step0000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
+}
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening conorm.var" << endl;
+}
+
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZRoeShd)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+}}
+var.close();
+*/
   // write status on log file
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-
-    logfile("I: ",(*ZRoeShd)(0,I,ISH), " " ,(*ZRoeShd)(1,I,ISH));
-    logfile("I: ",(*ZRoeShd)(2,I,ISH), " " ,(*ZRoeShd)(3,I,ISH));
+    unsigned m_I = I+1;
+    logfile(m_I," ",(*ZRoeShd)(0,I,ISH), " " ,(*ZRoeShd)(1,I,ISH),"\n");
+    logfile(m_I," ",(*ZRoeShd)(2,I,ISH), " " ,(*ZRoeShd)(3,I,ISH),"\n");
    }
   }
-
 
   // compute normal vector for each shock
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
@@ -114,6 +139,20 @@ void CoNorm4Pg::remesh()
   }
 
   logfile.Close();
+
+FILE* output;
+output = fopen("CheckC/conorm.check","w");
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned K=0;K<(*ndof);K++) {
+    fprintf(output,"%32.16F %s",(*ZRoeShd)(K,I,ISH)," ");}
+     for(unsigned K=0;K<2;K++) {
+    fprintf(output,"%32.16F %s",(*XYSh)(K,I,ISH)," ");}
+     for(unsigned K=0;K<2;K++) {
+    fprintf(output,"%32.16F %s",(*vShNor)(K,I,ISH)," ");}}}
+fclose(output);
+
 }
 
 //----------------------------------------------------------------------------//
@@ -291,28 +330,30 @@ void CoNorm4Pg::setVShNorForTP(unsigned ISPPNTS)
 
 void CoNorm4Pg::writeTecPlotFile()
 {
-  ofstream tecfile;
-  tecfile.open("shocknor.dat");
+  FILE* tecfile;
+  tecfile = fopen("shocknor.dat","w");
 
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   tecfile << "TITLE = Shock normals\n";
-   tecfile << "VARIABLES = X Y Z(1) Z(2) NX NY\n";
-   tecfile << "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ";
-   tecfile << "N = " << nShockPoints->at(ISH);
-   tecfile << ", E = " << nShockPoints->at(ISH)-1 << "\n";
+   fprintf(tecfile,"%s","TITLE = Shock normals\n");
+   fprintf(tecfile,"%s","VARIABLES = X Y Z(1) Z(2) NX NY\n");
+   fprintf(tecfile,"%s","ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ");
+   fprintf(tecfile,"%s %5u","N = ",nShockPoints->at(ISH));
+   fprintf(tecfile,"%s %5u %s",", E = ",nShockPoints->at(ISH)-1,"\n");
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
-     {tecfile << (*XYSh)(K,I,ISH) << " ";}
-    tecfile << "\n";
-    tecfile << 1 << " " << 1 << " ";
+     {fprintf(tecfile,"%32.16E %s",(*XYSh)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
+    fprintf(tecfile,"%s","1  1 ");
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) 
-     {tecfile << (*vShNor)(K,I,ISH) << " ";}
-    tecfile << "\n";
+     {fprintf(tecfile,"%32.16E %s",(*vShNor)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
-    tecfile << I << " " << I+1 << " " << I << "\n";
+    fprintf(tecfile,"%u %s %u %s %u %s",I+1," ",I+2," ",I+1,"\n");
    }
   }
+
+  fclose(tecfile);
 }
 
 //----------------------------------------------------------------------------//

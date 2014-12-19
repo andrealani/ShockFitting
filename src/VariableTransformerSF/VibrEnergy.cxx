@@ -35,24 +35,25 @@ void VibrEnergy::callVibrEnergy(double Tv, vector<double> alpha)
   setPhysicsData();
 
   vector<double> evs(*nsp);
+  vector<double> Rs(*nsp);
+
+  ev = 0.0;
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
+ 
    if      (typemol->at(ISP)=="A") {
-    evs.at(ISP) = 0;
+    evs.at(ISP) = 0.0;
    }
    else if (typemol->at(ISP)=="B") {
-    evs.at(ISP) = ChemicalConsts::Rgp() / mm->at(ISP) * thev->at(ISP) /
-                  (exp(thev->at(ISP)/Tv)-1);
+    evs.at(ISP) = ChemicalConsts::Rgp() / mm->at(ISP) *
+                  thev->at(ISP)/(exp(thev->at(ISP)/Tv)-1.0);
    }
    else                            {
-    cout << "VibrEnergy::error => not implemented for ";
+    cout << "VibrEnergy::error => algorithm not implemented for ";
     cout << typemol->at(ISP) << " typemol \n";
    }
-  }
-
-  ev = 0;
-  for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-   ev = ev + alpha.at(ISP) * evs.at(ISP);
+   double evshelp  = alpha.at(ISP) * evs.at(ISP);
+   ev = ev + evshelp;
   }
 }
 

@@ -68,6 +68,49 @@ void FixStateSps::update()
   setPhysicsData();
 
   setAddress();
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+
+if(MeshData::getInstance().getIstep()<10){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step0000"<<MeshData::getInstance().getIstep()<<"/Var/fxstatesps.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000" << MeshData::getInstance().getIstep()<<"/Var/fxstatesps.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step000"<<MeshData::getInstance().getIstep()<<"/Var/fxstatesps.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000" << MeshData::getInstance().getIstep()<<"/Var/fxstatesps.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00" << MeshData::getInstance().getIstep()<<"/Var/fxstatesps.var";
+}
+
+
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening fxstatesps.var" << endl;
+}
+
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShu)(k,I,ISH);}
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShd)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYShu)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYShd)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*vShNor)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*WSh)(k,I,ISH);}
+}}
+var.close();
+
+
+*/
+
 
   vector<double> varZ((*ndof));
   vector<double> avarZ((*ndof));

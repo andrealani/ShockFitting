@@ -156,14 +156,14 @@ void StandardShockFitting::process()
   // set the Shock Fitting version
   MeshData::getInstance().setVersion(m_version);
 
-  cout << "\n---------------- Shock Fitting Solver ------------------\n\n";
-  cout << "________________ StandardShockFitting __________________\n\n";
+  cout << "\n----------------- Shock Fitting Solver ------------------\n\n";
+  cout << "_________________ StandardShockFitting __________________\n\n";
 
   cout << "StandardShockFitting.Version = " << m_version << "\n";
-  cout << "________________________________________________________\n\n";
+  cout << "_________________________________________________________\n\n";
 
   cout << "          StandardShockFitting::pre-processing  \n";
-  cout << "--------------------------------------------------------\n\n";
+  cout << "---------------------------------------------------------\n\n";
 
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
@@ -178,9 +178,10 @@ void StandardShockFitting::process()
 
   m_redistrEqShockPoints->remesh();
 
-  cout << "\n-------------------------------------------------------\n\n";
+  cout << "\n---------------------------------------------------------\n\n";
   cout << "          StandardShockFitting::starting the time loop   \n";
-  cout << "-------------------------------------------------------\n\n";
+  cout << "---------------------------------------------------------\n";
+  cout << "---------------------------------------------------------\n\n";
 
   for(unsigned I=MeshData::getInstance().getnbBegin();
     I<MeshData::getInstance().getnbSteps(); I++) {
@@ -189,7 +190,11 @@ void StandardShockFitting::process()
 
    cout << "          StandardShockFitting::step number => ";
    cout << MeshData::getInstance().getIstep() << "   \n";
-   cout << "-------------------------------------------------------\n \n";
+   cout << "---------------------------------------------------------\n \n";
+
+
+   execmd = "mkdir CheckC";
+   system(execmd.c_str());
 
    m_findPhantPoints->remesh();
    m_changeBndryPoints->remesh();
@@ -209,27 +214,35 @@ void StandardShockFitting::process()
 
    m_triangleToCFmesh->convert();
 
-   cout << "________________________________________________________\n\n";
+   cout << "_________________________________________________________\n\n";
 
    m_COOLFluiD->call();
 
    // change COOLFluiD output file name
    if(MeshData::getInstance().getnbProcessors()==1) {
-    execmd = "cp -f cfout-P0.CFmesh cfout.CFmesh"; system(execmd.c_str());
-    if(system(execmd.c_str())!=0) {
-    cout << "StandardShockFitting::error => CFmesh file doesn't exist\n";
-    exit(1); }
-    execmd = "rm -f cfout-P0.CFmesh"; system(execmd.c_str());
-   }
-   else if (MeshData::getInstance().getnbProcessors()>1) {
-    execmd = "cp -f cfout-P?.CFmesh cfout.CFmesh"; system(execmd.c_str());
-    if(system(execmd.c_str())!=0) {
+    if(MeshData::getInstance().withP0()) { 
+     execmd = "cp -f cfout-P0.CFmesh cfout.CFmesh"; 
+     system(execmd.c_str());
+     if(system(execmd.c_str())!=0) {
      cout << "StandardShockFitting::error => CFmesh file doesn't exist\n";
      exit(1); }
-    execmd = "rm -f cfout-P?.CFmesh"; system(execmd.c_str());
+    }
+    if(MeshData::getInstance().withP0()) { execmd = "rm -f cfout-P0.CFmesh"; 
+                                           system(execmd.c_str()); }
+   }
+   else if (MeshData::getInstance().getnbProcessors()>1) {
+    if(MeshData::getInstance().withP0()) { 
+     execmd = "cp -f cfout-P?.CFmesh cfout.CFmesh";
+     system(execmd.c_str());
+     if(system(execmd.c_str())!=0) {
+      cout << "StandardShockFitting::error => CFmesh file doesn't exist\n";
+      exit(1); }
+    }
+    if(MeshData::getInstance().withP0()) { execmd = "rm -f cfout-P?.CFmesh";
+                                           system(execmd.c_str()); }
    }
 
-   cout << "________________________________________________________\n\n";
+   cout << "_________________________________________________________\n\n";
 
    m_CFmeshToTriangle->convert();
 
@@ -246,7 +259,7 @@ void StandardShockFitting::process()
 
    m_updatePhantPoints->update();
 
-   m_redistrShockPoints->remesh();
+   if(I<1000) { m_redistrShockPoints->remesh(); }
 
    m_writeBackTriangleFile->write();
 
@@ -254,7 +267,9 @@ void StandardShockFitting::process()
 
    m_meshRestore->copy();
 
-   cout << "________________________________________________________\n\n";
+   cout << "_________________________________________________________\n";
+
+   cout << "_________________________________________________________\n\n";
 
    // create the directory to backup files
    backdir.str(string());
@@ -267,8 +282,11 @@ void StandardShockFitting::process()
     execmd = "mkdir " + backdir.str();
     system(execmd.c_str());
 
-    execmd = "mv -f shocknor.dat sh99.dat cfout.CFmesh " + fname->str() + ".* "
-             + *fnameback + ".node " + backdir.str();
+    execmd = "mv -f shocknor.dat sh99.dat cfout.CFmesh cfin.CFmesh CheckC "
+             + *fnameback + ".node "; 
+    if (MeshData::getInstance().getVersion()=="original")
+     { execmd = execmd + fname->str() + ".* ";}
+    execmd = execmd + backdir.str();
     system(execmd.c_str());
 
     if (MeshData::getInstance().getnbProcessors()==1) {
@@ -283,18 +301,19 @@ void StandardShockFitting::process()
    }
 
    else {
-    execmd = "rm -f shocknor.dat "+ fname->str() +".* ";
+    execmd = "rm -f shocknor.dat ";
+    if(MeshData::getInstance().getVersion()=="original") 
+      { execmd = execmd + fname->str() +".* "; }
     execmd = execmd + *fnameback+".node sh99.dat ";
     system(execmd.c_str());
    }
 
    execmd = "cut -c1- residual.dat >> convergenza.dat";
    system(execmd.c_str());
-
   }
 
-  cout << "________________________________________________________\n";
-  cout << "________________________________________________________\n";
+  cout << "_________________________________________________________\n";
+  cout << "_________________________________________________________\n";
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

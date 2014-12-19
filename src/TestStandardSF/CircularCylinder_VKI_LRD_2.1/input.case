@@ -23,17 +23,22 @@
  # hole points coordinates
   .StandardShockFitting.MeshData.CADDholes = 0 
 
+ # set the output of coolfluid according to the coolfluid version
+ # coolfluid version 2013.9 returns cfout-P0.CFmesh (WithP0 = true)
+ # coolfluid version 2014.11  returns cfout.CFmesh (WithP0 = false)
+  .StandardShockFitting.MeshData.WithP0 = true 
+     
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 1          
+  .StandardShockFitting.MeshData.NPROC = 12         
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
 
  # number of step
-  .StandardShockFitting.MeshData.NSteps = 1
+  .StandardShockFitting.MeshData.NSteps = 10000 
 
  # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 1
+  .StandardShockFitting.MeshData.IBAK = 1 
 ###----------------------------------------------------------
 
 
@@ -62,7 +67,7 @@
     .StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12                        
 
   # specific heat ratio
-    .StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.4 
+    .StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.40e0 
  ##------
 
 
@@ -88,25 +93,25 @@
 
  ##--- ReferenceInfo
   # isoentropic coefficient of the gas
-    .StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4            
+    .StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4e0            
 
   # gas constant (J/kg/K)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287               
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287.0e0               
 
   # reference temperature (K)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833                    
+    .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833.0e0                    
 
   # freestream pressure (p)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65              
+    .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65e0              
 
   # reference speed (m/s)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594                 
+    .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594.0e0                 
 
   # species densities
     .StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = 0.00036354 0.00461646
 
   # reference length
-    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1  
+    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1.0e0  
  ##------
 
 ###----------------------------------------------------------

@@ -77,30 +77,6 @@ void Tricall::generate()
 
   triangleReport = fopen("./log/TriangleReport.log","w");
 
-  // open the library
-  // void* triangleLib = dlopen("/data/deamicis/ShockFitting.git/trunk/src/MeshGeneratorSF/TriLibrary/triangle.so",RTLD_LAZY);
-
-  // if (!triangleLib) {
-  //  cout << "Tricall::error => cannot open library: " << dlerror() << '\n';
-  //  exit(1);
-  // }
-
-  // load the symbol for 'triangulate' function
-  // typedef void (*m_triangulate)(char*, struct triangulateio*,
-  //                               struct triangulateio*, struct triangulateio*);
-  
-  // reset the error
-  //  dlerror();
-  
-  // m_triangulate triangulate = (m_triangulate) dlsym(triangleLib, "triangulate");
-  // const char *dlsym_error = dlerror();
-  // if (dlsym_error) {
-  //  cout << "Tricall::error => cannot load symbol 'triangulate': " << dlsym_error <<
-  //           '\n';
-  //  dlclose(triangleLib);
-  //  exit(1);
-  // }
-
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                              PhysicsInfo::getnbShPointsMax();
 
@@ -318,9 +294,6 @@ nine:
   // Free all allocated arrays, including those allocated by Triangle.
   freeTri();
 
-  // close the library link
-  // dlclose(triangleLib);
-  
   fclose(triangleReport);
 }
 

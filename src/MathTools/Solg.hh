@@ -51,7 +51,7 @@ public:
      seven:
           for (unsigned i=k+1; i<B.size(); i++) {
            pik = A(i,k)/A(k,k);
-           A(i,k) = 0;
+           A(i,k) = 0.0;
            B.at(i) = B.at(i)-pik*B.at(k);
            for (unsigned j=k+1; j<B.size(); j++) {
             A(i,j) = A(i,j) - pik * A(k,j);
@@ -61,7 +61,7 @@ public:
 
     X.at(B.size()-1) = B.at(B.size()-1)/A(B.size()-1,B.size()-1);
     for(int i=B.size()-2; i>=0; i--) {
-     summ = 0;
+     summ = 0.0;
      for (unsigned j=i+1; j<B.size(); j++) {
       summ = summ + A(i,j) * X.at(j);
      }

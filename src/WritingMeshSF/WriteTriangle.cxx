@@ -78,6 +78,7 @@ void WriteTriangle::write()
 
   // write node file
   dummyfile = fname->str()+".node";
+
   file = fopen(dummyfile.c_str(),"w");
 
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
@@ -256,13 +257,13 @@ void WriteTriangle::computenbHoles()
    for(unsigned I=1; I<nShockPoints->at(ISH)-1; I++) {
     ++iHole;
     fprintf(file,"%u %s",iHole,"  ");
-    fprintf(file,"%.15E %s %.15E %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
+    fprintf(file,"%.16f %s %.16f %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
    }
   }
 
   for (unsigned I=0; I<MeshData::getInstance().getnbAddHoles(); I++) {
    fprintf(file,"%u %s",iHole+I,"  ");
-   for(unsigned j=0; j<2; j++) { fprintf(file,"%.15E %s",caddholes->at(j)," ");}
+   for(unsigned j=0; j<2; j++) { fprintf(file,"%.16f %s",caddholes->at(j)," ");}
   }
 }
 

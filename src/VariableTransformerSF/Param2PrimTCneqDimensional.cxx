@@ -7,6 +7,7 @@
 #include "VariableTransformerSF/Param2PrimTCneqDimensional.hh"
 #include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
+#include "Framework/MeshData.hh"
 #include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "VariableTransformerSF/ComputeTv.hh"
@@ -66,6 +67,38 @@ void Param2PrimTCneqDimensional::transform()
   setMeshData();
   setAddress();
 
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+/*
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/VarT/transf.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/VarT/transf.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/VarT/transf.var";
+}
+
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening transf.var" << endl;
+}
+
+
+  for (unsigned I=0; I<npoin->at(1); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*zroe)(k,I);}
+}
+var.close();
+
+*/
+
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     // zrho and rho
     double sqrtr = 0;
@@ -78,7 +111,8 @@ void Param2PrimTCneqDimensional::transform()
     rhos.resize(*nsp);
     for (unsigned ISP=0; ISP<(*nsp); ISP++) {
      alpha.at(ISP) = (*zroe)(ISP,IPOIN)/sqrtr;
-     rhos.at(ISP) = (*zroe)(ISP,IPOIN) * sqrtr * ReferenceInfo::getrhoref(); }     
+     rhos.at(ISP) = (*zroe)(ISP,IPOIN) * sqrtr * ReferenceInfo::getrhoref();
+ }     
 
     // u, v, h, ev
     u.resize(2);
@@ -120,9 +154,7 @@ void Param2PrimTCneqDimensional::transform()
     // vibrational temperature
     ComputeTv cTv;
     if((*nmol)==1) {
-     for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-      if(typemol->at(ISP)=="B") { IM = ISP;}
-     }
+
      T.at(1) = T.at(0)*pow(10,-6);
 
      cTv.callComputeTv(ev,alpha,T);
@@ -148,6 +180,15 @@ void Param2PrimTCneqDimensional::transform()
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) * ReferenceInfo::getLref();
    (*XY)(1,IPOIN) = (*XY)(1,IPOIN) * ReferenceInfo::getLref();
   }
+
+FILE* output;
+output = fopen("CheckC/transf.check","w");
+
+  for (unsigned IP=0; IP<npoin->at(1); IP++) {
+    for(unsigned K=0;K<(*ndof);K++) {
+    fprintf(output,"%32.16F %s",(*zroe)(K,IP),"\n");}}
+fclose(output);
+
 }  
 
 //--------------------------------------------------------------------------//

@@ -137,7 +137,6 @@ void CFmesh2Triangle::readCFmeshFmt()
   string cfoutCFmesh = "cfout.CFmesh";
 
   file.open(string(cfoutCFmesh).c_str());
-  file.precision(16);
 
   // read number of the first dummy strings
   do {
@@ -222,7 +221,6 @@ void CFmesh2Triangle::readCFmeshFmt()
    file >> skipver >> dummy;
    if (skipver == "!NB_DIM") { file.close(); break; }
    ++LSKIP; } while(skipver != "!NB_DIM");
-
 
   file.open(string(cfoutCFmesh).c_str());
   ISKIP=0;
@@ -418,7 +416,7 @@ void CFmesh2Triangle::writeTriangleFmt()
   string NBND;
  
   // writing file (Triangle node file to be overwritten)
-  FILE* file;
+  FILE* trianglefile;
 
   // take new nodcode values from the new nodcod vector of the shocked mesh
   // in the fortran version this new vector is referred to index 1 (NODCOD(1))
@@ -428,37 +426,39 @@ void CFmesh2Triangle::writeTriangleFmt()
 
   // write on .node file
   dummystring = fname->str()+".1.node";
-  file = fopen(dummystring.c_str(),"w");
 
-  fprintf(file,"%u %s %u",npoin->at(1)," ",PhysicsInfo::getnbDim());
-  fprintf(file,"%s %u %s"," ",(*ndof)," 1\n");
+  trianglefile = fopen(dummystring.c_str(),"w");
+
+  fprintf(trianglefile,"%u %s %u",npoin->at(1)," ",PhysicsInfo::getnbDim());
+  fprintf(trianglefile,"%s %u %s"," ",(*ndof)," 1\n");
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-   fprintf(file,"%u %s",IPOIN+1," ");
+   fprintf(trianglefile,"%u %s",IPOIN+1," ");
    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++)
-    { fprintf(file,"%.16f %s",(*XY)(IA,IPOIN)," "); }
+    { fprintf(trianglefile,"%.16F %s",(*XY)(IA,IPOIN)," "); }
    for(unsigned IA=0; IA<(*ndof); IA++) 
-    { fprintf(file,"%.16f %s",(*zroe)(IA,IPOIN)," "); }
-   fprintf(file,"%u %s",nodcod->at(startNodcod+IPOIN),"\n");
+   { fprintf(trianglefile,"%.16F %s",(*zroe)(IA,IPOIN)," "); }
+   fprintf(trianglefile,"%u %s",nodcod->at(startNodcod+IPOIN),"\n");
   }
 
-  fclose(file);
+  fclose(trianglefile);
 
   // write on .poly file
   dummystring = fname->str()+".1.poly";
-  file = fopen(dummystring.c_str(),"w");
 
-  fprintf(file,"%s %u %s", "0 ", PhysicsInfo::getnbDim(), " 0 1\n");
-  fprintf(file,"%u %s",nbfac->at(1)," 1\n");
+  trianglefile = fopen(dummystring.c_str(),"w");
+
+  fprintf(trianglefile,"%s %u %s", "0 ", PhysicsInfo::getnbDim(), " 0 1\n");
+  fprintf(trianglefile,"%u %s",nbfac->at(1)," 1\n");
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    NBND = namebnd.at((*bndfac)(2,IFACE)-1); // c++ indeces start from 0
    if(NBND=="InnerSup" || NBND=="InnerSub") { NBND="10"; }
-   fprintf(file,"%u %s",IFACE+1," ");
-   fprintf(file,"%i %s %i",(*bndfac)(0,IFACE)," ",(*bndfac)(1,IFACE));
-   fprintf(file,"%s %s %s"," ",NBND.c_str()," \n");
+   fprintf(trianglefile,"%u %s",IFACE+1," ");
+   fprintf(trianglefile,"%i %s %i",(*bndfac)(0,IFACE)," ",(*bndfac)(1,IFACE));
+   fprintf(trianglefile,"%s %s %s"," ",NBND.c_str()," \n");
   }
 
-  fprintf(file,"%s","0\n"); // write number of holes   
-  fclose(file);
+  fprintf(trianglefile,"%s","0\n"); // write number of holes   
+  fclose(trianglefile);
 }
 
 //----------------------------------------------------------------------------//

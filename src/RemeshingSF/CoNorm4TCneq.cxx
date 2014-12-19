@@ -6,6 +6,7 @@
 
 #include "RemeshingSF/CoNorm4TCneq.hh"
 #include "RemeshingSF/ShpDpndnc.hh"
+#include "Framework/MeshData.hh"
 #include "Framework/Log.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -69,6 +70,43 @@ void CoNorm4TCneq::remesh()
 
   setSize();
 
+
+
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening conorm.var" << endl;
+}
+
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZRoeShd)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+}}
+var.close();
+
+
+*/
+
+
   // write downstream status on log file
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
@@ -117,6 +155,19 @@ void CoNorm4TCneq::remesh()
    writeTecPlotFile();
   }
   logfile.Close();
+
+FILE* output;
+output = fopen("CheckC/conorm.check","w");
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned K=0;K<(*ndof);K++) {
+    fprintf(output,"%32.16F %s",(*ZRoeShd)(K,I,ISH)," ");}
+     for(unsigned K=0;K<2;K++) {
+    fprintf(output,"%32.16F %s",(*XYSh)(K,I,ISH)," ");}
+     for(unsigned K=0;K<2;K++) {
+    fprintf(output,"%32.16F %s",(*vShNor)(K,I,ISH)," ");}}}
+fclose(output);
 }
 
 //----------------------------------------------------------------------------//
@@ -135,10 +186,10 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    onePointForward(J, ISH);
 
    // recover status for the forward point
-   ipoin = J+1; // c++ indeces start from 0
+   ipoin = J+1; // ipoin is used in the log file (c++ indeces start from 0)
    recoverState("forward",I,J,ISH);
 
-   if (I < (nShockPoints->at(ISH)-1)) {
+   if (I < (nShockPoints->at(ISH)-2)) {
     // two points forward
     J2=I+2;
     // coordinates of two points forward
@@ -158,7 +209,7 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    ShpDpndnc shockDepip(xi,yi,ush,vsh,xj,yj,uj,vj,aj);
    depip1 = shockDepip.getDependence();
   }
-  else if (I==nShockPoints->at(ISH)) {depip1=0; depim1=1;}
+//  else if (I==nShockPoints->at(ISH)-1) {depip1=0; depim1=1;}
 
 
   if (I>0) {
@@ -170,7 +221,7 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    // recover status for the backward point
    recoverState("backward",I,J,ISH);
 
-   ipoin = J+1; // c++ indeces start from 0
+   ipoin = J+1; // ipoin is used in the log file (c++ indeces start from 0)
 
    if (I>1) {
     // two points backward
@@ -180,7 +231,7 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    }
    else {setTauIm2ToZero();}
   }
-  else { // I=0
+  else { // if I=0
    setTauIm1ToZero();
    setTauIm2ToZero();
   }
@@ -191,12 +242,12 @@ void CoNorm4TCneq::computeTau(unsigned ISH, unsigned I)
    ShpDpndnc shockDepim(xi,yi,ush,vsh,xj,yj,uj,vj,aj);
    depim1 = shockDepim.getDependence();
   }
-  else if (I==0) {depip1=1; depim1=0;}
+//  else if (I==0) {depip1=1; depim1=0;}
 
   setLp();
   setLm();
 
-  if(I==0) {depim1=0; depip1=1; lm12=1;}
+  if(I==0) {depim1=0; depip1=1; lm12=1.0;}
   if(I==nShockPoints->at(ISH)-1) {depim1=1; depip1=0; lp12=1.0;}
 
 
@@ -308,27 +359,29 @@ void CoNorm4TCneq::setVShNorForTP(unsigned ISPPNTS)
 void CoNorm4TCneq::writeTecPlotFile()
 {
   FILE* tecfile;
-  tecfile = fopen("shocknor.dat", "w");
+  tecfile = fopen("shocknor.dat","w");
 
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   fprintf(tecfile, "%s", "TITLE = Shock normals\n");
-   fprintf(tecfile, "%s", "VARIABLES = X Y Z(1) Z(2) NX NY\n");
-   fprintf(tecfile, "%s", "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ");
-   fprintf(tecfile,"%s %u", "N = ",nShockPoints->at(ISH));
-   fprintf(tecfile,"%s %u %s",", E = ", nShockPoints->at(ISH)-1,"\n");
+   fprintf(tecfile,"%s","TITLE = Shock normals\n");
+   fprintf(tecfile,"%s","VARIABLES = X Y Z(1) Z(2) NX NY\n");
+   fprintf(tecfile,"%s","ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ");
+   fprintf(tecfile,"%s %5u","N = ",nShockPoints->at(ISH));
+   fprintf(tecfile,"%s %5u %s",", E = ",nShockPoints->at(ISH)-1,"\n");
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
-     {fprintf(tecfile,"%0.17f %s", (*XYSh)(K,I,ISH)," ");}
+     {fprintf(tecfile,"%32.16E %s",(*XYSh)(K,I,ISH)," ");}
     fprintf(tecfile,"%s","\n");
-    fprintf(tecfile,"%u %s %u %s",1, " ", 1," ");
-    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) 
-     {fprintf(tecfile, "%0.15f %s",(*vShNor)(K,I,ISH)," ");}
-   fprintf(tecfile,"%s","\n");
+    fprintf(tecfile,"%s","1  1 ");
+    for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
+     {fprintf(tecfile,"%32.16E %s",(*vShNor)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
     fprintf(tecfile,"%u %s %u %s %u %s",I+1," ",I+2," ",I+1,"\n");
    }
   }
+
+  fclose(tecfile);
 }
 
 //----------------------------------------------------------------------------//

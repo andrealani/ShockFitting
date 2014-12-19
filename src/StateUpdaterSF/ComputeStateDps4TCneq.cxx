@@ -6,6 +6,7 @@
 
 #include "StateUpdaterSF/ComputeStateDps4TCneq.hh"
 #include "Framework/Log.hh"
+#include "Framework/MeshData.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "StateUpdaterSF/CoDc.hh"
 #include "StateUpdaterSF/CoShock.hh"
@@ -70,6 +71,32 @@ void ComputeStateDps4TCneq::update()
 
   setDiscSpeedSize();
 
+/*
+ ifstream variables;
+ stringstream pathvar;
+ pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000" << MeshData::getInstance().getIstep() << "/Var/costatedps.var";
+ }
+ else if (MeshData::getInstance().getIstep()>=10 &&
+          MeshData::getInstance().getIstep()<100){
+  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/costatedps.var";
+ }
+ else if (MeshData::getInstance().getIstep()>=100 &&
+          MeshData::getInstance().getIstep()<1000){
+  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/costatedps.var";
+}
+
+variables.open(pathvar.str().c_str());
+
+  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
+for(unsigned I=0;I<(*ndof);I++) {variables >> (*ZroeShu)(I,IV,ISH); }
+for(unsigned I=0;I<(*ndof);I++) {variables >> (*ZroeShd)(I,IV,ISH); }
+for(unsigned I=0;I<2;I++) {variables >> (*vShNor)(I,IV,ISH); }
+for(unsigned I=0;I<2;I++) {variables >> (*WSh)(I,IV,ISH); }
+}}
+*/
 
   // create object of CoShock class
   CoShock computenewStateForShock;
@@ -106,7 +133,6 @@ void ComputeStateDps4TCneq::update()
 
     // initialize discontinuity speed
     WS = 0.0;
-
 
     if(typeSh->at(ISH)=="S") {
      computenewStateForShock.callCoShock(xd,xu,R2(IV,ISH));
@@ -148,20 +174,33 @@ void ComputeStateDps4TCneq::update()
    }
   } 
   logfile.Close();
+
+FILE* output;
+output = fopen("CheckC/costatedps.check","w");
+
+  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
+     for(unsigned K=0;K<(*ndof);K++) {
+     fprintf(output,"%32.16F %s",(*ZroeShu)(K,IV,ISH)," ");}
+     fprintf(output,"%s","\n");
+     for(unsigned K=0;K<(*ndof);K++) {
+     fprintf(output,"%32.16F %s",(*ZroeShd)(K,IV,ISH)," ");}
+}}
+fclose(output);
 }
 
 //----------------------------------------------------------------------------//
 
 void ComputeStateDps4TCneq::recoverDownState(unsigned IV, unsigned ISH)
 {
-  double ZRHOSH = 0;
+  double ZRHOSH = 0.0;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    ZRHOSH = ZRHOSH + (*ZroeShd)(ISP,IV,ISH); // sqrt(rho)
   }
   // density
   xd.at(0) = ZRHOSH*ZRHOSH;
 
-  double RHOHF = 0;
+  double RHOHF = 0.0;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    RHOHF = RHOHF + (*ZroeShd)(ISP,IV,ISH)* hf->at(ISP);
   }
@@ -182,17 +221,17 @@ void ComputeStateDps4TCneq::recoverDownState(unsigned IV, unsigned ISH)
 
   help = pow( (*ZroeShd)((*IX),IV,ISH) , 2) + pow( (*ZroeShd)((*IY),IV,ISH) , 2);
   // pressure
-  xd.at(1) = ((*gref)-1)/(*gref) * (ZRHOSH *  (*ZroeShd)((*IE),IV,ISH) - 0.5*help
+  xd.at(1) = ((*gref)-1)/(*gref) * (ZRHOSH *  (*ZroeShd)((*IE),IV,ISH) - 0.50*help
              - RHOHF - ZRHOSH* (*ZroeShd)((*IEV),IV,ISH));
 
-  R2(IV,ISH) = sqrt((*gref)*xd.at(1)/xd.at(0)) + 0.5 * ((*gref)-1) * xd.at(2);
+  R2(IV,ISH) = sqrt((*gref)*xd.at(1)/xd.at(0)) + 0.50 * ((*gref)-1.0) * xd.at(2);
 }
 
 //----------------------------------------------------------------------------//
 
 void ComputeStateDps4TCneq::recoverUpState(unsigned IV, unsigned ISH)
 { 
-  double ZRHOSH = 0;
+  double ZRHOSH = 0.0;
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    ZRHOSH = ZRHOSH + (*ZroeShu)(ISP,IV,ISH); // sqrt(rho)
   }
@@ -220,7 +259,7 @@ void ComputeStateDps4TCneq::recoverUpState(unsigned IV, unsigned ISH)
   
   help = pow( (*ZroeShu)((*IX),IV,ISH) , 2) + pow( (*ZroeShu)((*IY),IV,ISH) , 2);
   // pressure
-  xu.at(1) = ((*gref)-1)/(*gref) * (ZRHOSH *  (*ZroeShu)((*IE),IV,ISH) - 0.5*help
+  xu.at(1) = ((*gref)-1.0)/(*gref) * (ZRHOSH *  (*ZroeShu)((*IE),IV,ISH) - 0.50*help
              - RHOHF - ZRHOSH* (*ZroeShu)((*IEV),IV,ISH));
 } 
 

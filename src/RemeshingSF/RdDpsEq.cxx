@@ -47,10 +47,6 @@ void RdDpsEq::setup()
 {
   LogToScreen(VERBOSE, "RdDpsEq::setup() => start\n");
 
-  setPhysicsData();
-  setMeshData();
-  logfile.Open(getClassName());
-
   LogToScreen(VERBOSE, "RdDpsEq::setup() => end\n");
 }
 
@@ -59,8 +55,6 @@ void RdDpsEq::setup()
 void RdDpsEq::unsetup()
 {
   LogToScreen(VERBOSE, "RdDpsEq::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -69,6 +63,10 @@ void RdDpsEq::remesh()
 {
   LogToScreen(INFO, "RdDpsEq::remesh()\n");
 
+  setPhysicsData();
+  setMeshData();
+
+  logfile.Open(getClassName());
   // assign start pointers of Array2D and 3D
   setAddress();
 
@@ -97,6 +95,8 @@ void RdDpsEq::remesh()
    // rewrite the state arrays and indices
    rewriteValues(I);
   }
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//

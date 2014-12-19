@@ -67,6 +67,7 @@ void WriteBackTriangle::write()
 
   *fnameBack = "na99";
   string dummyfile = *fnameBack+".node";
+
   file = fopen(dummyfile.c_str(),"w");
 
   unsigned ilist = npoin->at(0);
@@ -102,6 +103,20 @@ void WriteBackTriangle::write()
   }
   
   fclose(file);  
+
+FILE* output;
+output = fopen("CheckC/wtri0.check","w");
+
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
+    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) {
+     fprintf(output,"%32.16F %s",(*XY)(IA,IPOIN),"  ");}
+    for(unsigned IA=0; IA<(*ndof); IA++) {
+     fprintf(output,"%32.16F %s",(*Zroe)(IA,IPOIN),"  ");}
+     fprintf(output,"%s","\n");}
+
+fclose(output);
+
+
 }
 
 //--------------------------------------------------------------------------//

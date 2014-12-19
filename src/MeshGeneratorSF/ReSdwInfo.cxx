@@ -45,8 +45,6 @@ ReSdwInfo::~ReSdwInfo()
 void ReSdwInfo::setup()
 {
   LogToScreen(VERBOSE, "ReSdwInfo::setup() => start\n");
-
-  logfile.Open(getClassName());
 }
 
 //--------------------------------------------------------------------------//
@@ -54,8 +52,6 @@ void ReSdwInfo::setup()
 void ReSdwInfo::unsetup()
 {
   LogToScreen(VERBOSE, "ReSdwInfo::unsetup()\n");
-
-  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//
@@ -63,6 +59,11 @@ void ReSdwInfo::unsetup()
 void ReSdwInfo::generate()
 {
   LogToScreen(INFO, "ReadSdwInfo::generate()\n");
+
+  logfile.Open(getClassName());
+  // check if the sh00 file is already opened
+  if(file.is_open()) { 
+   cout << "ReSdwInfo::warning => file sh00.dat seems to be already opened\n";}
 
   file.open(getInputFiles().c_str());
 
@@ -75,6 +76,8 @@ void ReSdwInfo::generate()
   readShockInfo(); 
 
   file.close();
+
+  logfile.Close();
 }
 
 //--------------------------------------------------------------------------//

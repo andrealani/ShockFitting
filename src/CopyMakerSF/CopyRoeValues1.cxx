@@ -67,6 +67,31 @@ void CopyRoeValues1::copy()
 
   setAddress();
 
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/dcopy1.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/dcopy1.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening dcopy1.var" << endl;
+}
+
+
+for(unsigned I=0;I<npoin->at(1);I++){
+for(unsigned IA=0;IA<(*ndof);IA++){
+var >> (*zroe1)(IA,I);}}
+var.close();
+*/
+
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    for(unsigned IA=0; IA<(*ndof); IA++) {
     // M12M0 has filled with indeces that start from 1

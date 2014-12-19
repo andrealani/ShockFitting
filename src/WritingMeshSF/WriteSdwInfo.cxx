@@ -184,6 +184,20 @@ void WriteSdwInfo::write()
   fclose(file);
 
   logfile.Close();
+
+FILE* output;
+output = fopen("CheckC/wrtsdwinfo.check","w");
+   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {  
+   for(unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned IA=0; IA<(*ndof); IA++)
+     { fprintf(output,"%32.16F %s",(*ZroeShu)(IA,I,ISH)," "); }
+    for(unsigned IA=0; IA<(*ndof); IA++)
+     { fprintf(output,"%32.16F %s",(*ZroeShd)(IA,I,ISH)," "); }
+    for(unsigned IA=0;IA<PhysicsInfo::getnbDim();IA++)
+    { fprintf(output,"%32.16F %s",(*XYSh)(IA,I,ISH)," "); }
+   }
+  }
+fclose(output);
 }
 
 //--------------------------------------------------------------------------//

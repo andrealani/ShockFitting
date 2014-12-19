@@ -17,7 +17,12 @@ int main (int argc, char** argv)
   testDir.at(0) = "CircularCylinder_Unibas_N_inv_M20_2.0";
   testDir.at(1) = "CircularCylinder_VKI_LRD_2.1";
 
-  const unsigned i = 0; // number of executing test
+  // number of executing test
+  const unsigned i = 0;
+  // version of mpi 
+  string mpi = "openmpi";
+
+
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
   string commandcp = "cp "+pwdTestDir+"/input.case .";
@@ -48,7 +53,15 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the coolfluid files
-  commandln = "ln -sf "+pwdTestDir+"/coolfluid-solver.xml .";
+  if (mpi == "openmpi") { 
+   commandln = "cp " + pwdTestDir + "/coolfluid-solver.xml.openmpi " +
+                pwdTestDir + "/coolfluid-solver.xml";
+   system(commandln.c_str()); }
+  if (mpi == "mpich2")  { 
+   commandln = "cp " + pwdTestDir + "/coolfluid-solver.xml.mpich2 " + 
+                pwdTestDir + "/coolfluid-solver.xml";
+   system(commandln.c_str()); } 
+  commandln = "ln -sf " + pwdTestDir + "/coolfluid-solver.xml .";
   system(commandln.c_str());
   commandln = "ln -sf "+pwdTestDir+"/cf00.CFcase .";
   system(commandln.c_str());

@@ -9,6 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <cstdlib>
@@ -34,6 +35,9 @@ public:
     command = "mv " + namefile + ".log ./log/";
     system(command.c_str());
     namefile = "./log/" + namefile + ".log";
+    if(filelog.is_open()) {
+     std::cout << "FileLogManip::warning => one log file ";
+     std::cout << " seems to be already opened\n";}
     filelog.open(namefile.c_str());
     filelog.precision(16);
   }

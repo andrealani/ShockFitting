@@ -72,6 +72,51 @@ void Interp::update()
 
   setAddress();
 
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step0000"<<MeshData::getInstance().getIstep()<<"/Var/interp.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/interp.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step000"<<MeshData::getInstance().getIstep()<<"/Var/interp.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/interp.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/interp.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening interp.var" << endl;
+}
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYShu)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYShd)(k,I,ISH);}
+}}
+
+  for(unsigned I=0;I<npoin->at(0);I++) {
+   for(unsigned k=0;k<2;k++) { var >> (*XY)(k,I);}
+   for(unsigned k=0;k<2;k++) { var >> (*XYBkg)(k,I);}
+  for(unsigned k=0;k<(*ndof);k++) { var >> (*zroe)(k,I);}   
+for(unsigned k=0;k<(*ndof);k++) { var >> (*zBkg)(k,I);}
+}
+var.close();
+*/
+
+
+
+
+
   unsigned I1, I2, JPOIN;
 
   logfile.Open(getClassName().c_str());
@@ -132,6 +177,16 @@ void Interp::update()
   }
 
   logfile.Close();
+
+FILE* output;
+output = fopen("CheckC/interp.check","w");
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
+    for(unsigned I=0; I<(*ndof); I++) {
+fprintf(output,"%32.16F %s",(*zBkg)(I,IPOIN)," ");}
+fprintf(output,"%s","\n");}
+fclose(output);
+
+
 }
 
 //--------------------------------------------------------------------------//

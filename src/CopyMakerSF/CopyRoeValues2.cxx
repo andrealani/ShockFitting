@@ -71,6 +71,36 @@ void CopyRoeValues2::copy()
                        PhysicsInfo::getnbShPointsMax();
   unsigned m_npoin0 = npoin->at(0)+1;
 
+
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/dcopy2.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/dcopy2.var";
+}
+if (MeshData::getInstance().getIstep()==562) {
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00562"<<MeshData::getInstance().getIstep()<<"/Var/dcopy2.var";
+}
+
+string path = pathvar.str();
+var.open(path.c_str());
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening dcopy2.var" << endl;
+}
+
+
+  for(unsigned IPOIN=0; IPOIN<ILIST; IPOIN++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*zroe0)(k,IPOIN+npoin->at(0));}
+}
+var.close();
+*/
+
+
+
   for(unsigned IPOIN=0; IPOIN<ILIST; IPOIN++) {
    IB = M02M1->at(m_npoin0+IPOIN);
    if(IB != 0) {

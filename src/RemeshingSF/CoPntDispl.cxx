@@ -68,6 +68,40 @@ void CoPntDispl::remesh()
   setPhysicsData();
   setAddress();
 
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/copntdispl.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/copntdispl.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/copntdispl.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening copntdispl.var" << endl;
+}
+
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*vShNor)(k,I,ISH);}
+}}
+var.close();
+
+*/
+
   logfile.Open(getClassName());
 
   // initialize nodcodsh values to -99
@@ -111,6 +145,18 @@ void CoPntDispl::remesh()
       exit(1); }
   }
   logfile.Close();
+
+FILE* output;
+output=fopen("CheckC/copntdispl.check","w");
+  for(unsigned ish=0; ish<(*nShocks); ish++) {
+   for(unsigned i=0; i<nShockPoints->at(ish); i++) {
+    for(unsigned K=0;K<2;K++){
+    fprintf(output,"%32.16F %s",(*XYShu)(K,i,ish)," ");}
+    for(unsigned K=0;K<2;K++){
+    fprintf(output,"%32.16F %s",(*XYShd)(K,i,ish)," ");}}}
+fclose(output);
+
+
 }
 
 //--------------------------------------------------------------------------//

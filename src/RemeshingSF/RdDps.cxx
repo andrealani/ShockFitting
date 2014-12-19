@@ -66,6 +66,40 @@ void RdDps::remesh()
   setPhysicsData();
 
   setAddress();
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step0000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
+}
+
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening rddps.var" << endl;
+}
+
+  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
+   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShu)(k,I,ISH);}
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShd)(k,I,ISH);}
+    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
+}}
+var.close();
+*/
 
   unsigned iShPoint;
   double dum;
@@ -73,7 +107,6 @@ void RdDps::remesh()
   double lenRelMin, lenRelMax;
 
   logfile.Open(getClassName().c_str());
-
 
   ShEdgeLgth.resize(PhysicsInfo::getnbShPointsMax());
 
@@ -97,13 +130,19 @@ void RdDps::remesh()
     }
     if (dum>1.5) {
      if (lenRelMax<dum) { lenRelMax = dum;
-                          ileMax = IV+1;  } 
+                          ileMax = IV+1; } 
     }
    }
 
    if (nShockPoints->at(ISH)<=3) { ileMin = 0;
                                    ileMax = 0; }
+
+
    if (ileMin != 0) {
+
+    cout << "\n\n\nRdDps::warning => ileMin!=0 this part has never been tested\n";
+    cout << "                  if something goes wrong please check the IV index\n\n\n";
+
     logfile("Before\n ");
     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
      iShPoint = IV+1;
@@ -143,7 +182,7 @@ void RdDps::remesh()
     }
 
     unsigned npi = ileMax;
-    for(unsigned IV=nShockPoints->at(ISH)-1;IV>npi+1;IV--) {
+    for(unsigned IV=nShockPoints->at(ISH)-1;IV>=npi;IV--) {
      for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
       (*XYSh)(I,IV+1,ISH) = (*XYSh)(I,IV,ISH); // c++ indeces start from 0
      }
@@ -176,6 +215,21 @@ void RdDps::remesh()
   }
 
   logfile.Close();
+
+FILE* output;
+output =fopen("CheckC/rddps.check","w");
+
+for(unsigned ISH=0;ISH<(*nShocks);ISH++) {
+    for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
+     for(unsigned k=0;k<(*ndof);k++) {
+      fprintf(output,"%32.16F %s",(*ZroeShd)(k,IV,ISH)," ");}
+     for(unsigned k=0;k<(*ndof);k++) {
+      fprintf(output,"%32.16F %s",(*ZroeShu)(k,IV,ISH)," ");}
+         for(unsigned k=0;k<2;k++) {
+      fprintf(output,"%32.16F %s",(*XYSh)(k,IV,ISH)," ");}
+}}
+
+fclose(output);
 }
 
 //--------------------------------------------------------------------------//

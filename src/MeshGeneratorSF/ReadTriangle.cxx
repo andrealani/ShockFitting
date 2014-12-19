@@ -110,7 +110,6 @@ void ReadTriangle::ReadNode()
   unsigned idum;
 
   file.open(getNodeFile().c_str());
-  file.precision(18);
 
   file >> m_npoin >> dim >> states >> iattr;
   if (dim != PhysicsInfo::getnbDim() || states > PhysicsInfo::getnbDofMax()) {

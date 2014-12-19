@@ -304,28 +304,30 @@ void CoNorm4Ar::setVShNorForTP(unsigned ISPPNTS)
 
 void CoNorm4Ar::writeTecPlotFile()
 {
-  ofstream tecfile;
-  tecfile.open("shocknor.dat");
+  FILE* tecfile;
+  tecfile = fopen("shocknor.dat","w");
 
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   tecfile << "TITLE = Shock normals\n";
-   tecfile << "VARIABLES = X Y Z(1) Z(2) NX NY\n";
-   tecfile << "ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ";
-   tecfile << "N = " << nShockPoints->at(ISH);
-   tecfile << ", E = " << nShockPoints->at(ISH)-1 << "\n";
+   fprintf(tecfile,"%s","TITLE = Shock normals\n");
+   fprintf(tecfile,"%s","VARIABLES = X Y Z(1) Z(2) NX NY\n");
+   fprintf(tecfile,"%s","ZONE T='sampletext', F = FEPOINT, ET = TRIANGLE ");
+   fprintf(tecfile,"%s %5u","N = ",nShockPoints->at(ISH));
+   fprintf(tecfile,"%s %5u %s",", E = ",nShockPoints->at(ISH)-1,"\n");
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
-     {tecfile << (*XYSh)(K,I,ISH) << " ";}
-    tecfile << "\n";
-    tecfile << 1 << " " << 1 << " ";
+     {fprintf(tecfile,"%32.16E %s",(*XYSh)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
+    fprintf(tecfile,"%s","1  1 ");
     for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++)
-     {tecfile << (*vShNor)(K,I,ISH) << " ";}
-    tecfile << "\n";
+     {fprintf(tecfile,"%32.16E %s",(*vShNor)(K,I,ISH)," ");}
+    fprintf(tecfile,"%s","\n");
    }
    for (unsigned I=0; I<nShockPoints->at(ISH)-1; I++) {
-    tecfile << I << " " << I+1 << " " << I << "\n";
+    fprintf(tecfile,"%u %s %u %s %u %s",I+1," ",I+2," ",I+1,"\n");
    }
   }
+
+  fclose(tecfile);
 }
 
 //----------------------------------------------------------------------------//

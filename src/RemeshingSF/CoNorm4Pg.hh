@@ -45,7 +45,7 @@ public:
 private: // helper functions
 
   /// return class name
-  std::string getClassName () const {return std::string("CoNorm4B");}
+  std::string getClassName () const {return std::string("CoNorm4Pg");}
 
   /// compute tangetial vectors
   void computeTau(unsigned, unsigned);

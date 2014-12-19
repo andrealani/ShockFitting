@@ -8,6 +8,7 @@
 #include "VariableTransformerSF/Prim2ParamTCneqDimensional.hh"
 #include "Framework/ChemicalConsts.hh"
 #include "Framework/Log.hh"
+#include "Framework/MeshData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -69,6 +70,38 @@ void Prim2ParamTCneqDimensional::transform()
 
   double sqrtr;
 
+/*
+ifstream var;
+stringstream pathvar;
+pathvar.str(string());
+if(MeshData::getInstance().getIstep()<10){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
+}
+else if (MeshData::getInstance().getIstep()>=10 &&
+         MeshData::getInstance().getIstep()<100){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
+}
+else if (MeshData::getInstance().getIstep()>=100 &&
+         MeshData::getInstance().getIstep()<1000){
+pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
+}
+
+
+string path = pathvar.str();
+var.open(path.c_str());
+
+if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening transf.var" << endl;
+}
+
+
+  for (unsigned I=0; I<npoin->at(1); I++) {
+    for(unsigned k=0;k<(*ndof);k++) { var >> (*zroe)(k,I);}
+}
+var.close();
+*/
+
+
+
   // create VibrEnergy object
   VibrEnergy computeVbEnergy;
 
@@ -76,7 +109,6 @@ void Prim2ParamTCneqDimensional::transform()
   alpha.resize( (*nsp) );
   u.resize(PhysicsInfo::getnbDim());
   T.resize(2);
-
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
 
@@ -96,21 +128,19 @@ void Prim2ParamTCneqDimensional::transform()
 
    // alpha 
    for(unsigned ISP=0; ISP<(*nsp); ISP++) { alpha.at(ISP) = rhos.at(ISP)/rho; }
-
    // kinetic energy
    kinetic = pow(u.at(0),2) + pow(u.at(1),2);
    kinetic = kinetic * 0.5;
 
    // formation enthalpy
-   double hftot = 0;
+   double hftot = 0.0;
    for(unsigned ISP=0; ISP<(*nsp); ISP++) {
     // pow((*uref),2) is used because of the hf dimensionalization
-    // done by the ReferenceInfo object
+    // made by the ReferenceInfo object
     // in ReferenceInfo hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
-    hftot = hftot + alpha.at(ISP) * hf->at(ISP) * 
-            pow(ReferenceInfo::geturef(),2);
+    double dumhf = hf->at(ISP) * pow(ReferenceInfo::geturef(),2);
+    hftot = hftot + alpha.at(ISP) * dumhf; 
    }
-
    // call for vibrational energy
    computeVbEnergy.callVibrEnergy(T.at(1),alpha);
 
@@ -128,8 +158,8 @@ void Prim2ParamTCneqDimensional::transform()
 
    sqrtr = sqrtr/sqrt(ReferenceInfo::getrhoref());
 
-   (*zroe)((*IEV),IPOIN) = sqrtr * ev / 
-               (ReferenceInfo::geturef()*ReferenceInfo::geturef());
+   (*zroe)((*IEV),IPOIN) = sqrtr * ev /
+                (ReferenceInfo::geturef()*ReferenceInfo::geturef());
    (*zroe)((*IX),IPOIN) = sqrtr * u.at(0) / ReferenceInfo::geturef();
    (*zroe)((*IY),IPOIN) = sqrtr * u.at(1) / ReferenceInfo::geturef();
    (*zroe)((*IE),IPOIN) = sqrtr * h / 
@@ -138,10 +168,23 @@ void Prim2ParamTCneqDimensional::transform()
    for(unsigned ISP=0; ISP<(*nsp); ISP++) {
     (*zroe)(ISP,IPOIN) = sqrtr * alpha.at(ISP);
    }
-  
+
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / ReferenceInfo::getLref();
    (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / ReferenceInfo::getLref();
   }
+
+
+FILE* output;
+output = fopen("CheckC/transf2.check","w");
+
+  for (unsigned IP=0; IP<npoin->at(1); IP++) {
+    for(unsigned K=0;K<(*ndof);K++) {
+    fprintf(output,"%32.16F %s",(*zroe)(K,IP),"\n");}}
+fclose(output);
+
+
+
+
 }
 
 //--------------------------------------------------------------------------//

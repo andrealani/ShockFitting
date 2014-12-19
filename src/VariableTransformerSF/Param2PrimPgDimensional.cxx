@@ -70,7 +70,8 @@ void Param2PrimPgDimensional::transform()
 
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     rho = (*zroe)(0,IPOIN) * (*zroe)(0,IPOIN);
-    kinetic = pow((*zroe)(2,IPOIN),2)+pow((*zroe)(3,IPOIN),2);
+    kinetic = (*zroe)(2,IPOIN) * (*zroe)(2,IPOIN) + 
+              (*zroe)(3,IPOIN) * (*zroe)(3,IPOIN);
     kinetic = kinetic * 0.5;
     h = (*zroe)(1,IPOIN)/(*zroe)(0,IPOIN);
     help = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam();
@@ -83,8 +84,8 @@ void Param2PrimPgDimensional::transform()
     (*zroe)(1,IPOIN) = u * ReferenceInfo::geturef();
     (*zroe)(2,IPOIN) = v * ReferenceInfo::geturef();
     (*zroe)(3,IPOIN) = pres/rho *
-                   (ReferenceInfo::geturef() * ReferenceInfo::geturef() /
-                    ReferenceInfo::getRgas());
+                       (ReferenceInfo::geturef() * ReferenceInfo::geturef() /
+                        ReferenceInfo::getRgas());
   }
 }
 

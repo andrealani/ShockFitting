@@ -19,7 +19,7 @@ class ChemicalConsts {
 public:
 
   /// Universal constant of gas [J/mol/K]
-  static double Rgp() {return 8.314472e0;}
+  static double Rgp() {return 8.314472;}
 
   /// Avogadro Constant [1/mol]
   static double Na() {return 6.0221367e23;}
