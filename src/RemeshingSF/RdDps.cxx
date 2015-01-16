@@ -141,7 +141,8 @@ var.close();
    if (ileMin != 0) {
 
     cout << "\n\n\nRdDps::warning => ileMin!=0 this part has never been tested\n";
-    cout << "                  if something goes wrong please check the IV index\n\n\n";
+    cout << "                  if something goes wrong please check the IV index\n";
+    cout << "                  and the output file ileMinLog.check\n\n\n";
 
     logfile("Before\n ");
     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
@@ -172,6 +173,21 @@ var.close();
      iShPoint = IV+1;
      logfile(iShPoint," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
     }
+
+    FILE* ileMinLog;
+    ileMinLog = fopen("IleMinLog.check","w");
+
+     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
+      for(unsigned k=0;k<(*ndof);k++) {
+       fprintf(ileMinLog,"%32.16F %s",(*ZroeShd)(k,IV,ISH)," ");}
+      for(unsigned k=0;k<(*ndof);k++) {
+       fprintf(ileMinLog,"%32.16F %s",(*ZroeShu)(k,IV,ISH)," ");}
+        for(unsigned k=0;k<2;k++) { 
+       fprintf(ileMinLog,"%32.16F %s",(*XYSh)(k,IV,ISH)," ");}
+     }
+
+    fclose(ileMinLog);
+
    }
 
    if (ileMax !=0) { 

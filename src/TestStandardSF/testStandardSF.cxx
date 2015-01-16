@@ -14,14 +14,11 @@ int main (int argc, char** argv)
   // (1) CircularCylinder_VKI_LRD_2.1 : TCneq
   const unsigned nbTest = 4;
   vector<string> testDir(nbTest);
-  testDir.at(0) = "CircularCylinder_Unibas_N_inv_M20_2.0";
+  testDir.at(0) = "CircularCylinder_Pg_inv_N_M20";
   testDir.at(1) = "CircularCylinder_VKI_LRD_2.1";
 
   // number of executing test
   const unsigned i = 0;
-  // version of mpi 
-  string mpi = "openmpi";
-
 
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
@@ -53,14 +50,6 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the coolfluid files
-  if (mpi == "openmpi") { 
-   commandln = "cp " + pwdTestDir + "/coolfluid-solver.xml.openmpi " +
-                pwdTestDir + "/coolfluid-solver.xml";
-   system(commandln.c_str()); }
-  if (mpi == "mpich2")  { 
-   commandln = "cp " + pwdTestDir + "/coolfluid-solver.xml.mpich2 " + 
-                pwdTestDir + "/coolfluid-solver.xml";
-   system(commandln.c_str()); } 
   commandln = "ln -sf " + pwdTestDir + "/coolfluid-solver.xml .";
   system(commandln.c_str());
   commandln = "ln -sf "+pwdTestDir+"/cf00.CFcase .";

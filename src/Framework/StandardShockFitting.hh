@@ -52,6 +52,13 @@ private:
   /// Standard Shock Fitting Version
   std::string m_version;
 
+  /// command object convert shock input file in sh00.dat
+  SConfig::SharedPtr<Converter> m_createshockfile;
+
+  /// command object convert triangle files 
+  /// to start the Shock Fitting algorithm
+  SConfig::SharedPtr<Converter> m_createTriangleFiles;
+
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile1;
 
@@ -100,9 +107,6 @@ private:
   /// command object converting file format from CFmesh to Triangle
   SConfig::SharedPtr<Converter> m_CFmeshToTriangle;
 
-  /// command object reading mesh generator files
-  SConfig::SharedPtr<MeshGenerator> m_readNewMesh;
-
   /// command object copying Roe values
   SConfig::SharedPtr<CopyMaker> m_copyZRoe1_0;
 
@@ -137,5 +141,7 @@ private:
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting
+
+//--------------------------------------------------------------------------//
 
 #endif //ShockFitting_StandardShockFitting_hh

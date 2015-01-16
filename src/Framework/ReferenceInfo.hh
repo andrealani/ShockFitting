@@ -21,7 +21,8 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 /// This class defines ReferenceInfo, whose task is to read freestream
-/// conditions, computes:
+/// conditions and assign them to the PhysicsData pattern.
+/// It computes:
 /// .) @param gref   : isoentropic coefficient of the gas
 /// .) @param Tref   : reference temperature
 /// .) @param pref   : reference pressure
@@ -51,6 +52,9 @@ public:
 
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}
+
+  /// get the reference species densities
+  static std::vector<double> getrhoiref() { return m_rhor; }
 
   /// get the reference temperature
   static double getTref() { return m_Tref; }
@@ -130,7 +134,7 @@ private: // data
   static double m_rhoref;
 
   /// species densities
-  std::vector <double> m_rhor;
+  static std::vector <double> m_rhor;
 
   /// reference length
   static double m_Lref;

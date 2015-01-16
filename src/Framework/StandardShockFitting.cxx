@@ -33,6 +33,8 @@ standardShockFittingProv("StandardShockFitting");
 
 StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   ShockFittingObj(objectName),
+  m_createshockfile(),
+  m_createTriangleFiles(),
   m_readInputFile1(),
   m_meshBackup(),
   m_readInputFile2(),
@@ -49,7 +51,6 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_triangleToCFmesh(),
   m_COOLFluiD(),
   m_CFmeshToTriangle(),
-  m_readNewMesh(),
   m_copyZRoe1_0(),
   m_updateSolution(),
   m_fixSpecPoints(),
@@ -92,7 +93,8 @@ void StandardShockFitting::setup()
 
   ShockFittingObj::setup();
 
-
+  m_createshockfile = m_fConverter[0].ptr();
+  m_createTriangleFiles = m_fConverter[1].ptr();
   m_readInputFile1 = m_mGenerator[0].ptr();
   m_meshBackup = m_cMaker[0].ptr();
   m_readInputFile2 = m_mGenerator[1].ptr();
@@ -105,11 +107,10 @@ void StandardShockFitting::setup()
   m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
   m_callTriangle = m_mGenerator[2].ptr();
-  m_callTriangleLib = m_mGenerator[4].ptr();
-  m_triangleToCFmesh = m_fConverter[0].ptr();
+  m_callTriangleLib = m_mGenerator[3].ptr();
+  m_triangleToCFmesh = m_fConverter[2].ptr();
   m_COOLFluiD = m_CFDSolver.ptr();
-  m_CFmeshToTriangle = m_fConverter[1].ptr();
-  m_readNewMesh = m_mGenerator[3].ptr();
+  m_CFmeshToTriangle = m_fConverter[3].ptr();
   m_copyZRoe1_0 = m_cMaker[1].ptr();
   m_updateSolution = m_cState.ptr();
   m_fixSpecPoints = m_sUpdater[0].ptr(); 
@@ -156,18 +157,33 @@ void StandardShockFitting::process()
   // set the Shock Fitting version
   MeshData::getInstance().setVersion(m_version);
 
-  cout << "\n----------------- Shock Fitting Solver ------------------\n\n";
-  cout << "_________________ StandardShockFitting __________________\n\n";
+  cout << "\n--------------------- Shock Fitting Solver ----------------------\n\n";
+  cout << "_____________________ StandardShockFitting ______________________\n\n";
 
   cout << "StandardShockFitting.Version = " << m_version << "\n";
-  cout << "_________________________________________________________\n\n";
+  cout << "_________________________________________________________________\n\n";
 
-  cout << "          StandardShockFitting::pre-processing  \n";
-  cout << "---------------------------------------------------------\n\n";
+  cout << "            StandardShockFitting::pre-processing  \n";
+  cout << "-----------------------------------------------------------------\n\n";
 
+  cout << "Collecting general Physics informations \n\n";
+ 
   PhysicsData::getInstance().getPhysicsInfo()->read();
   PhysicsData::getInstance().getChemicalInfo()->read(); 
   PhysicsData::getInstance().getReferenceInfo()->read();
+  cout << ".................................................\n";
+  cout << "_________________________________________________\n\n";
+/*  cout << "Creating starting SF files from the captured solution \n\n";
+
+  m_createshockfile->convert();
+  m_createTriangleFiles->convert();
+
+  m_callTriangle->generate(string("na00.node"));
+  cout << ".................................................\n";
+
+  system(string("mv na00.poly na99.poly").c_str());
+  cout << "_________________________________________________\n\n";
+*/  cout << "Building the initial computational domain\n\n";
 
   m_readInputFile1->generate();
   m_readInputFile2->generate();
@@ -177,20 +193,24 @@ void StandardShockFitting::process()
   m_meshBackup->copy();
 
   m_redistrEqShockPoints->remesh();
+  cout << ".................................................\n";
+  cout << "_________________________________________________\n\n";
 
-  cout << "\n---------------------------------------------------------\n\n";
-  cout << "          StandardShockFitting::starting the time loop   \n";
-  cout << "---------------------------------------------------------\n";
-  cout << "---------------------------------------------------------\n\n";
+
+  cout << "\n-----------------------------------------------------------------";
+  cout << "\n-----------------------------------------------------------------\n\n";
+  cout << "              StandardShockFitting::starting the time loop   \n";
+  cout << "-----------------------------------------------------------------\n";
+  cout << "-----------------------------------------------------------------\n\n";
 
   for(unsigned I=MeshData::getInstance().getnbBegin();
     I<MeshData::getInstance().getnbSteps(); I++) {
 
    MeshData::getInstance().setIstep(I+1);
 
-   cout << "          StandardShockFitting::step number => ";
+   cout << "              StandardShockFitting::step number => ";
    cout << MeshData::getInstance().getIstep() << "   \n";
-   cout << "---------------------------------------------------------\n \n";
+   cout << "-----------------------------------------------------------------\n \n";
 
 
    execmd = "mkdir CheckC";
@@ -214,7 +234,7 @@ void StandardShockFitting::process()
 
    m_triangleToCFmesh->convert();
 
-   cout << "_________________________________________________________\n\n";
+   cout << "_________________________________________________________________\n\n";
 
    m_COOLFluiD->call();
 
@@ -242,11 +262,11 @@ void StandardShockFitting::process()
                                            system(execmd.c_str()); }
    }
 
-   cout << "_________________________________________________________\n\n";
+   cout << "_________________________________________________________________\n\n";
 
    m_CFmeshToTriangle->convert();
 
-   if       (m_version=="original")  { m_readNewMesh->generate(); }
+   if       (m_version=="original")  { m_readInputFile1->generate(); }
 
    m_copyZRoe1_0->copy();
 
@@ -267,9 +287,9 @@ void StandardShockFitting::process()
 
    m_meshRestore->copy();
 
-   cout << "_________________________________________________________\n";
+   cout << "_________________________________________________________________\n";
 
-   cout << "_________________________________________________________\n\n";
+   cout << "_________________________________________________________________\n\n";
 
    // create the directory to backup files
    backdir.str(string());
@@ -312,8 +332,8 @@ void StandardShockFitting::process()
    system(execmd.c_str());
   }
 
-  cout << "_________________________________________________________\n";
-  cout << "_________________________________________________________\n";
+  cout << "_________________________________________________________________\n";
+  cout << "_________________________________________________________________\n";
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
 }

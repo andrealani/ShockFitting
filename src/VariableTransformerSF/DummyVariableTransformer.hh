@@ -42,6 +42,9 @@ public:
   /// Transform one set of variable into another
   virtual void transform ();
 
+  /// Transform one given set of variable into another
+  virtual void transform (std::vector <double>*, std::vector <double>*,
+                          std::vector <double>*);
 };
   
 //--------------------------------------------------------------------------//

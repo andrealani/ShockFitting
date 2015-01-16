@@ -37,7 +37,7 @@ Triangle2CFmesh::Triangle2CFmesh(const std::string& objectName) :
   addOption("ShockBoundary", &m_boundary,
             "Additional info on the shock boundary: single or splitted");
 
-  m_param2prim.name() = "DummyVariableTransformer";
+  m_param2prim.name() = "dummyVariableTransformer";
 }
 
 //----------------------------------------------------------------------------//

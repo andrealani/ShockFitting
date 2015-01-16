@@ -192,8 +192,8 @@ void RdDpsEq::computeInterPoints(unsigned index)
      alpha = dsj/ds;
      beta = 1-alpha;
      j1 = j-1; i1 = i-1;
-     logfile("node=",j1,"\n");
-     logfile("node_new=",i1,"\n");
+     logfile("node = ",j1,"\n");
+     logfile("node_new = ",i1,"\n");
      for (unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
       // XYSh has the indeces that start from 0, therefore "i-1" index
       // is used
@@ -221,18 +221,17 @@ void RdDpsEq::computeInterPoints(unsigned index)
 void RdDpsEq::rewriteValues(unsigned index)
 {
   ISH = index;
-  logfile("new shock point coordinates");
+  logfile("new shock point coordinates and quantities");
 
   for (unsigned I=0; I<nShockPoints_new; I++) {
    for(unsigned K=0; K<PhysicsInfo::getnbDim(); K++) {
     unsigned m_dim = K+1;
-    logfile(m_dim);
     (*XYSh)(K,I,ISH)= XYSh_New(K,I);
-    logfile((*XYSh)(K,I,ISH), " ");
+    logfile("XYSh(",m_dim,") ",(*XYSh)(K,I,ISH), "\n");
    }
-   logfile("\n");
-   for(unsigned IV=0; IV<(*ndof); IV++) {
-    logfile(ZRoeShd_New(IV,I), " ");
+   logfile("ZRoeShu(1) ",ZRoeShu_New(0,I), " ");
+   logfile("ZRoeShd(1) ",ZRoeShd_New(0,I), " ");
+   for(unsigned IV=0;IV<(*ndof);IV++) {
     (*ZRoeShu)(IV,I,ISH) = ZRoeShu_New(IV,I);
     (*ZRoeShd)(IV,I,ISH) = ZRoeShd_New(IV,I);
    }

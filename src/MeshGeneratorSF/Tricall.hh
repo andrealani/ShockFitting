@@ -52,6 +52,9 @@ public:
   /// create and refine the mesh
   virtual void generate();
 
+  /// create and refine the mesh
+  virtual void generate(std::string);
+
 private: // helper functions
 
   /// print triangle output

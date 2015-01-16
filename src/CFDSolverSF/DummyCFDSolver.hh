@@ -4,12 +4,12 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#ifndef ShockFitting_DummyRemeshing_hh
-#define ShockFitting_DummyRemeshing_hh
+#ifndef ShockFitting_DummyCFDSolver_hh
+#define ShockFitting_DummyCFDSolver_hh
 
 //--------------------------------------------------------------------------//
 
-#include "Framework/Remeshing.hh"
+#include "Framework/CFDSolver.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -17,18 +17,17 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines a DummyRemeshing, whose task is to alter a mesh
-/// geometry
+/// This class defines a DummyCFDSolver, whose task is call a CFD solver.
 
-class DummyRemeshing : public Remeshing {
+class DummyCFDSolver : public CFDSolver {
 public:
 
   /// Constructor 
   /// @param objectName the concrete class name
-  DummyRemeshing (const std::string& objectName);
+  DummyCFDSolver(const std::string& objectName);
 
   /// Destructor
-  virtual ~DummyRemeshing();
+  virtual ~DummyCFDSolver();
 
   /// Set up this object before its first use
   virtual void setup();
@@ -36,15 +35,12 @@ public:
   /// Unset up this object after its last use
   virtual void unsetup();
 
-  /// command geometry remesh
-  virtual void remesh();
-
+  /// Read input files
+  virtual void call();
 };
 
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting
 
-//--------------------------------------------------------------------------//
-
-#endif // ShockFitting_DummyRemeshing_hh
+#endif // ShockFitting_DummyCFDSolver_hh

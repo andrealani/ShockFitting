@@ -6,6 +6,7 @@
 
 #include "VariableTransformerSF/Param2PrimPgDimensional.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -86,7 +87,18 @@ void Param2PrimPgDimensional::transform()
     (*zroe)(3,IPOIN) = pres/rho *
                        (ReferenceInfo::geturef() * ReferenceInfo::geturef() /
                         ReferenceInfo::getRgas());
+
+    for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
+     (*XY)(I,IPOIN) = (*XY)(I,IPOIN)*ReferenceInfo::getLref(); }
   }
+}
+
+//--------------------------------------------------------------------------//
+
+void Param2PrimPgDimensional::transform(vector <double>* m_zroe,
+                                        vector <double>* m_XY,
+                                        vector <double>* m_prim)
+{
 }
 
 //--------------------------------------------------------------------------//

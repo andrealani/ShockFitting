@@ -21,7 +21,7 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 /// This class defines ChemicalInfo, whose task is to take informations about
-/// gas model and mixture.
+/// gas model and mixture and assign them to the PhysicsData pattern
 /// If model = Cneq or model = TCneq ChemInfo reads data from mixture.dat
 /// file and stores them in vectors 
 

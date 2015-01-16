@@ -115,8 +115,6 @@ var.close();
 
 
 
-
-
   unsigned I1, I2, JPOIN;
 
   logfile.Open(getClassName().c_str());
@@ -124,9 +122,9 @@ var.close();
   logfile("Entering in Interp\n");
 
   // match upstream nodes with downstream ones
-  // coordinates of the shocked mesh are used
-  // the nof of shock points is that on the shocked mesh
-  // NOT the one on the background mesh
+  // these are the coordinates of the shocked mesh (1)
+  // the nof of shock points belongs the shocked mesh
+  // NOT the background mesh
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for(unsigned IPOIN=0; IPOIN<nShockPoints->at(ISH); IPOIN++)  {
     I1 = ISH * PhysicsInfo::getnbShMax() + IPOIN; //c++ indeces start from 0
@@ -155,7 +153,7 @@ var.close();
 
     logfile("Found in cell ",getCell()," ",getIfound(), "\n");
     if(getIfound()!=0) {
-     logfile("Search failed for vertex ", IPOIN, "\n");
+     logfile("Search failed for vertex ", m_IPOIN, "\n");
      for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)
       { logfile((*XYBkg)(I,IPOIN), " "); }
      logfile ("\ncell no. is ",getCell(),"\n");
@@ -177,7 +175,7 @@ var.close();
   }
 
   logfile.Close();
-
+/*
 FILE* output;
 output = fopen("CheckC/interp.check","w");
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
@@ -185,7 +183,7 @@ output = fopen("CheckC/interp.check","w");
 fprintf(output,"%32.16F %s",(*zBkg)(I,IPOIN)," ");}
 fprintf(output,"%s","\n");}
 fclose(output);
-
+*/
 
 }
 

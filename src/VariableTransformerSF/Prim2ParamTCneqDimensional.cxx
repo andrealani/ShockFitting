@@ -181,9 +181,86 @@ output = fopen("CheckC/transf2.check","w");
     for(unsigned K=0;K<(*ndof);K++) {
     fprintf(output,"%32.16F %s",(*zroe)(K,IP),"\n");}}
 fclose(output);
+}
 
+//--------------------------------------------------------------------------//
 
+void Prim2ParamTCneqDimensional::transform(vector <double>* m_prim,
+                                           vector <double>* m_XY,
+                                           vector <double>* m_zroe)
+{
+  double sqrtr = 0;
 
+  setPhysicsData("FirstCaptured");
+
+  // create VibrEnergy object
+  VibrEnergy computeVbEnergy;
+
+  rhos.resize((*nsp),0);
+  alpha.resize((*nsp),0);
+  u.resize(PhysicsInfo::getnbDim(),0);
+  T.resize(2,0);
+
+  for(unsigned ISP=0; ISP<(*nsp); ISP++)
+   { rhos.at(ISP) = m_prim->at(ISP); }
+
+  for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)
+   { u.at(I) = m_prim->at((*nsp)+I); }
+
+  for(unsigned I=0; I<2; I++)
+   { T.at(I) = m_prim->at((*nsp)+PhysicsInfo::getnbDim()+I); }
+
+  // rho
+  rho = 0;
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) { rho = rho + rhos.at(ISP); }
+  sqrtr = sqrt(rho);
+
+  // alpha 
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) { alpha.at(ISP) = rhos.at(ISP)/rho; }
+
+  // kinetic energy
+  kinetic = pow(u.at(0),2) + pow(u.at(1),2);
+  kinetic = kinetic * 0.5;
+
+  // formation enthalpy 
+  double hftot = 0.0;
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) {
+   // pow((*uref),2) is used because of the hf dimensionalization
+   // made by the ReferenceInfo object
+   // in ReferenceInfo hf->at(ISP) = hf->at(ISP)/((*uref) * (*uref));
+   double dumhf = hf->at(ISP) * pow(ReferenceInfo::geturef(),2);
+   hftot = hftot + alpha.at(ISP) * dumhf;
+  }
+  // call for vibrational energy
+  computeVbEnergy.callVibrEnergy(T.at(1),alpha);
+
+  ev = computeVbEnergy.getEv();
+
+  // roto-traslation specific heat
+  double Cp = 0;
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) {
+   Cp = Cp + alpha.at(ISP)* ChemicalConsts::Rgp() / mm->at(ISP) /
+        (gams->at(ISP)-1) * gams->at(ISP);
+  }
+
+  // total energy
+  h = Cp * T.at(0) + ev + hftot + kinetic;
+
+  sqrtr = sqrtr/sqrt(ReferenceInfo::getrhoref());
+
+  m_zroe->at((*IEV)) = sqrtr * ev /
+               (ReferenceInfo::geturef()*ReferenceInfo::geturef());
+  m_zroe->at((*IX)) = sqrtr * u.at(0) / ReferenceInfo::geturef();
+  m_zroe->at((*IY)) = sqrtr * u.at(1) / ReferenceInfo::geturef();
+  m_zroe->at((*IE)) = sqrtr * h /
+              (ReferenceInfo::geturef()*ReferenceInfo::geturef());
+
+  for(unsigned ISP=0; ISP<(*nsp); ISP++) {
+   m_zroe->at(ISP) = sqrtr * alpha.at(ISP);
+  }
+
+  m_XY->at(0) = m_XY->at(0) / ReferenceInfo::getLref();
+  m_XY->at(1) = m_XY->at(1) / ReferenceInfo::getLref();
 
 }
 

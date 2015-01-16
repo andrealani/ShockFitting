@@ -64,13 +64,13 @@ public:
 
 protected: // data
 
-  /// variables format input
+  /// input variables format
   std::string m_inFmt;
 
-  /// variables format output
+  /// output variables format
   std::string m_outFmt;
 
-  /// model used to compute the variables transformation
+  /// gas model
   std::string m_modelTransf;
 
   /// additional infos used to compute variables transformation

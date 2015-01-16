@@ -82,6 +82,12 @@ void ReSdwInfo::generate()
 
 //--------------------------------------------------------------------------//
 
+void ReSdwInfo::generate(string processingFile)
+{
+}
+
+//--------------------------------------------------------------------------//
+
 std::string ReSdwInfo::getInputFiles() const
 {
   using namespace std;

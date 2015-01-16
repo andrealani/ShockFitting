@@ -50,6 +50,10 @@ public:
   /// Transform one set of variable into another
   virtual void transform () = 0;
 
+  /// Transform one set of given variable to another
+  virtual void transform(std::vector<double>*, std::vector<double>*,
+                         std::vector<double>*) = 0;
+
   /// Gets the Class name
   static std::string getClassName() {return "VariableTransformer";}
 

@@ -40,6 +40,9 @@ public:
   /// generate the new mesh
   virtual void generate();
 
+  /// generate the new mesh from a given processing file
+  virtual void generate(std::string);
+
 private:
 
   /// dummy string

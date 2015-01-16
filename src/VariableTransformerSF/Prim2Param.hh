@@ -61,6 +61,10 @@ public:
   /// command variables transformation
   virtual void transform() = 0;
 
+  /// Transform given variables transformation
+  virtual void transform(std::vector<double>*, std::vector<double>*,
+                         std::vector<double>*) = 0;
+
   /// Gets the Class name
   static std::string getClassName() {return "Prim2Param";}
 
@@ -71,11 +75,14 @@ protected: // functions
   /// @param args is the ConfigArgs with the arguments to be parsed.
   virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
 
-  /// assign variables used in Parm2Prim to MeshData pattern
+  /// assign variables used in Prim2Param to MeshData pattern
   void setMeshData();
 
-  /// assign variables used in Parm2Prim to PhysicsData pattern
+  /// assign variables used in Prim2Param to PhysicsData pattern
   void setPhysicsData();
+
+  /// assign a few number of variables used in Prim2Param to PhysicsData pattern
+  void setPhysicsData(std::string);
 
   /// assign start pointers of Array2D and 3D
   void setAddress();

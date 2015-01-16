@@ -1,6 +1,8 @@
 LIST ( APPEND CFDSolverSF_files
 COOLFluiD.cxx
 COOLFluiD.hh
+DummyCFDSolver.cxx
+DummyCFDSolver.hh
 )
 
 LIST ( APPEND CFDSolverSF_libs Framework SConfig MathTools)

@@ -193,5 +193,13 @@ fclose(output);
 
 //--------------------------------------------------------------------------//
 
+void Param2PrimTCneqDimensional::transform(vector <double>* m_zroe,
+					   vector <double>* m_XY,
+                                           vector <double>* m_prim)
+{
+}
+
+//--------------------------------------------------------------------------//
+
 } // namespace ShockFitting
 

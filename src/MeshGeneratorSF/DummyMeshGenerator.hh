@@ -40,10 +40,12 @@ public:
   /// Read input files
   virtual void generate();
 
+  /// Read a given input file
+  virtual void generate(std::string);
 };
 
 //--------------------------------------------------------------------------//
 
 } // namespace ShockFitting
 
-#endif // ShockFitting_MeshGenerator_hh
+#endif // ShockFitting_DummyMeshGenerator_hh

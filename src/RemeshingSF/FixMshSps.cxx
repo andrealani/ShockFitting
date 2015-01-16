@@ -209,6 +209,8 @@ void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
   s1 = lookForBE.getS();
 
   if (iedg1==-1) {
+   cout << "FixMshSps::error => failed matching shock points\n";
+   cout << "                    look in the FixMshSps.log file for more info\n";
    logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
    exit(1);}
   int iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
@@ -222,7 +224,9 @@ void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
   iedg2 = lookForBE.getBEdg(xsh, ysh);
   s2 = lookForBE.getS();
 
-  if (iedg2==-1) { 
+  if (iedg2==-1) {
+   cout << "FixMshSps::error => failed matching the shock points\n";
+   cout << "                    look in the FixMshSps.log file for more info\n"; 
    logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
    exit(1);}
   iedg = iedg2+1; // only for log file printing, c++ indeces start from 0

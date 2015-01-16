@@ -72,4 +72,20 @@ void TriangleExe::generate()
 
 //--------------------------------------------------------------------------//
 
+void TriangleExe::generate(string processingFile)
+{
+  LogToScreen(INFO,"TriangleExe::generate()\n");
+
+  command = "/data/deamicis/ShockFitting.git/trunk/src/MeshGeneratorSF/TriLibrary/triangle -nep "
+            + processingFile + " > log/TriangleExe.log";
+
+  system(command.c_str());
+
+  if(system(command.c_str())!=0) {
+   cout << "TriangleExe::error => Triangle Mesh Generator execution failed\n";
+   exit(1); }
+}
+
+//--------------------------------------------------------------------------//
+
 } // namespace ShockFitting

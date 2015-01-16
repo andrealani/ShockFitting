@@ -61,6 +61,9 @@ public:
   /// Run the mesh reading
   virtual void generate();
 
+  /// Run the mesh reading from a given input file
+  virtual void generate(std::string);
+
 private: // helper functions
 
   /// return class name

@@ -6,6 +6,7 @@
 
 #include "VariableTransformerSF/Prim2ParamPgAdimensional.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsInfo.hh"
 #include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -84,7 +85,40 @@ void Prim2ParamPgAdimensional::transform()
    (*zroe)(2,IPOIN) = sqrtr * (*zroe)(1,IPOIN);
    (*zroe)(1,IPOIN) = sqrtr * h;
    (*zroe)(0,IPOIN) = sqrtr;
+
+    for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
+     (*XY)(I,IPOIN) = (*XY)(I,IPOIN)/ReferenceInfo::getLref(); }
   }
+}
+
+//--------------------------------------------------------------------------//
+
+void Prim2ParamPgAdimensional::transform(vector <double>* m_prim,
+					 vector <double>* m_XY,
+					 vector <double>* m_zroe)
+{
+  double sqrtr;
+
+  double rhoref = ReferenceInfo::getpref() / ReferenceInfo::getTref() /
+                  ReferenceInfo::getRgas();
+
+  ReferenceInfo::setrhoref(rhoref);
+
+  rho = m_prim->at(0) / m_prim->at(3) / ReferenceInfo::getRgas()/ 
+        ReferenceInfo::getTref() * ReferenceInfo::geturef() * ReferenceInfo::geturef();
+  sqrtr = sqrt(rho);
+  kinetic = pow(m_prim->at(1),2)+pow(m_prim->at(2),2);
+  kinetic = kinetic*0.5;
+  help = ReferenceInfo::getgam()/(ReferenceInfo::getgam()-1);
+  h = help * ReferenceInfo::getRgas() * m_prim->at(3) + kinetic;
+
+  m_zroe->at(3) = sqrtr * m_prim->at(2);
+  m_zroe->at(2) = sqrtr * m_prim->at(1);
+  m_zroe->at(1) = sqrtr * h;
+  m_zroe->at(0) = sqrtr;
+
+  m_XY->at(0) = m_XY->at(0)/ ReferenceInfo::getLref();
+  m_XY->at(1) = m_XY->at(1)/ ReferenceInfo::getLref();
 }
 
 //--------------------------------------------------------------------------//

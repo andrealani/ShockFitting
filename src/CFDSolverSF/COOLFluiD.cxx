@@ -72,24 +72,13 @@ void COOLFluiD::call()
    command << " coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
   }
 
-//  system(command.str().c_str());
   FILE* file = popen(command.str().c_str(),"r");
 
-//  if(!file) {
-//   cout << "CFDSolver::error => Failed to call COOLFluiD\n";
-//   exit(1); }
+  if(!file) {
+   cout << "CFDSolver::error => Failed to call COOLFluiD\n";
+   exit(1); }
 
   pclose(file);
-
-//  if(pclose(file)!=0) {
-//   cout << "CFDSolver::error => Failed to close command stream \n";
-//   exit(1); }
-/*
-  if(system(command.str().c_str())!=0) {
-   cout << "COOLFluiD::error => COOLFluiD has return an error code\n"; 
-   cout << "                    check COOLFluiD output file in log/coolfluid.log\n";
-   exit(1); }
-*/
 }
 
 //--------------------------------------------------------------------------//

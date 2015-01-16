@@ -299,6 +299,17 @@ nine:
 
 //--------------------------------------------------------------------------//
 
+void Tricall::generate(string dummystr)
+{
+  LogToScreen(INFO, "Tricall::generate()\n");
+
+
+
+
+}
+
+//--------------------------------------------------------------------------//
+
 void Tricall::setMapVectorForNodcod()
 {
   for (unsigned IPOIN=0; IPOIN< npoin->at(0); IPOIN++) {

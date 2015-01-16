@@ -104,6 +104,12 @@ void ReadTriangle::generate()
 
 //--------------------------------------------------------------------------//
 
+void ReadTriangle::generate(string processingFile)
+{
+}
+
+//--------------------------------------------------------------------------//
+
 void ReadTriangle::ReadNode()
 {
   unsigned totsize,dim,iattr, states;

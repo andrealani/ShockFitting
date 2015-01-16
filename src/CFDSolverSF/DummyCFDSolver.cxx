@@ -1,10 +1,10 @@
-// Copyright (C) 2013 von Karman Institute for Fluid Dynamics, Belgium
+// Copyright (C) 2014 von Karman Institute for Fluid Dynamics, Belgium
 //
 // This software is distributed under the terms of the
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#include "VariableTransformerSF/DummyVariableTransformer.hh"
+#include "CFDSolverSF/DummyCFDSolver.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -18,48 +18,39 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<DummyVariableTransformer, VariableTransformer> 
-dummyVariableTransformerProv("DummyVariableTransformer"); 
- 
-//--------------------------------------------------------------------------//
-  
-DummyVariableTransformer::DummyVariableTransformer(const std::string& objectName) :
-  VariableTransformer(objectName)
-{
-}
- 
+ObjectProvider<DummyCFDSolver, CFDSolver>
+dummyCFDSolverProv("DummyCFDSolver");
+
 //--------------------------------------------------------------------------//
 
-DummyVariableTransformer::~DummyVariableTransformer()
+DummyCFDSolver::DummyCFDSolver(const std::string& objectName) :
+  CFDSolver(objectName)
 {
 }
 
 //--------------------------------------------------------------------------//
 
-void DummyVariableTransformer::setup()
+DummyCFDSolver::~DummyCFDSolver()
 {
 }
 
 //--------------------------------------------------------------------------//
 
-void DummyVariableTransformer::unsetup() 
-{ 
-} 
- 
-//--------------------------------------------------------------------------// 
-
-void DummyVariableTransformer::transform()
+void DummyCFDSolver::setup()
 {
-  std::cout << "DummyVariableTransformer::transform()\n";
 }
 
 //--------------------------------------------------------------------------//
 
-void DummyVariableTransformer::transform(std::vector<double>* m_before,
-					 std::vector<double>* m_XY,
-                                         std::vector<double>* m_after)
+void DummyCFDSolver::unsetup()
 {
-  std::cout << "DummyVariableTransformer::transform()\n";
+}
+
+//--------------------------------------------------------------------------//
+
+void DummyCFDSolver::call()
+{
+  std::cout <<"DummyCFDSolver::call()\n";
 }
 
 //--------------------------------------------------------------------------//

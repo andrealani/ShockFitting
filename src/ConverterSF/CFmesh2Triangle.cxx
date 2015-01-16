@@ -35,7 +35,7 @@ CFmesh2TriangleProv("CFmesh2Triangle");
 CFmesh2Triangle::CFmesh2Triangle(const std::string& objectName) :
   Converter(objectName)
 {
-  m_prim2param.name() = "DummyVariableTransformer";
+  m_prim2param.name() = "dummyVariableTransformer";
 }
 
 //----------------------------------------------------------------------------//
@@ -99,7 +99,7 @@ void CFmesh2Triangle::convert()
   LogToScreen(DEBUG_MIN, "CFmesh2Triangle::reading CFmesh format\n");
   readCFmeshFmt();
 
-  // make the transformation fro primitive variables to dimensional 
+  // make the transformation from primitive variables to 
   // Roe parameter vector variables
   m_prim2param.ptr()->transform(); 
 
@@ -132,7 +132,6 @@ void CFmesh2Triangle::readCFmeshFmt()
 
   // reading file
   ifstream file;
-
 
   string cfoutCFmesh = "cfout.CFmesh";
 

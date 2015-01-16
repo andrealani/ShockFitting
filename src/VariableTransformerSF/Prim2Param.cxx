@@ -95,4 +95,21 @@ void Prim2Param::setPhysicsData()
 
 //--------------------------------------------------------------------------//
 
+void Prim2Param::setPhysicsData(string FirstCaptured)
+{
+  nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
+  mm = PhysicsData::getInstance().getData <vector<double> > ("MM");
+  hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
+  thev = PhysicsData::getInstance().getData <vector<double> > ("THEV");
+  gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
+  typemol =
+    PhysicsData::getInstance().getData <vector<string> > ("TYPEMOL");
+}
+
+//--------------------------------------------------------------------------//
+
 } // namespace ShockFitting

@@ -55,4 +55,10 @@ void DummyMeshGenerator::generate()
 
 //--------------------------------------------------------------------------//
 
+void DummyMeshGenerator::generate(std::string)
+{
+}
+
+//--------------------------------------------------------------------------//
+
 } // namespace ShockFitting

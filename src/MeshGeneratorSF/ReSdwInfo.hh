@@ -41,8 +41,11 @@ public:
   /// Unset up this object before its first use
   virtual void unsetup();
 
-  /// Run file reading
+  /// read shock info file
   virtual void generate();
+
+  /// Read a given file
+  virtual void generate(std::string);
 
 private: // helper functions
 

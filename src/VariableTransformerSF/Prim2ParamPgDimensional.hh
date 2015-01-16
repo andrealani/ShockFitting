@@ -41,9 +41,12 @@ public:
   /// Unset up this object after its last use
   virtual void unsetup();
 
-  /// transform variables
+  /// transform variables of the MeshData pattern
   virtual void transform();
 
+  /// transform given variables
+  virtual void transform(std::vector<double>*, 
+                         std::vector<double>*, std::vector<double>*);
 };
 
 //--------------------------------------------------------------------------//

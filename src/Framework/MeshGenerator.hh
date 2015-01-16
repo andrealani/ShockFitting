@@ -20,14 +20,14 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-///This class defines a MeshGenerator, whose task is read informations
+/// This class defines a MeshGenerator, whose task is read informations
 /// needed to generate a mesh from input files and store them in arrays 
 /// and vectors.
 
 class MeshGenerator : public BaseShockFitting {
 public:
 
-  ///typedef needed by the self-registration mechanism
+  /// typedef needed by the self-registration mechanism
   typedef SConfig::Provider<MeshGenerator> PROVIDER;
 
   /// Constructor
@@ -48,8 +48,11 @@ public:
   /// @param args is the ConfgArgs with the arguments to be parsed.
   virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
 
-  /// Read one or more input files and stores values in arrays
+  /// generate a mesh domain from input files
   virtual void generate() = 0;
+
+  /// generate a mesh from given processing file
+  virtual void generate(std::string) = 0;
 
   /// Set the mesh field
   virtual void setMeshField (Field *const field);

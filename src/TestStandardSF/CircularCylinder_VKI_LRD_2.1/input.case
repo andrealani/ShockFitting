@@ -29,16 +29,16 @@
   .StandardShockFitting.MeshData.WithP0 = true 
      
  # number of processor
-  .StandardShockFitting.MeshData.NPROC = 12         
+  .StandardShockFitting.MeshData.NPROC = 8         
 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
 
  # number of step
-  .StandardShockFitting.MeshData.NSteps = 10000 
+  .StandardShockFitting.MeshData.NSteps = 12101 
 
  # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 1 
+  .StandardShockFitting.MeshData.IBAK = 100 
 ###----------------------------------------------------------
 
 
@@ -83,7 +83,7 @@
   # reference speed (only if model=Cneq and mixture=Ar4)
     .StandardShockFitting.PhysicsData.ChemicalInfo.Qref = /                            
 
-  # global indeces
+  # global indeces (should not be changed)
     .StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0                    
     .StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1                      
     .StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2                         
@@ -119,7 +119,7 @@
 
 ##--- List of mesh generator objects
  .StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo \
-                                           TriangleExe ReadTriangle Tricall
+                                           TriangleExe Tricall
 
 # processing file
    .StandardShockFitting.ReadTriangle.InputFiles = na00.1 
@@ -135,7 +135,10 @@
 ##--- List of remeshing objects
 .StandardShockFitting.RemeshingList = BndryNodePtr RdDpsEq FndPhPs ChangeBndryPtr \
                                        CoPntDispl FixMshSps RdDps
-# object computing normal vector
+# object computing normal vector CoNorm
+# add Pg for perfect gas
+# add Ar for chemical non equilibrium 
+# add TCneq for temperature and chemical non equilibrium 
  .StandardShockFitting.CoNorm = CoNorm4TCneq
 ##------
 
@@ -146,20 +149,57 @@
 
 
 ##--- List of converters
-.StandardShockFitting.ConverterList = Triangle2CFmesh CFmesh2Triangle
+.StandardShockFitting.ConverterList = ShockFileConverter CFmesh2StartingTriangle \
+                                      Triangle2CFmesh CFmesh2Triangle
 
- # Converter features
+  # input file containing the shock polyline and the downstream state
+  .StandardShockFitting.ShockFileConverter.InputFile = shock.dat
+
+  # number of variables inside the shock input file
+  .StandardShockFitting.ShockFileConverter.nbDof = 6 
+
+  # number of shocks
+  .StandardShockFitting.ShockFileConverter.nbShocks = 1
+
+  # number of special points
+  .StandardShockFitting.ShockFileConverter.nbSpecPoints = 2
+
+  # type of the special point
+  # it is now implemented only for OPY special point
+  .StandardShockFitting.ShockFileConverter.TypeSpecPoints = OPY
+
+  # Converter features
+  # From/To        => Param : parameter vector
+  #                   Prim : primitive
+  #                   Cons : conservative (not implemented)
+  # GasModel       => Pg or TCneq
+  # AdditionalInfo => Dimensional or Adimensional related to CoolFluiD fmt
+
+  # object converting shock file from the captured solution in the sh00.dat file
+  .StandardShockFitting.ShockFileConverter.From = Prim
+  .StandardShockFitting.ShockFileConverter.To = Param
+  .StandardShockFitting.ShockFileConverter.GasModel = TCneq
+  .StandardShockFitting.ShockFileConverter.AdditionalInfo = Dimensional
+
+  # object converting the starting captured solution in the triangle files  
+  .StandardShockFitting.CFmesh2StartingTriangle.InputFile = start.CFmesh
+  .StandardShockFitting.CFmesh2StartingTriangle.From = Prim
+  .StandardShockFitting.CFmesh2StartingTriangle.To = Param
+  .StandardShockFitting.CFmesh2StartingTriangle.GasModel = TCneq 
+  .StandardShockFitting.CFmesh2StartingTriangle.AdditionalInfo = Dimensional
+
+  # object converting the triangle flies in the cfin.CFmesh file
   .StandardShockFitting.Triangle2CFmesh.From = Param
   .StandardShockFitting.Triangle2CFmesh.To = Prim
-  .StandardShockFitting.Triangle2CFmesh.Model = TCneq
+  .StandardShockFitting.Triangle2CFmesh.GasModel = TCneq
   .StandardShockFitting.Triangle2CFmesh.AdditionalInfo = Dimensional
    # 'single' or 'splitted'
   .StandardShockFitting.Triangle2CFmesh.ShockBoundary = single
 
- # Converter features
+  # object converting the cfout.CFmesh file in the triangle files
   .StandardShockFitting.CFmesh2Triangle.From = Prim
   .StandardShockFitting.CFmesh2Triangle.To = Param
-  .StandardShockFitting.CFmesh2Triangle.Model = TCneq
+  .StandardShockFitting.CFmesh2Triangle.GasModel = TCneq
   .StandardShockFitting.CFmesh2Triangle.AdditionalInfo = Dimensional
 ##------
 
@@ -173,9 +213,15 @@
 ## List of state updater objects
 .StandardShockFitting.StateUpdaterList = FixStateSps Interp
 
-# object compute mesh points states
+# object compute mesh points state ComputeStateDps
+# add Pg for perfect gas
+# add Ar for chemical non equilibrium
+# add TCneq for temperature and chemical non equilibrium
  .StandardShockFitting.ComputeStateDps = ComputeStateDps4TCneq
 
-# object moving discontinuities
+# object moving discontinuities MoveDps
+# add Pg for perfect gas
+# add Ar for chemical non equilibrium
+# add TCneq for temperature and chemical non equilibrium
  .StandardShockFitting.MoveDps = MoveDps4TCneq
 ##
