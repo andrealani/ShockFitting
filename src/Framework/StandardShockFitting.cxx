@@ -193,7 +193,7 @@ void StandardShockFitting::process()
 
    system(string("mv na00.poly na99.poly").c_str());
   }
-exit(1);
+
   cout << "_________________________________________________\n\n";
   cout << "Building the initial computational domain\n\n";
 
