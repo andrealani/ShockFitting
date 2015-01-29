@@ -117,6 +117,7 @@ void ChangeBndryPtr::lookForNode(int IPOIN)
   Binsrc findIpoin(ipoin,iwork_nodptr);
   ipos = findIpoin.callBinsrc();
   if (ipos==-1) {
+   cout << "ChangeBndryPtr::error => look at ChangeBndryPtr.log file\n";
    logfile("Entry NOT found for ", ipoin, "\n");
    logfile("Entry NOT found for ", ipoin, "\n");
    exit(1);

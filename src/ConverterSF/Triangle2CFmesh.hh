@@ -63,6 +63,9 @@ protected: // functions
 
 private: // helper functions
 
+  /// return the class name
+  std::string getClassName() { return "Triangle2CFmesh"; }
+
   /// read triangle mesh generator format file
   void readTriangleFmt();
 

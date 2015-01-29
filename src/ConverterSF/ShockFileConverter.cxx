@@ -142,7 +142,7 @@ void ShockFileConverter::convert()
 
   while(dummystring!="ZONE") { shockdat >> dummystring; }
 
-//  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..)
+  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..)
 
   nbShockPoints = 0;
   while (!shockdat.eof()) {
@@ -162,7 +162,7 @@ void ShockFileConverter::convert()
 
   while(dummystring!="ZONE") { shockdat >> dummystring; }
 
-//  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..) 
+  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..) 
 
   shfile = fopen("sh00.dat","w");
   fprintf(shfile,"%1u %s",m_nbShocks,"\n");

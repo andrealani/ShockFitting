@@ -66,40 +66,6 @@ void RdDps::remesh()
   setPhysicsData();
 
   setAddress();
-/*
-ifstream var;
-stringstream pathvar;
-pathvar.str(string());
-if(MeshData::getInstance().getIstep()<10){
-//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step0000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
-}
-else if (MeshData::getInstance().getIstep()>=10 &&
-         MeshData::getInstance().getIstep()<100){
-//pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.0/tests/CircularCylinder-Unibas_inv_M20_coarse_N/step000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
-}
-
-else if (MeshData::getInstance().getIstep()>=100 &&
-         MeshData::getInstance().getIstep()<1000){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/rddps.var";
-}
-
-
-string path = pathvar.str();
-var.open(path.c_str());
-
-if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening rddps.var" << endl;
-}
-
-  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShu)(k,I,ISH);}
-    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZroeShd)(k,I,ISH);}
-    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
-}}
-var.close();
-*/
 
   unsigned iShPoint;
   double dum;
@@ -140,22 +106,20 @@ var.close();
 
    if (ileMin != 0) {
 
-    cout << "\n\n\nRdDps::warning => ileMin!=0 this part has never been tested\n";
-    cout << "                  if something goes wrong please check the IV index\n";
-    cout << "                  and the output file ileMinLog.check\n\n\n";
-
     logfile("Before\n ");
+
     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
      iShPoint = IV+1;
      logfile(iShPoint," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
     }
     unsigned npc = ileMin;
-
-    if (ShEdgeLgth.at(ileMin-2)>ShEdgeLgth.at(ileMin)  )   { npc = ileMin+1; }
-    if (ileMin==1)                                         { npc = 2; }
-    if (ileMin==nShockEdges->at(ISH))                      { npc = ileMin; }
+   
+    if (ShEdgeLgth.at(ileMin-1)>ShEdgeLgth.at(ileMin+1)  )   { npc = ileMin+1; }
+    if (ileMin==1)                                           { npc = 2; }
+    if (ileMin==nShockEdges->at(ISH))                        { npc = ileMin; }
 
     for(unsigned IV=npc; IV<nShockPoints->at(ISH); IV++) {
+
      for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
       (*XYSh)(I,IV-1,ISH) = (*XYSh)(I,IV,ISH); // c++ indeces start from 0
      }
@@ -173,21 +137,6 @@ var.close();
      iShPoint = IV+1;
      logfile(iShPoint," ", (*ZroeShd)(0,IV,ISH)," ",(*ZroeShd)(1,IV,ISH),"\n");
     }
-
-    FILE* ileMinLog;
-    ileMinLog = fopen("IleMinLog.check","w");
-
-     for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-      for(unsigned k=0;k<(*ndof);k++) {
-       fprintf(ileMinLog,"%32.16F %s",(*ZroeShd)(k,IV,ISH)," ");}
-      for(unsigned k=0;k<(*ndof);k++) {
-       fprintf(ileMinLog,"%32.16F %s",(*ZroeShu)(k,IV,ISH)," ");}
-        for(unsigned k=0;k<2;k++) { 
-       fprintf(ileMinLog,"%32.16F %s",(*XYSh)(k,IV,ISH)," ");}
-     }
-
-    fclose(ileMinLog);
-
    }
 
    if (ileMax !=0) { 
@@ -231,21 +180,6 @@ var.close();
   }
 
   logfile.Close();
-
-FILE* output;
-output =fopen("CheckC/rddps.check","w");
-
-for(unsigned ISH=0;ISH<(*nShocks);ISH++) {
-    for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-     for(unsigned k=0;k<(*ndof);k++) {
-      fprintf(output,"%32.16F %s",(*ZroeShd)(k,IV,ISH)," ");}
-     for(unsigned k=0;k<(*ndof);k++) {
-      fprintf(output,"%32.16F %s",(*ZroeShu)(k,IV,ISH)," ");}
-         for(unsigned k=0;k<2;k++) {
-      fprintf(output,"%32.16F %s",(*XYSh)(k,IV,ISH)," ");}
-}}
-
-fclose(output);
 }
 
 //--------------------------------------------------------------------------//

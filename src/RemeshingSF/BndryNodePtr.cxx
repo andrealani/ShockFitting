@@ -78,11 +78,10 @@ void BndryNodePtr::remesh()
 
 void BndryNodePtr::setBndryNodePtr()
 {
-  getnbFreezedPoints();
   getnbBndryPoints();
 
   nodptrVect->resize(nbpoin->at(0) * 3);
-  iwork_.resize(nbpoin->at(0));
+  iwork_.resize(nbpoin->at(0) * 2);
   iworkRank_.resize(nbpoin->at(0));
 
   // assign arrays used in BndryNodePtr to MeshData 
@@ -114,7 +113,7 @@ void BndryNodePtr::myroutine()
   logfile("Found ",nbpoin->at(0)," boundary points\n");
   }
   else {
-   cout << "LAST =! NBPOIN\n";
+   cout << "BndryNodePtr::error => LAST =! NBPOIN\n";
    exit(1);
   }
 
@@ -137,7 +136,8 @@ void BndryNodePtr::myroutine()
       Binsrc B(IPOIN, iwork_nodptr);
       ipos = B.callBinsrc();
       if (ipos ==-1) {
-       cout << "Subr. CheckBndryPntr: Entry NOT found for " << IPOIN << endl;
+       cout << "BndryNodePtr::error => subr. CheckBndryPntr entry NOT found for ";
+       cout << IPOIN << endl;
        cout << "Color: " << (*bndfac)(2,IFACE) << endl;
        cout << (*bndfac)(0,IFACE) << " , " << (*bndfac)(1,IFACE) << endl;
        exit(1);
@@ -152,7 +152,7 @@ void BndryNodePtr::myroutine()
       }
   // node seems to belong to two boundary faces
       ifail = IPOIN;
-      cout << "Node seems to belong to two boundary faces\n";
+      cout << "BndryNodePtr::error => Node seems to belong to two boundary faces\n";
       cout << "Face no. " << IFACE << endl;
       for (unsigned k=0; k<3; k++) { cout << (*bndfac)(k,IFACE) << ", " << endl;}
       cout << "Node no. " << IPOIN << endl;
@@ -164,19 +164,11 @@ void BndryNodePtr::myroutine()
   }
 
   seven:
-     if (ifail !=0) { cout << "Unrecoverable error in CheckBndryPntr\n"; exit(1);}
+     if (ifail !=0) { 
+      cout << "BndryNodePtr::error => unrecoverable error in CheckBndryPntr\n";
+      exit(1);}
 
   return;
-}
-
-//--------------------------------------------------------------------------//
-
-void BndryNodePtr::getnbFreezedPoints()
-{
-  *nfpoin=0;
-  for (unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
-   if((*nodcod)[IPOIN]==999) { (*nfpoin)++;}
-  }
 }
 
 //--------------------------------------------------------------------------//
@@ -187,7 +179,6 @@ void BndryNodePtr::getnbBndryPoints()
   for (unsigned IPOIN=0; IPOIN<npoin->at(0)-1; IPOIN++) {
    if((*nodcod)[IPOIN]>0) {nbpoin->at(0)++;}
   }
-  nbpoin->at(0) = nbpoin->at(0) - (*nfpoin);
 }
 
 //--------------------------------------------------------------------------//
@@ -208,7 +199,6 @@ void BndryNodePtr::setMeshData()
 {
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
-  nfpoin = MeshData::getInstance().getData <unsigned> ("NFPOIN");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   nodptrVect = MeshData::getInstance().getData <vector<int> >("NODPTR");

@@ -143,22 +143,6 @@ void ComputeStateDps4Pg::update()
    }
   }
   logfile.Close();
-
-FILE* output;
-output = fopen("CheckC/costatedps.check","w");
-
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-     for(unsigned K=0;K<4;K++) {
-     fprintf(output,"%32.16F %s",(*ZroeShu)(K,IV,ISH)," ");}
-     fprintf(output,"%s","\n");
-     for(unsigned K=0;K<4;K++) {
-     fprintf(output,"%32.16F %s",(*ZroeShd)(K,IV,ISH)," ");}
-     for(unsigned K=0;K<2;K++) {
-     fprintf(output,"%32.16F %s",(*vShNor)(K,IV,ISH)," ");}
-}}
-fclose(output);
-
 }
 
 //----------------------------------------------------------------------------//

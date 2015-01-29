@@ -22,8 +22,21 @@ public:
   /// Destructor
   ~MinMax() {}
 
+  /// return minimum value between two values
+  TYPE min(TYPE value1, TYPE value2) {
+   minvalue = value1;
+   if (value2<minvalue) { minvalue = value2; }
+   return minvalue;
+  }
 
-  /// return minimum value
+  /// return maximum value between two values
+  TYPE max(TYPE value1, TYPE value2) {
+   maxvalue = value1;
+   if (value2>maxvalue) { maxvalue = value2; }
+   return maxvalue;
+  }
+
+  /// return minimum value between three values
   TYPE min(TYPE value1, TYPE value2, TYPE value3) {
    minvalue = value1;
    if (value2<minvalue) { minvalue = value2; }
@@ -31,7 +44,7 @@ public:
    return minvalue;
   }
 
-  /// return maximum value
+  /// return maximum value between three values
   TYPE max(TYPE value1, TYPE value2, TYPE value3) {
    maxvalue = value1;
    if (value2>maxvalue) { maxvalue = value2; }

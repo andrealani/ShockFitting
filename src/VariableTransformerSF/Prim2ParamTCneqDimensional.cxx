@@ -70,38 +70,6 @@ void Prim2ParamTCneqDimensional::transform()
 
   double sqrtr;
 
-/*
-ifstream var;
-stringstream pathvar;
-pathvar.str(string());
-if(MeshData::getInstance().getIstep()<10){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
-}
-else if (MeshData::getInstance().getIstep()>=10 &&
-         MeshData::getInstance().getIstep()<100){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
-}
-else if (MeshData::getInstance().getIstep()>=100 &&
-         MeshData::getInstance().getIstep()<1000){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/VarT2/transf.var";
-}
-
-
-string path = pathvar.str();
-var.open(path.c_str());
-
-if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening transf.var" << endl;
-}
-
-
-  for (unsigned I=0; I<npoin->at(1); I++) {
-    for(unsigned k=0;k<(*ndof);k++) { var >> (*zroe)(k,I);}
-}
-var.close();
-*/
-
-
-
   // create VibrEnergy object
   VibrEnergy computeVbEnergy;
 
@@ -172,15 +140,6 @@ var.close();
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / ReferenceInfo::getLref();
    (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / ReferenceInfo::getLref();
   }
-
-
-FILE* output;
-output = fopen("CheckC/transf2.check","w");
-
-  for (unsigned IP=0; IP<npoin->at(1); IP++) {
-    for(unsigned K=0;K<(*ndof);K++) {
-    fprintf(output,"%32.16F %s",(*zroe)(K,IP),"\n");}}
-fclose(output);
 }
 
 //--------------------------------------------------------------------------//

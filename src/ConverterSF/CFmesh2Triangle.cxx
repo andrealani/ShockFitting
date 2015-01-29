@@ -10,7 +10,6 @@
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
-#include "MathTools/Jcycl.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/Factory.hh"
 #include "SConfig/ConfigFileReader.hh"

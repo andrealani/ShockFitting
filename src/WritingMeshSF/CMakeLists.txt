@@ -6,7 +6,9 @@ WriteBackTriangle.hh
 WriteSdwInfo.cxx
 WriteSdwInfo.hh
 WriteTriangle.cxx
+WriteTriangleFreez.cxx
 WriteTriangle.hh
+WriteTriangleFreez.hh
 )
 
 LIST ( APPEND WritingMeshSF_libs Framework SConfig MathTools )

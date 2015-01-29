@@ -4,14 +4,15 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#ifndef ShockFitting_CFmesh2StartingTriangle_hh
-#define ShockFitting_CFmesh2StartingTriangle_hh
+#ifndef ShockFitting_CFmesh2StartingTriangleFreez_hh
+#define ShockFitting_CFmesh2StartingTriangleFreez_hh
 
 //----------------------------------------------------------------------------//
 
 #include <string>
 #include <sstream>
 #include "Framework/Converter.hh"
+#include "Framework/FileLogManip.hh"
 #include "Framework/VariableTransformer.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
@@ -22,21 +23,21 @@ namespace ShockFitting {
 
 //----------------------------------------------------------------------------//
 
-/// This class defines a CFmesh2StartingTriangle, whose task is to make
+/// This class defines a CFmesh2StartingTriangleFreez, whose task is to make
 /// conversion from CFmesh format to Triangle mesh generator format files
 /// The triangle files are the ones start the Shock Fitting algorithm
 /// This class differs from the CFmesh2Triangle one because its arrays
 /// do not belong to the MeshData and PhysicsData patterns
 
-class CFmesh2StartingTriangle  : public Converter {
+class CFmesh2StartingTriangleFreez  : public Converter {
 public:
 
   /// Constructor
   /// @param objectName the concrete class name
-  CFmesh2StartingTriangle(const std::string& objectName);
+  CFmesh2StartingTriangleFreez(const std::string& objectName);
 
   /// Destructor
-  virtual ~CFmesh2StartingTriangle();
+  virtual ~CFmesh2StartingTriangleFreez();
 
   /// Set up this object before its first use
   virtual void setup();
@@ -57,7 +58,7 @@ protected: // functions
 private: // helper functions
 
   /// return the class name
-  std::string getClassName() { return "CFmesh2StartingTriangle"; }
+  std::string getClassName() { return "CFmesh2StartingTriangleFreez"; }
 
   /// read CFmesh format file
   void readCFmeshFmt();
@@ -70,6 +71,12 @@ private: // helper functions
 
   /// fill nodcod
   void setNodcod();
+
+  /// 
+  void computeEdges();
+
+  ///
+  void computeEdgesFlag();
 
 private: // data
 
@@ -97,6 +104,15 @@ private: // data
   /// number of holes
   unsigned nholes;
 
+  /// number of boundary points
+  unsigned nbpoin;
+
+  /// number of hanging points
+  unsigned nhnode;
+
+  /// number of edges
+  unsigned nedges;
+
   /// mesh points state (read from the CFmesh file)
   std::vector <double> prim;
 
@@ -112,6 +128,21 @@ private: // data
   /// mesh boundary faces 
   std::vector<int> bndfac;
 
+  /// vector characterizing nodes elements
+  std::vector<int> celnod;
+
+  /// vector characterizing elements
+  std::vector<int> celcel;
+
+  /// vector characterizing edges
+  std::vector<int> edgnod;
+
+  /// vector characterizing cells
+  std::vector<int> celedg;
+
+  /// vector storing edges flags
+  std::vector<int> flag;
+
   // vector of TRS_NAME strings
   std::vector<std::string> namebnd;
 
@@ -120,6 +151,9 @@ private: // data
 
   /// fstream variale reading input file
   std::ifstream file;
+
+  /// file storing log info
+  FileLogManip logfile;
 };
 
 //----------------------------------------------------------------------------//
@@ -128,4 +162,4 @@ private: // data
 
 //----------------------------------------------------------------------------//
 
-#endif // ShockFitting_CFmesh2StartingTriangle_hh
+#endif // ShockFitting_CFmesh2StartingTriangleFreez_hh

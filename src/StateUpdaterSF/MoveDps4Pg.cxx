@@ -111,21 +111,6 @@ void MoveDps4Pg::update()
    }
   }
   logfile.Close();
-
-
-FILE* output;
-output =fopen("CheckC/mvdps.check","w");
-
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-    for(unsigned I=0; I<2; I++) {
-     fprintf(output,"%32.16F %s",(*XYSh)(I,IV,ISH), " ");}
-    for(unsigned I=0; I<2; I++) {
-     fprintf(output,"%32.16F %s",(*WSh)(I,IV,ISH), " ");}
-    fprintf(output,"%s","\n");}}
-fclose(output);
-
-
 }
 
 //----------------------------------------------------------------------------//

@@ -52,6 +52,9 @@ private:
   /// Standard Shock Fitting Version
   std::string m_version;
 
+  /// specifies the starting file format
+  bool m_startFiles;
+
   /// command object convert shock input file in sh00.dat
   SConfig::SharedPtr<Converter> m_createshockfile;
 
@@ -70,6 +73,9 @@ private:
 
   /// command object setting bonudary node pointers
   SConfig::SharedPtr<Remeshing> m_bndryNodePtr;
+
+  /// command object setting boundary faces
+  SConfig::SharedPtr<Remeshing> m_bndryFacePtr;
 
   /// command object redistributing shock points
   SConfig::SharedPtr<Remeshing> m_redistrEqShockPoints; 

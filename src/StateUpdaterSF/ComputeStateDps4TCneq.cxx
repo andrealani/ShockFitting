@@ -71,33 +71,6 @@ void ComputeStateDps4TCneq::update()
 
   setDiscSpeedSize();
 
-/*
- ifstream variables;
- stringstream pathvar;
- pathvar.str(string());
-if(MeshData::getInstance().getIstep()<10){
-  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000" << MeshData::getInstance().getIstep() << "/Var/costatedps.var";
- }
- else if (MeshData::getInstance().getIstep()>=10 &&
-          MeshData::getInstance().getIstep()<100){
-  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/costatedps.var";
- }
- else if (MeshData::getInstance().getIstep()>=100 &&
-          MeshData::getInstance().getIstep()<1000){
-  pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/costatedps.var";
-}
-
-variables.open(pathvar.str().c_str());
-
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-for(unsigned I=0;I<(*ndof);I++) {variables >> (*ZroeShu)(I,IV,ISH); }
-for(unsigned I=0;I<(*ndof);I++) {variables >> (*ZroeShd)(I,IV,ISH); }
-for(unsigned I=0;I<2;I++) {variables >> (*vShNor)(I,IV,ISH); }
-for(unsigned I=0;I<2;I++) {variables >> (*WSh)(I,IV,ISH); }
-}}
-*/
-
   // create object of CoShock class
   CoShock computenewStateForShock;
 
@@ -174,19 +147,6 @@ for(unsigned I=0;I<2;I++) {variables >> (*WSh)(I,IV,ISH); }
    }
   } 
   logfile.Close();
-
-FILE* output;
-output = fopen("CheckC/costatedps.check","w");
-
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
-     for(unsigned K=0;K<(*ndof);K++) {
-     fprintf(output,"%32.16F %s",(*ZroeShu)(K,IV,ISH)," ");}
-     fprintf(output,"%s","\n");
-     for(unsigned K=0;K<(*ndof);K++) {
-     fprintf(output,"%32.16F %s",(*ZroeShd)(K,IV,ISH)," ");}
-}}
-fclose(output);
 }
 
 //----------------------------------------------------------------------------//

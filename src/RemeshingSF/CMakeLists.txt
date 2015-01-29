@@ -1,6 +1,10 @@
 LIST ( APPEND RemeshingSF_files
+BndryFacePtrFreez.cxx
+BndryFacePtrFreez.hh
 BndryNodePtr.cxx
+BndryNodePtrFreez.cxx
 BndryNodePtr.hh
+BndryNodePtrFreez.hh
 ChangeBndryPtr.cxx
 ChangeBndryPtr.hh
 CoIntrPnt.cxx

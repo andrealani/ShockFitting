@@ -192,7 +192,7 @@ void ReadTriangle::ReadNode()
    file >> (*zroe)(IA,IPOIN);
   }
   if      ((*firstRead)==1)       
-   { file >> nodcod->at(IPOIN); }
+   { file >> nodcod->at(IPOIN);}
   else if ((*firstRead)==0)       
    { start = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                                 PhysicsInfo::getnbShPointsMax();

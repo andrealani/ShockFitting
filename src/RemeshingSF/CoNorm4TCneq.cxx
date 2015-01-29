@@ -70,43 +70,6 @@ void CoNorm4TCneq::remesh()
 
   setSize();
 
-
-
-/*
-ifstream var;
-stringstream pathvar;
-pathvar.str(string());
-if(MeshData::getInstance().getIstep()<10){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step0000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
-}
-else if (MeshData::getInstance().getIstep()>=10 &&
-         MeshData::getInstance().getIstep()<100){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step000"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
-}
-else if (MeshData::getInstance().getIstep()>=100 &&
-         MeshData::getInstance().getIstep()<1000){
-pathvar << "/students/st_13_14/deamicis/nobackup/UnDiFi-2D-v2.1/tests/CircularCylinder_VKI_inv_N-N2_E2_LRD/step00"<<MeshData::getInstance().getIstep()<<"/Var/conorm.var";
-}
-
-
-string path = pathvar.str();
-var.open(path.c_str());
-
-if(var.fail()) { cout << "Step000" << MeshData::getInstance().getIstep() << "Failed opening conorm.var" << endl;
-}
-
-
-  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for(unsigned k=0;k<(*ndof);k++) { var >> (*ZRoeShd)(k,I,ISH);}
-    for(unsigned k=0;k<2;k++) { var >> (*XYSh)(k,I,ISH);}
-}}
-var.close();
-
-
-*/
-
-
   // write downstream status on log file
   for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
@@ -155,19 +118,6 @@ var.close();
    writeTecPlotFile();
   }
   logfile.Close();
-
-FILE* output;
-output = fopen("CheckC/conorm.check","w");
-
-  for (unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-    for(unsigned K=0;K<(*ndof);K++) {
-    fprintf(output,"%32.16F %s",(*ZRoeShd)(K,I,ISH)," ");}
-     for(unsigned K=0;K<2;K++) {
-    fprintf(output,"%32.16F %s",(*XYSh)(K,I,ISH)," ");}
-     for(unsigned K=0;K<2;K++) {
-    fprintf(output,"%32.16F %s",(*vShNor)(K,I,ISH)," ");}}}
-fclose(output);
 }
 
 //----------------------------------------------------------------------------//

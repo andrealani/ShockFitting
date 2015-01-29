@@ -116,6 +116,9 @@ public:
   /// get the COOLFluiD output file
   bool withP0() { return m_coolfluidCFmesh; }
 
+  /// get the grid informations
+  bool cellsFreezed() { return m_gridInfo; }
+
 private:
 
   MeshData() : SConfig::ConfigObject("MeshData") 
@@ -141,6 +144,9 @@ private:
     m_caddholes = std::vector <double>();
     addOption("CADDholes",&m_caddholes,
              "Holes points coordinates");
+    m_gridInfo = false;
+    addOption("freezedWallCells",&m_gridInfo,
+              "Cell close to the wall are freezed or not freezed");
     m_coolfluidCFmesh = true;
     addOption("WithP0",&m_coolfluidCFmesh,
              "Coolfluid output file");
@@ -212,6 +218,9 @@ private: // data (read from input file)
 
   /// coolfluid output file
   bool m_coolfluidCFmesh;
+
+  /// specifies freezed grids
+  bool m_gridInfo;
 
   /// hole points coordinates
   std::vector <double> m_caddholes; 

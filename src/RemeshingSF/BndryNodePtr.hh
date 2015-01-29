@@ -51,9 +51,6 @@ private: // helper functions
   /// local function for NODPTR computation
   void myroutine();
 
-  /// count number of freezed points
-  void getnbFreezedPoints();
-
   /// count number of boundary points
   void getnbBndryPoints();
  
@@ -67,9 +64,6 @@ private: // helper functions
   void setMeshData();
 
 private: //data
-
-  /// number of freezed points
-  unsigned* nfpoin;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;
@@ -95,7 +89,7 @@ private: //data
   Array2D <int>* nodptr;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
-  /// bndfac(1)(i-face) 2° endpoint of i-boundary fac
+  /// bndfac(1)(i-face) 2° endpoint of i-boundary face
   /// bndfac(2)(i-face) boundary marker of i-boundary face
   Array2D <int>* bndfac;
 

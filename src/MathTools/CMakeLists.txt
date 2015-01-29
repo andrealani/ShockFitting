@@ -6,6 +6,7 @@ Array2D.hh
 Array3D.hh
 Binsrc.hh
 Binsrc.cxx
+CrossProd.hh
 Ishel.hh
 Ishel.cxx
 Isortrx.hh
