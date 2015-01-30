@@ -5,7 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #ifndef ShockFitting_CoPntDispl_hh
-#define Shockfitting_CoPntDispl_hh
+#define ShockFitting_CoPntDispl_hh
 
 //--------------------------------------------------------------------------//
 

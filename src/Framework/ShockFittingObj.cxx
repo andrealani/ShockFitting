@@ -9,6 +9,8 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
+#include "Framework/BoundaryConnectivity.hh"
+#include "Framework/Field.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
 
@@ -344,7 +346,19 @@ void ShockFittingObj::process()
 }
 
 //--------------------------------------------------------------------------//
-
+  
+  void ShockFittingObj::processField(const BoundaryConnectivity *const inBndConn, 
+				     const Field *const inState,
+				     const Field *const inNode,
+				     BoundaryConnectivity* outBndConn, 
+				     Field* outState,
+				     Field* outNode)
+{
+  LogToScreen(VERBOSE, "ShockFittingObj::processField()\n");
+}
+  
+//--------------------------------------------------------------------------//
+  
 void ShockFittingObj::createMeshData()
 {
   MeshData::getInstance().createData <unsigned> ("NVT", 1);

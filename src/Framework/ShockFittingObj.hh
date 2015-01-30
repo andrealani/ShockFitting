@@ -32,6 +32,9 @@
 
 namespace ShockFitting {
   
+  class BoundaryConnectivity;
+  class Field;
+  
 //--------------------------------------------------------------------------//
 
 /// This class defines a ShockFittingObj, whose task is to provide an 
@@ -61,6 +64,14 @@ public:
   
   /// Run the coupling tools
   virtual void process();
+  
+  /// Run the coupling tools feeding the mesh data and getting them back modified 
+  virtual void processField(const BoundaryConnectivity *const inBndConn, 
+			    const Field *const inState,
+			    const Field *const inNode,
+			    BoundaryConnectivity* outBndConn, 
+			    Field* outState,
+			    Field* outNode);
   
   /// get the name of the parent
   virtual std::string getParentName() const {return getName();}

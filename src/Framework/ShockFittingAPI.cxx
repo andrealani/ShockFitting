@@ -6,6 +6,7 @@
 
 #include "Framework/ShockFittingAPI.hh"
 #include "Framework/Field.hh"
+#include "Framework/BoundaryConnectivity.hh"
 #include "SConfig/Factory.hh"
 
 //--------------------------------------------------------------------------//
@@ -41,6 +42,48 @@ void SF_process_(int* federateID)
 {  
   assert(*federateID < NFEDERATES);
   obj[*federateID]->getObj().process();
+}
+
+//--------------------------------------------------------------------------//
+
+void SF_process_field_(int* federateID, int* dim,
+		       int* inNbBoundaries, int* inbInfo, int* inbNode, int* inbPtr,
+		       int* inNbElems,
+		       int* inNbStates,
+		       int* inStateStride,
+		       int* inElementState, 
+		       int* inElementStatePtr,
+		       double* inState, 
+		       double* inNode, 
+		       int* outNbBoundaries, int* outbInfo, int* outbNode, int* outbPtr,
+		       int* outNbElems,
+		       int* outNbStates,
+		       int* outStateStride,
+		       int* outElementState, 
+		       int* outElementStatePtr,
+		       double* outState,
+		       double* outNode)
+{  
+  assert(*federateID < NFEDERATES);
+  
+  // create the boundary connectivity object
+  BoundaryConnectivity inBndConn((unsigned)(*dim), (unsigned)(*inNbBoundaries), inbInfo, inbNode, inbPtr);
+  BoundaryConnectivity outBndConn((unsigned)(*dim), (unsigned)(*outNbBoundaries), outbInfo, outbNode, outbPtr);
+  
+  // create element connectivity objects
+  Connectivity inStateConn((unsigned)(*inNbElems), inElementState, inElementStatePtr);
+  Connectivity outStateConn((unsigned)(*outNbElems), outElementState, outElementStatePtr);
+  
+  // WATCH OUT: here we assume isoparametric elements (same connectivity for nodes and states)
+  
+  // create all field objects
+  Field finState((unsigned)(*inNbStates), (unsigned)(*inStateStride), inStateConn, inState);
+  Field foutState((unsigned)(*outNbStates), (unsigned)(*outStateStride), outStateConn, outState);
+  Field finNode((unsigned)(*inNbStates), (unsigned)(*dim), inStateConn, inNode);
+  Field foutNode((unsigned)(*outNbStates), (unsigned)(*dim), outStateConn, outNode);
+  
+  obj[*federateID]->getObj().processField(&inBndConn, &finState, &finNode, 
+					  &outBndConn, &foutState, &foutNode);
 }
 
 //--------------------------------------------------------------------------//

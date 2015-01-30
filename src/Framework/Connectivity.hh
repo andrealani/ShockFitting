@@ -28,6 +28,9 @@ public:
   Connectivity() : m_nbElems(0), m_elementNode(NULL), m_elementPtr(NULL) {}
   
   /// constructor
+  /// @param nbElements   number of elements
+  /// @param eNode        element-node connectivity
+  /// @param ePtr         pointer to the start of the corresponding element
   Connectivity(const unsigned nbElements, int* eNode, int* ePtr) 
   {reset(nbElements, eNode, ePtr);}
   

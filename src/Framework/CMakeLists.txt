@@ -1,6 +1,7 @@
 LIST ( APPEND Framework_files
 BaseShockFitting.cxx
 BaseShockFitting.hh
+BoundaryConnectivity.hh
 CFDSolver.cxx
 CFDSolver.hh
 ChemicalConsts.hh
