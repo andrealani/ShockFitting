@@ -84,9 +84,6 @@ void MoveDps4Pg::update()
     dum = 0;
     for(unsigned K=0; K<2; K++) { dum = dum + pow((*WSh)(K,IV,ISH),2); }
     WShMod = sqrt(dum);
-    dum = 0;
-    for(unsigned K=0; K<2; K++) { dum = dum + pow((*WSh)(K,IV,ISH),2); }
-    WShMod = sqrt(dum);
 
     logfile("Shock point n. ", iShockPoint," speed: ", WShMod, "\n");
 

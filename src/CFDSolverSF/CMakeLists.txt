@@ -3,6 +3,8 @@ COOLFluiD.cxx
 COOLFluiD.hh
 DummyCFDSolver.cxx
 DummyCFDSolver.hh
+OverwriteInputFile.cxx
+OverwriteInputFile.hh
 )
 
 LIST ( APPEND CFDSolverSF_libs Framework SConfig MathTools)

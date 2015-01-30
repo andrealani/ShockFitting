@@ -15,8 +15,7 @@ int main (int argc, char** argv)
   // (2) CircularCylinder_Pg_inv_N_M25  : perfect gas M=25 inviscid
   // (3) CircularCylinder_VKI_LRD_2.1   : TCneq       M6   inviscid
   // (4) CircularCylinder_Pg_vis_Bx_M17 : perfect gas M=17 viscous
-  // (5) CircularCylinder_Pg_vis_Bx_M17_NEW : perfect gas M=17 viscous,
-  //                                          COOLfluiD calls one step of SF
+
   const unsigned nbTest = 10;
   vector<string> testDir(nbTest);
   testDir.at(0) = "CircularCylinder_Pg_inv_N_M15";
@@ -24,7 +23,6 @@ int main (int argc, char** argv)
   testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
   testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
   testDir.at(4) = "CircularCylinder_Pg_vis_Bx_M17";
-  testDir.at(5) = "CircularCylinder_Pg_vis_Bx_M17_NEW";
 
   // number of executing test
   const unsigned i = 4;
@@ -46,7 +44,7 @@ int main (int argc, char** argv)
 
   // link the I/O files 
   string commandln;
-/*  commandln = "cp -rf "+pwdTestDir+"/na00.1.node .";
+  commandln = "cp -rf "+pwdTestDir+"/na00.1.node .";
   system(commandln.c_str());
   commandln = "cp -rf "+pwdTestDir+"/na00.1.poly .";
   system(commandln.c_str());
@@ -58,13 +56,13 @@ int main (int argc, char** argv)
   system(commandln.c_str());
   commandln = "cp -rf "+pwdTestDir+"/sh00.dat .";
   system(commandln.c_str());
-*/
+
   // link the starting captured solution
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/cylinder-P9.CFmesh .";
+/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/cylinder-P9.CFmesh .";
   system(commandln.c_str());
   commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/shock.dat .";
   system(commandln.c_str());
-
+*/
   // link the chemical info file
   if(i==3) {
      commandln = "ln -sf "+pwdTestDir+"/nitrogen2.dat .";

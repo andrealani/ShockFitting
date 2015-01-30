@@ -24,6 +24,7 @@ class COOLFluiD : public CFDSolver {
 public:
 
   /// Constructor
+  /// @param objectName the concrete class name
   COOLFluiD(const std::string& objectName);
 
   /// Destructor

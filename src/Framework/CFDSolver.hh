@@ -49,6 +49,13 @@ public:
   /// Gets the Class name
   static std::string getClassName() {return "CFDSolver";}
 
+private: // data
+
+  /// set the option to change some CFD input file values at run time
+  bool m_alterCFDinputfile;
+
+  /// specifies the values to be changed
+  std::vector<std::string> m_alterWhichValues; 
 };
 
 //--------------------------------------------------------------------------//

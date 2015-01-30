@@ -116,8 +116,20 @@ public:
   /// get the COOLFluiD output file
   bool withP0() { return m_coolfluidCFmesh; }
 
-  /// get the grid informations
+  /// get the freezed grid informations
   bool cellsFreezed() { return m_gridInfo; }
+
+  /// get the connectivity grid informations (default it is set to false)
+  bool freezedConnectivity() { return m_connectivityInfo; }
+
+  /// get the connectivity freezed method
+  std::string howFreezedConnectivity() { return m_freezedConnectivityMethod; }
+
+  /// get the connecctivity freezed iter (set inside the input.case)
+  unsigned getFreezedConnectivityIter() { return m_freezedConnectivityIter; }
+
+  /// get the minimum shock speed freezing the connectivity
+  double getFreezedConnectivityShockSpeed() { return m_freezedConnectivityShSpeed; }
 
 private:
 
@@ -147,6 +159,18 @@ private:
     m_gridInfo = false;
     addOption("freezedWallCells",&m_gridInfo,
               "Cell close to the wall are freezed or not freezed");
+    m_connectivityInfo = "false";
+    addOption("freezedConnectivity",&m_connectivityInfo,
+              "The connectivity is freezed according to a set rule");
+    m_freezedConnectivityMethod = "dummyMethod";
+    addOption("freezedConnectivityMethod",&m_freezedConnectivityMethod,
+              "The connectivity is freezed according to a set rule");
+    m_freezedConnectivityIter = 1000000;
+    addOption("freezedConnectivityIter",&m_freezedConnectivityIter,
+              "Iter value to freez the connectivity");
+    m_freezedConnectivityShSpeed = 1000;
+    addOption("freezedConnectivityShockSpeed",&m_freezedConnectivityShSpeed,
+              "Minimu shock speed value to freez the connectivity");
     m_coolfluidCFmesh = true;
     addOption("WithP0",&m_coolfluidCFmesh,
              "Coolfluid output file");
@@ -221,6 +245,18 @@ private: // data (read from input file)
 
   /// specifies freezed grids
   bool m_gridInfo;
+
+  /// specifies freezed connectivity
+  bool m_connectivityInfo;
+
+  /// specifies the rule to freez the connectivity
+  std::string m_freezedConnectivityMethod;
+
+  /// specifies the iter value fro  which freez the connectivity
+  unsigned m_freezedConnectivityIter;
+
+  /// specifies the minimum value of the shock speed from which freez the connectivity
+  double m_freezedConnectivityShSpeed;
 
   /// hole points coordinates
   std::vector <double> m_caddholes; 
