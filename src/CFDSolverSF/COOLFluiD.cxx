@@ -5,6 +5,7 @@
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
 #include "CFDSolverSF/COOLFluiD.hh"
+#include "CFDSolverSF/OverwriteInputFile.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -57,6 +58,28 @@ void COOLFluiD::unsetup()
 
 void COOLFluiD::call()
 {
+  stringstream iterValue;
+
+  // check if some values of the CoolFluid input file are asked
+  // to be changed
+  if(m_alterCFDinputfile) {
+
+   // make a back up of the coolfluid input file
+   command.str(string());
+   command << "mv cf00.CFcase cf00.CFcase.BAK";
+   system(command.str().c_str());
+   
+   // create the object overwriting the coolfluid file
+   OverwriteInputFile ModifyInputCase(string("cf00.CFcase.BAK").c_str(),
+                                      string("cf00.CFcase").c_str() );
+
+   iterValue << MeshData::getInstance().getIstep();
+   ModifyInputCase.overwriteValue("Simulator.SubSystem.InitialIter =",
+                                  iterValue.str());
+  }
+
+exit(1);
+
   LogToScreen(INFO,"COOLFluiD::call()\n");
 
   if(MeshData::getInstance().getnbProcessors()==1) {

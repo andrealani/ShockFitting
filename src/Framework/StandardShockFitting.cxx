@@ -226,10 +226,6 @@ void StandardShockFitting::process()
    cout << MeshData::getInstance().getIstep() << "   \n";
    cout << "-----------------------------------------------------------------\n \n";
 
-
-   execmd = "mkdir CheckC";
-   system(execmd.c_str());
-
    m_findPhantPoints->remesh();
    m_changeBndryPoints->remesh();
    m_computeNormalVector->remesh();
