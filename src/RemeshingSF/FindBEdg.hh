@@ -44,6 +44,9 @@ private: // helper functions
   /// assign start pointers of Array2D and 3D
   void setAddress();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// value computed by class

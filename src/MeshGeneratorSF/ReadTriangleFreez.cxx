@@ -44,8 +44,6 @@ ReadTriangleFreez::ReadTriangleFreez(const std::string& objectName) :
 
 ReadTriangleFreez::~ReadTriangleFreez()
 {
-  delete coor; delete zroe; delete celnod;
-  delete celcel; delete edgptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//
@@ -96,6 +94,9 @@ void ReadTriangleFreez::generate()
   ReadNeigh();
 
   ReadEdge();
+
+  // de-allocate the dynamic arrays
+  freeArray();
 
   logfile.Close();
 
@@ -505,6 +506,14 @@ std::string ReadTriangleFreez::getEdgeFile() const
   }
   LogToScreen(INFO,"ReadTriangleFreez::error => in input.case no <edge> type found");
   exit(1);
+}
+
+//--------------------------------------------------------------------------//
+
+void ReadTriangleFreez::freeArray()
+{
+  delete coor; delete zroe; delete celnod;
+  delete celcel; delete edgptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//

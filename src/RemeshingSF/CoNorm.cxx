@@ -29,7 +29,6 @@ CoNorm::CoNorm(const std::string& objectName) :
 
 CoNorm::~CoNorm()
 {
-  delete ZRoeShd;
 }
 
 //----------------------------------------------------------------------------//
@@ -60,6 +59,13 @@ void CoNorm::setSize()
   vShNor->resize(PhysicsInfo::getnbDim(),
                  PhysicsInfo::getnbShPointsMax(),
                  PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm::freeArray()
+{
+  delete ZRoeShd;
 }
 
 //----------------------------------------------------------------------------//

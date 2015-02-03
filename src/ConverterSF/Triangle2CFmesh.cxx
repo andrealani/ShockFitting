@@ -96,19 +96,23 @@ void Triangle2CFmesh::convert()
   setMeshData();
   setPhysicsData();
   
-  if (MeshData::getInstance().getVersion()==("original")) {
-   /// read triangle format file
+  if (MeshData::getInstance().getVersion()==("original")) 
+  {
+   // read triangle format file
    LogToScreen(DEBUG_MIN, "Triangle2CFmesh::reading Triangle format\n");
    readTriangleFmt();
   }
 
-  /// make the tansformation from Roe parameter vector variables
-  /// to primitive dimensional variables for CFmesh format
+  // make the tansformation from Roe parameter vector variables
+  // to primitive dimensional variables for CFmesh format
   m_param2prim.ptr()->transform();
 
-  /// write CFmesh format
+  // write CFmesh format
   LogToScreen(DEBUG_MIN, "Triangle2CFmesh::writing CFmesh format\n");
   writeCFmeshFmt();
+
+  // de-allocate dynamic arrays
+  freeArray();
 }
 
 //----------------------------------------------------------------------------//
@@ -323,7 +327,8 @@ void Triangle2CFmesh::writeCFmeshFmt()
   Jcycl J;
 
   // allocate the arrays if the optimized version
-  if(MeshData::getInstance().getVersion()=="optimized") {
+  if(MeshData::getInstance().getVersion()=="optimized")
+  {
    // assign start pointers for the zroe and XY arrays
    start = PhysicsInfo::getnbDim() *
            (npoin->at(0) + 2 *
@@ -413,12 +418,6 @@ void Triangle2CFmesh::writeCFmeshFmt()
 
   else if (m_boundary == "splitted") {
    fprintf(cfin,"%s %3u","\n!NB_TRSs",BNDS+1);
-  }
-
-  else {
-   cout << "Triangle2CFmesh::error => Shock Boundary condition ";
-   cout << "should be 'single' or 'splitted' \n";
-   cout << "                          Check the input.case\n";
   }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
@@ -549,6 +548,14 @@ void Triangle2CFmesh::writeCFmeshFmt()
   fprintf(cfin,"%s","!END\n");
 
   fclose(cfin);
+}
+
+//----------------------------------------------------------------------------//
+
+void Triangle2CFmesh::freeArray()
+{
+  delete XY; delete zroe;
+  delete celnod; delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//

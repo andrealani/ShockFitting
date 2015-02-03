@@ -63,6 +63,9 @@ protected: // functions
   /// assign values used in MoveDps to PhysicsData pattern
   void setPhysicsData();
 
+  /// de-allocate dynamic arrays
+ void freeArray();
+
 protected: // data
 
   /// number of degrees of freedom
@@ -116,6 +119,9 @@ protected: // data
   /// work variables
   double ro, a, p, help, dum;
   double WShMod;
+
+  /// maximum value of the shock points speed
+  double WShMax;
 };
 
 //----------------------------------------------------------------------------//

@@ -85,6 +85,9 @@ private: // helper functions
   /// assign variables used in FxMshSps to PhysicsData pattern
   void setPhysicsData();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// shock indeces variables

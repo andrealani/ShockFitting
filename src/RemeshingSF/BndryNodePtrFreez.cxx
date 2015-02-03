@@ -40,7 +40,6 @@ BndryNodePtrFreez::BndryNodePtrFreez(const std::string& objectName) :
 
 BndryNodePtrFreez::~BndryNodePtrFreez()
 {
-  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//
@@ -70,6 +69,9 @@ void BndryNodePtrFreez::remesh()
   setMeshData();
 
   setBndryNodePtrFreez();
+
+  // de.allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -196,6 +198,13 @@ void BndryNodePtrFreez::getnbBndryPoints()
   nbpoin->at(0) = nbpoin->at(0) - (*nfpoin);
 
   logfile("Found ",nbpoin->at(0)," boundary points\n");
+}
+
+//--------------------------------------------------------------------------//
+
+void BndryNodePtrFreez::freeArray()
+{
+  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//

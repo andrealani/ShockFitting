@@ -36,8 +36,6 @@ FixStateSps::FixStateSps(const std::string& objectName) :
 
 FixStateSps::~FixStateSps()
 {
-  delete ZroeShu; delete ZroeShd;
-  delete XYShu;   delete XYShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -164,6 +162,9 @@ void FixStateSps::update()
     }
    }
   }
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -427,6 +428,14 @@ void FixStateSps::setAddress()
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroeVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void FixStateSps::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
+  delete XYShu;   delete XYShd;
 }
 
 //--------------------------------------------------------------------------//

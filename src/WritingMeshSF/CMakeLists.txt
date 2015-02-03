@@ -7,6 +7,8 @@ WriteSdwInfo.cxx
 WriteSdwInfo.hh
 WriteTriangle.cxx
 WriteTriangleFreez.cxx
+WriteTriangleFreezedConnectivity.cxx
+WriteTriangleFreezedConnectivity.hh
 WriteTriangle.hh
 WriteTriangleFreez.hh
 )

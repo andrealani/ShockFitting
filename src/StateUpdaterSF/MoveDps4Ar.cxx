@@ -70,6 +70,8 @@ void MoveDps4Ar::update()
 
   logfile.Open(getClassName().c_str());
 
+  WShMax = 0;
+
   // compute the dt max
   dt = 1e39;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
@@ -98,6 +100,8 @@ void MoveDps4Ar::update()
 
     logfile("Shock point n. ", iShockPoint," speed: ", WShMod, "\n");
 
+    if (WShMod>WShMax) { WShMax = WShMod; }
+
     dum = (MeshData::getInstance().getSHRELAX()) *
           (MeshData::getInstance().getDXCELL())  *
           (MeshData::getInstance().getSNDMIN()) /(a+WShMod);
@@ -107,6 +111,22 @@ void MoveDps4Ar::update()
   }
 
   logfile("DT max: ", dt, "\n");
+
+  // if the connectivity option is set to true and 
+  // if the freezed connectivity ratio is less than the value
+  // chosen in the input.case, the freezed connectivity bool variable
+  // is set to true
+  if(MeshData::getInstance().freezedConnectivityOption()) {
+   if(WShMax*dt/MeshData::getInstance().getSNDMIN() <
+      MeshData::getInstance().getFreezedAdimConnectivityRatio())
+   {
+    MeshData::getInstance().setFreezedConnectivity(true);
+    logfile("\n (!) Freezed connectivity\n");
+    logfile("Freezed connectivity ratio = ",
+            WShMax*dt/MeshData::getInstance().getSNDMIN(),"\n\n");
+    LogToScreen(INFO,"MoveDps4Ar::warning => freezed connectivity\n");
+   }
+  }
 
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    unsigned iShock = ISH+1;
@@ -118,6 +138,9 @@ void MoveDps4Ar::update()
     logfile((*XYSh)(0,IV,ISH), " ", (*XYSh)(1,IV,ISH), "\n");
    }
   }
+
+  // de-allocate ZRoeSh
+  freeArray();
 
   logfile.Close();
 }

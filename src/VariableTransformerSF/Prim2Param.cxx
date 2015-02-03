@@ -29,7 +29,6 @@ Prim2Param::Prim2Param(const std::string& objectName) :
 
 Prim2Param::~Prim2Param()
 {
-  delete XY; delete zroe;
 }
 
 //--------------------------------------------------------------------------//
@@ -64,6 +63,13 @@ void Prim2Param::setAddress()
                                 PhysicsInfo::getnbShMax() *
                                 PhysicsInfo::getnbShPointsMax()),
                                 &zroeVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void Prim2Param::freeArray()
+{
+  delete XY; delete zroe;
 }
 
 //--------------------------------------------------------------------------//

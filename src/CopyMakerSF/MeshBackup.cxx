@@ -36,7 +36,6 @@ MeshBackup::MeshBackup(const std::string& objectName) :
 
 MeshBackup::~MeshBackup()
 {
-  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//
@@ -101,6 +100,9 @@ void MeshBackup::copy()
   // make the backup of nbfac
   // Index 2 refers to backup value
   nbfac->at(2) = nbfac->at(0);
+
+  // de-allocate the dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//
@@ -111,6 +113,13 @@ void MeshBackup::setAddress()
                      PhysicsInfo::getnbShMax()*PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(0));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(0));
+}
+
+//--------------------------------------------------------------------------//
+
+void MeshBackup::freeArray()
+{
+  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//

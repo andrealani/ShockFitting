@@ -29,7 +29,6 @@ MoveDps::MoveDps(const std::string& objectName) :
 
 MoveDps::~MoveDps()
 {
-  delete ZroeSh;
 }
 
 //----------------------------------------------------------------------------//
@@ -51,6 +50,13 @@ void MoveDps::setAddress()
                                  PhysicsInfo::getnbShPointsMax(),
                                  PhysicsInfo::getnbShMax(),
                                  &zroeVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void MoveDps::freeArray()
+{
+  delete ZroeSh;
 }
 
 //----------------------------------------------------------------------------//

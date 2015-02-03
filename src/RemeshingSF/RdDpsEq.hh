@@ -79,6 +79,9 @@ private: // helper functions
   /// rewrite the state arrays and indices
   void rewriteValues(unsigned);
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// dummy variable used as index

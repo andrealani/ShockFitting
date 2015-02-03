@@ -73,6 +73,9 @@ private: // helper functions
   /// resize vectors and arrays
   void setSize();
 
+  /// de-allocate the dynamic arrays
+  void freeArray();
+
 private: //data
 
   /// number of degree of freedom

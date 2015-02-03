@@ -30,7 +30,6 @@ ComputeStateDps::ComputeStateDps(const std::string& objectName) :
 
 ComputeStateDps::~ComputeStateDps()
 {
-  delete ZroeShu; delete ZroeShd;
 }
 
 //----------------------------------------------------------------------------//
@@ -70,6 +69,13 @@ void ComputeStateDps::setDiscSpeedSize()
   WSh->resize(PhysicsInfo::getnbDim(),
               PhysicsInfo::getnbShPointsMax(),
               PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
 }
 
 //----------------------------------------------------------------------------//

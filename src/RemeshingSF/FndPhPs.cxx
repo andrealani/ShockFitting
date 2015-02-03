@@ -94,15 +94,8 @@ void FndPhPs::remesh()
       d.at(1) = dist.getRdshp(xc.at(1),yc.at(1),xs1, ys1, xs2, ys2);
       d.at(2) = dist.getRdshp(xc.at(2),yc.at(2),xs1, ys1, xs2, ys2);
 
-
-      if (ielem==3926) { writeElem3926();}
-
       // if distance is too small the node become a phantom node
       setPhanPoints();
-
-      if (ielem==3926) {
-        writeElem3926();}
-
      } // if   
     } // iElem
    } // iElemSh
@@ -139,23 +132,6 @@ bool FndPhPs::cellCrossed(unsigned ISH_index, unsigned ielemsh_index,
     return true;}
   }
   return false; 
-}
-
-//--------------------------------------------------------------------------//
-
-void FndPhPs::writeElem3926 ()
-{
-   cout << "xs1, ys1: " << xs1 << ", " <<  ys1 << "\n";
-   cout << "xs2, ys2: " << xs2 << ", " <<  ys2 << "\n";
-   cout << "xc1, yc1: " << xc.at(0) << ", " << yc.at(0) << "\n";
-   cout << "xc2, yc2: " << xc.at(1) << ", " << yc.at(1) << "\n";
-   cout << "xc3, yc3: " << xc.at(2) << ", " << yc.at(2) << "\n";
-   cout << "d1: " << d.at(0) << "\n";
-   cout << "d2: " << d.at(1) << "\n";
-   cout << "d3: " << d.at(2) << "\n";
-   cout << "nodcod[" << n.at(0) << "]= " << nodcod->at(n.at(0)) << "\n";
-   cout << "nodcod[" << n.at(1) << "]= " << nodcod->at(n.at(1)) << "\n";
-   cout << "nodcod[" << n.at(2) << "]= " << nodcod->at(n.at(2)) << "\n";
 }
 
 //--------------------------------------------------------------------------//

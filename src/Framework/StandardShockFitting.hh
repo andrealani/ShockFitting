@@ -71,6 +71,9 @@ private:
   /// command object reading mesh generator files
   SConfig::SharedPtr<MeshGenerator> m_readInputFile2;
 
+  /// command object fix the mesh connectivity
+  SConfig::SharedPtr<MeshGenerator> m_setMeshConnect;
+
   /// command object setting bonudary node pointers
   SConfig::SharedPtr<Remeshing> m_bndryNodePtr;
 
@@ -98,6 +101,9 @@ private:
   /// command object writing output files
   SConfig::SharedPtr<WritingMesh> m_writeTriangleFile;
 
+  /// command object write output files for freezed connectivity
+  SConfig::SharedPtr<WritingMesh> m_writeTriangleFileFreezedConnect;
+
   /// command object generating new mesh
   SConfig::SharedPtr<MeshGenerator> m_callTriangle;
 
@@ -106,6 +112,10 @@ private:
 
   /// command object converting file format from Triangle to CFmesh
   SConfig::SharedPtr<Converter> m_triangleToCFmesh;
+
+  /// command object converting file format from Triangle to CFmesh
+  /// when the connectivity is freezed
+  SConfig::SharedPtr<Converter> m_triangleToCFmeshFreezedConnect;
 
   /// command object calling CFDSolver
   SConfig::SharedPtr<CFDSolver> m_COOLFluiD;

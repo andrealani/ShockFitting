@@ -41,8 +41,6 @@ FixMshSps::FixMshSps (const std::string& objectName)
 
 FixMshSps::~FixMshSps()
 {
-  delete bndfac; delete XY;
-  delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -102,6 +100,9 @@ void FixMshSps::remesh()
   }
 
   (*nbfacSh) = ibfac;
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -406,6 +407,14 @@ void FixMshSps::setAddress()
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &coorVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void FixMshSps::freeArray()
+{
+  delete bndfac; delete XY;
+  delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//

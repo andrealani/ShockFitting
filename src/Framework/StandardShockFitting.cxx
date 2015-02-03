@@ -47,6 +47,7 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_computeShockLayer(),
   m_fixMeshSpecialPoints(),
   m_writeTriangleFile(),
+  m_writeTriangleFileFreezedConnect(),
   m_callTriangle(),
   m_callTriangleLib(),
   m_triangleToCFmesh(),
@@ -112,6 +113,8 @@ void StandardShockFitting::setup()
   m_computeShockLayer = m_fRemeshing[4].ptr();
   m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
+  if(MeshData::getInstance().freezedConnectivityOption()) {
+   m_writeTriangleFileFreezedConnect = m_wMesh[3].ptr(); }
   m_callTriangle = m_mGenerator[2].ptr();
   m_callTriangleLib = m_mGenerator[3].ptr();
   m_triangleToCFmesh = m_fConverter[2].ptr();
@@ -207,7 +210,9 @@ void StandardShockFitting::process()
   m_meshBackup->copy();
 
   m_redistrEqShockPoints->remesh();
+
   cout << ".................................................\n";
+
   cout << "_________________________________________________\n\n";
 
 
@@ -226,21 +231,32 @@ void StandardShockFitting::process()
    cout << MeshData::getInstance().getIstep() << "   \n";
    cout << "-----------------------------------------------------------------\n \n";
 
+   if(MeshData::getInstance().getFreezedConnectivity()) {
+    cout << ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::";
+    cout << "\n (!) StandardShockFitting::warning => freezed connectivity\n";
+    cout << ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
+   }
+
    m_findPhantPoints->remesh();
    m_changeBndryPoints->remesh();
    m_computeNormalVector->remesh();
+
    m_computeShockLayer->remesh();
    m_fixMeshSpecialPoints->remesh();
 
-   if      (m_version=="original")  { m_writeTriangleFile->write();
+   // if the connectivity is not freezed call triangle mesh generator
+   if(!MeshData::getInstance().getFreezedConnectivity()) {
+ 
+    if      (m_version=="original")  { m_writeTriangleFile->write();
                                       m_callTriangle->generate();    }
+ 
+    else if (m_version=="optimized") { m_callTriangleLib->generate(); }
+   }
 
-   else if (m_version=="optimized") { m_callTriangleLib->generate(); }
-
-   else { cout << "\nStandardShockFitting::error => only 'original' and ";
-          cout << "'optimized' versions are supported\n";
-          cout << "                               Check the input.case\n";  
-          exit(1);  }
+   // if the connectivity is freezed do not call triangle mesh generator
+   else if (MeshData::getInstance().getFreezedConnectivity()) {
+    m_writeTriangleFileFreezedConnect->write();
+   }
 
    m_triangleToCFmesh->convert();
 
@@ -276,7 +292,7 @@ void StandardShockFitting::process()
 
    m_CFmeshToTriangle->convert();
 
-   if       (m_version=="original")  { m_readInputFile1->generate(); }
+   if  (m_version=="original" )  { m_readInputFile1->generate(); }
 
    m_copyZRoe1_0->copy();
 
@@ -289,7 +305,7 @@ void StandardShockFitting::process()
 
    m_updatePhantPoints->update();
 
-   if(I<1000) { m_redistrShockPoints->remesh(); }
+   if( I<1000 ) { m_redistrShockPoints->remesh(); }
 
    m_writeBackTriangleFile->write();
 
@@ -308,6 +324,7 @@ void StandardShockFitting::process()
    while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
    backdir << setw(9-nbDig) << setfill('0') << left << string("step").c_str() << I+1;
 
+   // during the current step the solution will be saved
    if((I)%MeshData::getInstance().getnbIbak()==0) {
     execmd = "mkdir " + backdir.str();
     system(execmd.c_str());
@@ -334,9 +351,11 @@ void StandardShockFitting::process()
     system(execmd.c_str());
    }
 
+   // during the current step the solution wont be saved
    else {
     execmd = "rm -f shocknor.dat ";
-    if(MeshData::getInstance().getVersion()=="original") 
+    if(MeshData::getInstance().getVersion()=="original" && 
+       !MeshData::getInstance().getFreezedConnectivity())
       { execmd = execmd + fname->str() +".* "; }
     execmd = execmd + *fnameback+".node sh99.dat ";
     system(execmd.c_str());

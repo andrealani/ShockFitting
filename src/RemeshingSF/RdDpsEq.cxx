@@ -38,7 +38,6 @@ RdDpsEq::RdDpsEq(const std::string& objectName) :
 
 RdDpsEq::~RdDpsEq()
 {
-  delete ZRoeShu; delete ZRoeShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -95,6 +94,9 @@ void RdDpsEq::remesh()
    // rewrite the state arrays and indices
    rewriteValues(I);
   }
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -277,6 +279,13 @@ void RdDpsEq::setSize()
   // Sh_ABSC_New is filled with the indeces that start from 1
   // Sh_ABSC_New(1:NSHMAX+1)
   Sh_ABSC_New.resize(PhysicsInfo::getnbShPointsMax()+1);
+}
+
+//--------------------------------------------------------------------------//
+
+void RdDpsEq::freeArray()
+{
+  delete ZRoeShu; delete ZRoeShd;
 }
 
 //--------------------------------------------------------------------------//

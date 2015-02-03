@@ -41,8 +41,6 @@ CFmesh2Triangle::CFmesh2Triangle(const std::string& objectName) :
 
 CFmesh2Triangle::~CFmesh2Triangle()
 {
-  delete XY; delete zroe; delete celnod;
-  delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//
@@ -102,11 +100,15 @@ void CFmesh2Triangle::convert()
   // Roe parameter vector variables
   m_prim2param.ptr()->transform(); 
 
-  if (MeshData::getInstance().getVersion()=="original") {
+  if (MeshData::getInstance().getVersion()=="original")
+  {
    // write Triangle format files
    LogToScreen(DEBUG_MIN, "CFmesh2Triangle::writing Triangle format\n");
    writeTriangleFmt(); 
   }
+
+  // de-allocate the dynamic arrays
+  freeArray();
 }
 
 //----------------------------------------------------------------------------//
@@ -457,6 +459,14 @@ void CFmesh2Triangle::writeTriangleFmt()
 
   fprintf(trianglefile,"%s","0\n"); // write number of holes   
   fclose(trianglefile);
+}
+
+//----------------------------------------------------------------------------//
+
+void CFmesh2Triangle::freeArray()
+{
+  delete XY; delete zroe; delete celnod;
+  delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//

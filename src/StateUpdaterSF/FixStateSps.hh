@@ -91,6 +91,9 @@ private: // helper functions
   /// set starting pointers for the arrays
   void setAddress();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of degrees of freedom

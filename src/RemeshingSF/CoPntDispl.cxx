@@ -32,8 +32,6 @@ ObjectProvider<CoPntDispl, Remeshing> coPointdisplProv("CoPntDispl");
 CoPntDispl::CoPntDispl (const std::string& objectName) :
   Remeshing(objectName)
 {
-  delete ZRoeShu; delete NodCodSh;
-  delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -110,6 +108,10 @@ void CoPntDispl::remesh()
       cout << "Condition not implemented\n";
       exit(1); }
   }
+
+  // de-allocate dynamic arrays
+  freeArray();
+
   logfile.Close();
 }
 
@@ -573,6 +575,14 @@ void CoPntDispl::setAddress()
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &coor->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void CoPntDispl::freeArray()
+{
+  delete ZRoeShu; delete NodCodSh;
+  delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//

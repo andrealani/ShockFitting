@@ -37,7 +37,6 @@ WriteSdwInfo::WriteSdwInfo(const std::string& objectName) :
 
 WriteSdwInfo::~WriteSdwInfo()
 {
-  delete ZroeShu; delete ZroeShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -183,6 +182,9 @@ void WriteSdwInfo::write()
 
   fclose(file);
 
+  // de-allocate dynamic array
+  freeArray();
+
   logfile.Close();
 }
 
@@ -214,6 +216,13 @@ void WriteSdwInfo::setAddress()
                                   PhysicsInfo::getnbShPointsMax(),
                                   PhysicsInfo::getnbShMax(),
                                   &zroe->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteSdwInfo::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
 }
 
 //--------------------------------------------------------------------------//

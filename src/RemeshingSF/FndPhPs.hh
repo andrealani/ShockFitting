@@ -50,9 +50,6 @@ private: // helper functions
   bool cellCrossed(unsigned ISH_index, unsigned ielemsh_index,
                    unsigned ielem_index);
 
-  /// write information about element number 3926
-  void writeElem3926();
-
   /// compute phantom nodes
   void setPhanPoints();
 

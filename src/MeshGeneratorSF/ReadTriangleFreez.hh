@@ -109,6 +109,9 @@ private: // helper functions
   /// assign values read by ReadTriangleFreez to PhysicsData
   void setPhysicsData();
 
+  /// de-allocate the dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// max number of degrees of freedom

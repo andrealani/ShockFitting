@@ -36,7 +36,6 @@ MeshRestoring::MeshRestoring(const std::string& objectName) :
 
 MeshRestoring::~MeshRestoring()
 {
-  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//
@@ -89,6 +88,9 @@ void MeshRestoring::copy()
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    nodcod->at(IPOIN) = nodcodBackup->at(IPOIN);
   }
+
+  // de-allocate the dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//
@@ -100,6 +102,13 @@ void MeshRestoring::setAddress()
                      PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(0));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(0));
+}
+
+//--------------------------------------------------------------------------//
+
+void MeshRestoring::freeArray()
+{
+  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//

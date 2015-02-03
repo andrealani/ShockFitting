@@ -4,7 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and oc/gpl.txt for the license text.
 
-#include "WritingMeshSF/WriteTriangleFreez.hh"
+#include "WritingMeshSF/WriteTriangleFreezedConnectivity.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
@@ -23,68 +23,57 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<WriteTriangleFreez, WritingMesh> WriteTriangleFreezProv("WriteTriangleFreez");
+ObjectProvider<WriteTriangleFreezedConnectivity, WritingMesh> 
+ writeTriangleFreezedConnectivityProv("WriteTriangleFreezedConnectivity");
 
 //--------------------------------------------------------------------------//
 
-WriteTriangleFreez::WriteTriangleFreez(const std::string& objectName) :
+WriteTriangleFreezedConnectivity::WriteTriangleFreezedConnectivity
+(const std::string& objectName) :
   WritingMesh(objectName)
 {
 }
 
 //--------------------------------------------------------------------------//
 
-WriteTriangleFreez::~WriteTriangleFreez()
+WriteTriangleFreezedConnectivity::~WriteTriangleFreezedConnectivity()
 {
 }
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::setup()
+void WriteTriangleFreezedConnectivity::setup()
 {
-  LogToScreen(VERBOSE, "WriteTriangleFreez::setup() => start\n");
+  LogToScreen(VERBOSE,"WriteTriangleFreezedConnectivity::setup() => start\n");
 
-  LogToScreen(VERBOSE, "WriteTriangleFreez::setup() => end\n");
+  LogToScreen(VERBOSE,"WriteTriangleFreezedConnectivity::setup() => end\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::unsetup()
+void WriteTriangleFreezedConnectivity::unsetup()
 {
-  LogToScreen(VERBOSE, "WriteTriangleFreez::unsetup()\n");
+  LogToScreen(VERBOSE,"WriteTriangleFreezedConnectivity::unsetup()\n");
 }
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::write()
+void WriteTriangleFreezedConnectivity::write()
 {
-  LogToScreen(INFO, "WriteTriangleFreez::write()\n");
+  LogToScreen(INFO,"WriteTriangleFreezedConnectivity:write()\n");
 
   setMeshData();
   setPhysicsData();
 
   setAddress();
 
-  string dummyfile;
-
-  fname->str(string());
-
-  unsigned nbDig = 0;
-  unsigned dummyIstep = MeshData::getInstance().getIstep();
-
-  while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
-  *fname << setw(7-nbDig) << setfill('0') << left << string("na").c_str();
-  *fname << MeshData::getInstance().getIstep();
-
-  // write node file
-  dummyfile = fname->str()+".node";
-
-  file = fopen(dummyfile.c_str(),"w");
+  // copy and rename the triangle files
+  copyAnDrenameTriangleFiles();
 
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                              PhysicsInfo::getnbShPointsMax();
 
-  // M02M1 and M12M0 are filled with indeces that start 
+  // M02M1 and M12M0 are filled with indeces that start
   // from 1 to NPOIN+2*NSHMAX*NPSHMAX+1
   M02M1->resize(ilist+1); // c++ indeces start from 0
   M12M0->resize(ilist+1); // c++ indeces start from 0
@@ -104,70 +93,97 @@ void WriteTriangleFreez::write()
 
   ilist = TNPOIN;
 
-  fprintf(file,"%u %s %u %s %u %s",ilist," ",PhysicsInfo::getnbDim()," ",*ndof," 1\n");
-  
-  // write mesh points coordinates and states on Triangle file
-  writeMeshVariables();
+  npoin->at(1) = ilist;
 
-  icount = npoin->at(0);
+  // fill in the .node file
+  writeFileNode();
 
-  // write upstream shock points coordinates and states on Triangle file
-  writeUpstreamStatus();
+  // de-allocate dynamic arrays
+  freeArray();
+}
 
-  // write downstream shock points coordinates and states on Triangle file
-  writeDownstreamStatus();
+//--------------------------------------------------------------------------//
 
-  fclose(file);
+void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
+{
+  string command;
+  string fnameOld;
+  stringstream backdir;
 
-  // write poly file
-  dummyfile = fname->str()+".poly";
+  fnameOld = fname->str();
+
+  fname->str(string());
+
+  unsigned nbDig = 0;
+  unsigned dummyIstep = MeshData::getInstance().getIstep();
+
+  while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
+  *fname << setw(7-nbDig) << setfill('0') << left << string("na").c_str();
+  *fname << MeshData::getInstance().getIstep();
+
+  nbDig = 0;
+  dummyIstep = MeshData::getInstance().getIstep()-1;
+  while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
+  backdir << setw(9-nbDig) << setfill('0') << left 
+          << string("step").c_str() << MeshData::getInstance().getIstep()-1;
+
+  // if the solution has been saved in the previous step
+  // take the files inside the corresponding folder
+  if (((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()==0) ) {
+
+   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.poly ./" + fname->str() + ".1.poly";
+   system(command.c_str());
+   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.ele ./" + fname->str() + ".1.ele";
+   system(command.c_str());
+   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.neigh ./" + fname->str() + ".1.neigh";
+   system(command.c_str());
+   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.edge ./" + fname->str() + ".1.edge";
+   system(command.c_str());
+  }
+
+  else if (((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()!=0) 
+             && (MeshData::getInstance().getIstep()-1)!=1 ) {
+
+   command = "cp " + fnameOld + ".1.poly " + fname->str() + ".1.poly";
+   system(command.c_str());
+   command = "cp " + fnameOld + ".1.ele " + fname->str() + ".1.ele";
+   system(command.c_str());
+   command = "cp " + fnameOld + ".1.neigh " + fname->str() + ".1.neigh";
+   system(command.c_str());
+   command = "cp " + fnameOld + ".1.edge " + fname->str() + ".1.edge"; 
+   system(command.c_str());
+  }
+
+  else if ((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()!=0 
+            && (MeshData::getInstance().getIstep()-1)==1) {
+
+   command = "cp ./step00001/na00001.1.poly ./na00002.1.poly";
+   system(command.c_str());
+   command = "cp ./step00001/na00001.1.ele ./na00002.1.ele";
+   system(command.c_str());
+   command = "cp ./step00001/na00001.1.neigh ./na00002.1.neigh";
+   system(command.c_str());
+   command = "cp ./step00001/na00001.1.edge ./na00002.1.edge";
+   system(command.c_str());
+  }
+
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteTriangleFreezedConnectivity::writeFileNode()
+{
+  string dummyfile;
+
+  // open node file
+  dummyfile = fname->str()+".1.node";
 
   file = fopen(dummyfile.c_str(),"w");
 
-  fprintf(file,"%s %u %s", "0 ",PhysicsInfo::getnbDim()," 0 1 \n");
-  
-  // set map vector for bndfac and write bndfac on poly file
-  writeBndfac();
+  fprintf(file,"%u %s %u %s %u %s",ilist," ",
+          PhysicsInfo::getnbDim()," ",*ndof," 1\n");
 
-  // compute number of holes
-  computenbHoles();
-
-  // de-alloctae dynamic arrays
-  freeArray();
-
-  fclose(file);
-}
-
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::setMapVectorForNodcod()
-{
-  for (unsigned IPOIN=0; IPOIN< npoin->at(0); IPOIN++) {
-   if (nodcod->at(IPOIN)>=0) { ++TNPOIN;
-                               M02M1->at(IPOIN+1) = TNPOIN;
-                               M12M0->at(TNPOIN) = IPOIN+1; } 
-  }
-}
-
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::setMapVectorForNodcodSh()
-{
-  for (unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
-   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
-    ++icount;
-
-    if ((*NodCodSh)(I,ISH)==10) { ++TNPOIN;
-                                    M02M1->at(icount) = TNPOIN;
-                                    M12M0->at(TNPOIN) = icount;}
-   }
-  }
-}
-
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::writeMeshVariables()
-{
+  // write mesh variables
   for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if(nodcod->at(IPOIN)>=0) {
     fprintf(file,"%u %s",M02M1->at(IPOIN+1),"  "); // c++ indeces start from 0
@@ -178,12 +194,10 @@ void WriteTriangleFreez::writeMeshVariables()
     fprintf(file,"%u %s",nodcod->at(IPOIN),"\n");
    }
   }
-}
 
-//--------------------------------------------------------------------------//
+  icount = npoin->at(0);
 
-void WriteTriangleFreez::writeUpstreamStatus()
-{
+  // write upstream status
   for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
    for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++icount;
@@ -197,12 +211,8 @@ void WriteTriangleFreez::writeUpstreamStatus()
     }
    }
   }
-}
 
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::writeDownstreamStatus()
-{
+  // write downstream status
   for(unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
    for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
      icount++;
@@ -216,59 +226,8 @@ void WriteTriangleFreez::writeDownstreamStatus()
     }
    }
   }
-}
 
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::writeBndfac()
-{
-  int IBC;
-
-  ICHECK = 0;
-  for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) {
-   IBC = (*bndfac)(2,IFACE);
-   if(IBC>0) { ++ICHECK; }
-  }
-
-  for(unsigned IEDGE=0;IEDGE<nedge->at(0);IEDGE++) {
-   IBC = (*edgptr)(2,IEDGE);
-   if(IBC==999) { ++ICHECK; }
-  }
-
-  fprintf(file,"%u %s",ICHECK,"  1\n");
-  ICHECK=0;
-
-  for(unsigned IFACE=0; IFACE<(*nbfacSh); IFACE++) { 
-   IBC = (*bndfac)(2,IFACE);
-
-   if(IBC>0) {
-    ++ICHECK; 
-    fprintf(file,"%u %s",ICHECK,"  ");
-    for(unsigned IA=0; IA<2; IA++) {
-     fprintf(file,"%u %s",M02M1->at((*bndfac)(IA,IFACE)),"  ");
-    }
-   fprintf(file,"%i %s",IBC,"\n");
-   }
-  }
-
-  for(unsigned IEDGE=0; IEDGE<nedge->at(0);IEDGE++) {
-   IBC = (*edgptr)(2,IEDGE);
-
-   if(IBC==999) { 
-    ++ICHECK;
-    fprintf(file,"%u %s",ICHECK, " ");
-    for(unsigned IA=0; IA<2; IA++) {
-     fprintf(file,"%u %s",M02M1->at((*edgptr)(IA,IEDGE)),"  ");
-    }
-    fprintf(file,"%i %s",IBC,"\n");
-   }
-  }
-}
-
-//--------------------------------------------------------------------------//
-
-void WriteTriangleFreez::computenbHoles()
-{
+  // compute number of hole points
   nHoles = 0;
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    nHoles = nHoles + nShockPoints->at(ISH)-2;
@@ -292,7 +251,33 @@ void WriteTriangleFreez::computenbHoles()
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::setAddress()
+void WriteTriangleFreezedConnectivity::setMapVectorForNodcod()
+{
+  for (unsigned IPOIN=0; IPOIN< npoin->at(0); IPOIN++) {
+   if (nodcod->at(IPOIN)>=0) { ++TNPOIN;
+                               M02M1->at(IPOIN+1) = TNPOIN;
+                               M12M0->at(TNPOIN) = IPOIN+1; }
+  }
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteTriangleFreezedConnectivity::setMapVectorForNodcodSh()
+{
+  for (unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
+   for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
+    ++icount;
+
+    if ((*NodCodSh)(I,ISH)==10) { ++TNPOIN;
+                                    M02M1->at(icount) = TNPOIN;
+                                    M12M0->at(TNPOIN) = icount;}
+   }
+  }
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteTriangleFreezedConnectivity::setAddress()
 {
   unsigned start; unsigned totsize;
   start = 0;
@@ -304,8 +289,7 @@ void WriteTriangleFreez::setAddress()
                            PhysicsInfo::getnbShMax() *
                            PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
-  celnod = new Array2D<int> ((*nvt), nelem->at(0), &celnodVect->at(start)); 
-  edgptr = new Array2D<int> ((*nvt), nedge->at(0), &edgptrVect->at(start));
+  celnod = new Array2D<int> ((*nvt), nelem->at(0), &celnodVect->at(start));
   start = npoin->at(0);
   NodCodSh = new Array2D <int> (PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
@@ -338,32 +322,30 @@ void WriteTriangleFreez::setAddress()
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::freeArray()
+void WriteTriangleFreezedConnectivity::freeArray()
 {
   delete XY; delete Zroe;
-  delete bndfac; delete edgptr; delete celnod;
-  delete NodCodSh; delete ZRoeShd; delete ZRoeShu;
-  delete XYShu; delete XYShd;
+  delete bndfac; delete celnod;
+  delete ZRoeShu; delete ZRoeShd; delete XYShu; delete XYShd; 
+  delete NodCodSh;
 }
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::setMeshData()
+void WriteTriangleFreezedConnectivity::setMeshData()
 {
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
   nelem =MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
-  nedge = MeshData::getInstance().getData <vector<unsigned> > ("NEDGE");
   nbfacSh = MeshData::getInstance().getData<unsigned>("NBFACSH");
-  caddholes = 
+  caddholes =
     MeshData::getInstance().getData <vector<double> > ("CADDholes");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
-  edgptrVect = MeshData::getInstance().getData <vector<int> >("EDGPTR");
   fname = MeshData::getInstance().getData <stringstream> ("FNAME");
   M12M0 = MeshData::getInstance().getData <vector <int> > ("M12M0");
   M02M1 = MeshData::getInstance().getData <vector <unsigned> > ("M02M1");
@@ -371,7 +353,7 @@ void WriteTriangleFreez::setMeshData()
 
 //--------------------------------------------------------------------------//
 
-void WriteTriangleFreez::setPhysicsData()
+void WriteTriangleFreezedConnectivity::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
   nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");

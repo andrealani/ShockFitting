@@ -131,6 +131,9 @@ void WriteTriangle::write()
   // compute number of holes
   computenbHoles();
 
+  // de-allocate dynamic arrays
+  freeArray();
+
   fclose(file);
 }
 
@@ -310,6 +313,16 @@ void WriteTriangle::setAddress()
                                 PhysicsInfo::getnbShPointsMax(),
                                 PhysicsInfo::getnbShMax(),
                                 &coorVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteTriangle::freeArray()
+{
+  delete XY; delete Zroe;
+  delete bndfac; delete celnod;
+  delete NodCodSh;
+  delete ZRoeShu; delete ZRoeShd; delete XYShu; delete XYShd;
 }
 
 //--------------------------------------------------------------------------//

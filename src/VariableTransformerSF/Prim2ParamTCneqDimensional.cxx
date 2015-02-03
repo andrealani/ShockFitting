@@ -140,6 +140,9 @@ void Prim2ParamTCneqDimensional::transform()
    (*XY)(0,IPOIN) = (*XY)(0,IPOIN) / ReferenceInfo::getLref();
    (*XY)(1,IPOIN) = (*XY)(1,IPOIN) / ReferenceInfo::getLref();
   }
+
+  // de-allocate dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//

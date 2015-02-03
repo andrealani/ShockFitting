@@ -113,6 +113,9 @@ void CoNorm4Pg::remesh()
    writeTecPlotFile();
   }
 
+  // de-allocate ZRoeShd
+  freeArray();
+
   logfile.Close();
 }
 

@@ -28,7 +28,6 @@ FindBEdg::FindBEdg()
 
 FindBEdg::~FindBEdg()
 {
-  delete bndfac; delete XY;
 }
 
 //--------------------------------------------------------------------------//
@@ -61,7 +60,7 @@ int FindBEdg::getBEdg(double xsh, double ysh)
      if (std::abs(y2-y1)>std::abs(x2-x1)) { s = (ysh-y1)/(y2-y1); }
      else                              	{ s = (xsh-x1)/(x2-x1); }
 
-     if (0<=s && s<=1) { return ibfac;} 
+     if (0<=s && s<=1) {   delete bndfac; delete XY; return ibfac;} 
     } // if abs(tline)<=tollerance
    ibfac++;
    } // if bndfac(2,ibfac)>0
@@ -69,7 +68,17 @@ int FindBEdg::getBEdg(double xsh, double ysh)
    else {ibfac++;}
   } // while
 
+  // de-allocate dynamic arrays
+  freeArray();
+
   return -1;
+}
+
+//--------------------------------------------------------------------------//
+
+void FindBEdg::freeArray()
+{
+  delete bndfac; delete XY;
 }
 
 //--------------------------------------------------------------------------//

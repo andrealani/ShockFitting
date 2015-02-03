@@ -37,7 +37,6 @@ RdDps::RdDps(const std::string& objectName) :
 
 RdDps::~RdDps()
 {
-  delete ZroeShu; delete ZroeShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -179,6 +178,9 @@ void RdDps::remesh()
    }
   }
 
+  // de-allocate dynamic arrays
+  freeArray();
+
   logfile.Close();
 }
 
@@ -202,6 +204,13 @@ void RdDps::setAddress()
                PhysicsInfo::getnbShPointsMax(),
                PhysicsInfo::getnbShMax(),
                &zroeVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void RdDps::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
 }
 
 //--------------------------------------------------------------------------//

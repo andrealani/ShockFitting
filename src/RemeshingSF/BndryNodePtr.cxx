@@ -40,7 +40,6 @@ BndryNodePtr::BndryNodePtr(const std::string& objectName) :
 
 BndryNodePtr::~BndryNodePtr()
 {
-  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//
@@ -70,6 +69,9 @@ void BndryNodePtr::remesh()
   setMeshData();
 
   setBndryNodePtr();
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -179,6 +181,13 @@ void BndryNodePtr::getnbBndryPoints()
   for (unsigned IPOIN=0; IPOIN<npoin->at(0)-1; IPOIN++) {
    if((*nodcod)[IPOIN]>0) {nbpoin->at(0)++;}
   }
+}
+
+//--------------------------------------------------------------------------//
+
+void BndryNodePtr::freeArray()
+{
+  delete bndfac; delete nodptr;
 }
 
 //--------------------------------------------------------------------------//

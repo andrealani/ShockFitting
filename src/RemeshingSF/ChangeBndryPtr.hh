@@ -65,6 +65,9 @@ private: // helper functions
   /// assign values used in ChangeBndryPtr to MeshData pattern
   void setMeshData();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of points in the mesh

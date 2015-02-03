@@ -67,6 +67,9 @@ private: // helper functions
   /// return boolean variable checking if the phantom node is found
   unsigned getIfound() const { return ifound; }
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of vertices

@@ -103,6 +103,9 @@ void WriteBackTriangle::write()
   }
   
   fclose(file);  
+
+  // de-allocate dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//
@@ -114,6 +117,13 @@ void WriteBackTriangle::setAddress()
                              &zroeVect->at(0));
   XY = new Array2D<double>(PhysicsInfo::getnbDim(), npoin->at(0),
                            &coorVect->at(0));
+}
+
+//--------------------------------------------------------------------------//
+
+void WriteBackTriangle::freeArray()
+{
+  delete Zroe; delete XY;
 }
 
 //--------------------------------------------------------------------------//

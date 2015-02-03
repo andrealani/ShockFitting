@@ -78,8 +78,6 @@ void COOLFluiD::call()
                                   iterValue.str());
   }
 
-exit(1);
-
   LogToScreen(INFO,"COOLFluiD::call()\n");
 
   if(MeshData::getInstance().getnbProcessors()==1) {

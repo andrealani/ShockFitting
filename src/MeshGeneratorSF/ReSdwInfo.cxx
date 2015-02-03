@@ -37,7 +37,6 @@ ReSdwInfo::ReSdwInfo(const std::string& objectName) :
 
 ReSdwInfo::~ReSdwInfo()
 {
-  delete NodCodSh; delete ZRoeShu; delete ZRoeShd;
 }
 
 //--------------------------------------------------------------------------//
@@ -76,6 +75,9 @@ void ReSdwInfo::generate()
   readShockInfo(); 
 
   file.close();
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -300,6 +302,13 @@ void ReSdwInfo::setAddress()
                           PhysicsInfo::getnbShPointsMax(),
                           PhysicsInfo::getnbShMax(),
                           &zroe->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void ReSdwInfo::freeArray()
+{
+  delete NodCodSh; delete ZRoeShu; delete ZRoeShd;
 }
 
 //--------------------------------------------------------------------------//

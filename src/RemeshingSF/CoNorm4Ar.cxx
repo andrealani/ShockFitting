@@ -118,6 +118,9 @@ void CoNorm4Ar::remesh()
   // write the computed normal vectors on tecplot file
   writeTecPlotFile();
 
+  // de-allocate ZRoeShd
+  freeArray();
+
   logfile.Close();
 }
 

@@ -68,6 +68,9 @@ protected: // functions
   /// assign values used in ComputeState to PhysicsData pattern
   void setPhysicsData();
 
+  /// de-allocate the dynamic arrays
+  void freeArray();
+
 protected: // data
 
   /// number of degrees of freedom

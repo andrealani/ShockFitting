@@ -142,6 +142,10 @@ void ComputeStateDps4Pg::update()
    logfile((*WSh)(0,IV,ISH), ", ", (*WSh)(1,IV,ISH), "\n");
    }
   }
+
+  // de-allocate dynamic array
+  freeArray();
+
   logfile.Close();
 }
 

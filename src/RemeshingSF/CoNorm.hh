@@ -71,6 +71,9 @@ protected: // functions
   /// assign values used in CoNorm to PhysicsData pattern
   void setPhysicsData();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 protected: // data
 
   /// dummy variables for the shock speed

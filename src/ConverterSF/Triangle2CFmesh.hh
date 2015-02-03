@@ -78,6 +78,9 @@ private: // helper functions
   /// assign variables used in ReadTrianleFmt to PhysicsData pattern
   void setPhysicsData();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of degrees of freedom

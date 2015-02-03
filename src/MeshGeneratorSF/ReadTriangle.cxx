@@ -44,8 +44,6 @@ ReadTriangle::ReadTriangle(const std::string& objectName) :
 
 ReadTriangle::~ReadTriangle()
 {
-  delete coor; delete zroe; delete celnod;
-  delete celcel; delete edgptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//
@@ -96,6 +94,9 @@ void ReadTriangle::generate()
   ReadNeigh();
 
   ReadEdge();
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 
@@ -486,6 +487,14 @@ std::string ReadTriangle::getEdgeFile() const
   }
   LogToScreen(INFO,"ReadTriangle::error => in input.case no <edge> type found");
   exit(1);
+}
+
+//--------------------------------------------------------------------------//
+
+void ReadTriangle::freeArray()
+{
+  delete coor; delete zroe; delete celnod;
+  delete celcel; delete edgptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//

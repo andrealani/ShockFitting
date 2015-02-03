@@ -4,8 +4,8 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#ifndef ShockFitting_WriteTriangleFreez_hh
-#define ShockFitting_WriteTriangleFreez_hh
+#ifndef ShockFitting_WriteTriangleFreezedConnectivity_hh
+#define ShockFitting_WriteTriangleFreezedConnectivity_hh
 
 //--------------------------------------------------------------------------//
 
@@ -23,23 +23,20 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-/// This class defines WriteTriangleFreez, whose task is to write Triangle Mesh
-/// Generator file using data computed by the code.
-/// Two vectors are defines (M02M1 and M12M0) to remove not operative shock 
-/// nodes and phantom nodes.
-/// They map working memory locations. 
-/// Therefore it excludes nodcod points with values equal to -2, -1, -99.
-/// The Freez version should be used for the starting structured grid
+/// This class defines a WriteTriangleFreezedConnectivity, whose task is
+/// to copy the triangle files of the previous step, update the file name
+/// with the current step number and overwrite the file node with the
+/// new values in the nodes
 
-class WriteTriangleFreez : public WritingMesh {
+class WriteTriangleFreezedConnectivity : public WritingMesh {
 public:
 
   /// Constructor
   /// @param objectName the concrete class name
-  WriteTriangleFreez(const std::string& objectName);
+  WriteTriangleFreezedConnectivity(const std::string& objectName);
 
   /// Destructor
-  virtual ~WriteTriangleFreez();
+  virtual ~WriteTriangleFreezedConnectivity();
 
   /// Set up this object before its first use
   virtual void setup();
@@ -58,25 +55,16 @@ private: // helper functions
   /// set map vector for NodCodSh
   void setMapVectorForNodcodSh();
 
-  /// write mesh points coordinates and status on Triangle file
-  void writeMeshVariables();
+  /// write the .node file
+  void writeFileNode();
 
-  /// write upstream shock points coordinates and status on Triangle file
-  void writeUpstreamStatus();
+  /// copy and rename the triangle files
+  void copyAnDrenameTriangleFiles();
 
-  /// write downstream shock points coordinates and status on Triangle file
-  void writeDownstreamStatus();
-
-  /// set map vector for bndfac and write bndfac on poly file
-  void writeBndfac();
-
-  /// compute number of holes
-  void computenbHoles();
-
-  /// assign variables used in WriteTriangleFreez to MeshData pattern
+  /// assign variables used in WriteTriangleFreezedConnectivity to MeshData
   void setMeshData();
 
-  /// assign variables used in WriteTriangleFreez to PhysicsData pattern
+  /// assign variables used in WriteTriangleFreezedConnectivity to PhysicsData
   void setPhysicsData();
 
   /// assign start pointers of Array2D and 3D
@@ -108,9 +96,6 @@ private: // data
   /// number of boundary faces
   std::vector<unsigned>* nbfac;
 
-  /// number of edges
-  std::vector<unsigned>* nedge;
-
   /// number of Shock points for each shock
   std::vector<unsigned>* nShockPoints;
 
@@ -135,9 +120,6 @@ private: // data
   /// vector characterizing  nodes elements (assignable to MeshData)
   std::vector<int>* celnodVect;
 
-  /// vector characterizing edges (assignable to MeshData)
-  std::vector<int>* edgptrVect;
-
   /// map vector
   std::vector <unsigned>* M02M1;
  
@@ -153,11 +135,6 @@ private: // data
   /// celnod(1)(i-elem) 2° node of i-element
   /// celnod(2)(i-elem) 3° node of i-element
   Array2D <int>* celnod;
-
-  /// edgptr(0)(i-edge) 1° endpoint of i-edge
-  /// edgptr(1)(i-edge) 2° endpoint of i-edge
-  /// edgptr(2)(i-edge) boundary marker of i-edge
-  Array2D <int>* edgptr;
 
   /// mesh points coordinates (in array storing)
   Array2D <double>* XY;
@@ -206,5 +183,4 @@ private: // data
 
 //--------------------------------------------------------------------------//
 
-#endif // ShockFitting_WriteTriangleFreez_hh
-
+#endif // ShockFitting_WriteTriangleFreezedConnectivity_hh

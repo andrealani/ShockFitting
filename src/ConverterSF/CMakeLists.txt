@@ -9,12 +9,12 @@ CFmesh2TriangleFreez.cxx
 CFmesh2TriangleFreez.hh
 DummyConverter.cxx
 DummyConverter.hh
-Triangle2CFmesh.cxx
-Triangle2CFmeshFreez.cxx
-Triangle2CFmesh.hh
-Triangle2CFmeshFreez.hh
 ShockFileConverter.cxx
 ShockFileConverter.hh
+Triangle2CFmesh.cxx
+Triangle2CFmeshFreez.cxx
+Triangle2CFmeshFreez.hh
+Triangle2CFmesh.hh
 )
 
 LIST ( APPEND ConverterSF_libs Framework SConfig MathTools)

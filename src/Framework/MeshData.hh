@@ -98,7 +98,7 @@ public:
   /// get the max non dimensional distance of phantom nodes
   double getSNDMIN() const { return m_sndmin; }
 
-  /// get the length of the shock edges
+  // get the length of the shock edges
   double getDXCELL() const {return m_dxcell; }
 
   /// get the relax coefficient of the shock points integration
@@ -120,16 +120,16 @@ public:
   bool cellsFreezed() { return m_gridInfo; }
 
   /// get the connectivity grid informations (default it is set to false)
-  bool freezedConnectivity() { return m_connectivityInfo; }
+  bool freezedConnectivityOption() { return m_connectivityInfo; }
 
-  /// get the connectivity freezed method
-  std::string howFreezedConnectivity() { return m_freezedConnectivityMethod; }
+  /// set the connectivity freezed
+  void setFreezedConnectivity(bool freezOrNotNow) { m_freezedNow = freezOrNotNow; }
 
-  /// get the connecctivity freezed iter (set inside the input.case)
-  unsigned getFreezedConnectivityIter() { return m_freezedConnectivityIter; }
+  /// get the connectivity freezed
+  bool getFreezedConnectivity() { return m_freezedNow; }
 
-  /// get the minimum shock speed freezing the connectivity
-  double getFreezedConnectivityShockSpeed() { return m_freezedConnectivityShSpeed; }
+  /// get the value of the ratio WSh*dt/SNDMIN freezing the connectivity
+  double getFreezedAdimConnectivityRatio() { return m_freezedConnectivityRatio; }
 
 private:
 
@@ -159,18 +159,13 @@ private:
     m_gridInfo = false;
     addOption("freezedWallCells",&m_gridInfo,
               "Cell close to the wall are freezed or not freezed");
-    m_connectivityInfo = "false";
-    addOption("freezedConnectivity",&m_connectivityInfo,
-              "The connectivity is freezed according to a set rule");
-    m_freezedConnectivityMethod = "dummyMethod";
-    addOption("freezedConnectivityMethod",&m_freezedConnectivityMethod,
-              "The connectivity is freezed according to a set rule");
-    m_freezedConnectivityIter = 1000000;
-    addOption("freezedConnectivityIter",&m_freezedConnectivityIter,
-              "Iter value to freez the connectivity");
-    m_freezedConnectivityShSpeed = 1000;
-    addOption("freezedConnectivityShockSpeed",&m_freezedConnectivityShSpeed,
-              "Minimu shock speed value to freez the connectivity");
+    m_connectivityInfo = false;  
+    addOption("freezedConnectivityOption",&m_connectivityInfo,
+              "Specifies if the connectivity will be freezed");
+    m_freezedNow = false;
+    m_freezedConnectivityRatio = 1e-4;
+    addOption("maxFreezedConnectivityRatio",&m_freezedConnectivityRatio,
+              "Maximum value of the ratio: WSh*dt/SNDMIN freezing the connectivity");
     m_coolfluidCFmesh = true;
     addOption("WithP0",&m_coolfluidCFmesh,
              "Coolfluid output file");
@@ -249,14 +244,11 @@ private: // data (read from input file)
   /// specifies freezed connectivity
   bool m_connectivityInfo;
 
-  /// specifies the rule to freez the connectivity
-  std::string m_freezedConnectivityMethod;
+  /// soecifies when the connectivity starts to be freezed
+  bool m_freezedNow;
 
-  /// specifies the iter value fro  which freez the connectivity
-  unsigned m_freezedConnectivityIter;
-
-  /// specifies the minimum value of the shock speed from which freez the connectivity
-  double m_freezedConnectivityShSpeed;
+  /// specifies the value of the freezed connectivity ratio = WSh*dt/SNDIM
+  double m_freezedConnectivityRatio;
 
   /// hole points coordinates
   std::vector <double> m_caddholes; 

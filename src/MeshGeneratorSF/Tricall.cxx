@@ -302,10 +302,6 @@ nine:
 void Tricall::generate(string dummystr)
 {
   LogToScreen(INFO, "Tricall::generate()\n");
-
-
-
-
 }
 
 //--------------------------------------------------------------------------//

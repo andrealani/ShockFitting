@@ -87,6 +87,9 @@ protected: // functions
   /// assign start pointers of Array2D and 3D
   void setAddress();
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 protected: // data
 
   /// number of degrees of freedom

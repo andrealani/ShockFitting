@@ -55,8 +55,11 @@ private: // helper functions
   /// assign variables used in WriteBackTriangle to PhysicsData pattern
   void setPhysicsData();
 
-  /// asign starting pointers for Array2D
+  /// assign starting pointers for Array2D
   void setAddress();
+
+  /// de-allocate dynamic arrays
+  void freeArray();
 
 private: // data
 

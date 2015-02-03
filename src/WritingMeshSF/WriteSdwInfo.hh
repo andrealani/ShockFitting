@@ -59,6 +59,9 @@ private: // helper functions
   /// write SHinSPPs elements of sh99 file
   void writeSHinSPPs(unsigned, unsigned);
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of degrees of freedom

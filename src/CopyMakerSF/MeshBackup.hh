@@ -51,6 +51,9 @@ private: // helper functions
   /// assign starting pointers for Array2D
   void setAddress();
 
+  /// de-allocate the dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of mesh points

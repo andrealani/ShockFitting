@@ -90,6 +90,9 @@ void Prim2ParamPgDimensional::transform()
     for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
      (*XY)(I,IPOIN) = (*XY)(I,IPOIN)/ReferenceInfo::getLref(); }
   } 
+
+  // de-allocate dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//

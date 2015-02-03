@@ -38,7 +38,6 @@ ChangeBndryPtr::ChangeBndryPtr(const std::string& objectName) :
 
 ChangeBndryPtr::~ChangeBndryPtr()
 {
-  delete nodptr; delete bndfac;
 }
 
 //--------------------------------------------------------------------------//
@@ -97,6 +96,9 @@ void ChangeBndryPtr::remesh()
   }
 
   logfile("Subr ChangeBndryPtr; NBFAC is now = ",nbfac->at(0),"\n");
+
+  // de-allocate dynamic arrays
+  freeArray();
 
   logfile.Close();
 }
@@ -170,6 +172,13 @@ void ChangeBndryPtr::setAddress()
                                     PhysicsInfo::getnbShEdgesMax();
   bndfac = new Array2D<int> (3,totsize,&bndfacVect->at(start));
   nodptr = new Array2D<int> (nbpoin->at(0),3, &nodptrVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void ChangeBndryPtr::freeArray()
+{
+  delete nodptr; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//

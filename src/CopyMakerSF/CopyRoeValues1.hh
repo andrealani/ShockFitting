@@ -52,6 +52,9 @@ private: // helper functions
   /// assign start pointers for arrays 2D
   void setAddress();
 
+  /// de-allocate the dynamic arrays
+  void freeArray();
+
 private: // data
 
   /// number of degrees of freedom
