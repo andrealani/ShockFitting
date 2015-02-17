@@ -106,6 +106,12 @@ void MoveDps4Pg::update()
   // chosen in the input.case, the freezed connectivity bool variable
   // is set to true
   if(MeshData::getInstance().freezedConnectivityOption()) {
+
+   // open file storing freezedConnectivityRatioValues
+   ofstream memFCR("FreezedConnectivityRatioValues.dat",ios::app);
+   memFCR << WShMax*dt/MeshData::getInstance().getSNDMIN() << endl;
+   memFCR.close();
+
    if(WShMax*dt/MeshData::getInstance().getSNDMIN() < 
     MeshData::getInstance().getFreezedAdimConnectivityRatio()) 
    {
@@ -113,7 +119,7 @@ void MoveDps4Pg::update()
     logfile("\n (!) Freezed connectivity\n");
     logfile("Freezed connectivity ratio = ",
             WShMax*dt/MeshData::getInstance().getSNDMIN(),"\n\n");
-    LogToScreen(INFO,"MoveDps4Pg::warning => freezed connectivity\n");
+    LogToScreen(INFO,"MoveDps4Pg::warning => freezed connectivity\n"); 
    }
   }
 

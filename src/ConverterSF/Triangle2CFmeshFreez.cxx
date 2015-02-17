@@ -44,7 +44,6 @@ Triangle2CFmeshFreez::Triangle2CFmeshFreez(const std::string& objectName) :
 
 Triangle2CFmeshFreez::~Triangle2CFmeshFreez()
 {
-  delete XY; delete zroe; delete celnod; delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//

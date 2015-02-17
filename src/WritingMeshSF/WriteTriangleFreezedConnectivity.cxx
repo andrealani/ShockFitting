@@ -227,26 +227,7 @@ void WriteTriangleFreezedConnectivity::writeFileNode()
    }
   }
 
-  // compute number of hole points
-  nHoles = 0;
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   nHoles = nHoles + nShockPoints->at(ISH)-2;
-  }
-
-  fprintf(file, "%u %s",nHoles + MeshData::getInstance().getnbAddHoles(),"\n");
-  unsigned iHole=0;
-  for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
-   for(unsigned I=1; I<nShockPoints->at(ISH)-1; I++) {
-    ++iHole;
-    fprintf(file,"%u %s",iHole,"  ");
-    fprintf(file,"%.16f %s %.16f %s",(*XYSh)(0,I,ISH),"  ",(*XYSh)(1,I,ISH),"\n");
-   }
-  }
-
-  for (unsigned I=0; I<MeshData::getInstance().getnbAddHoles(); I++) {
-   fprintf(file,"%u %s",iHole+I,"  ");
-   for(unsigned j=0; j<2; j++) { fprintf(file,"%.16f %s",caddholes->at(j)," ");}
-  }
+  fclose(file);
 }
 
 //--------------------------------------------------------------------------//

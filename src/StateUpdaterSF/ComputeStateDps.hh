@@ -46,7 +46,7 @@ public:
   /// Unset up this object after its last use
   virtual void unsetup() = 0;
 
-  /// update status
+  /// update state
   virtual void update() = 0;
 
 protected: // functions

@@ -140,7 +140,7 @@ void BndryNodePtrFreez::myroutine()
       Binsrc B(IPOIN, iwork_nodptr);
       ipos = B.callBinsrc();
       if (ipos ==-1) {
-       cout << "BndryNodePtr::error => subr. CheckBndryPntr entry NOT found for " << IPOIN << endl;
+       cout << "BndryNodePtrFreez::error => entry NOT found for " << IPOIN << endl;
        cout << "Color: " << (*bndfac)(2,IFACE) << endl;
        cout << (*bndfac)(0,IFACE) << " , " << (*bndfac)(1,IFACE) << endl;
        exit(1);
@@ -168,7 +168,7 @@ void BndryNodePtrFreez::myroutine()
 
   seven:
      if (ifail !=0) { 
-      cout << "BndryNodePtr::error => something wrong in CheckBndryPntr\n";
+      cout << "BndryNodePtrFreez::error => something wrong in CheckBndryPntr\n";
       exit(1);
      }
 

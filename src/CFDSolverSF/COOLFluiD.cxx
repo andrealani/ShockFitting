@@ -58,11 +58,19 @@ void COOLFluiD::unsetup()
 
 void COOLFluiD::call()
 {
-  stringstream iterValue;
-
   // check if some values of the CoolFluid input file are asked
   // to be changed
   if(m_alterCFDinputfile) {
+
+   stringstream iterValue;
+   stringstream oldIterValue;
+   stringstream maxNbStepsValue;
+   stringstream oldMaxNbStepsValue;
+
+   iterValue.str(string());
+   oldIterValue.str(string());
+   maxNbStepsValue.str(string());
+   oldMaxNbStepsValue.str(string());
 
    // make a back up of the coolfluid input file
    command.str(string());
@@ -73,9 +81,20 @@ void COOLFluiD::call()
    OverwriteInputFile ModifyInputCase(string("cf00.CFcase.BAK").c_str(),
                                       string("cf00.CFcase").c_str() );
 
-   iterValue << MeshData::getInstance().getIstep();
-   ModifyInputCase.overwriteValue("Simulator.SubSystem.InitialIter =",
-                                  iterValue.str());
+   // command the object modifying the current coolfluid iter and the 
+   // maximum number of coolfluid steps 
+   iterValue << "Simulator.SubSystem.InitialIter = " 
+             << MeshData::getInstance().getIstep() << "\n";
+   oldIterValue << "Simulator.SubSystem.InitialIter = "
+             << MeshData::getInstance().getIstep()-1; 
+   maxNbStepsValue << "Simulator.SubSystem.MaxNumberSteps.nbSteps = "
+             << MeshData::getInstance().getIstep()+1 << "\n";
+   oldMaxNbStepsValue << "Simulator.SubSystem.MaxNumberSteps.nbSteps = "
+             << MeshData::getInstance().getIstep();
+   ModifyInputCase.overwriteValue(oldIterValue.str(),
+                                  iterValue.str(),
+                                  oldMaxNbStepsValue.str(),
+                                  maxNbStepsValue.str());
   }
 
   LogToScreen(INFO,"COOLFluiD::call()\n");

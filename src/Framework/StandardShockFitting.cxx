@@ -70,6 +70,9 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_startFiles = true;
   addOption("startFromCapturedFiles",&m_startFiles,
             "The starting files are the ones from the captured solution");
+  m_computeShockFittingResidual = false;
+  addOption("shockFittingResidual",&m_computeShockFittingResidual,
+            "Specifies if the shock fitting residual are computed");
 }
 
 //--------------------------------------------------------------------------//
@@ -117,6 +120,8 @@ void StandardShockFitting::setup()
    m_writeTriangleFileFreezedConnect = m_wMesh[3].ptr(); }
   m_callTriangle = m_mGenerator[2].ptr();
   m_callTriangleLib = m_mGenerator[3].ptr();
+  if(m_computeShockFittingResidual) { 
+   m_computeSFresidual = m_sUpdater[2].ptr();}
   m_triangleToCFmesh = m_fConverter[2].ptr();
   m_COOLFluiD = m_CFDSolver.ptr();
   m_CFmeshToTriangle = m_fConverter[3].ptr();
@@ -259,6 +264,8 @@ void StandardShockFitting::process()
    }
 
    m_triangleToCFmesh->convert();
+
+   if(m_computeShockFittingResidual) { m_computeSFresidual->update(); }
 
    cout << "_________________________________________________________________\n\n";
 

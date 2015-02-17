@@ -377,6 +377,7 @@ void ShockFittingObj::createMeshData()
 
   MeshData::getInstance().createData <vector <int> >("NODCOD", 1);
   MeshData::getInstance().createData <vector <double> >("ZROE", 1);
+  MeshData::getInstance().createData <vector <double> >("ZROEOld",1);
   MeshData::getInstance().createData <vector <double> >("COOR", 1);
   MeshData::getInstance().createData <vector <int> >("BNDFAC", 1);
   MeshData::getInstance().createData <vector <int> >("CELNOD", 1);
@@ -396,6 +397,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <stringstream>("FNAME");
   MeshData::getInstance().createData <string>("FNAMEBACK");
 
+  MeshData::getInstance().createData <vector <double> >("firstResidual", 1);
   MeshData::getInstance().setup();
 }
 
@@ -468,6 +470,9 @@ void ShockFittingObj::deleteMeshData()
 
   MeshData::getInstance().deleteData <vector <int> >("NODCOD");
   MeshData::getInstance().deleteData <vector <double> >("ZROE");
+  // the following variable is used to store the old values and
+  // compute the shock fitting residual
+  MeshData::getInstance().deleteData <vector <double> >("ZROEOld");
   MeshData::getInstance().deleteData <vector <double> >("COOR");
   MeshData::getInstance().deleteData <vector <int> >("BNDFAC");
   MeshData::getInstance().deleteData <vector <int> >("CELNOD");
@@ -485,6 +490,8 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <unsigned>("FirstRead");
   MeshData::getInstance().deleteData <stringstream >("FNAME");
   MeshData::getInstance().deleteData <string >("FNAMEBACK");
+
+  MeshData::getInstance().deleteData <vector <double> >("firstResidual");
 
   MeshData::getInstance().unsetup();
 }

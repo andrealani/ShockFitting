@@ -55,6 +55,9 @@ private:
   /// specifies the starting file format
   bool m_startFiles;
 
+  /// specifies if the shock fitting residuals will be computed
+  bool m_computeShockFittingResidual;
+
   /// command object convert shock input file in sh00.dat
   SConfig::SharedPtr<Converter> m_createshockfile;
 
@@ -97,6 +100,9 @@ private:
 
   /// command object fixing mesh around special points
   SConfig::SharedPtr<Remeshing> m_fixMeshSpecialPoints;
+
+  /// command object computing shock fitting residual
+  SConfig::SharedPtr<StateUpdater> m_computeSFresidual;
 
   /// command object writing output files
   SConfig::SharedPtr<WritingMesh> m_writeTriangleFile;

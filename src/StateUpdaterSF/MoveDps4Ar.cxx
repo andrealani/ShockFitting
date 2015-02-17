@@ -117,6 +117,12 @@ void MoveDps4Ar::update()
   // chosen in the input.case, the freezed connectivity bool variable
   // is set to true
   if(MeshData::getInstance().freezedConnectivityOption()) {
+
+   // open file storing freezedConnectivityRatioValues
+   ofstream memFCR("FreezedConnectivityRatioValues.dat",ios::app);
+   memFCR << WShMax*dt/MeshData::getInstance().getSNDMIN() << endl;
+   memFCR.close();
+
    if(WShMax*dt/MeshData::getInstance().getSNDMIN() <
       MeshData::getInstance().getFreezedAdimConnectivityRatio())
    {

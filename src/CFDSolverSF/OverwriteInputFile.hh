@@ -37,6 +37,9 @@ public:
   /// @param string the replacing value
   void overwriteValue(std::string, std::string);
 
+  /// overwrite two values
+  void overwriteValue(std::string, std::string, std::string, std::string);
+
 private: // data
 
   /// name of the input file

@@ -102,6 +102,32 @@ void Param2PrimPgDimensional::transform(vector <double>* m_zroe,
                                         vector <double>* m_XY,
                                         vector <double>* m_prim)
 {
+  double rhoref = ReferenceInfo::getpref() / ReferenceInfo::getTref() /
+                  ReferenceInfo::getRgas();
+
+  ReferenceInfo::setrhoref(rhoref);
+
+  rho = m_zroe->at(0) * m_zroe->at(0);
+  kinetic = m_zroe->at(2) * m_zroe->at(2) +
+            m_zroe->at(3) * m_zroe->at(3);
+  kinetic = kinetic * 0.5;
+  h = m_zroe->at(1)/m_zroe->at(0);
+  help = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam();
+  pres = help * (rho * h - kinetic);
+  u = m_zroe->at(2)/m_zroe->at(0);
+  v = m_zroe->at(3)/m_zroe->at(0);
+
+  m_prim->at(0) = pres * ReferenceInfo::getrhoref() *
+                       ReferenceInfo::geturef() * ReferenceInfo::geturef();
+  m_prim->at(1) = u * ReferenceInfo::geturef();
+  m_prim->at(2) = v * ReferenceInfo::geturef();
+  m_prim->at(3) = pres/rho *
+                       (ReferenceInfo::geturef() * ReferenceInfo::geturef() /
+                        ReferenceInfo::getRgas());
+
+  for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++) {
+   m_XY->at(I) = m_XY->at(I)/ReferenceInfo::getLref();
+  }
 }
 
 //--------------------------------------------------------------------------//

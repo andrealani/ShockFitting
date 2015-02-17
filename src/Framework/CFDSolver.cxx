@@ -21,7 +21,7 @@ namespace ShockFitting {
 CFDSolver::CFDSolver(const std::string& objectName) :
   BaseShockFitting(objectName)
 {
-  m_alterCFDinputfile = "false";
+  m_alterCFDinputfile = false;
   addOption("alterCFDinputFile",&m_alterCFDinputfile,
             "Ask to change some values in the CFD input file at run time");
   m_alterWhichValues = vector<string>(1);

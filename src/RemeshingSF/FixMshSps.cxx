@@ -158,7 +158,6 @@ void FixMshSps::createDownShEdges()
 
 void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
 {
-
   setShockIndeces(1,ISPPNTS);
   unsigned ishock = ISH.at(0)+1 ;
 
@@ -212,8 +211,8 @@ void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
   // Split the existing edges of the background mesh
   // and create 2 new edges at  boundary
   // if the first point of the shock  is at the boundary
-  if (iedg1>0) { splitEdges();
-		 createNewEdges(IP.at(0), ISH.at(0)); }
+  if (iedg>0) { splitEdges();
+		createNewEdges(IP.at(0), ISH.at(0)); }
 }
 
 //--------------------------------------------------------------------------//
@@ -257,7 +256,7 @@ void FixMshSps::fixMeshForRRX(unsigned ISPPNTS)
   // check if the shock crosses a boundary point
   checkShockBndryEdgeCrossing();
 
-  iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
+  iedg = iedg1+1; // c++ indeces start from 0 
   logfile ("****************************");
   logfile ("    Shock: ", ishock, "\n");
   logfile ("    ", iedg, "\n");
@@ -266,8 +265,8 @@ void FixMshSps::fixMeshForRRX(unsigned ISPPNTS)
   // Split the existing edges of the background mesh
   // and create two new edges at  boundary
   // if the first point of the shock  is at the boundary
-  if (iedg1>0) { splitEdges();
-                 createNewEdges(IP.at(0), ISH.at(0),IP.at(1), ISH.at(1)); }
+  if (iedg>0) { splitEdges();
+                createNewEdges(IP.at(0), ISH.at(0),IP.at(1), ISH.at(1)); }
 }
 
 //--------------------------------------------------------------------------//
@@ -323,7 +322,7 @@ void FixMshSps::splitEdges()
   (*bndfac)(2,iedg1) = -IBC;
   int iedg = iedg1+1; // only for file log printing, c++ indeces start from 0
   logfile("Removing background edge ", iedg, " ");
-  logfile(I1, " ", I2, "\n");
+  logfile(I1, " ", I2, "\n\n");
 }
 
 //--------------------------------------------------------------------------//

@@ -3,6 +3,8 @@ DummyStateUpdater.cxx
 DummyStateUpdater.hh
 CoDc.cxx
 CoDc.hh
+ComputeResidual.cxx
+ComputeResidual.hh
 ComputeStateDps.cxx
 ComputeStateDps.hh
 ComputeStateDps4Ar.cxx
@@ -13,6 +15,12 @@ ComputeStateDps4TCneq.cxx
 ComputeStateDps4TCneq.hh
 CoShock.cxx
 CoShock.hh
+DiscrErrorNormL1.cxx
+DiscrErrorNormL1.hh
+DiscrErrorNormL1weighted.cxx
+DiscrErrorNormL1weighted.hh
+DiscrErrorNormL2.cxx
+DiscrErrorNormL2.hh
 FixStateSps.cxx
 FixStateSps.hh
 Interp.cxx

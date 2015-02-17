@@ -19,7 +19,7 @@ namespace ShockFitting {
 //----------------------------------------------------------------------------//
 
 /// This class defines FindBEdg, whose task is find the boundary edge
-/// (of the background mesh) the shokc point (xsh, ysh) belongs to
+/// (of the background mesh) the shock point (xsh, ysh) belongs to
 
 class FindBEdg {
 public:

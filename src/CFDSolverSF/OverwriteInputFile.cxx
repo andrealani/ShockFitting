@@ -42,17 +42,49 @@ void OverwriteInputFile::overwriteValue(string VarName, string VarValue)
   while(!fileIn.eof()) {
    // read until the VarName is not identified 
    getline(fileIn,dumstring);
-   fileOut << dumstring << endl;
    if(dumstring==VarName) {
-    // read the old value 
-    getline(fileIn,dumstring);
     // write the new value
     fileOut << VarValue << endl;
+   }
+   else { fileOut << dumstring << endl;}
+  }
+
+  fileIn.close();
+  fileOut.close();
+}
+
+//--------------------------------------------------------------------------//
+
+void OverwriteInputFile::overwriteValue(string VarName1, string VarValue1,
+                                        string VarName2, string VarValue2)
+{
+  string dumstring;
+  
+  fileIn.open(m_inputFile.c_str());
+  fileOut.open(m_outputFile.c_str());
+
+  while(!fileIn.eof()) {
+   // read until the VarName1 or VarName2 is not identified
+   getline(fileIn,dumstring);
+
+   if(dumstring==VarName1) {
+    // write the new value
+    fileOut << VarValue1;
+   }
+
+   else if(dumstring==VarName2) {
+    // write the new value
+    fileOut << VarValue2;
+   }
+
+   else {
+    fileOut << dumstring << endl;
    }
   }
 
   fileIn.close();
   fileOut.close();
+
 }
 
 //--------------------------------------------------------------------------//

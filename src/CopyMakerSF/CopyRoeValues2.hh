@@ -20,8 +20,8 @@ namespace ShockFitting {
 
 /// This class defines a CopyRoeValues2, whose task is to update the 
 /// nodal values of the shocks on the new grid 
-/// In the fortran versione the new grid is referred to index "1"
-/// here it is pushed bacl at the end of the background grid.
+/// In the fortran version the new grid is referred to index "1"
+/// here it is pushed back at the end of the background grid.
 /// This copy is necessary here since FixStateSps and ComputeStateDps work
 /// on nodal values of grid(0).
 
