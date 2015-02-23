@@ -112,15 +112,30 @@ void ShockFileConverter::convert()
   XYSh.resize(PhysicsInfo::getnbDim());
 
   // transform upstream variables
-  if(m_modelTransf == "Pg") { m_prim.at(0) = ReferenceInfo::getpref();
-                              m_prim.at(1) = -ReferenceInfo::geturef();
-                              m_prim.at(2) = 0;
-                              m_prim.at(3) = ReferenceInfo::getTref(); }
+  if(m_modelTransf == "Pg") { 
+   m_prim.at(0) = ReferenceInfo::getpref();
+   // the free-stream speed is concordant with the x-axis
+   if(ReferenceInfo::speedDirectionXaxis()) { 
+    m_prim.at(1) = ReferenceInfo::geturef(); }
+   // the free-stream speed is pointed as -x
+   else { m_prim.at(1) = -ReferenceInfo::geturef(); }
+   m_prim.at(2) = 0;
+   m_prim.at(3) = ReferenceInfo::getTref();
+  }
   else if (m_modelTransf == "TCneq") { 
    for(unsigned i=0; i<ReferenceInfo::getrhoiref().size(); i++) {
      m_prim.at(i) = ReferenceInfo::getrhoiref().at(i);
    }
-   m_prim.at(ReferenceInfo::getrhoiref().size()+0) = -ReferenceInfo::geturef();
+   // the free-stream speed is concordant with the x-axis
+   if(ReferenceInfo::speedDirectionXaxis()) {
+    m_prim.at(ReferenceInfo::getrhoiref().size()+0) =
+     ReferenceInfo::geturef();
+   }
+   // the free-stream speed is pointed as -x
+   else { 
+    m_prim.at(ReferenceInfo::getrhoiref().size()+0) =
+     -ReferenceInfo::geturef();
+   }
    m_prim.at(ReferenceInfo::getrhoiref().size()+1) = 0.0;
    m_prim.at(ReferenceInfo::getrhoiref().size()+2) = ReferenceInfo::getTref();
    m_prim.at(ReferenceInfo::getrhoiref().size()+3) = ReferenceInfo::getTref();

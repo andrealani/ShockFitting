@@ -138,6 +138,12 @@ void Triangle2CFmeshFreez::readTriangleFmt()
   // set ICLR vector to 0 value
   ICLR->assign(20,0);
 
+  // make the bakcup of number of old shocked mesh points
+  // if npoin->at(1) > npoinShockedMeshBack then the current 
+  // residual will be computed on npoinShockedMeshBkp-points
+  // else the current residual will be computed on npoin->at(1)-points
+  (*npoinShockedMeshBkp) = npoin->at(1);
+
   string dummyfile;
 
   dummyfile = fname->str()+".1.node";
@@ -562,6 +568,8 @@ void Triangle2CFmeshFreez::freeArray()
 void Triangle2CFmeshFreez::setMeshData()
 {
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
+  npoinShockedMeshBkp = 
+    MeshData::getInstance().getData <unsigned> ("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");

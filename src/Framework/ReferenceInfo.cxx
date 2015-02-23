@@ -40,6 +40,9 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
   m_uref = 1;
   addOption("VelocityRef",&m_uref,
             "Reference speed [m/s]");
+  m_speedDirection = false;
+  addOption("isVelocityConcordantWithX",&m_speedDirection,
+            "It specifies if the free-stream velocity is concordant with x");
   m_rhor = vector<double>();
   addOption("SpeciesDensities",&m_rhor,
             "Species densities");
@@ -79,6 +82,10 @@ double ReferenceInfo::m_gam=1;
 //--------------------------------------------------------------------------//
 
 double ReferenceInfo::m_Rgas=1;
+
+//--------------------------------------------------------------------------//
+
+bool ReferenceInfo::m_speedDirection=false;
 
 //--------------------------------------------------------------------------//
 

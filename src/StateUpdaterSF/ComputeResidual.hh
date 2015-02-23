@@ -69,6 +69,9 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
+  /// backup of the old number of shocked mesh points
+  unsigned* npoinShockedMeshBkp;
+
   /// norm value get from the norm computing object
   double normValue;
 

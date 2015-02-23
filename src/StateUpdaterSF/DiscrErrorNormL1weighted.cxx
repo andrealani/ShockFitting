@@ -66,6 +66,8 @@ void DiscrErrorNormL1weighted::update()
   setPhysicsData();
   setAddress();
 
+  unsigned currentNbMeshPoints;
+
   normValue.resize((*ndof),0);
 
   // L1w = (sum(i=1,N) |u^(n+1)-u^(n)|)/ (sum(i=1,N) |u^(1)-u^(0)|)
@@ -80,7 +82,7 @@ for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    }
 fclose(outfile);
 outfile = fopen("ZroeOld.txt","w");
-for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+for(unsigned IPOIN=0; IPOIN<(*npoinShockedMeshBkp); IPOIN++) {
    for(unsigned K=0; K<(*ndof); K++) {
     fprintf(outfile,"%32.16F %s",(*zroeOld)(K,IPOIN)," "); }
     fprintf(outfile,"%s","\n ");
@@ -88,11 +90,29 @@ for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
 fclose(outfile);
 }
 
-
-  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-   for(unsigned K=0; K<(*ndof); K++) {
-    normValue.at(K) = normValue.at(K) + 
+  // if the new number of points of the shocked mesh is smaller than
+  // the old number of points of the shocked mesh, then the
+  // residual will be computed on npoin->at(1)
+  if(npoin->at(1)<(*npoinShockedMeshBkp)) {
+   currentNbMeshPoints = npoin->at(1);
+   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+    for(unsigned K=0; K<(*ndof); K++) {
+     normValue.at(K) = normValue.at(K) + 
                       abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
+    }
+   }
+  }
+
+  // if the new number of points of the shocked mesh is larger than
+  // the old number of points of the shocked mesh, then the
+  // residual will be computed on npoinShockedMeshBkp
+  else { 
+   currentNbMeshPoints = (*npoinShockedMeshBkp);
+   for(unsigned IPOIN=0; IPOIN<(*npoinShockedMeshBkp); IPOIN++) {
+    for(unsigned K=0; K<(*ndof); K++) {
+     normValue.at(K) = normValue.at(K) +
+                      abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
+    }
    }
   }
 
@@ -100,13 +120,13 @@ fclose(outfile);
   if(MeshData::getInstance().getIstep()==2) {
    firstResidualValue->resize((*ndof));
    for(unsigned K=0; K<(*ndof); K++) {
-    firstResidualValue->at(K) = normValue.at(K) / npoin->at(1);
+    firstResidualValue->at(K) = normValue.at(K) / currentNbMeshPoints;
    }
   }
 
   // weight the residual value on the first residual
-  for(unsigned K=0; K<(*ndof); K++) { 
-    normValue.at(K) = normValue.at(K) / npoin->at(1) / firstResidualValue->at(K);
+  for(unsigned K=0; K<(*ndof); K++) {
+    normValue.at(K) = normValue.at(K) / currentNbMeshPoints / firstResidualValue->at(K);
   }
 
   // define the fstream value printing the norm
@@ -153,6 +173,8 @@ void DiscrErrorNormL1weighted::freeArray()
 
 void DiscrErrorNormL1weighted::setMeshData()
 {
+  npoinShockedMeshBkp = 
+   MeshData::getInstance().getData <unsigned>("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   zroeOldVect = MeshData::getInstance().getData <vector<double> >("ZROEOld");

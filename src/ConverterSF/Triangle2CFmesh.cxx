@@ -139,6 +139,12 @@ void Triangle2CFmesh::readTriangleFmt()
   // set ICLR vector to 0 value
   ICLR->assign(20,0);
 
+  // make the bakcup of number of old shocked mesh points
+  // if npoin->at(1) > npoinShockedMeshBack then the current
+  // residual will be computed on npoinShockedMeshBkp-points
+  // else the current residual will be computed on npoin->at(1)-points
+  (*npoinShockedMeshBkp) = npoin->at(1);
+
   string dummyfile;
 
   dummyfile = fname->str()+".1.node";
@@ -316,7 +322,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
   unsigned BNDS=0; unsigned BND=0; unsigned IND2=2;
   // @param LIST_STATE = 0 there is not a list of states
   // @param LIST_STATE = 1 there is a list of states
-  unsigned  LIST_STATE=1;
+  unsigned  LIST_STATE = 1;
   int ip;
   vector <unsigned> np(2);
 
@@ -563,6 +569,8 @@ void Triangle2CFmesh::freeArray()
 void Triangle2CFmesh::setMeshData()
 {
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
+  npoinShockedMeshBkp = 
+    MeshData::getInstance().getData <unsigned> ("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");

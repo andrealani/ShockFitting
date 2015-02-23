@@ -333,7 +333,7 @@ void ShockFittingObj::unsetup()
   m_cState.ptr()->unsetup();
 
   // configure object moving shock points
-  m_moveDps.ptr()->setup();
+  m_moveDps.ptr()->unsetup();
 
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
@@ -366,6 +366,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <unsigned> ("NFPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("nPhanPoints",1);
   MeshData::getInstance().createData <unsigned> ("nBoundPhanPoints",1);
+  MeshData::getInstance().createData <unsigned> ("NPOINshockedMeshBkp",1);
   MeshData::getInstance().createData <vector<unsigned> > ("NPOIN", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NEDGE", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NELEM", 2);
@@ -459,6 +460,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <unsigned> ("NFPOIN");
   MeshData::getInstance().deleteData <unsigned> ("nPhanPoints");
   MeshData::getInstance().deleteData <unsigned> ("nBoundPhanPoints");
+  MeshData::getInstance().deleteData <unsigned> ("NPOINshockedMeshBkp");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NPOIN");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NEDGE");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NELEM");

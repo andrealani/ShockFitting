@@ -66,6 +66,8 @@ void DiscrErrorNormL2::update()
   setPhysicsData();
   setAddress();
 
+  unsigned currentNbMeshPoints;
+
   normValue.resize((*ndof),0);
 
   // L2 = ((sum(i=1,N) |u^(n+1)-u^(n)|^2)/ N)^1/2
@@ -78,8 +80,35 @@ void DiscrErrorNormL2::update()
    }
   }
 
+  // if the new number of points of the shocked mesh is smaller than
+  // the old number of points of the shocked mesh, then the
+  // residual will be computed on npoin->at(1)
+  if(npoin->at(1)<(*npoinShockedMeshBkp)) {
+   currentNbMeshPoints = npoin->at(1);
+   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+    for(unsigned K=0; K<(*ndof); K++) {
+     normValue.at(K) = normValue.at(K) +
+                      abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
+    }
+   }
+  }
+
+  // if the new number of points of the shocked mesh is larger than
+  // the old number of points of the shocked mesh, then the
+  // residual will be computed on npoinShockedMeshBkp
+  else {
+   currentNbMeshPoints = (*npoinShockedMeshBkp);
+   for(unsigned IPOIN=0; IPOIN<(*npoinShockedMeshBkp); IPOIN++) {
+    for(unsigned K=0; K<(*ndof); K++) {
+     normValue.at(K) = normValue.at(K) +
+                      abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
+    }
+   }
+  }
+        
+  // compute the norm
   for(unsigned K=0; K<(*ndof); K++) {
-    normValue.at(K) = sqrt(normValue.at(K)/npoin->at(1)); 
+    normValue.at(K) = sqrt(normValue.at(K)/currentNbMeshPoints); 
   }
 
   // define the fstream value printing the norm
@@ -126,6 +155,8 @@ void DiscrErrorNormL2::freeArray()
 
 void DiscrErrorNormL2::setMeshData()
 {
+  npoinShockedMeshBkp =
+    MeshData::getInstance().getData <unsigned>("NPOINshockedMeshBkp");   
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   zroeOldVect = MeshData::getInstance().getData <vector<double> >("ZROEOld");

@@ -15,27 +15,26 @@ int main (int argc, char** argv)
   // (2) CircularCylinder_Pg_inv_N_M25  : perfect gas M=25 inviscid
   // (3) CircularCylinder_VKI_LRD_2.1   : TCneq       M6   inviscid
   // (4) CircularCylinder_Pg_vis_Bx_M17 : perfect gas M=17 viscous
-  //                                      Gnoffo1 in pepe folder
-  // (5) CircularCylinder_Pg_vis_Bx_M17_New: perfect gas M=17 viscous
-  //                                         VKIc_vis_freez in pepe folder
+  //                                      from the folder vki
+  // (5) CircularCylinder_Pg_vis_Bx_M17 : perfect gas M=6 inviscid
   const unsigned nbTest = 10;
   vector<string> testDir(nbTest);
   testDir.at(0) = "CircularCylinder_Pg_inv_N_M15";
   testDir.at(1) = "CircularCylinder_Pg_inv_N_M20";
   testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
   testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
-  testDir.at(4) = "CircularCylinder_Pg_vis_Bx_M17";
-  testDir.at(5) = "CircularCylinder_Pg_vis_Bx_M17_New";
+  testDir.at(4) = "CircularCylinder_Pg_inv_N_M6";
+  testDir.at(5) = "CircularCylinder_Pg_vis_Bx_M17";
 
   // number of executing test
-  const unsigned i = 1;
+  const unsigned i = 4;
 
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
   string commandcp = "cp "+pwdTestDir+"/input.case .";
   system(commandcp.c_str());
 
-  if(i==3) {
+  if(i==3 || i==4) {
   string commandcp = "cp "+pwdTestDir+"/cylRDS.inter .";
   system(commandcp.c_str());
   }
@@ -61,7 +60,7 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the starting captured solution
-/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/cylinder-P3.CFmesh .";
+/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/cyl_TCneq_noChem-P0.CFmesh .";
   system(commandln.c_str());
   commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/shock.dat .";
   system(commandln.c_str());
@@ -73,7 +72,7 @@ int main (int argc, char** argv)
   }
 
   // link the coolfluid files
-  commandln = "cp -sf " + pwdTestDir + "/coolfluid-solver.xml .";
+  commandln = "cp -rf " + pwdTestDir + "/coolfluid-solver.xml .";
   system(commandln.c_str());
   commandln = "cp -rf "+pwdTestDir+"/cf00.CFcase .";
   system(commandln.c_str());

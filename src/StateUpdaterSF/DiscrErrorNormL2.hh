@@ -63,6 +63,9 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
+  /// backup of the old number of points of the shecked mesh
+  unsigned* npoinShockedMeshBkp;
+
   /// number of mesh points
   std::vector<unsigned>* npoin;
 

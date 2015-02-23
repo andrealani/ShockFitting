@@ -125,6 +125,11 @@ void ComputeResidual::update()
    m_normErr.ptr()->update();
   }
 
+  zroeOld->resize(PhysicsInfo::getnbDofMax(), 
+                 (npoin->at(1) + 2 *
+                  PhysicsInfo::getnbShMax() *
+                  PhysicsInfo::getnbShPointsMax()));
+
   // update zroeOld with the values of the current step
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    for(unsigned K=0; K<(*ndof); K++) { 
@@ -150,7 +155,7 @@ void ComputeResidual::setAddress()
                                PhysicsInfo::getnbShPointsMax()),
                                &zroeVect->at(start));
   zroeOld = new Array2D <double>  (PhysicsInfo::getnbDofMax(),
-                                  (npoin->at(1) + 2 *
+                                  ((*npoinShockedMeshBkp) + 2 *
                                    PhysicsInfo::getnbShMax() *
                                    PhysicsInfo::getnbShPointsMax()),
                                    &zroeOldVect->at(0));
@@ -167,6 +172,8 @@ void ComputeResidual::freeArray()
 
 void ComputeResidual::setMeshData()
 {
+  npoinShockedMeshBkp = 
+    MeshData::getInstance().getData <unsigned> ("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   zroeOldVect = MeshData::getInstance().getData <vector<double> >("ZROEOld");

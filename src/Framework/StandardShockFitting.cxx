@@ -67,7 +67,7 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_version = "dummyVersion";
   addOption("Version",&m_version,
             "Current version of the StandardShockFitting");
-  m_startFiles = true;
+  m_startFiles = false;
   addOption("startFromCapturedFiles",&m_startFiles,
             "The starting files are the ones from the captured solution");
   m_computeShockFittingResidual = false;

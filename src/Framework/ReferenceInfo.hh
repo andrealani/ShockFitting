@@ -65,6 +65,9 @@ public:
   /// get the reference speed
   static double geturef() { return m_uref; }
 
+  /// get the reference speed direction
+  static bool speedDirectionXaxis() { return m_speedDirection; }
+
   /// get the reference length
   static double getLref() { return m_Lref; }
 
@@ -129,6 +132,9 @@ private: // data
 
   /// freestream speed (m/s)
   static double m_uref;
+
+  /// direction of the speed (same direction as x or not)
+  static bool m_speedDirection;
 
   /// reference density
   static double m_rhoref;
