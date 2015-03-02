@@ -136,8 +136,8 @@ protected: // data
   /// discontinuity speed
   double WS;
 
-  /// working array storing riemann invariant
-  Array2D <double>R2;
+  /// working variable storing the riemann invariant
+  double R2;
 
   /// helping variables
   double help;

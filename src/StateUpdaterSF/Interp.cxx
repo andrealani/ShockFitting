@@ -266,6 +266,7 @@ void Interp::setAddress()
   // M02M12(0:2*NSHMAX*NPSHMAX-1)
   M02M12 = new vector<int>(2 * PhysicsInfo::getnbShMax() *
                                PhysicsInfo::getnbShPointsMax());
+
   for(unsigned i=0; i<M02M12->size(); i++) {
    M02M12->at(i) = M02M1->at(i+npoin->at(0)+1);
   }
@@ -275,6 +276,7 @@ void Interp::setAddress()
 
 void Interp::freeArray()
 {
+  delete zroe; delete XY;
   delete XYShu; delete XYShd;
   delete celnod;
   delete XYBkg; delete zBkg;

@@ -27,7 +27,8 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<BndryFacePtrFreez, Remeshing> readBndryFacePtrFreezProv("BndryFacePtrFreez");
+ObjectProvider<BndryFacePtrFreez, Remeshing> 
+ readBndryFacePtrFreezProv("BndryFacePtrFreez");
 
 //--------------------------------------------------------------------------//
 

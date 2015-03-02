@@ -37,6 +37,9 @@ ComputeResidual::ComputeResidual(const std::string& objectName) :
   m_isItWeighted = false;
   addOption("isItWeighted", &m_isItWeighted,
             "Specifies if the used norm is weighted");
+  m_gasModel = "DummyModel"; // up-to-date Pg or TCneq 
+  addOption("gasModel", &m_gasModel,
+            "Gas model required for the conversion in primitive variables");
 }
 
 //--------------------------------------------------------------------------//
@@ -53,6 +56,8 @@ void ComputeResidual::setup()
 
   m_normErr.ptr()->setup();
 
+  m_paramToprimDimensional.ptr()->setup();
+
   LogToScreen(VERBOSE,"ComputeResidual::setup() => end\n");
 }
 
@@ -63,6 +68,8 @@ void ComputeResidual::unsetup()
   LogToScreen(VERBOSE,"ComputeResidual::unsetup()\n");
 
   m_normErr.ptr()->unsetup();
+
+  m_paramToprimDimensional.ptr()->unsetup();
 }
 
 //--------------------------------------------------------------------------//
@@ -76,14 +83,26 @@ void ComputeResidual::configure(OptionMap& cmap, const std::string& prefix)
   m_normErr.name() = "DiscrErrorNorm"+m_whichNorm;
   if(m_isItWeighted) { m_normErr.name() = m_normErr.name() + "weighted"; }
 
+  // assign strings read in input.case to the object making the 
+  // variable transformation
+   m_paramToprimDimensional.name() = "Param2Prim"+m_gasModel+"Dimensional";
+
   if (ConfigFileReader::isFirstConfig()) {
-   m_normErr.ptr().reset(SConfig::Factory<StateUpdater>::getInstance().
-                             getProvider(m_normErr.name())
-                             ->create(m_normErr.name()));
+   m_normErr.ptr().reset
+     (SConfig::Factory<StateUpdater>::getInstance().
+      getProvider(m_normErr.name())->create(m_normErr.name()));
+
+   m_paramToprimDimensional.ptr().reset
+     (SConfig::Factory<VariableTransformer>::getInstance().
+      getProvider(m_paramToprimDimensional.name())->
+      create(m_paramToprimDimensional.name()));
   }
 
   // configure the object computing the norm value
   configureDeps(cmap, m_normErr.ptr().get());
+
+  // configure the object transforming the variables
+  configureDeps(cmap, m_paramToprimDimensional.ptr().get());
 }
  
 //--------------------------------------------------------------------------//    
@@ -95,11 +114,11 @@ void ComputeResidual::update()
   setMeshData();
   setPhysicsData();
 
+
   if(MeshData::getInstance().getIstep()==1) {
-   // resize zroeOldVect if the first step
-   unsigned totsize = npoin->at(1) +
-             2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax();
-   zroeOldVect->resize(PhysicsInfo::getnbDofMax() * totsize);
+
+   // resize vector and arrays
+   resizeArray();
 
    ofstream printNorm("SFconvergence.plt",ios::app);
    printNorm << "TITLE = Convergence of Shock Fitting norm: "<< m_whichNorm;
@@ -114,26 +133,40 @@ void ComputeResidual::update()
 
   setAddress();
 
+  // write the number of the current on the the output file
   if(MeshData::getInstance().getIstep()>1) {
+
    ofstream printNorm("SFconvergence.plt",ios::app);
    printNorm << MeshData::getInstance().getIstep() << " ";
    printNorm.close();
   }
 
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
+   // assign the zroe of the IPOIN to the working vector m_zroe
+   for(unsigned IV=0; IV<(*ndof); IV++) {
+    m_zroe.at(IV) = (*zroe)(IV,IPOIN);
+   }
+
+   // convert the zroe variables in primitive variables
+   m_paramToprimDimensional.ptr()->transform(&m_zroe,&m_XY,&m_prim);
+
+   // assign the transformed prim variablesof the IPOIN-point  to 
+   // the corrisponding array
+   for(unsigned IV=0; IV<(*ndof); IV++) {        
+    (*primBackgroundMesh)(IV,IPOIN) = m_prim.at(IV);
+   }
+  }
+
   if(MeshData::getInstance().getIstep()>1) {
-   // compute the norm of the discretization error
+   // compute the norm of the discretization error using the
+   // primitive variables of the background mesh grid-points
    m_normErr.ptr()->update();
   }
 
-  zroeOld->resize(PhysicsInfo::getnbDofMax(), 
-                 (npoin->at(1) + 2 *
-                  PhysicsInfo::getnbShMax() *
-                  PhysicsInfo::getnbShPointsMax()));
-
-  // update zroeOld with the values of the current step
-  for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+  // update primBackgroundMeshOld with the values of the current step
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    for(unsigned K=0; K<(*ndof); K++) { 
-    (*zroeOld)(K,IPOIN) = (*zroe)(K,IPOIN); 
+    (*primBackgroundMeshOld)(K,IPOIN) = (*primBackgroundMesh)(K,IPOIN); 
    }
   }
 
@@ -143,40 +176,41 @@ void ComputeResidual::update()
 
 //--------------------------------------------------------------------------//
 
+void ComputeResidual::resizeArray()
+{
+  m_zroe.resize((*ndof));
+  m_prim.resize((*ndof));
+  m_XY.resize((*ndof),0); // it is not used
+  primBackgroundMesh->resize((*ndof),npoin->at(0));
+  primBackgroundMeshOld->resize((*ndof),npoin->at(0));
+}
+
+//--------------------------------------------------------------------------//
+
 void ComputeResidual::setAddress()
 {
-  unsigned start = PhysicsInfo::getnbDofMax() *
-                   (npoin->at(0) + 2 *
-                    PhysicsInfo::getnbShMax() *
-                    PhysicsInfo::getnbShPointsMax());
   zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
-                              (npoin->at(1) + 2 *
-                               PhysicsInfo::getnbShMax() *
-                               PhysicsInfo::getnbShPointsMax()),
-                               &zroeVect->at(start));
-  zroeOld = new Array2D <double>  (PhysicsInfo::getnbDofMax(),
-                                  ((*npoinShockedMeshBkp) + 2 *
-                                   PhysicsInfo::getnbShMax() *
-                                   PhysicsInfo::getnbShPointsMax()),
-                                   &zroeOldVect->at(0));
+                               npoin->at(0),
+                               &zroeVect->at(0));
 }
 
 //--------------------------------------------------------------------------//
 
 void ComputeResidual::freeArray()
 {
-  delete zroe; delete zroeOld;
+  delete zroe; 
 }
 
 //--------------------------------------------------------------------------//
 
 void ComputeResidual::setMeshData()
 {
-  npoinShockedMeshBkp = 
-    MeshData::getInstance().getData <unsigned> ("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
-  zroeOldVect = MeshData::getInstance().getData <vector<double> >("ZROEOld");
+  primBackgroundMesh = 
+   MeshData::getInstance().getData <Array2D<double> >("primVariablesBkg");
+  primBackgroundMeshOld = 
+   MeshData::getInstance().getData <Array2D<double> >("primVariablesBkgOld");
 }
 
 //--------------------------------------------------------------------------//

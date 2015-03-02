@@ -89,9 +89,6 @@ private: // data
   /// number of vertices
   unsigned* nvt;
 
-  /// backup of the old number of shocked mesh points
-  unsigned* npoinShockedMeshBkp;
-
   /// number of mesh points
   std::vector<unsigned>* npoin;
 

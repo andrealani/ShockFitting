@@ -50,13 +50,10 @@ int Ishel::Ishel1 ()
 
 int Ishel::Ishel2 ()
 {
-  Array2D <double> a;
-  vector <double> b;
-  vector <double> x;
+  Array2D <double> a(2,2);
+  vector <double> b(2);
+  vector <double> x(2);
   double xi, yi, rlsh2, rl2;
-  a.resize(2,2);
-  b.resize(2);
-  x.resize(2);
 
   // write the equation of the straight line passing for the two shock points
   a(0,0) = ys2-ys1;

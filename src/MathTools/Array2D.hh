@@ -44,6 +44,7 @@ public:
    for(unsigned i=0; i<nRows*nCols; i++) {
     ptr[i]=ArrayCopy.ptr[i];
    }
+   alreadyAlloc = true;
  }
 
  /// Constructor
@@ -56,7 +57,7 @@ public:
  }
 
  /// Destructor
- ~Array2D(){if (alreadyAlloc) {delete ptr;}}
+ ~Array2D(){if (alreadyAlloc) {delete [] ptr;}}
 
  /// Initialize array with given sizes to 0
  void resize(const unsigned nbRows, const unsigned nbColumns)

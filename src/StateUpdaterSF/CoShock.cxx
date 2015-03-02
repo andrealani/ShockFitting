@@ -36,6 +36,8 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
 {
   setPhysicsData();
 
+  Array2D <double> g(4,4);
+
   x1.resize(xd.size()); x2.resize(xu.size());
   x1 = xd; x2 = xu; R2 = R;
   W=0;
@@ -44,7 +46,6 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
   yn1.resize(4);
   yn.resize(4);
   b.resize(4);
-  g.resize(4,4);
   dyn.resize(4);
 
   // initialize unknows vectors
@@ -86,6 +87,8 @@ void CoShock::callCoShock(vector<double> xd, vector<double> xu, double R )
   x1.at(0) = yn1.at(0);
   x1.at(1) = yn1.at(1);
   x1.at(2) = yn1.at(2);
+
+  if(ChemicalInfo::getModel() == "PG") { delete gam; }
 }
 
 //----------------------------------------------------------------------------//

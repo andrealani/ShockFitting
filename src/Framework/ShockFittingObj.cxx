@@ -282,7 +282,7 @@ void ShockFittingObj::unsetup()
   deleteMeshData();
 
   deletePhysicsData();
-  
+ 
   // configure the field interpolators
   for (unsigned i = 0; i < m_fInterpolator.size(); ++i) {
     m_fInterpolator[i].ptr()->unsetup();
@@ -366,7 +366,6 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <unsigned> ("NFPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("nPhanPoints",1);
   MeshData::getInstance().createData <unsigned> ("nBoundPhanPoints",1);
-  MeshData::getInstance().createData <unsigned> ("NPOINshockedMeshBkp",1);
   MeshData::getInstance().createData <vector<unsigned> > ("NPOIN", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NEDGE", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NELEM", 2);
@@ -378,7 +377,6 @@ void ShockFittingObj::createMeshData()
 
   MeshData::getInstance().createData <vector <int> >("NODCOD", 1);
   MeshData::getInstance().createData <vector <double> >("ZROE", 1);
-  MeshData::getInstance().createData <vector <double> >("ZROEOld",1);
   MeshData::getInstance().createData <vector <double> >("COOR", 1);
   MeshData::getInstance().createData <vector <int> >("BNDFAC", 1);
   MeshData::getInstance().createData <vector <int> >("CELNOD", 1);
@@ -386,9 +384,13 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <vector <int> >("EDGPTR", 1);
   MeshData::getInstance().createData <vector <int> >("NODPTR", 1);
   MeshData::getInstance().createData <vector <int> >("M12M0", 1);
-  MeshData::getInstance().createData <vector <int> >("M02M1", 1);
   MeshData::getInstance().createData <vector <unsigned> >("M02M1", 1);
   MeshData::getInstance().createData <vector <int> >("ICLR", 1);
+
+  // store the primitive variables on the grid-points of the background
+  // mesh for the current step and for the previous step
+  MeshData::getInstance().createData <Array2D <double> >("primVariablesBkg",1);
+  MeshData::getInstance().createData <Array2D <double> >("primVariablesBkgOld",1);
 
   MeshData::getInstance().createData <vector <int> >("NODCODBackup",1);
   MeshData::getInstance().createData <Array2D <int> >("NODPTRBackup",1);
@@ -399,6 +401,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <string>("FNAMEBACK");
 
   MeshData::getInstance().createData <vector <double> >("firstResidual", 1);
+
   MeshData::getInstance().setup();
 }
 
@@ -460,21 +463,16 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <unsigned> ("NFPOIN");
   MeshData::getInstance().deleteData <unsigned> ("nPhanPoints");
   MeshData::getInstance().deleteData <unsigned> ("nBoundPhanPoints");
-  MeshData::getInstance().deleteData <unsigned> ("NPOINshockedMeshBkp");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NPOIN");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NEDGE");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NELEM");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NBFAC");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NBPOIN");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NHOLE");
-
   MeshData::getInstance().deleteData <vector<double> > ("CADDholes");
 
   MeshData::getInstance().deleteData <vector <int> >("NODCOD");
   MeshData::getInstance().deleteData <vector <double> >("ZROE");
-  // the following variable is used to store the old values and
-  // compute the shock fitting residual
-  MeshData::getInstance().deleteData <vector <double> >("ZROEOld");
   MeshData::getInstance().deleteData <vector <double> >("COOR");
   MeshData::getInstance().deleteData <vector <int> >("BNDFAC");
   MeshData::getInstance().deleteData <vector <int> >("CELNOD");
@@ -484,6 +482,9 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector <int> >("M12M0");
   MeshData::getInstance().deleteData <vector <unsigned> >("M02M1");
   MeshData::getInstance().deleteData <vector <int> >("ICLR");
+
+  MeshData::getInstance().deleteData <Array2D <double> >("primVariablesBkg"); 
+  MeshData::getInstance().deleteData <Array2D <double> >("primVariablesBkgOld");
 
   MeshData::getInstance().deleteData <vector <int> >("NODCODBackup");
   MeshData::getInstance().deleteData <Array2D <int> >("NODPTRBackup");
@@ -502,8 +503,6 @@ void ShockFittingObj::deleteMeshData()
 
 void ShockFittingObj::deletePhysicsData()
 {
-  PhysicsData::getInstance().unsetup();
-  
   PhysicsData::getInstance().deleteData <unsigned> ("NDOF");
 
   PhysicsData::getInstance().deleteData <unsigned> ("NMOL");
@@ -531,9 +530,10 @@ void ShockFittingObj::deletePhysicsData()
   PhysicsData::getInstance().deleteData <vector <unsigned> > ("nShockEdges");
   PhysicsData::getInstance().deleteData <vector <string> > ("TypeSpecPoints");
   PhysicsData::getInstance().deleteData <vector <string> > ("TYPESH");
+  PhysicsData::getInstance().deleteData <Array3D <double> > ("XYSH");
+  PhysicsData::getInstance().deleteData <Array3D <unsigned> > ("SHinSPPs");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHuOLD");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("ZROESHdOLD");
-  PhysicsData::getInstance().deleteData <Array3D <unsigned> > ("SHinSPPs");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("VSHNOR");
   PhysicsData::getInstance().deleteData <Array3D <double> > ("WSH");
 

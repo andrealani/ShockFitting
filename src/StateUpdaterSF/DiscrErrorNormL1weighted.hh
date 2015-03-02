@@ -20,10 +20,8 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 /// This class define a DiscrErrorNormL1weighted, whose task is to
-/// compute the L1 norm of the discretization error over
-/// the entire computational domain weighted on the first value of the residual
-/// the variables are already the primitive ones because they are converted in
-/// Triangle2CFmesh
+/// compute the L1 norm of the discretization error weighted on the first 
+/// value of the residual over the grid-points of the background mesh
 
 class DiscrErrorNormL1weighted : public StateUpdater {
 public:
@@ -52,37 +50,26 @@ private: // functions
   /// assign the variables used in DiscrErrorNormL1weighted to PhysicsData pattern
   void setPhysicsData();
 
-  /// set the starting pointers foer the array2D
-  void setAddress();
-
-  /// de-allocate the dynamic arrays
-  void freeArray();
-
 private: // data
 
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// backup of the number of the old shocked mesh points
-  unsigned* npoinShockedMeshBkp;
-
   /// number of mesh points
   std::vector<unsigned>* npoin;
-
-  /// mesh points state (assignable to MeshData)
-  std::vector<double>* zroeVect;
-
-  /// mesh points state belonging to the previous time step (assignable to MeshData)
-  std::vector<double>* zroeOldVect;
 
   /// value of the residual t=0
   std::vector<double>* firstResidualValue;
 
-  /// Array2D of the zroe values own to the current step
-  Array2D <double>* zroe;
+  /// Array2D storing the primitive values of the current step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMesh;
 
-  /// Array2D of the zroe values own to the previous step
-  Array2D <double>* zroeOld;
+  /// Array2D storing the primitive values of the previous step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMeshOld;   
 
   /// value of the computed norm
   std::vector<double> normValue;

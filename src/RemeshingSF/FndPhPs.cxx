@@ -103,6 +103,9 @@ void FndPhPs::remesh()
 
   countPhanPoints();
 
+  // de-allocate dynamic arrays
+  freeArray();
+
   logfile.Close();
 }
 
@@ -198,6 +201,13 @@ void FndPhPs::setAddress()
                              npoin->at(0),
                              &coorVect->at(start));
   celnod = new Array2D <int> ((*nvt), nelem->at(0), &celnodVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void FndPhPs::freeArray()
+{
+  delete xy; delete celnod;
 }
 
 //--------------------------------------------------------------------------//

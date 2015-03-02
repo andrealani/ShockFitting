@@ -9,7 +9,6 @@
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
-
 #include "SConfig/ObjectProvider.hh"
 
 //--------------------------------------------------------------------------//
@@ -64,55 +63,17 @@ void DiscrErrorNormL1weighted::update()
 
   setMeshData();
   setPhysicsData();
-  setAddress();
-
-  unsigned currentNbMeshPoints;
 
   normValue.resize((*ndof),0);
 
-  // L1w = (sum(i=1,N) |u^(n+1)-u^(n)|)/ (sum(i=1,N) |u^(1)-u^(0)|)
+  // L1w = (sum(i=1,N) |u_(n+1)-u_(n)|)/ (sum(i=1,N) |u_(1)-u_(0)|)
   // @param N number of mesh points
   
-if(MeshData::getInstance().getIstep()>1) {
-FILE* outfile = fopen("Zroe.txt","w");
-for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    for(unsigned K=0; K<(*ndof); K++) {
-    fprintf(outfile,"%32.16F %s",(*zroe)(K,IPOIN)," "); }
-    fprintf(outfile,"%s","\n ");
-   }
-fclose(outfile);
-outfile = fopen("ZroeOld.txt","w");
-for(unsigned IPOIN=0; IPOIN<(*npoinShockedMeshBkp); IPOIN++) {
-   for(unsigned K=0; K<(*ndof); K++) {
-    fprintf(outfile,"%32.16F %s",(*zroeOld)(K,IPOIN)," "); }
-    fprintf(outfile,"%s","\n ");
-   }
-fclose(outfile);
-}
-
-  // if the new number of points of the shocked mesh is smaller than
-  // the old number of points of the shocked mesh, then the
-  // residual will be computed on npoin->at(1)
-  if(npoin->at(1)<(*npoinShockedMeshBkp)) {
-   currentNbMeshPoints = npoin->at(1);
-   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-    for(unsigned K=0; K<(*ndof); K++) {
-     normValue.at(K) = normValue.at(K) + 
-                      abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
-    }
-   }
-  }
-
-  // if the new number of points of the shocked mesh is larger than
-  // the old number of points of the shocked mesh, then the
-  // residual will be computed on npoinShockedMeshBkp
-  else { 
-   currentNbMeshPoints = (*npoinShockedMeshBkp);
-   for(unsigned IPOIN=0; IPOIN<(*npoinShockedMeshBkp); IPOIN++) {
-    for(unsigned K=0; K<(*ndof); K++) {
-     normValue.at(K) = normValue.at(K) +
-                      abs((*zroe)(K,IPOIN)-(*zroeOld)(K,IPOIN));
-    }
+    normValue.at(K) = normValue.at(K) + 
+                      abs((*primBackgroundMesh)(K,IPOIN)-
+                          (*primBackgroundMeshOld)(K,IPOIN));
    }
   }
 
@@ -120,13 +81,13 @@ fclose(outfile);
   if(MeshData::getInstance().getIstep()==2) {
    firstResidualValue->resize((*ndof));
    for(unsigned K=0; K<(*ndof); K++) {
-    firstResidualValue->at(K) = normValue.at(K) / currentNbMeshPoints;
+    firstResidualValue->at(K) = normValue.at(K) / npoin->at(0);
    }
   }
 
   // weight the residual value on the first residual
   for(unsigned K=0; K<(*ndof); K++) {
-    normValue.at(K) = normValue.at(K) / currentNbMeshPoints / firstResidualValue->at(K);
+    normValue.at(K) = normValue.at(K) / npoin->at(0) / firstResidualValue->at(K);
   }
 
   // define the fstream value printing the norm
@@ -137,47 +98,17 @@ fclose(outfile);
 
   printNorm << endl;
   printNorm.close();
-
-  // de-allocate the dynamic arrays
-  freeArray();
-}
-
-//--------------------------------------------------------------------------//
-
-void DiscrErrorNormL1weighted::setAddress()
-{
-  unsigned start = PhysicsInfo::getnbDofMax() *
-                   (npoin->at(0) + 2 *
-                    PhysicsInfo::getnbShMax() * 
-                    PhysicsInfo::getnbShPointsMax());
-  zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
-                              (npoin->at(1) + 2 *
-                               PhysicsInfo::getnbShMax() *
-                               PhysicsInfo::getnbShPointsMax()),
-                               &zroeVect->at(start));
-  zroeOld = new Array2D <double>  (PhysicsInfo::getnbDofMax(),
-                                  (npoin->at(1) + 2 *
-                                   PhysicsInfo::getnbShMax() *
-                                   PhysicsInfo::getnbShPointsMax()),
-                                   &zroeOldVect->at(0));
-}
-
-//--------------------------------------------------------------------------//
-
-void DiscrErrorNormL1weighted::freeArray()
-{
-  delete zroe; delete zroeOld;
 }
 
 //--------------------------------------------------------------------------//
 
 void DiscrErrorNormL1weighted::setMeshData()
 {
-  npoinShockedMeshBkp = 
-   MeshData::getInstance().getData <unsigned>("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
-  zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
-  zroeOldVect = MeshData::getInstance().getData <vector<double> >("ZROEOld");
+  primBackgroundMesh =
+   MeshData::getInstance().getData <Array2D<double> >("primVariablesBkg");
+  primBackgroundMeshOld =
+   MeshData::getInstance().getData <Array2D<double> >("primVariablesBkgOld");
   firstResidualValue = 
    MeshData::getInstance().getData <vector<double> >("firstResidual");
 }

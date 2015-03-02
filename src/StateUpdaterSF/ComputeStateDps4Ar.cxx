@@ -70,6 +70,8 @@ void ComputeStateDps4Ar::update()
 
   setDiscSpeedSize();
 
+  unsigned I;
+
   // create object of CoShock class
   CoShock computenewStateForShock;
 
@@ -81,8 +83,6 @@ void ComputeStateDps4Ar::update()
   xd.resize(4);
   xu.resize(4);
 
-  unsigned I;
-
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
 
    unsigned ivalue = ISH+1;
@@ -90,8 +90,6 @@ void ComputeStateDps4Ar::update()
 
    for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
     ++TotnbShockPoints;
-
-    R2.resize(nShockPoints->at(ISH),(*nShocks));
 
     I=IV;
     dx = (*vShNor)(0,I,ISH);
@@ -107,7 +105,7 @@ void ComputeStateDps4Ar::update()
     WS = 0.0;
 
     if(typeSh->at(ISH)=="S") {
-     computenewStateForShock.callCoShock(xd,xu,R2(IV,ISH));
+     computenewStateForShock.callCoShock(xd,xu,R2);
      xd = computenewStateForShock.getnewDownValues();
      WS = computenewStateForShock.getnewDiscSpeed();
     }
@@ -181,7 +179,7 @@ void ComputeStateDps4Ar::recoverDownState(unsigned IV, unsigned ISH)
   // pressure
   xd.at(1) = ((*gref)-1)/(*gref) * (ZRHOSH *  (*ZroeShd)((*IE),IV,ISH) -
               0.5 * help - RHOHF);
-  R2(IV,ISH) = sqrt((*gref)*xd.at(1)/xd.at(0)) + 0.5 * ((*gref)-1) * xd.at(2);
+  R2 = sqrt((*gref)*xd.at(1)/xd.at(0)) + 0.5 * ((*gref)-1) * xd.at(2);
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
    logfile("Zd(",ISP,") ",(*ZroeShd)(ISP,IV,ISH),"\n");

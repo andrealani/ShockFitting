@@ -71,7 +71,6 @@ private: // data
   std::vector <double> yn;
   std::vector <double> yn1;
   std::vector <double> b;
-  Array2D <double> g;
 };
 
 //----------------------------------------------------------------------------//

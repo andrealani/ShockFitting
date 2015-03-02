@@ -71,6 +71,8 @@ void ComputeStateDps4Pg::update()
 
   setDiscSpeedSize();
 
+  unsigned I;
+
   // create object of CoShock class
   CoShock computenewStateForShock;
 
@@ -80,8 +82,6 @@ void ComputeStateDps4Pg::update()
   xd.resize(4);
   xu.resize(4);
 
-  unsigned I;
-
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
 
    unsigned ivalue = ISH+1;
@@ -89,8 +89,6 @@ void ComputeStateDps4Pg::update()
 
    for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
     ++TotnbShockPoints;
-
-    R2.resize(nShockPoints->at(ISH),(*nShocks));
 
     I=IV;
     dx = (*vShNor)(0,I,ISH);
@@ -105,41 +103,41 @@ void ComputeStateDps4Pg::update()
     // initialize discontinuity speed
     WS = 0.0;
 
-   if(typeSh->at(ISH)=="S") {
-    computenewStateForShock.callCoShock(xd,xu,R2(IV,ISH));
-    xd = computenewStateForShock.getnewDownValues();
-    WS = computenewStateForShock.getnewDiscSpeed();
-   }
+    if(typeSh->at(ISH)=="S") {
+     computenewStateForShock.callCoShock(xd,xu,R2);
+     xd = computenewStateForShock.getnewDownValues();
+     WS = computenewStateForShock.getnewDiscSpeed();
+    }
 
 
-   if(typeSh->at(ISH)=="D") {
-    computenewStateForDc.callCoDc(xd,xu);
-    xd = computenewStateForDc.getnewDownValues();
-    xu = computenewStateForDc.getnewUpValues();
-    WS = computenewStateForDc.getnewDiscSpeed();
-   }
+    if(typeSh->at(ISH)=="D") {
+     computenewStateForDc.callCoDc(xd,xu);
+     xd = computenewStateForDc.getnewDownValues();
+     xu = computenewStateForDc.getnewUpValues();
+     WS = computenewStateForDc.getnewDiscSpeed();
+    }
 
-   // enforce tangential component equality for the shock case
-   if(typeSh->at(ISH)=="S") { xd.at(3) = xu.at(3); }
+    // enforce tangential component equality for the shock case
+    if(typeSh->at(ISH)=="S") { xd.at(3) = xu.at(3); }
 
-   // save old downstream status
-   saveDownState(IV, ISH);
+    // save old downstream status
+    saveDownState(IV, ISH);
 
-   // compute downstream variables and assing the new values
-   // to Zroe array (for the shock case)
-   computeDownState(IV, ISH);
+    // compute downstream variables and assing the new values
+    // to Zroe array (for the shock case)
+    computeDownState(IV, ISH);
 
-   // compute upstream variables and assing the new values 
-   // to Zroe array (for the shock case)
-   computeUpState(IV, ISH);
+    // compute upstream variables and assing the new values 
+    // to Zroe array (for the shock case)
+    computeUpState(IV, ISH);
 
-   // set the new discontinuity speed
-   (*WSh)(0,IV,ISH) = WS * dx;
-   (*WSh)(1,IV,ISH) = WS * dy;
+    // set the new discontinuity speed
+    (*WSh)(0,IV,ISH) = WS * dx;
+    (*WSh)(1,IV,ISH) = WS * dy;
 
-   ivalue = IV+1;
-   logfile("S/D point nr. ", ivalue, " Speed: ");
-   logfile((*WSh)(0,IV,ISH), ", ", (*WSh)(1,IV,ISH), "\n");
+    ivalue = IV+1;
+    logfile("S/D point nr. ", ivalue, " Speed: ");
+    logfile((*WSh)(0,IV,ISH), ", ", (*WSh)(1,IV,ISH), "\n");
    }
   }
 
@@ -161,8 +159,8 @@ void ComputeStateDps4Pg::recoverDownState(unsigned IV, unsigned ISH)
   help = pow((*ZroeShd)(2,IV,ISH),2) + pow((*ZroeShd)(3,IV,ISH),2);
   xd.at(1) = (PhysicsInfo::getGam()-1)/PhysicsInfo::getGam() *
      ((*ZroeShd)(0,IV,ISH) * (*ZroeShd)(1,IV,ISH) - 0.5 * help); // pressure
-  R2(IV,ISH) = sqrt(PhysicsInfo::getGam()*xd.at(1)/xd.at(0)) +
-               0.5 * (PhysicsInfo::getGam()-1) * xd.at(2);
+  R2 = sqrt(PhysicsInfo::getGam()*xd.at(1)/xd.at(0)) +
+       0.5 * (PhysicsInfo::getGam()-1) * xd.at(2);
 
   logfile("Zd(1) ",(*ZroeShd)(0,IV,ISH),"\n");
   logfile("Zd(2) ",(*ZroeShd)(1,IV,ISH),"\n");

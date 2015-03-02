@@ -60,6 +60,9 @@ private: // helper functions
   void setIndex(unsigned ISH_index, unsigned ielemsh_index,
                   unsigned ielem_index);
 
+  /// de-allocate dynamic arrays
+  void freeArray();
+
   /// assign variables used in FndPhPs to MeshData
   void setMeshData();
 

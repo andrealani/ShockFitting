@@ -21,9 +21,7 @@ namespace ShockFitting {
 
 /// This class define a DiscrErrorNormL2, whose task is to
 /// compute the L2 norm of the discretization error over
-/// the entire computational domain
-/// the variables are already the primitive ones because they are converted in
-/// Triangle2CFmesh
+/// the grid-points of the background mesh 
 
 class DiscrErrorNormL2 : public StateUpdater {
 public:
@@ -52,34 +50,23 @@ private: // functions
   /// assign the variables used in DiscrErrorNormL2 to PhysicsData pattern
   void setPhysicsData();
 
-  /// set the starting pointers foer the array2D
-  void setAddress();
-
-  /// de-allocate the dynamic arrays
-  void freeArray();
-
 private: // data
 
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// backup of the old number of points of the shecked mesh
-  unsigned* npoinShockedMeshBkp;
-
   /// number of mesh points
   std::vector<unsigned>* npoin;
 
-  /// mesh points state (assignable to MeshData)
-  std::vector<double>* zroeVect;
+  /// Array2D storing the primitive values of the current step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMesh;
 
-  /// mesh points state belonging to the previous time step (assignable to MeshData)
-  std::vector<double>* zroeOldVect;
-
-  /// Array2D of the zroe values own to the current step
-  Array2D <double>* zroe;
-
-  /// Array2D of the zroe values own to the previous step
-  Array2D <double>* zroeOld;
+  /// Array2D storing the primitive values of the previous step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMeshOld;
 
   /// value of the computed norm
   std::vector<double> normValue;

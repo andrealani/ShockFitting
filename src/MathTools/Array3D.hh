@@ -48,8 +48,8 @@ public:
     for(unsigned i=0; i<size1*size2*size3; i++) {
      ptr[i] = ArrayCopy.ptr[i];
     }
+    alreadyAlloc = true;
   }
-
 
   ///Constructor with a given address
   Array3D (const unsigned dim1, const unsigned dim2, const unsigned dim3, TYPE* start)
@@ -59,12 +59,16 @@ public:
     alreadyAlloc = false;
   }
 
+  /// Destructor
+  ~Array3D(){if (alreadyAlloc) {delete [] ptr;}}
+ 
   /// initialize array with all sizes assigned to 0
   void resize(const unsigned dim1, const unsigned dim2, const unsigned dim3)
   {
     setSize1(dim1); setSize2(dim2);setSize3(dim3);
     ptr = new TYPE[size1*size2*size3]; //create space for array
     for (unsigned i=0; i<size1*size2*size3; i++) {ptr[i] = 0;}
+    alreadyAlloc = true;
   }
 
   /// initialize Array3D with a given address (sizes assigned)

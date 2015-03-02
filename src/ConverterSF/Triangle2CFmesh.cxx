@@ -33,7 +33,7 @@ triangle2CFmeshProv("Triangle2CFmesh");
 Triangle2CFmesh::Triangle2CFmesh(const std::string& objectName) :
   Converter(objectName)
 {
-  m_boundary = 1;
+  m_boundary = "single";
   addOption("ShockBoundary", &m_boundary,
             "Additional info on the shock boundary: single or splitted");
 
@@ -44,7 +44,6 @@ Triangle2CFmesh::Triangle2CFmesh(const std::string& objectName) :
 
 Triangle2CFmesh::~Triangle2CFmesh()
 {
-  delete XY; delete zroe; delete celnod; delete celcel; delete bndfac;
 }
 
 //----------------------------------------------------------------------------//
@@ -138,12 +137,6 @@ void Triangle2CFmesh::readTriangleFmt()
 
   // set ICLR vector to 0 value
   ICLR->assign(20,0);
-
-  // make the bakcup of number of old shocked mesh points
-  // if npoin->at(1) > npoinShockedMeshBack then the current
-  // residual will be computed on npoinShockedMeshBkp-points
-  // else the current residual will be computed on npoin->at(1)-points
-  (*npoinShockedMeshBkp) = npoin->at(1);
 
   string dummyfile;
 
@@ -569,8 +562,6 @@ void Triangle2CFmesh::freeArray()
 void Triangle2CFmesh::setMeshData()
 {
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
-  npoinShockedMeshBkp = 
-    MeshData::getInstance().getData <unsigned> ("NPOINshockedMeshBkp");
   npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");

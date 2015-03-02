@@ -79,6 +79,9 @@ void CopyRoeValues2::copy()
     }
    }
   }
+
+  // de-allocte dynamic arrays
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//
@@ -97,6 +100,13 @@ void CopyRoeValues2::setAddress()
                                PhysicsInfo::getnbShPointsMax() *
                                PhysicsInfo::getnbShMax()),
                               &zroeVect->at(start));
+}
+
+//--------------------------------------------------------------------------//
+
+void CopyRoeValues2::freeArray()
+{
+  delete zroe0; delete zroe1;
 }
 
 //--------------------------------------------------------------------------//

@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "Framework/StateUpdater.hh"
+#include "Framework/VariableTransformer.hh"
 #include "MathTools/Array2D.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
@@ -58,6 +59,9 @@ private: // helper functions
   /// assign variables used in ComputeResidual to the PhysicsData pattern
   void setPhysicsData();
 
+  /// resize local vector and arrays
+  void resizeArray();
+
   /// assign starting pointer for the array2D
   void setAddress();
 
@@ -69,9 +73,6 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// backup of the old number of shocked mesh points
-  unsigned* npoinShockedMeshBkp;
-
   /// norm value get from the norm computing object
   double normValue;
 
@@ -81,23 +82,41 @@ private: // data
   /// mesh points state (assignable to MeshData)
   std::vector<double>* zroeVect;
 
-  /// mesh points state belonging to the previous time step (assignable to MeshData)
-  std::vector<double>* zroeOldVect;
+  /// working vectors used to exchange data with the object
+  /// transforming the variables
+  std::vector<double> m_zroe;
+  std::vector<double> m_prim;
+  std::vector<double> m_XY;
 
-  /// Array2D of the zroe values belonging to thge current step
+  /// Array2D of the zroe values belonging to the current step
   Array2D <double>* zroe;
 
-  /// Array2D of the zroe values belonging to the previous step
-  Array2D <double>* zroeOld;
+  /// Array2D storing the primitive values of the current step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMesh;
 
+  /// Array2D storing the primitive values of the previous step
+  /// computed in the grid-points of the background mesh
+  /// it is assigned to MeshData
+  Array2D <double>* primBackgroundMeshOld;
+
+  /// Array2D storing the primitive values of the state in the
+  /// grid-points of the background mesh
   /// specifies which kind of norm will be used
   std::string m_whichNorm;
 
   /// specifies if the used norm is weighted
   bool m_isItWeighted;
 
+  /// specifies the gas model used fot the coconverison in primitive variables
+  std::string m_gasModel;
+
   /// command object computing norm of the discretization error
   PAIR_TYPE(StateUpdater) m_normErr;
+
+  /// command object making the variable conversion. From param to prim dimensional
+  PAIR_TYPE(VariableTransformer) m_paramToprimDimensional;
 };
 
 //--------------------------------------------------------------------------//

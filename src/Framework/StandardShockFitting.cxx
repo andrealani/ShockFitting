@@ -265,8 +265,6 @@ void StandardShockFitting::process()
 
    m_triangleToCFmesh->convert();
 
-   if(m_computeShockFittingResidual) { m_computeSFresidual->update(); }
-
    cout << "_________________________________________________________________\n\n";
 
    m_COOLFluiD->call();
@@ -319,6 +317,8 @@ void StandardShockFitting::process()
    m_writeShockInfo->write();
 
    m_meshRestore->copy();
+
+   if(m_computeShockFittingResidual) { m_computeSFresidual->update(); }
 
    cout << "_________________________________________________________________\n";
 
