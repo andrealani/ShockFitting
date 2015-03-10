@@ -18,6 +18,8 @@ int main (int argc, char** argv)
   // (5) CircularCylinder_Pg_vis_Bx_M17 : perfect gas M=17 viscous
   //                                      from the folder vki
   // (6) CircularCylinder_Pg_vis_N_M6 : perfect gas M=6 inviscid
+  // (7) CircularCylinder_TCneq_vis_Air5_LDA_M17: TCneq M17, LDA, viscid
+  //
   const unsigned nbTest = 10;
   vector<string> testDir(nbTest);
   testDir.at(0) = "CircularCylinder_Pg_inv_N_M15";
@@ -27,6 +29,7 @@ int main (int argc, char** argv)
   testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6";
   testDir.at(5) = "CircularCylinder_Pg_inv_N_M6";
   testDir.at(6) = "CircularCylinder_Pg_vis_Bx_M17";
+  testDir.at(7) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
 
   // number of executing test
   const unsigned i = 4;
@@ -36,12 +39,12 @@ int main (int argc, char** argv)
   string commandcp = "cp "+pwdTestDir+"/input.case .";
   system(commandcp.c_str());
 
-  if(i==3 || i==4 || i==5) {
+  if(i==3 || i==4 || i==5 || i==7) {
   string commandcp = "cp "+pwdTestDir+"/cylRDS.inter .";
   system(commandcp.c_str());
   }
 
-  if(i==5) {
+  if(i==6) {
   string commandcp = "cp "+pwdTestDir+"/cyl.inter .";
   system(commandcp.c_str());
   }
@@ -62,14 +65,19 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the starting captured solution
-/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/cyl-P0.CFmesh .";
+/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT_NS/restartFVM.CFmesh .";
   system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFresults/shock.dat .";
+  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT_NS/shock.dat .";
   system(commandln.c_str());
 */
   // link the chemical info file
   if(i==3 || i==4) {
      commandln = "cp -rf "+pwdTestDir+"/nitrogen2.dat .";
+     system(commandln.c_str());
+  }
+
+  if(i==7) {
+     commandln = "cp -rf "+pwdTestDir+"/air5.dat .";
      system(commandln.c_str());
   }
 

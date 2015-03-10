@@ -66,6 +66,7 @@ void DiscrErrorNormL2::update()
   setPhysicsData();
 
   normValue.resize((*ndof),0);
+  for(unsigned K=0; K<(*ndof); K++) { normValue.at(K) = 0; }
 
   // L2 = ((sum(i=1,N) |u_(n+1)-u_(n)|^2)/ N)^1/2
   // @param N number of mesh points

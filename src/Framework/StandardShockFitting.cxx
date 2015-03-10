@@ -312,9 +312,12 @@ void StandardShockFitting::process()
 
    if( I<1000 ) { m_redistrShockPoints->remesh(); }
 
-   m_writeBackTriangleFile->write();
-
-   m_writeShockInfo->write();
+   // if the solution must be saved in the I-step, the shock data
+   // background grid data are written on output files
+   if((I)%MeshData::getInstance().getnbIbak()==0) {
+    m_writeBackTriangleFile->write();
+    m_writeShockInfo->write();
+   }
 
    m_meshRestore->copy();
 
@@ -364,7 +367,6 @@ void StandardShockFitting::process()
     if(MeshData::getInstance().getVersion()=="original" && 
        !MeshData::getInstance().getFreezedConnectivity())
       { execmd = execmd + fname->str() +".* "; }
-    execmd = execmd + *fnameback+".node sh99.dat ";
     system(execmd.c_str());
    }
 

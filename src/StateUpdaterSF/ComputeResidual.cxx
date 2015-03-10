@@ -121,7 +121,7 @@ void ComputeResidual::update()
    resizeArray();
 
    ofstream printNorm("SFconvergence.plt",ios::app);
-   printNorm << "TITLE = Convergence of Shock Fitting norm: "<< m_whichNorm;
+   printNorm << "TITLE = Shock Fitting Convergence, norm: "<< m_whichNorm;
    if(m_isItWeighted) { printNorm << " weighted"; }
    printNorm << "\n";
    printNorm << "VARIABLES = ";

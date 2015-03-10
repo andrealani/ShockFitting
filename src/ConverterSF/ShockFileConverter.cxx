@@ -157,7 +157,7 @@ void ShockFileConverter::convert()
 
   while(dummystring!="ZONE") { shockdat >> dummystring; }
 
-  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..)
+  shockdat >> dummystring; // read = DT(DOUBLE DOUBLE ..)
 
   nbShockPoints = 0;
   while (!shockdat.eof()) {
@@ -168,7 +168,7 @@ void ShockFileConverter::convert()
   --nbShockPoints; 
 
   shockdat.close();
-  
+
   shockdat.clear();
   dummystring = "dummy";
 
@@ -177,14 +177,15 @@ void ShockFileConverter::convert()
 
   while(dummystring!="ZONE") { shockdat >> dummystring; }
 
-  shockdat >> dummystring; // read DT = (DOUBLE DOUBLE ..) 
+  shockdat >> dummystring; // read = DT(DOUBLE DOUBLE ..)
 
   shfile = fopen("sh00.dat","w");
   fprintf(shfile,"%1u %s",m_nbShocks,"\n");
   fprintf(shfile,"%u %s",nbShockPoints," S\n");
 
   for(unsigned IPOIN=0; IPOIN<nbShockPoints; IPOIN++) {
-   for(unsigned IV=0; IV<PhysicsInfo::getnbDim(); IV++) { shockdat >> XYSh.at(IV); }
+
+   for(unsigned IV=0; IV<PhysicsInfo::getnbDim(); IV++) { shockdat >> XYSh.at(IV);}
    for(unsigned IV=0; IV<m_nbDof; IV++) { shockdat >> m_prim.at(IV); }
 
    if((IPOIN == 0) || (IPOIN == nbShockPoints-1)) {
@@ -196,11 +197,11 @@ void ShockFileConverter::convert()
    m_prim2param.ptr()->transform(&m_prim,&XYSh,&ZRoeShd);
 
    for(unsigned IV=0; IV<PhysicsInfo::getnbDim(); IV++) {
-    fprintf(shfile,"%20.15F %s",XYSh.at(IV)," ");}
+    fprintf(shfile,"%18.15F %s",XYSh.at(IV)," ");}
    for(unsigned IV=0; IV<m_nbDof; IV++) {
-    fprintf(shfile,"%20.15F %s", ZRoeShd.at(IV)," ");}
+    fprintf(shfile,"%18.15F %s", ZRoeShd.at(IV)," ");}
    for(unsigned IV=0; IV<m_nbDof; IV++) {
-    fprintf(shfile,"%20.15F %s", ZRoeShu.at(IV)," ");}    
+    fprintf(shfile,"%18.15F %s", ZRoeShu.at(IV)," ");}    
    fprintf(shfile,"%s","\n");
   }
 

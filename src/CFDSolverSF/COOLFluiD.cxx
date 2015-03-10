@@ -80,7 +80,6 @@ void COOLFluiD::call()
    // create the object overwriting the coolfluid file
    OverwriteInputFile ModifyInputCase(string("cf00.CFcase.BAK").c_str(),
                                       string("cf00.CFcase").c_str() );
-
    // command the object modifying the current coolfluid iter and the 
    // maximum number of coolfluid steps 
    iterValue << "Simulator.SubSystem.InitialIter = " 

@@ -65,11 +65,11 @@ void DiscrErrorNormL1weighted::update()
   setPhysicsData();
 
   normValue.resize((*ndof),0);
+  for(unsigned K=0; K<(*ndof); K++) { normValue.at(K) = 0; }
 
   // L1w = (sum(i=1,N) |u_(n+1)-u_(n)|)/ (sum(i=1,N) |u_(1)-u_(0)|)
   // @param N number of mesh points
-  
-  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
+  for(unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++){
    for(unsigned K=0; K<(*ndof); K++) {
     normValue.at(K) = normValue.at(K) + 
                       abs((*primBackgroundMesh)(K,IPOIN)-
@@ -88,7 +88,8 @@ void DiscrErrorNormL1weighted::update()
   // weight the residual value on the first residual
   for(unsigned K=0; K<(*ndof); K++) {
     normValue.at(K) = normValue.at(K) / npoin->at(0) / firstResidualValue->at(K);
-  }
+  cout << normValue.at(K) << " ";
+  }cout << endl;
 
   // define the fstream value printing the norm
   ofstream printNorm("SFconvergence.plt",ios::app);
