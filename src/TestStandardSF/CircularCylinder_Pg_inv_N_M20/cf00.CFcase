@@ -1,0 +1,116 @@
+# COOLFluiD .CFcase file
+#
+
+### Simulation Modules
+
+ Simulator.Modules.Libs = libPetscI libCFmeshFileWriter libCFmeshFileReader libTecplotWriter  libNavierStokes libFluctSplit libFluctSplitSystem libNewtonMethod libFluctSplitNavierStokes libForwardEuler libTHOR2CFmesh libGambit2CFmesh
+###
+
+
+### Simulation Parameters
+
+Simulator.Paths.WorkingDir = ./
+Simulator.Paths.ResultsDir = ./
+###
+
+
+### Physical Model (libNavierStokes)
+
+ Simulator.SubSystem.Default.PhysicalModelType = Euler2D
+ Simulator.SubSystem.Euler2D.refValues = 10. 6623.94 6623.94. 273.14
+ Simulator.SubSystem.Euler2D.refLength = 1.0
+###
+
+
+### Output Format (libCFmeshFileWriter, libTecplotWriter)
+
+ # specifies the list of the required output files
+ Simulator.SubSystem.OutputFormat = Tecplot CFmesh
+ # name of the COOLFluiD output file
+ Simulator.SubSystem.CFmesh.FileName = cfout.CFmesh
+ # every how many iterations the file is saved
+ Simulator.SubSystem.CFmesh.SaveRate = 1
+ # do not add to the output file name the time and the iteration number
+ Simulator.SubSystem.CFmesh.AppendTime = false 
+ Simulator.SubSystem.CFmesh.AppendIter = false
+ # name of the tecplot output file
+ Simulator.SubSystem.Tecplot.FileName = cfout.plt
+ # variables to print in the tecplot file
+ Simulator.SubSystem.Tecplot.Data.outputVar = Puvt
+ # write also density, total enthalpy, mach nuber and pressure
+ Simulator.SubSystem.Tecplot.Data.printExtraValues = true
+ # name of the TRS in the .CFmesh file
+ Simulator.SubSystem.Tecplot.Data.SurfaceTRS = 1 2 3 4 InnerSup InnerSub
+ # every how many steps the solution is saved 
+ Simulator.SubSystem.Tecplot.SaveRate = 1
+ # do not add to the output file name the time and the iteration number
+ Simulator.SubSystem.Tecplot.AppendTime = false
+ Simulator.SubSystem.Tecplot.AppendIter = false
+###
+
+
+### Stop Condition
+
+ # the stop condition is the number of the step (set equal to 1)
+ Simulator.SubSystem.StopCondition = MaxNumberSteps
+ Simulator.SubSystem.MaxNumberSteps.nbSteps = 1
+###
+
+
+### Mesh Reader (libCFmeshFileReader)
+
+ # specifies the list of the TRS defined in the .CFmesh file 
+ Simulator.SubSystem.Default.listTRS = InnerCells 1 2 3 4 InnerSup InnerSub
+ # specify the reader from a file .FileName
+ Simulator.SubSystem.MeshCreator = CFmeshFileReader
+ Simulator.SubSystem.CFmeshFileReader.Data.FileName = cfin.CFmesh
+###
+
+
+### Convergence Method (libNewtonMethod)
+
+ Simulator.SubSystem.ConvergenceMethod = FwdEuler
+ Simulator.SubSystem.FwdEuler.Data.CFL.Value = 0.2
+
+###
+
+
+### Space Method (libNavierStokes, libNEQ, libFluctSplitting, libFluctSplitSystem
+#                 libFluctSplittingNavierStokes)
+
+ Simulator.SubSystem.SpaceMethod = FluctuationSplit
+
+ Simulator.SubSystem.FluctuationSplit.Data.FluctSplitStrategy = RD
+ Simulator.SubSystem.FluctuationSplit.Data.SysSplitter = SysN
+ # set the following "true" to restart the simulation
+ Simulator.SubSystem.FluctuationSplit.Restart    = true 
+ # variables in which the equations are formulated must ALWAYS be Cons    
+ Simulator.SubSystem.FluctuationSplit.Data.SolutionVar  = Cons
+ # variables in which the solution is stored and computed
+ Simulator.SubSystem.FluctuationSplit.Data.UpdateVar  = Puvt
+
+ Simulator.SubSystem.FluctuationSplit.Data.DistribVar = Cons
+ Simulator.SubSystem.FluctuationSplit.Data.LinearVar  = Roe
+
+ # initial conditions
+ Simulator.SubSystem.FluctuationSplit.InitComds = InitState InitState
+ Simulator.SubSystem.FluctuationSplit.InitNames = InField SinField
+ # InField conditions
+ Simulator.SubSystem.FluctuationSplit.InField.applyTRS = InnerCells
+ Simulator.SubSystem.FluctuationSplit.InField.Vars = x y
+ Simulator.SubSystem.FluctuationSplit.InField.Def = 10. -6623.94 0. 273.14
+ # SinField conditions
+ Simulator.SubSystem.FluctuationSplit.SinField.applyTRS = 1
+ Simulator.SubSystem.FluctuationSplit.SinField.Vars = x y 
+ Simulator.SubSystem.FluctuationSplit.SinField.Def = 10. -6623.94 0. 273.14
+
+ # boundary conditions
+ Simulator.SubSystem.FluctuationSplit.BcComds =  WeakSlipWallEuler2D SuperInlet
+ Simulator.SubSystem.FluctuationSplit.BcNames = Wall SInlet
+ # Wall conditions 
+ Simulator.SubSystem.FluctuationSplit.Wall.applyTRS = 3
+ # SInlet conditions
+ Simulator.SubSystem.FluctuationSplit.SInlet.applyTRS = 1
+ Simulator.SubSystem.FluctuationSplit.SInlet.Vars = x y
+ Simulator.SubSystem.FluctuationSplit.SInlet.Def = 10. -6623.94 0. 273.14
+###

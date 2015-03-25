@@ -88,8 +88,7 @@ void DiscrErrorNormL1weighted::update()
   // weight the residual value on the first residual
   for(unsigned K=0; K<(*ndof); K++) {
     normValue.at(K) = normValue.at(K) / npoin->at(0) / firstResidualValue->at(K);
-  cout << normValue.at(K) << " ";
-  }cout << endl;
+  }
 
   // define the fstream value printing the norm
   ofstream printNorm("SFconvergence.plt",ios::app);

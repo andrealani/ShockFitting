@@ -1,0 +1,145 @@
+### CFEnv
+### SimpleMaestro
+### SimpleMaestro.GlobalMaxNumberSteps
+### Simulator
+### Simulator.Paths
+Simulator.Paths.ResultsDir ./CFresults
+Simulator.Paths.WorkingDir ./
+### Simulator.Modules
+Simulator.Modules.Libs libPetscI libCFmeshFileWriter libCFmeshFileReader libTecplotWriter  libNavierStokes libFluctSplit libFluctSplitSystem libNewtonMethod libFluctSplitNavierStokes libForwardEuler libTHOR2CFmesh libGambit2CFmesh
+### Simulator.SubSystem
+Simulator.SubSystem.ConvergenceMethod NewtonIterator
+Simulator.SubSystem.LSSNames NewtonIteratorLSS
+Simulator.SubSystem.LinearSystemSolver PETSC
+Simulator.SubSystem.MeshCreator CFmeshFileReader
+Simulator.SubSystem.OutputFormat Tecplot CFmesh
+Simulator.SubSystem.SpaceMethod FluctuationSplit
+Simulator.SubSystem.StopCondition MaxNumberSteps
+### Simulator.SubSystem.Default
+Simulator.SubSystem.Default.PhysicalModelType Euler2D
+### Simulator.SubSystem.Default
+Simulator.SubSystem.Default.listTRS InnerCells 1 2 3 4
+### Simulator.SubSystem.Default.Null
+### Simulator.SubSystem.Euler2D
+### Simulator.SubSystem.SubSystemStatus
+### Simulator.SubSystem.SubSystemStatus.Null
+### Simulator.SubSystem.InteractiveParamReader
+### Simulator.SubSystem.Euler2D
+Simulator.SubSystem.Euler2D.refLength 1.0
+Simulator.SubSystem.Euler2D.refValues 10. 6623.94 6623.94 273.
+### Simulator.SubSystem.Euler2D.Null
+### Simulator.SubSystem.Euler2D.ConvTerm
+### Simulator.SubSystem.MaxNumberSteps
+Simulator.SubSystem.MaxNumberSteps.nbSteps 600
+### Simulator.SubSystem.CFmeshFileReader
+### Simulator.SubSystem.CFmeshFileReader.Data
+Simulator.SubSystem.CFmeshFileReader.Data.FileName cyl_Pg_M20.CFmesh
+### Simulator.SubSystem.CFmeshFileReader.StdSetup
+### Simulator.SubSystem.CFmeshFileReader.StdUnSetup
+### Simulator.SubSystem.CFmeshFileReader.ParReadCFmesh
+### Simulator.SubSystem.CFmeshFileReader.ParReadCFmesh.ParCFmeshFileReader
+### Simulator.SubSystem.CFmeshFileReader.ParReadCFmesh.ParCFmeshFileReader.ParMetis
+### Simulator.SubSystem.Null1
+### Simulator.SubSystem.Null2
+### Simulator.SubSystem.FluctuationSplit
+Simulator.SubSystem.FluctuationSplit.BcComds WeakSlipWallEuler2DImpl SuperInletImpl
+Simulator.SubSystem.FluctuationSplit.BcNames Wall SInlet
+Simulator.SubSystem.FluctuationSplit.ComputeRHS RhsJacob
+Simulator.SubSystem.FluctuationSplit.ComputeTimeRHS PseudoSteadyTimeRhs
+Simulator.SubSystem.FluctuationSplit.InitComds InitState InitState
+Simulator.SubSystem.FluctuationSplit.InitNames InField SinField
+### Simulator.SubSystem.FluctuationSplit.Data
+Simulator.SubSystem.FluctuationSplit.Data.DistribVar Cons
+Simulator.SubSystem.FluctuationSplit.Data.FluctSplitStrategy RD
+Simulator.SubSystem.FluctuationSplit.Data.JacobianStrategy Numerical
+Simulator.SubSystem.FluctuationSplit.Data.LinearVar Roe
+Simulator.SubSystem.FluctuationSplit.Data.SolutionVar Cons
+Simulator.SubSystem.FluctuationSplit.Data.SysSplitter SysN
+Simulator.SubSystem.FluctuationSplit.Data.UpdateVar Puvt
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.Data.Numerical
+### Simulator.SubSystem.FluctuationSplit.Data.SysN
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.Data.RD
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.Data.Numerical
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.Data.Null
+### Simulator.SubSystem.FluctuationSplit.StdSetup0
+### Simulator.SubSystem.FluctuationSplit.StdUnSetup0
+### Simulator.SubSystem.FluctuationSplit.Null
+### Simulator.SubSystem.FluctuationSplit.RhsJacob
+### Simulator.SubSystem.FluctuationSplit.PseudoSteadyTimeRhs
+### Simulator.SubSystem.FluctuationSplit.Null
+### Simulator.SubSystem.FluctuationSplit.Null
+### Simulator.SubSystem.FluctuationSplit.InField
+Simulator.SubSystem.FluctuationSplit.InField.Def 10. -6623.94 0. 273.
+Simulator.SubSystem.FluctuationSplit.InField.Vars x y
+Simulator.SubSystem.FluctuationSplit.InField.applyTRS InnerCells
+### Simulator.SubSystem.FluctuationSplit.SinField
+Simulator.SubSystem.FluctuationSplit.SinField.Def 10. -6623.94 0. 273.
+Simulator.SubSystem.FluctuationSplit.SinField.Vars x y
+Simulator.SubSystem.FluctuationSplit.SinField.applyTRS 1
+### Simulator.SubSystem.FluctuationSplit.Wall
+Simulator.SubSystem.FluctuationSplit.Wall.applyTRS 3
+### Simulator.SubSystem.FluctuationSplit.SInlet
+Simulator.SubSystem.FluctuationSplit.SInlet.Def 10. -6623.94 0. 273.
+Simulator.SubSystem.FluctuationSplit.SInlet.Vars x y
+Simulator.SubSystem.FluctuationSplit.SInlet.applyTRS 1
+### Simulator.SubSystem.Null4
+### Simulator.SubSystem.NewtonIteratorLSS
+### Simulator.SubSystem.NewtonIteratorLSS.Data
+Simulator.SubSystem.NewtonIteratorLSS.Data.KSPType KSPGMRES
+Simulator.SubSystem.NewtonIteratorLSS.Data.MatOrderingType MATORDERING_RCM
+Simulator.SubSystem.NewtonIteratorLSS.Data.PCType PCASM
+Simulator.SubSystem.NewtonIteratorLSS.Data.RelativeTolerance 1e-4
+### Simulator.SubSystem.NewtonIteratorLSS.Data.Null
+### Simulator.SubSystem.NewtonIteratorLSS.NewSeqSetup
+### Simulator.SubSystem.NewtonIteratorLSS.StdSeqUnSetup
+### Simulator.SubSystem.NewtonIteratorLSS.StdSeqSolveSys
+### Simulator.SubSystem.NewtonIterator
+### Simulator.SubSystem.NewtonIterator.AbsoluteNormAndMaxIter
+### Simulator.SubSystem.NewtonIterator.Data
+### Simulator.SubSystem.NewtonIterator.Data.CFL
+Simulator.SubSystem.NewtonIterator.Data.CFL.ComputeCFL Function
+Simulator.SubSystem.NewtonIterator.Data.CFL.Value 0.1
+### Simulator.SubSystem.NewtonIterator.Data.CFL.Function
+Simulator.SubSystem.NewtonIterator.Data.CFL.Function.Def if(i<300,0.1,min(1e4,cfl*1.03))
+### Simulator.SubSystem.NewtonIterator.Data.L2
+### Simulator.SubSystem.NewtonIterator.Data.Identity
+### Simulator.SubSystem.NewtonIterator.Data.Identity
+### Simulator.SubSystem.NewtonIterator.StdSetup
+### Simulator.SubSystem.NewtonIterator.StdUnSetup
+### Simulator.SubSystem.NewtonIterator.StdPrepare
+### Simulator.SubSystem.NewtonIterator.Null
+### Simulator.SubSystem.NewtonIterator.Null
+### Simulator.SubSystem.NewtonIterator.StdUpdateSol
+### Simulator.SubSystem.NewtonIterator.Null
+### Simulator.SubSystem.Null7
+### Simulator.SubSystem.Null8
+### Simulator.SubSystem.Tecplot
+Simulator.SubSystem.Tecplot.AppendIter false
+Simulator.SubSystem.Tecplot.AppendTime false
+Simulator.SubSystem.Tecplot.FileName cyl_Pg.plt
+Simulator.SubSystem.Tecplot.SaveRate 10
+### Simulator.SubSystem.Tecplot.Data
+Simulator.SubSystem.Tecplot.Data.SurfaceTRS 1 2 3 4
+Simulator.SubSystem.Tecplot.Data.outputVar Puvt
+### Simulator.SubSystem.Tecplot.Data.DataHandleOutput
+### Simulator.SubSystem.Tecplot.StdSetup
+### Simulator.SubSystem.Tecplot.StdUnSetup
+### Simulator.SubSystem.Tecplot.WriteSolution
+### Simulator.SubSystem.CFmesh
+Simulator.SubSystem.CFmesh.AppendIter false
+Simulator.SubSystem.CFmesh.AppendTime false
+Simulator.SubSystem.CFmesh.FileName cyl_Pg.CFmesh
+Simulator.SubSystem.CFmesh.SaveRate 10
+### Simulator.SubSystem.CFmesh.Data
+### Simulator.SubSystem.CFmesh.Data.DataHandleOutput
+### Simulator.SubSystem.CFmesh.StdSetup
+### Simulator.SubSystem.CFmesh.StdUnSetup
+### Simulator.SubSystem.CFmesh.ParWriteSolution
+### Simulator.SubSystem.CFmesh.ParWriteSolution.ParCFmeshFileWriter
+### Simulator.SubSystem.CFmeshFileReader.Null
+### Simulator.SubSystem.FluctuationSplit.Builder

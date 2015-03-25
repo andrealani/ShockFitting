@@ -1,0 +1,1891 @@
+-------------------------------------------------------------
+Creating Simulation Maestro
+-------------------------------------------------------------
+Creating Simulation
+-------------------------------------------------------------
+Configuration of Simulator
+-------------------------------------------------------------
+Working Dir set to: './'
+Results Dir set to: './CFresults'
+-------------------------------------------------------------
+-------------------------------------------------------------
+Loading external modules
+ModuleLoader: Module libFluctSplitSystem is already loaded.
+Initiating environment of loaded modules
+Initiated PETSc
+-------------------------------------------------------------
+-------------------------------------------------------------
+#
+###### STARTING SUBSYSTEM : SubSystem ######
+#
+-------------------------------------------------------------
+Building SubSystem
+Name : SubSystem
+Type : StandardSubSystem
+-------------------------------------------------------------
+#
+###### CONFIG PHASE #################
+#
+-------------------------------------------------------------
+Setting Namespace : Default
+MeshData          : Default
+PhysicalModelName : Euler2D
+PhysicalModelType : Euler2D
+SubSysStatus      : SubSystemStatus
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating MeshCreator : CFmeshFileReader
+Configuring Method [CFmeshFileReader] in the Namespace: [Default]
+ Renumber : 0
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating MeshAdapterMethod : Null1
+Configuring Method [Null1] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating CouplerMethod : Null2
+Configuring Method [Null2] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating SpaceMethod : FluctuationSplit
+Configuring Method [FluctuationSplit] in the Namespace: [Default]
+FluctuationSplit: Using Update VarSet: Puvt
+FluctuationSplit: Using Solution VarSet: Cons
+FluctuationSplit: Using Diffusive VarSet: Null
+FluctuationSplit: Using Distribution VarSet: Cons
+FluctuationSplit: Using Linearizer: Euler2DLinearRoe
+FluctuationSplit: Using ScalarSplitter: Null
+FluctuationSplit: Using SystemSplitter: SysN
+FluctuationSplit: Using JacobianScalarSplitter: Null
+FluctuationSplit: Using JacobianSystemSplitter: Null
+FluctuationSplit: Using FluctuationSplitStrategy: RD
+FluctuationSplit: Using ArtificialDisffusionStrategy: Null
+FluctuationSplit: Using MatrixTransformer Solution to Distribution Vars: Identity
+FluctuationSplit: Using MatrixTransformer Distribution to Solution Vars: Identity
+FluctuationSplit: Using MatrixTransformer Linear to Distribution Vars: Euler2DRoeToConsInRef
+FluctuationSplit: Using MatrixTransformer Solution to Linear In Update Vars: Euler2DConsToRoeInPuvt
+FluctuationSplit: Using MatrixTransformer Solution to Linear Vars: Identity
+FluctuationSplit: Using Transformer Update to Linear Vars: Euler2DPuvtToRoe
+FluctuationSplit: Using Transformer Update to Solution Vars: Euler2DPuvtToCons
+FluctuationSplit: Using Integrator Quadrature: GaussLegendre
+FluctuationSplit: Using Integrator Order: P1
+P0 => FluctuationSplit: Using ComputeSourceTerm:  Null  
+
+P0 => FluctuationSplit: Using SourceTermSplitter:  Null  
+
+INIT type = InitState
+INIT name = InField
+INIT type = InitState
+INIT name = SinField
+BC type = WeakSlipWallEuler2DImpl
+BC name = Wall
+BC type = SuperInletImpl
+BC name = SInlet
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating ErrorEstimatorMethod : Null4
+Configuring Method [Null4] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating LinearSystemSolver : NewtonIteratorLSS
+Configuring Method [NewtonIteratorLSS] in the Namespace: [Default]
+Petsc PCType = PCASM
+Petsc KSPType = KSPGMRES
+Petsc Nb KSP spaces = 30
+Petsc MatOrderingType = MATORDERING_RCM
+Petsc MaxIter = 50
+Petsc Relative Tolerance = 0.0001
+Petsc Absolute Tolerance = 1e-30
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating ConvergenceMethod : NewtonIterator
+Configuring Method [NewtonIterator] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating DataProcessing : Null7
+Configuring Method [Null7] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating DataProcessing : Null8
+Configuring Method [Null8] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating OutputFormatter : Tecplot
+Configuring Method [Tecplot] in the Namespace: [Default]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Creating OutputFormatter : CFmesh
+Configuring Method [CFmesh] in the Namespace: [Default]
+-------------------------------------------------------------
+#
+###### SOCKETS PLUG PHASE ###########
+#
+#
+###### BUILD PHASE ##################
+#
+-------------------------------------------------------------
+Setting up all PhysicalModel's
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+Setting up Physical Model [Euler2D]
+WARNING: Mach infinity NOT set
+Equations will be solved dimensionally
+tempRef = 0
+pRef   = 0
+machInf   = 0
+rhoRef  = 1
+-------------------------------------------------------------
+-------------------------------------------------------------
+Setting up all MeshCreator's
+-------------------------------------------------------------
+Setup Method [CFmeshFileReader]
+-------------------------------------------------------------
+Building MeshData's
+-------------------------------------------------------------
+-------------------------------------------------------------
+MeshCreator [CFmeshFileReader] Generate or Read Mesh
+
+Memory usage before building mesh: 2.94141 MB
+
+Original NbEquations = 4
+Final NbEquations    = 4
+Memory Usage before assembling connectivity: 2.94141 MB
+Reading data from cyl_Pg_M20.CFmesh took 0.041626s
+Memory Usage after mesh reading: 5.14062 MB
+Building TRS: InnerCells
+TRS Name: 1
+Building TRS: 1
+Created Boundary TRS '1' with 179 faces
+TRS Name: 2
+Building TRS: 2
+Created Boundary TRS '2' with 58 faces
+TRS Name: 3
+Building TRS: 3
+Created Boundary TRS '3' with 52 faces
+TRS Name: 4
+Building TRS: 4
+Created Boundary TRS '4' with 58 faces
+Building MeshData from ./cyl_Pg_M20.CFmesh took 0.049053s
+Building the mesh took: 0.049191s
+
+Memory usage after building mesh: 5.14062 MB
+-------------------------------------------------------------
+-------------------------------------------------------------
+MeshCreator [CFmeshFileReader] Building Mesh Data
+-------------------------------------------------------------
+Building TRS info for MeshData in Namespace Default
+#
+###### SETUP PHASE ##################
+#
+-------------------------------------------------------------
+Setting up DataPreProcessing's
+Setup Method [Null7]
+-------------------------------------------------------------
+Setting up MeshAdapterMethod's
+Setup Method [Null1]
+-------------------------------------------------------------
+Setting up ConvergenceMethod's
+Setup Method [NewtonIterator]
+-------------------------------------------------------------
+Setting up LinearSystemSolver's
+Setup Method [NewtonIteratorLSS]
+-------------------------------------------------------------
+Setting up SpaceMethod's
+Setup Method [FluctuationSplit]
+WARNING: No ContourIntegratorImpl found for the Interpolator: LagrangeLineP1 - Using NullIntegrator.
+-------------------------------------------------------------
+Setting up ErrorEstimatorMethod's
+Setup Method [Null4]
+-------------------------------------------------------------
+Setting up CouplerMethod's
+Setup Method [Null2]
+-------------------------------------------------------------
+CouplerMethod's write interface coordinates
+-------------------------------------------------------------
+Writting coordinates of CouplerMethod [Null2]
+-------------------------------------------------------------
+-------------------------------------------------------------
+CouplerMethod's read interface coordinates
+-------------------------------------------------------------
+Reading coordinates of CouplerMethod [Null2]
+-------------------------------------------------------------
+-------------------------------------------------------------
+CouplerMethod's match mesh and write
+-------------------------------------------------------------
+Mesh matching of CouplerMethod [Null2]
+-------------------------------------------------------------
+-------------------------------------------------------------
+CouplerMethod's read match mesh
+-------------------------------------------------------------
+Reading matched mesh of CouplerMethod [Null2]
+-------------------------------------------------------------
+-------------------------------------------------------------
+Setting up DataPostProcessing's
+Setup Method [Null8]
+-------------------------------------------------------------
+Setting up OutputFormatter's
+Setup Method [Tecplot]
+Setup Method [CFmesh]
+
+-------------------------------------------------------------
+Initializing solution
+-------------------------------------------------------------
+Initializing solution of method [FluctuationSplit]
+-------------------------------------------------------------
+Writing initial solution ... 
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.02898s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Element written 
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.044643s
+-------------------------------------------------------------
+#
+###### RUN PHASE ####################
+#
+KSP convergence reached at iteration: 1
+Iter:     1      Res: [0.89289273 -0.097393075 -0.200485 1.8202279 ]  CFL:      0.1 CPUTime:    0.364    Mem: 21.5 MB
+KSP convergence reached at iteration: 1
+Iter:     2      Res: [0.90722178 0.15620198 0.064600723 1.7977676 ]  CFL:      0.1 CPUTime:    0.728    Mem: 21.625 MB
+KSP convergence reached at iteration: 1
+Iter:     3      Res: [0.92158437 0.2902794 0.20861385 1.7809255 ]  CFL:      0.1 CPUTime:    1.096    Mem: 21.6211 MB
+KSP convergence reached at iteration: 1
+Iter:     4      Res: [0.93597616 0.37775806 0.30466531 1.7685688 ]  CFL:      0.1 CPUTime:     1.46    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:     5      Res: [0.95039384 0.44108725 0.37539362 1.7598249 ]  CFL:      0.1 CPUTime:    1.827    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:     6      Res: [0.96483486 0.49002827 0.43071959 1.7540154 ]  CFL:      0.1 CPUTime:    2.192    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:     7      Res: [0.97929708 0.5296383 0.47583324 1.7506083 ]  CFL:      0.1 CPUTime:    2.558    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:     8      Res: [0.99377875 0.56283818 0.5137658 1.7491829 ]  CFL:      0.1 CPUTime:    2.924    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:     9      Res: [1.0082783 0.59144574 0.54640654 1.7494036 ]  CFL:      0.1 CPUTime:    3.284    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:    10      Res: [1.0227945 0.61665543 0.5750525 1.7510007 ]  CFL:      0.1 CPUTime:    3.649    Mem: 21.4961 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030487s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032398s
+KSP convergence reached at iteration: 1
+Iter:    11      Res: [1.0373259 0.63928669 0.60058535 1.753756 ]  CFL:      0.1 CPUTime:     4.06    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    12      Res: [1.0518715 0.65992029 0.62364162 1.7574918 ]  CFL:      0.1 CPUTime:    4.426    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    13      Res: [1.0664302 0.67897923 0.6446923 1.7620621 ]  CFL:      0.1 CPUTime:    4.788    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    14      Res: [1.0810009 0.69677907 0.66409411 1.7673468 ]  CFL:      0.1 CPUTime:    5.155    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    15      Res: [1.0955828 0.71355948 0.68212267 1.7732458 ]  CFL:      0.1 CPUTime:    5.521    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    16      Res: [1.1101747 0.7295056 0.69899457 1.7796758 ]  CFL:      0.1 CPUTime:    5.886    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    17      Res: [1.124776 0.74476262 0.71488266 1.7865668 ]  CFL:      0.1 CPUTime:    6.249    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    18      Res: [1.1393855 0.75944581 0.7299267 1.7938599 ]  CFL:      0.1 CPUTime:    6.611    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    19      Res: [1.1540025 0.7736476 0.74424106 1.801505 ]  CFL:      0.1 CPUTime:    6.974    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    20      Res: [1.168626 0.78744301 0.75792036 1.8094596 ]  CFL:      0.1 CPUTime:    7.369    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030555s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032631s
+KSP convergence reached at iteration: 1
+Iter:    21      Res: [1.1832553 0.80089329 0.77104369 1.8176874 ]  CFL:      0.1 CPUTime:    7.787    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    22      Res: [1.1978894 0.81404907 0.78367769 1.826157 ]  CFL:      0.1 CPUTime:    8.142    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    23      Res: [1.2125274 0.82695213 0.79587908 1.8348415 ]  CFL:      0.1 CPUTime:    8.507    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    24      Res: [1.2271687 0.83963771 0.80769643 1.8437175 ]  CFL:      0.1 CPUTime:     8.87    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    25      Res: [1.2418122 0.85213519 0.81917169 1.8527648 ]  CFL:      0.1 CPUTime:    9.233    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    26      Res: [1.2564573 0.86446959 0.83034127 1.8619656 ]  CFL:      0.1 CPUTime:    9.595    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    27      Res: [1.2711029 0.8766619 0.84123705 1.8713045 ]  CFL:      0.1 CPUTime:    9.964    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    28      Res: [1.2857467 0.88872912 0.85185287 1.8807668 ]  CFL:      0.1 CPUTime:   10.341    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    29      Res: [1.3003861 0.90068417 0.86225323 1.890338 ]  CFL:      0.1 CPUTime:   10.709    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    30      Res: [1.3150233 0.9125438 0.87245455 1.9000107 ]  CFL:      0.1 CPUTime:   11.073    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030665s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032158s
+KSP convergence reached at iteration: 1
+Iter:    31      Res: [1.3296576 0.92431951 0.88247636 1.9097755 ]  CFL:      0.1 CPUTime:   11.513    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    32      Res: [1.3442881 0.93602111 0.89233613 1.9196239 ]  CFL:      0.1 CPUTime:    11.88    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    33      Res: [1.358914 0.94765733 0.9020496 1.9295483 ]  CFL:      0.1 CPUTime:   12.244    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    34      Res: [1.3735345 0.95923557 0.91163092 1.9395421 ]  CFL:      0.1 CPUTime:   12.608    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    35      Res: [1.3881487 0.97076232 0.92109291 1.9495989 ]  CFL:      0.1 CPUTime:   12.977    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    36      Res: [1.402756 0.98224329 0.93044719 1.9597134 ]  CFL:      0.1 CPUTime:    13.33    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    37      Res: [1.4173554 0.99368336 0.93970431 1.9698804 ]  CFL:      0.1 CPUTime:    13.68    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    38      Res: [1.4319461 1.005087 0.94887387 1.9800955 ]  CFL:      0.1 CPUTime:   14.033    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    39      Res: [1.4465274 1.0164579 0.95796462 1.9903545 ]  CFL:      0.1 CPUTime:   14.388    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    40      Res: [1.4610985 1.0277994 0.96698457 2.0006534 ]  CFL:      0.1 CPUTime:   14.741    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029659s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031022s
+KSP convergence reached at iteration: 1
+Iter:    41      Res: [1.4756586 1.0391145 0.97594101 2.0109889 ]  CFL:      0.1 CPUTime:   15.149    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    42      Res: [1.4902068 1.0504057 0.98484065 2.0213577 ]  CFL:      0.1 CPUTime:   15.503    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    43      Res: [1.5047424 1.0616753 0.99368959 2.0317568 ]  CFL:      0.1 CPUTime:   15.858    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    44      Res: [1.5192647 1.0729252 1.0024935 2.0421834 ]  CFL:      0.1 CPUTime:   16.214    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    45      Res: [1.5337729 1.0841571 1.0112574 2.0526349 ]  CFL:      0.1 CPUTime:   16.571    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    46      Res: [1.5482661 1.0953726 1.0199861 2.063109 ]  CFL:      0.1 CPUTime:   16.929    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    47      Res: [1.5627436 1.1065729 1.0286838 2.0736032 ]  CFL:      0.1 CPUTime:   17.288    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    48      Res: [1.5772047 1.1177592 1.0373547 2.0841156 ]  CFL:      0.1 CPUTime:   17.643    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    49      Res: [1.5916485 1.1289325 1.0460022 2.0946441 ]  CFL:      0.1 CPUTime:       18    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    50      Res: [1.6060744 1.1400935 1.0546297 2.1051868 ]  CFL:      0.1 CPUTime:    18.36    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029744s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031088s
+KSP convergence reached at iteration: 1
+Iter:    51      Res: [1.6204815 1.151243 1.0632402 2.115742 ]  CFL:      0.1 CPUTime:   18.765    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    52      Res: [1.6348692 1.1623815 1.0718366 2.1263078 ]  CFL:      0.1 CPUTime:   19.127    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    53      Res: [1.6492352 1.1735102 1.0803846 2.1368834 ]  CFL:      0.1 CPUTime:   19.485    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    54      Res: [1.6635804 1.1846287 1.088936 2.1474663 ]  CFL:      0.1 CPUTime:   19.845    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    55      Res: [1.6779038 1.1957376 1.0974806 2.1580554 ]  CFL:      0.1 CPUTime:   20.206    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:    56      Res: [1.6922045 1.2068371 1.1060206 2.168649 ]  CFL:      0.1 CPUTime:   20.558    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:    57      Res: [1.7064745 1.2179229 1.1144943 2.1792421 ]  CFL:      0.1 CPUTime:   20.911    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:    58      Res: [1.7207207 1.2289986 1.1229949 2.189836 ]  CFL:      0.1 CPUTime:   21.267    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    59      Res: [1.7349415 1.2400651 1.1314952 2.2004302 ]  CFL:      0.1 CPUTime:   21.621    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    60      Res: [1.7491364 1.2511224 1.1399966 2.2110237 ]  CFL:      0.1 CPUTime:   21.971    Mem: 21.75 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029633s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.030976s
+KSP convergence reached at iteration: 1
+Iter:    61      Res: [1.7633046 1.2621705 1.1485 2.2216151 ]  CFL:      0.1 CPUTime:   22.371    Mem: 25.3203 MB
+KSP convergence reached at iteration: 1
+Iter:    62      Res: [1.7774453 1.2732094 1.1570065 2.2322034 ]  CFL:      0.1 CPUTime:   22.728    Mem: 25.3203 MB
+KSP convergence reached at iteration: 1
+Iter:    63      Res: [1.7915577 1.2842389 1.165517 2.2427872 ]  CFL:      0.1 CPUTime:   23.083    Mem: 25.3203 MB
+KSP convergence reached at iteration: 1
+Iter:    64      Res: [1.8056412 1.295259 1.1740322 2.2533655 ]  CFL:      0.1 CPUTime:   23.436    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:    65      Res: [1.8196951 1.3062693 1.182553 2.2639372 ]  CFL:      0.1 CPUTime:   23.796    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:    66      Res: [1.8337185 1.3172697 1.1910798 2.2745011 ]  CFL:      0.1 CPUTime:   24.153    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    67      Res: [1.8477081 1.3282608 1.1995714 2.2850573 ]  CFL:      0.1 CPUTime:   24.507    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    68      Res: [1.8616664 1.3392414 1.2080867 2.2956033 ]  CFL:      0.1 CPUTime:   24.866    Mem: 21.6055 MB
+KSP convergence reached at iteration: 1
+Iter:    69      Res: [1.875592 1.3502114 1.2166103 2.3061385 ]  CFL:      0.1 CPUTime:   25.225    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    70      Res: [1.8894839 1.3611705 1.2251424 2.3166618 ]  CFL:      0.1 CPUTime:   25.587    Mem: 25.2109 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.02986s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032574s
+KSP convergence reached at iteration: 1
+Iter:    71      Res: [1.9033415 1.3721185 1.2336834 2.3271723 ]  CFL:      0.1 CPUTime:    26.01    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    72      Res: [1.9171641 1.383055 1.2422333 2.3376689 ]  CFL:      0.1 CPUTime:   26.371    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    73      Res: [1.9309508 1.3939797 1.2507924 2.3481507 ]  CFL:      0.1 CPUTime:   26.735    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    74      Res: [1.944701 1.4048922 1.2593606 2.3586166 ]  CFL:      0.1 CPUTime:     27.1    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    75      Res: [1.958414 1.4157921 1.2679381 2.3690657 ]  CFL:      0.1 CPUTime:   27.466    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    76      Res: [1.9720889 1.4266791 1.2765247 2.3794969 ]  CFL:      0.1 CPUTime:   27.823    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    77      Res: [1.9857251 1.4375528 1.2851205 2.3899094 ]  CFL:      0.1 CPUTime:   28.229    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    78      Res: [1.9993218 1.4484128 1.2937254 2.4003021 ]  CFL:      0.1 CPUTime:   28.933    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    79      Res: [2.0128784 1.4592586 1.3023392 2.4106742 ]  CFL:      0.1 CPUTime:    29.61    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    80      Res: [2.026394 1.47009 1.3109618 2.4210246 ]  CFL:      0.1 CPUTime:   30.006    Mem: 25.2109 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030669s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.03211s
+KSP convergence reached at iteration: 1
+Iter:    81      Res: [2.0398679 1.4809064 1.319593 2.4313523 ]  CFL:      0.1 CPUTime:   30.541    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    82      Res: [2.0532995 1.4917074 1.3282325 2.4416565 ]  CFL:      0.1 CPUTime:   30.909    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    83      Res: [2.066688 1.5024926 1.3368801 2.4519362 ]  CFL:      0.1 CPUTime:   31.273    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    84      Res: [2.0800327 1.5132615 1.3455355 2.4621904 ]  CFL:      0.1 CPUTime:   31.637    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    85      Res: [2.0933328 1.5240138 1.3541985 2.4724182 ]  CFL:      0.1 CPUTime:   32.007    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    86      Res: [2.1065876 1.534749 1.3628686 2.4826186 ]  CFL:      0.1 CPUTime:   32.367    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:    87      Res: [2.1197925 1.5454676 1.3715054 2.4927917 ]  CFL:      0.1 CPUTime:   32.736    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:    88      Res: [2.1329518 1.5561679 1.3801659 2.5029353 ]  CFL:      0.1 CPUTime:   33.103    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    89      Res: [2.1460633 1.5668499 1.3888337 2.5130489 ]  CFL:      0.1 CPUTime:   33.467    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    90      Res: [2.1591264 1.5775131 1.3975083 2.5231315 ]  CFL:      0.1 CPUTime:    33.83    Mem: 29.3555 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030826s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032228s
+KSP convergence reached at iteration: 1
+Iter:    91      Res: [2.1721403 1.588157 1.4061895 2.5331821 ]  CFL:      0.1 CPUTime:   34.251    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    92      Res: [2.1851042 1.5987813 1.4148766 2.5431997 ]  CFL:      0.1 CPUTime:   34.614    Mem: 21.5312 MB
+KSP convergence reached at iteration: 1
+Iter:    93      Res: [2.1980174 1.6093853 1.4235694 2.5531835 ]  CFL:      0.1 CPUTime:   34.985    Mem: 25.1758 MB
+KSP convergence reached at iteration: 1
+Iter:    94      Res: [2.2108792 1.6199688 1.4322673 2.5631324 ]  CFL:      0.1 CPUTime:   35.348    Mem: 29.3203 MB
+KSP convergence reached at iteration: 1
+Iter:    95      Res: [2.223685 1.630532 1.4409392 2.5730462 ]  CFL:      0.1 CPUTime:    35.71    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:    96      Res: [2.2364384 1.6410735 1.4495978 2.5829232 ]  CFL:      0.1 CPUTime:   36.072    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:    97      Res: [2.2491378 1.6515932 1.4582713 2.5927626 ]  CFL:      0.1 CPUTime:   36.435    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    98      Res: [2.2617823 1.6620903 1.4669008 2.6025632 ]  CFL:      0.1 CPUTime:   36.798    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:    99      Res: [2.2743714 1.6725648 1.4755578 2.6123244 ]  CFL:      0.1 CPUTime:   37.162    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   100      Res: [2.2869042 1.6830162 1.4842226 2.6220451 ]  CFL:      0.1 CPUTime:   37.529    Mem: 21.5312 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030624s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032159s
+KSP convergence reached at iteration: 1
+Iter:   101      Res: [2.29938 1.693444 1.4928942 2.6317243 ]  CFL:      0.1 CPUTime:   37.951    Mem: 25.1758 MB
+KSP convergence reached at iteration: 1
+Iter:   102      Res: [2.3117979 1.7038477 1.5015719 2.641361 ]  CFL:      0.1 CPUTime:   38.311    Mem: 29.3203 MB
+KSP convergence reached at iteration: 1
+Iter:   103      Res: [2.3241572 1.714227 1.5102549 2.6509542 ]  CFL:      0.1 CPUTime:   38.709    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   104      Res: [2.3364571 1.7245814 1.5189424 2.6605028 ]  CFL:      0.1 CPUTime:   39.079    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   105      Res: [2.3486969 1.7349104 1.5276336 2.6700059 ]  CFL:      0.1 CPUTime:   39.448    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   106      Res: [2.3608726 1.7452125 1.5363057 2.6794615 ]  CFL:      0.1 CPUTime:   39.813    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   107      Res: [2.3729847 1.7554852 1.5449822 2.6888666 ]  CFL:      0.1 CPUTime:   40.177    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   108      Res: [2.3850343 1.7657313 1.5536599 2.6982231 ]  CFL:      0.1 CPUTime:    40.58    Mem: 21.4961 MB
+KSP convergence reached at iteration: 1
+Iter:   109      Res: [2.3970126 1.7759514 1.5623009 2.7075306 ]  CFL:      0.1 CPUTime:   40.938    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   110      Res: [2.4089298 1.7861436 1.5709621 2.716787 ]  CFL:      0.1 CPUTime:   41.293    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029922s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031251s
+KSP convergence reached at iteration: 1
+Iter:   111      Res: [2.4207815 1.796308 1.5796239 2.7259918 ]  CFL:      0.1 CPUTime:   41.702    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   112      Res: [2.4325669 1.8064442 1.5882853 2.7351437 ]  CFL:      0.1 CPUTime:   42.065    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   113      Res: [2.4442852 1.8165516 1.5969457 2.7442417 ]  CFL:      0.1 CPUTime:    42.43    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   114      Res: [2.4559355 1.82663 1.6056044 2.7532846 ]  CFL:      0.1 CPUTime:   42.791    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   115      Res: [2.4675084 1.8366801 1.6142277 2.7622719 ]  CFL:      0.1 CPUTime:   43.154    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   116      Res: [2.479015 1.8467 1.6228656 2.771202 ]  CFL:      0.1 CPUTime:   43.523    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   117      Res: [2.4904506 1.8566898 1.6315011 2.7800737 ]  CFL:      0.1 CPUTime:    43.97    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   118      Res: [2.5018143 1.866649 1.6401333 2.7888861 ]  CFL:      0.1 CPUTime:   44.388    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   119      Res: [2.5131052 1.8765773 1.6487618 2.7976378 ]  CFL:      0.1 CPUTime:   44.755    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   120      Res: [2.5243225 1.8864743 1.6573857 2.8063277 ]  CFL:      0.1 CPUTime:   45.123    Mem: 25.1914 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030672s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032242s
+KSP convergence reached at iteration: 1
+Iter:   121      Res: [2.5354652 1.8963396 1.6660041 2.8149546 ]  CFL:      0.1 CPUTime:    45.55    Mem: 25.1914 MB
+KSP convergence reached at iteration: 1
+Iter:   122      Res: [2.5465325 1.9061727 1.6746169 2.8235172 ]  CFL:      0.1 CPUTime:   46.052    Mem: 29.3398 MB
+KSP convergence reached at iteration: 1
+Iter:   123      Res: [2.5575233 1.9159737 1.6832229 2.8320141 ]  CFL:      0.1 CPUTime:   46.687    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   124      Res: [2.5684368 1.9257417 1.691822 2.8404443 ]  CFL:      0.1 CPUTime:    47.05    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   125      Res: [2.5792619 1.9354776 1.7003878 2.8488066 ]  CFL:      0.1 CPUTime:   47.412    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   126      Res: [2.5900116 1.9451797 1.7089583 2.8570997 ]  CFL:      0.1 CPUTime:   47.772    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   127      Res: [2.6006804 1.954848 1.717522 2.8653225 ]  CFL:      0.1 CPUTime:   48.125    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   128      Res: [2.6112675 1.9644821 1.7260795 2.8734734 ]  CFL:      0.1 CPUTime:   48.478    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   129      Res: [2.6217657 1.9740823 1.7346161 2.8815509 ]  CFL:      0.1 CPUTime:   48.839    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   130      Res: [2.6321758 1.9836456 1.7431295 2.8895521 ]  CFL:      0.1 CPUTime:   49.211    Mem: 25.2109 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03038s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032099s
+KSP convergence reached at iteration: 1
+Iter:   131      Res: [2.6425006 1.9931727 1.7516362 2.8974764 ]  CFL:      0.1 CPUTime:    49.62    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   132      Res: [2.6527388 2.0026643 1.7601345 2.9053233 ]  CFL:      0.1 CPUTime:   49.979    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   133      Res: [2.6628894 2.0121202 1.768623 2.9130914 ]  CFL:      0.1 CPUTime:   50.336    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   134      Res: [2.6729511 2.0215399 1.7771009 2.9207792 ]  CFL:      0.1 CPUTime:   50.698    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   135      Res: [2.682923 2.0309231 1.7855676 2.928385 ]  CFL:      0.1 CPUTime:   51.062    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   136      Res: [2.6928038 2.0402695 1.7940225 2.9359075 ]  CFL:      0.1 CPUTime:   51.429    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   137      Res: [2.7025923 2.0495786 1.8024648 2.9433448 ]  CFL:      0.1 CPUTime:   51.796    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   138      Res: [2.7122736 2.0588513 1.8108761 2.9506947 ]  CFL:      0.1 CPUTime:   52.198    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   139      Res: [2.7218658 2.0680858 1.8192834 2.9579571 ]  CFL:      0.1 CPUTime:   52.808    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   140      Res: [2.7313614 2.0772824 1.8276774 2.9651295 ]  CFL:      0.1 CPUTime:   53.173    Mem: 29.3555 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03066s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032061s
+KSP convergence reached at iteration: 1
+Iter:   141      Res: [2.740759 2.0864403 1.8360264 2.9722101 ]  CFL:      0.1 CPUTime:    53.59    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   142      Res: [2.7500422 2.0955605 1.8443588 2.9791961 ]  CFL:      0.1 CPUTime:   53.945    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   143      Res: [2.759231 2.1046417 1.8526916 2.9860877 ]  CFL:      0.1 CPUTime:   54.295    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   144      Res: [2.768317 2.1136835 1.8609879 2.9928823 ]  CFL:      0.1 CPUTime:   54.651    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   145      Res: [2.7772991 2.1226861 1.8693126 2.9995785 ]  CFL:      0.1 CPUTime:   55.007    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   146      Res: [2.7861757 2.131649 1.8776171 3.0061736 ]  CFL:      0.1 CPUTime:   55.361    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   147      Res: [2.7949453 2.1405718 1.8859136 3.0126657 ]  CFL:      0.1 CPUTime:   55.717    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   148      Res: [2.803597 2.1494546 1.8941937 3.0190515 ]  CFL:      0.1 CPUTime:   56.076    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   149      Res: [2.8121382 2.1582969 1.9024631 3.0253301 ]  CFL:      0.1 CPUTime:   56.432    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   150      Res: [2.8205669 2.1670984 1.9107198 3.0314993 ]  CFL:      0.1 CPUTime:    56.79    Mem: 21.6406 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029817s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031216s
+KSP convergence reached at iteration: 1
+Iter:   151      Res: [2.8288814 2.1758586 1.9189623 3.0375568 ]  CFL:      0.1 CPUTime:   57.197    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   152      Res: [2.837064 2.1845779 1.927182 3.0434977 ]  CFL:      0.1 CPUTime:   57.558    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   153      Res: [2.8451337 2.1932554 1.9353888 3.049323 ]  CFL:      0.1 CPUTime:   57.917    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   154      Res: [2.8530831 2.2018909 1.9435788 3.0550294 ]  CFL:      0.1 CPUTime:   58.272    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   155      Res: [2.8609103 2.210484 1.9517508 3.0606141 ]  CFL:      0.1 CPUTime:   58.628    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   156      Res: [2.8686133 2.2190345 1.959904 3.0660743 ]  CFL:      0.1 CPUTime:   58.989    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   157      Res: [2.8761901 2.2275419 1.9680376 3.0714072 ]  CFL:      0.1 CPUTime:   59.366    Mem: 25.2109 MB
+KSP convergence reached at iteration: 1
+Iter:   158      Res: [2.8836193 2.2360064 1.9761471 3.0766061 ]  CFL:      0.1 CPUTime:   59.719    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   159      Res: [2.8909246 2.2444272 1.9842379 3.0816744 ]  CFL:      0.1 CPUTime:    60.07    Mem: 21.6406 MB
+KSP convergence reached at iteration: 1
+Iter:   160      Res: [2.8980963 2.2528042 1.9923082 3.0866065 ]  CFL:      0.1 CPUTime:   60.423    Mem: 25.2109 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030135s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032492s
+KSP convergence reached at iteration: 1
+Iter:   161      Res: [2.9051114 2.2611372 2.0003553 3.0913943 ]  CFL:      0.1 CPUTime:   60.838    Mem: 29.3555 MB
+KSP convergence reached at iteration: 1
+Iter:   162      Res: [2.9119948 2.269426 2.0083828 3.0960412 ]  CFL:      0.1 CPUTime:   61.189    Mem: 21.6602 MB
+KSP convergence reached at iteration: 1
+Iter:   163      Res: [2.9187362 2.2776701 2.0163894 3.1005417 ]  CFL:      0.1 CPUTime:    61.54    Mem: 25.2266 MB
+KSP convergence reached at iteration: 1
+Iter:   164      Res: [2.9253329 2.2858692 2.0243747 3.104892 ]  CFL:      0.1 CPUTime:   61.895    Mem: 29.375 MB
+KSP convergence reached at iteration: 1
+Iter:   165      Res: [2.9317821 2.2940225 2.0323129 3.1090884 ]  CFL:      0.1 CPUTime:    62.25    Mem: 21.6602 MB
+KSP convergence reached at iteration: 1
+Iter:   166      Res: [2.9380617 2.3021302 2.0402489 3.1131216 ]  CFL:      0.1 CPUTime:   62.608    Mem: 25.2266 MB
+KSP convergence reached at iteration: 1
+Iter:   167      Res: [2.9441929 2.3101929 2.0481784 3.116996 ]  CFL:      0.1 CPUTime:   62.964    Mem: 29.375 MB
+KSP convergence reached at iteration: 1
+Iter:   168      Res: [2.9501663 2.3182086 2.0560677 3.1207043 ]  CFL:      0.1 CPUTime:   63.319    Mem: 29.375 MB
+KSP convergence reached at iteration: 1
+Iter:   169      Res: [2.955964 2.326179 2.0639573 3.1242351 ]  CFL:      0.1 CPUTime:   63.671    Mem: 29.375 MB
+KSP convergence reached at iteration: 1
+Iter:   170      Res: [2.9616073 2.3341029 2.0718501 3.127594 ]  CFL:      0.1 CPUTime:   64.034    Mem: 24.8672 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03047s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031673s
+KSP convergence reached at iteration: 2
+Iter:   171      Res: [2.9670853 2.3419795 2.0797547 3.1307729 ]  CFL:      0.1 CPUTime:   64.446    Mem: 29.0117 MB
+KSP convergence reached at iteration: 2
+Iter:   172      Res: [2.9723959 2.349809 2.0876195 3.1337662 ]  CFL:      0.1 CPUTime:   64.801    Mem: 29.0117 MB
+KSP convergence reached at iteration: 2
+Iter:   173      Res: [2.9775235 2.3575898 2.0954606 3.136562 ]  CFL:      0.1 CPUTime:   65.157    Mem: 29.0117 MB
+KSP convergence reached at iteration: 2
+Iter:   174      Res: [2.9824736 2.3653222 2.1032907 3.1391611 ]  CFL:      0.1 CPUTime:   65.515    Mem: 29.4102 MB
+KSP convergence reached at iteration: 2
+Iter:   175      Res: [2.9872408 2.3730057 2.1111054 3.1415566 ]  CFL:      0.1 CPUTime:   65.872    Mem: 29.4102 MB
+KSP convergence reached at iteration: 2
+Iter:   176      Res: [2.9917991 2.3806382 2.1189105 3.1437308 ]  CFL:      0.1 CPUTime:   66.238    Mem: 29.4102 MB
+KSP convergence reached at iteration: 2
+Iter:   177      Res: [2.9961736 2.3882216 2.1266916 3.1456925 ]  CFL:      0.1 CPUTime:   66.621    Mem: 29.4102 MB
+KSP convergence reached at iteration: 2
+Iter:   178      Res: [3.0003504 2.3957553 2.1344488 3.1474296 ]  CFL:      0.1 CPUTime:   66.988    Mem: 29.4102 MB
+KSP convergence reached at iteration: 2
+Iter:   179      Res: [3.0043239 2.4032383 2.14218 3.1489341 ]  CFL:      0.1 CPUTime:    67.35    Mem: 21.5508 MB
+KSP convergence reached at iteration: 2
+Iter:   180      Res: [3.008069 2.4106677 2.1498925 3.1501898 ]  CFL:      0.1 CPUTime:   67.714    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030614s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031967s
+KSP convergence reached at iteration: 2
+Iter:   181      Res: [3.0116053 2.4180469 2.1576178 3.1512044 ]  CFL:      0.1 CPUTime:   68.136    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   182      Res: [3.0149049 2.4253742 2.1654049 3.1519555 ]  CFL:      0.1 CPUTime:   68.504    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   183      Res: [3.0179803 2.4326509 2.1732159 3.1524459 ]  CFL:      0.1 CPUTime:   68.877    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   184      Res: [3.0208204 2.4398765 2.1810397 3.1526619 ]  CFL:      0.1 CPUTime:    69.25    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   185      Res: [3.0234176 2.4470487 2.1888669 3.1525912 ]  CFL:      0.1 CPUTime:   69.615    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   186      Res: [3.0257506 2.4541651 2.1966987 3.1522105 ]  CFL:      0.1 CPUTime:    69.97    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   187      Res: [3.0278284 2.4612273 2.2045093 3.1515209 ]  CFL:      0.1 CPUTime:   70.325    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   188      Res: [3.0296272 2.4682321 2.2123108 3.1504952 ]  CFL:      0.1 CPUTime:   70.695    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   189      Res: [3.0311494 2.4751807 2.2200936 3.1491398 ]  CFL:      0.1 CPUTime:   71.059    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   190      Res: [3.032383 2.4820773 2.2280547 3.147454 ]  CFL:      0.1 CPUTime:   71.425    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03085s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032286s
+KSP convergence reached at iteration: 2
+Iter:   191      Res: [3.0333194 2.4889235 2.2362138 3.1454239 ]  CFL:      0.1 CPUTime:   71.847    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   192      Res: [3.0339382 2.4957137 2.2444152 3.1430108 ]  CFL:      0.1 CPUTime:   72.209    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   193      Res: [3.0342401 2.502448 2.2526359 3.1402074 ]  CFL:      0.1 CPUTime:   72.574    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   194      Res: [3.034205 2.5091227 2.260866 3.1369786 ]  CFL:      0.1 CPUTime:   72.937    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   195      Res: [3.0338282 2.5157379 2.2690606 3.1333103 ]  CFL:      0.1 CPUTime:   73.308    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   196      Res: [3.0315344 2.5297528 2.2866517 3.1625177 ]  CFL:      0.1 CPUTime:    73.67    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   197      Res: [3.0293496 2.547463 2.3087679 3.2008627 ]  CFL:      0.1 CPUTime:   74.025    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   198      Res: [3.0237503 2.5794347 2.3435321 3.2809246 ]  CFL:      0.1 CPUTime:   74.381    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   199      Res: [3.0162227 2.6304839 2.3872616 3.3891296 ]  CFL:      0.1 CPUTime:    74.74    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   200      Res: [2.9993184 2.7161332 2.4371955 3.5366254 ]  CFL:      0.1 CPUTime:   75.102    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030528s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032201s
+KSP convergence reached at iteration: 2
+Iter:   201      Res: [2.9853399 2.7972059 2.4830112 3.6452382 ]  CFL:      0.1 CPUTime:   75.517    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   202      Res: [2.970773 2.8641204 2.5243229 3.7218922 ]  CFL:      0.1 CPUTime:   75.876    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   203      Res: [2.9556794 2.9152367 2.5593839 3.7728202 ]  CFL:      0.1 CPUTime:   76.235    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   204      Res: [2.9397346 2.9528871 2.5895249 3.804631 ]  CFL:      0.1 CPUTime:   76.594    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   205      Res: [2.9229874 2.9802255 2.6179819 3.8226431 ]  CFL:      0.1 CPUTime:   77.084    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   206      Res: [2.9051325 3.0002673 2.6494897 3.8312469 ]  CFL:      0.1 CPUTime:   77.448    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   207      Res: [2.8863423 3.0142059 2.6798 3.8324002 ]  CFL:      0.1 CPUTime:   77.938    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   208      Res: [2.8638935 3.0366921 2.7328517 3.847142 ]  CFL:      0.1 CPUTime:    78.32    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   209      Res: [2.8398652 3.0714985 2.7735805 3.876846 ]  CFL:      0.1 CPUTime:   78.731    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   210      Res: [2.8260346 3.0831641 2.7931945 3.8742853 ]  CFL:      0.1 CPUTime:   79.098    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031622s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032867s
+KSP convergence reached at iteration: 2
+Iter:   211      Res: [2.8211152 3.0855184 2.804573 3.8593952 ]  CFL:      0.1 CPUTime:   79.521    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   212      Res: [2.8260285 3.0803258 2.8072136 3.8351707 ]  CFL:      0.1 CPUTime:   79.889    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   213      Res: [2.8395031 3.0701866 2.8069075 3.8054332 ]  CFL:      0.1 CPUTime:   80.257    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   214      Res: [2.8598021 3.056341 2.8012361 3.771296 ]  CFL:      0.1 CPUTime:   80.623    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   215      Res: [2.8844186 3.0404251 2.7966276 3.7358059 ]  CFL:      0.1 CPUTime:   81.022    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   216      Res: [2.9115838 3.0231946 2.7922896 3.6997759 ]  CFL:      0.1 CPUTime:   81.379    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   217      Res: [2.9397804 3.0046116 2.7837301 3.662408 ]  CFL:      0.1 CPUTime:   81.739    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   218      Res: [2.9674418 2.985201 2.7733654 3.6245159 ]  CFL:      0.1 CPUTime:   82.098    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   219      Res: [2.9938078 2.9655871 2.7614586 3.5865453 ]  CFL:      0.1 CPUTime:   82.461    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   220      Res: [3.0187464 2.9457753 2.7483895 3.5487314 ]  CFL:      0.1 CPUTime:   82.822    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031077s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032548s
+KSP convergence reached at iteration: 2
+Iter:   221      Res: [3.0415027 2.9259067 2.7338914 3.5119196 ]  CFL:      0.1 CPUTime:   83.239    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   222      Res: [3.0610317 2.9061583 2.718651 3.4866412 ]  CFL:      0.1 CPUTime:   83.594    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   223      Res: [3.0786058 2.8918582 2.7044361 3.4898433 ]  CFL:      0.1 CPUTime:   83.958    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   224      Res: [3.0950449 2.8834655 2.6919139 3.5109513 ]  CFL:      0.1 CPUTime:   84.324    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   225      Res: [3.1100547 2.8797532 2.6810341 3.5419444 ]  CFL:      0.1 CPUTime:    84.69    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   226      Res: [3.12364 2.879545 2.6718911 3.5744844 ]  CFL:      0.1 CPUTime:   85.059    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   227      Res: [3.1357727 2.8813851 2.6638866 3.6042521 ]  CFL:      0.1 CPUTime:   85.429    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   228      Res: [3.1465537 2.8841867 2.657408 3.629123 ]  CFL:      0.1 CPUTime:   85.841    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   229      Res: [3.1559519 2.8869999 2.6517767 3.6487813 ]  CFL:      0.1 CPUTime:   86.214    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   230      Res: [3.1640336 2.8892997 2.6471014 3.6633502 ]  CFL:      0.1 CPUTime:   86.578    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.0308s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.035365s
+KSP convergence reached at iteration: 2
+Iter:   231      Res: [3.170951 2.8906142 2.6426735 3.673399 ]  CFL:      0.1 CPUTime:   87.055    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   232      Res: [3.1764212 2.8908667 2.6393939 3.6794101 ]  CFL:      0.1 CPUTime:   87.438    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   233      Res: [3.1808502 2.8920975 2.6429363 3.6854994 ]  CFL:      0.1 CPUTime:   88.007    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   234      Res: [3.1840321 2.8939173 2.6499459 3.6910256 ]  CFL:      0.1 CPUTime:   88.419    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   235      Res: [3.1856437 2.9166123 2.6718394 3.7264978 ]  CFL:      0.1 CPUTime:   88.781    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   236      Res: [3.1868661 2.9260043 2.6851568 3.7380006 ]  CFL:      0.1 CPUTime:   89.144    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   237      Res: [3.1873076 2.9313329 2.6944225 3.7416103 ]  CFL:      0.1 CPUTime:   89.509    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   238      Res: [3.1868811 2.933175 2.7011358 3.7394188 ]  CFL:      0.1 CPUTime:   90.013    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   239      Res: [3.1856627 2.9316634 2.7039954 3.7318294 ]  CFL:      0.1 CPUTime:   90.385    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   240      Res: [3.183545 2.9277829 2.7061388 3.7209513 ]  CFL:      0.1 CPUTime:   90.765    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030918s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032076s
+KSP convergence reached at iteration: 2
+Iter:   241      Res: [3.1805052 2.9213714 2.7054598 3.706601 ]  CFL:      0.1 CPUTime:   91.172    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   242      Res: [3.1766291 2.9129885 2.7039052 3.6898131 ]  CFL:      0.1 CPUTime:   91.524    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   243      Res: [3.1719329 2.9031679 2.7026026 3.6714156 ]  CFL:      0.1 CPUTime:   91.881    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   244      Res: [3.166386 2.8918257 2.7004185 3.6516024 ]  CFL:      0.1 CPUTime:   92.234    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   245      Res: [3.1599959 2.8792171 2.6961398 3.6303541 ]  CFL:      0.1 CPUTime:   92.587    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   246      Res: [3.1528118 2.8654732 2.6907805 3.6081238 ]  CFL:      0.1 CPUTime:   92.947    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   247      Res: [3.1448568 2.8508105 2.6842679 3.5851242 ]  CFL:      0.1 CPUTime:   93.306    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   248      Res: [3.1361511 2.8353469 2.6765526 3.5615147 ]  CFL:      0.1 CPUTime:   93.667    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   249      Res: [3.1267166 2.8191544 2.6678815 3.53736 ]  CFL:      0.1 CPUTime:   94.026    Mem: 25.2266 MB
+KSP convergence reached at iteration: 2
+Iter:   250      Res: [3.1165755 2.8024156 2.6581436 3.5128167 ]  CFL:      0.1 CPUTime:   94.382    Mem: 25.2266 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030708s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031072s
+KSP convergence reached at iteration: 2
+Iter:   251      Res: [3.1057605 2.7851538 2.6476323 3.487996 ]  CFL:      0.1 CPUTime:   94.796    Mem: 29.375 MB
+KSP convergence reached at iteration: 2
+Iter:   252      Res: [3.094286 2.7674428 2.6363844 3.4629318 ]  CFL:      0.1 CPUTime:   95.156    Mem: 29.375 MB
+KSP convergence reached at iteration: 2
+Iter:   253      Res: [3.0821842 2.7494224 2.6244707 3.4376768 ]  CFL:      0.1 CPUTime:   95.516    Mem: 29.375 MB
+KSP convergence reached at iteration: 2
+Iter:   254      Res: [3.0694762 2.7310493 2.6118442 3.4124057 ]  CFL:      0.1 CPUTime:   95.874    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   255      Res: [3.0561214 2.7124263 2.5987942 3.38804 ]  CFL:      0.1 CPUTime:   96.257    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   256      Res: [3.0421876 2.6939594 2.5856115 3.3654787 ]  CFL:      0.1 CPUTime:   96.623    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   257      Res: [3.0277006 2.676106 2.5728702 3.3456839 ]  CFL:      0.1 CPUTime:   96.983    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   258      Res: [3.0126209 2.6590914 2.5604513 3.3303931 ]  CFL:      0.1 CPUTime:   97.347    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   259      Res: [2.997063 2.6437068 2.5490064 3.3201863 ]  CFL:      0.1 CPUTime:   97.704    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   260      Res: [2.980904 2.6303966 2.5383782 3.3171989 ]  CFL:      0.1 CPUTime:   98.063    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031236s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031282s
+KSP convergence reached at iteration: 2
+Iter:   261      Res: [2.9638469 2.6210295 2.528557 3.3276192 ]  CFL:      0.1 CPUTime:   98.473    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   262      Res: [2.9467171 2.615837 2.5196076 3.3422557 ]  CFL:      0.1 CPUTime:   98.843    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   263      Res: [2.9293048 2.6140518 2.5126875 3.3597993 ]  CFL:      0.1 CPUTime:   99.201    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   264      Res: [2.9116598 2.6147481 2.5076735 3.377708 ]  CFL:      0.1 CPUTime:   99.562    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   265      Res: [2.8938042 2.6170649 2.5042439 3.3944029 ]  CFL:      0.1 CPUTime:   99.919    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   266      Res: [2.8757841 2.6202713 2.502115 3.4090529 ]  CFL:      0.1 CPUTime:  100.275    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   267      Res: [2.8576201 2.62377 2.5009927 3.4212374 ]  CFL:      0.1 CPUTime:  100.633    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   268      Res: [2.8393765 2.627129 2.5006224 3.4308974 ]  CFL:      0.1 CPUTime:  100.995    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   269      Res: [2.8210862 2.6300565 2.5008772 3.4380998 ]  CFL:      0.1 CPUTime:  101.356    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   270      Res: [2.8027912 2.6323669 2.501381 3.4429873 ]  CFL:      0.1 CPUTime:  101.726    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030995s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032394s
+KSP convergence reached at iteration: 2
+Iter:   271      Res: [2.7845352 2.6339383 2.5019853 3.4457215 ]  CFL:      0.1 CPUTime:  102.147    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   272      Res: [2.7663725 2.634744 2.5027902 3.446581 ]  CFL:      0.1 CPUTime:  102.529    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   273      Res: [2.7483196 2.6352497 2.5044123 3.4463557 ]  CFL:      0.1 CPUTime:  102.902    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   274      Res: [2.7304383 2.6365549 2.5091829 3.4467368 ]  CFL:      0.1 CPUTime:  103.267    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   275      Res: [2.7127647 2.6370573 2.5144377 3.445621 ]  CFL:      0.1 CPUTime:  103.633    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   276      Res: [2.6953432 2.6377462 2.5214266 3.444455 ]  CFL:      0.1 CPUTime:  103.991    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   277      Res: [2.6781969 2.6390001 2.5330119 3.4442443 ]  CFL:      0.1 CPUTime:  104.346    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   278      Res: [2.6614309 2.6391511 2.5417348 3.441944 ]  CFL:      0.1 CPUTime:  104.699    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   279      Res: [2.6450832 2.6386537 2.5490202 3.4384061 ]  CFL:      0.1 CPUTime:  105.053    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   280      Res: [2.6291846 2.6375164 2.5547385 3.4337059 ]  CFL:      0.1 CPUTime:  105.407    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030725s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031507s
+KSP convergence reached at iteration: 2
+Iter:   281      Res: [2.6137761 2.6358193 2.5589476 3.4280061 ]  CFL:      0.1 CPUTime:  105.818    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   282      Res: [2.5988908 2.6335319 2.561641 3.4213365 ]  CFL:      0.1 CPUTime:  106.174    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   283      Res: [2.5845721 2.6307718 2.5629469 3.4139059 ]  CFL:      0.1 CPUTime:  106.531    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   284      Res: [2.570849 2.6275184 2.5628886 3.4057426 ]  CFL:      0.1 CPUTime:  106.889    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   285      Res: [2.5577514 2.6243302 2.5618625 3.3977788 ]  CFL:      0.1 CPUTime:  107.244    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   286      Res: [2.5453307 2.6204959 2.5596196 3.3889229 ]  CFL:      0.1 CPUTime:  107.601    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   287      Res: [2.5336228 2.6169899 2.5565497 3.380692 ]  CFL:      0.1 CPUTime:  107.955    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   288      Res: [2.5227728 2.6167046 2.5526728 3.3767698 ]  CFL:      0.1 CPUTime:  108.325    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   289      Res: [2.5128271 2.6140025 2.5476396 3.3693787 ]  CFL:      0.1 CPUTime:  108.692    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   290      Res: [2.503734 2.610316 2.541712 3.3606175 ]  CFL:      0.1 CPUTime:  109.055    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031123s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032607s
+KSP convergence reached at iteration: 2
+Iter:   291      Res: [2.4954522 2.6057546 2.5349704 3.3505986 ]  CFL:      0.1 CPUTime:  109.491    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   292      Res: [2.4879287 2.600376 2.5275442 3.3395047 ]  CFL:      0.1 CPUTime:  109.847    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   293      Res: [2.4811017 2.5942655 2.5196377 3.3274843 ]  CFL:      0.1 CPUTime:  110.215    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   294      Res: [2.4748894 2.5875043 2.5109832 3.3146133 ]  CFL:      0.1 CPUTime:  110.583    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   295      Res: [2.4692136 2.5801069 2.501796 3.3010045 ]  CFL:      0.1 CPUTime:  110.942    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   296      Res: [2.4640448 2.5721874 2.4923733 3.2867975 ]  CFL:      0.1 CPUTime:  111.297    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   297      Res: [2.4592864 2.5638124 2.4825681 3.2721061 ]  CFL:      0.1 CPUTime:  111.661    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   298      Res: [2.4548814 2.5549957 2.4726401 3.2570049 ]  CFL:      0.1 CPUTime:  112.038    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   299      Res: [2.4507454 2.5457827 2.4625068 3.2416297 ]  CFL:      0.1 CPUTime:  112.402    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   300      Res: [2.4724719 2.5622884 2.4785316 3.2524051 ]  CFL:  0.10609 CPUTime:  112.764    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.029818s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031656s
+KSP convergence reached at iteration: 2
+Iter:   301      Res: [2.4941499 2.5779307 2.4943134 3.2621549 ]  CFL: 0.11255088 CPUTime:  113.181    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   302      Res: [2.5157523 2.5926303 2.5099755 3.2710792 ]  CFL: 0.11940523 CPUTime:  113.544    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   303      Res: [2.5372124 2.6064252 2.5257059 3.2794125 ]  CFL: 0.12667701 CPUTime:   113.91    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   304      Res: [2.55839 2.6192816 2.5419158 3.2875482 ]  CFL: 0.13439164 CPUTime:  114.316    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   305      Res: [2.5793226 2.6313981 2.5590274 3.2960112 ]  CFL: 0.14257609 CPUTime:  114.749    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   306      Res: [2.5997126 2.6428537 2.5774171 3.3056512 ]  CFL: 0.15125897 CPUTime:  115.184    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   307      Res: [2.6193461 2.6541905 2.599594 3.318995 ]  CFL: 0.16047064 CPUTime:  115.552    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   308      Res: [2.6385677 2.6657019 2.6233685 3.3353583 ]  CFL: 0.17024331 CPUTime:   115.91    Mem: 21.7773 MB
+KSP convergence reached at iteration: 2
+Iter:   309      Res: [2.6571928 2.6779947 2.6508049 3.356354 ]  CFL: 0.18061112 CPUTime:  116.269    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   310      Res: [2.675168 2.691049 2.6805373 3.3808038 ]  CFL: 0.19161034 CPUTime:  116.627    Mem: 21.7773 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030536s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031659s
+KSP convergence reached at iteration: 2
+Iter:   311      Res: [2.692441 2.7058922 2.7141925 3.4099593 ]  CFL: 0.20327941 CPUTime:  117.083    Mem: 25.3477 MB
+KSP convergence reached at iteration: 2
+Iter:   312      Res: [2.7090987 2.7217725 2.7475871 3.4396971 ]  CFL: 0.21565913 CPUTime:  117.507    Mem: 21.7773 MB
+KSP convergence reached at iteration: 3
+Iter:   313      Res: [2.7248618 2.7389232 2.7809799 3.4701522 ]  CFL: 0.22879277 CPUTime:  117.882    Mem: 25.3477 MB
+KSP convergence reached at iteration: 3
+Iter:   314      Res: [2.7397497 2.7569434 2.8127596 3.4993478 ]  CFL: 0.24272625 CPUTime:   118.25    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   315      Res: [2.7539855 2.7752695 2.8412768 3.5255143 ]  CFL: 0.25750828 CPUTime:   118.62    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   316      Res: [2.7671698 2.7940857 2.8676526 3.5498634 ]  CFL: 0.27319053 CPUTime:  118.988    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   317      Res: [2.7796495 2.8135023 2.8905802 3.5724064 ]  CFL: 0.28982783 CPUTime:  119.353    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   318      Res: [2.7915522 2.831639 2.9084993 3.5906394 ]  CFL: 0.30747835 CPUTime:  119.721    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   319      Res: [2.8029484 2.8491715 2.9232059 3.6067509 ]  CFL: 0.32620378 CPUTime:  120.115    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   320      Res: [2.8144413 2.8674702 2.9376422 3.6230671 ]  CFL: 0.34606959 CPUTime:  120.477    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030337s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032352s
+KSP convergence reached at iteration: 3
+Iter:   321      Res: [2.825144 2.885123 2.950352 3.6392572 ]  CFL: 0.36714523 CPUTime:  120.893    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   322      Res: [2.8360729 2.9025685 2.9655154 3.6562485 ]  CFL: 0.38950437 CPUTime:  121.257    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   323      Res: [2.847046 2.9224831 2.987007 3.6788561 ]  CFL: 0.41322519 CPUTime:  121.635    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   324      Res: [2.8583096 2.9418236 3.0062641 3.6998609 ]  CFL: 0.4383906 CPUTime:  122.007    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   325      Res: [2.8701147 2.9622768 3.026916 3.7222808 ]  CFL: 0.46508859 CPUTime:  122.373    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   326      Res: [2.8823891 2.9864507 3.053457 3.7498443 ]  CFL: 0.49341248 CPUTime:  122.737    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   327      Res: [2.8951189 3.009973 3.0711679 3.7732717 ]  CFL: 0.5234613 CPUTime:  123.119    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   328      Res: [2.9083819 3.039545 3.0927723 3.8048596 ]  CFL: 0.5553401 CPUTime:  123.475    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   329      Res: [2.9238395 3.0645057 3.1057501 3.8252707 ]  CFL: 0.58916031 CPUTime:  123.828    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   330      Res: [2.9405376 3.0902336 3.1287785 3.8484732 ]  CFL: 0.62504017 CPUTime:  124.183    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.0303s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.031579s
+KSP convergence reached at iteration: 3
+Iter:   331      Res: [2.9583248 3.1094816 3.1443851 3.8618834 ]  CFL: 0.66310512 CPUTime:  124.599    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   332      Res: [2.9762277 3.1284642 3.1657018 3.8772554 ]  CFL: 0.70348822 CPUTime:  124.957    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   333      Res: [2.9955035 3.1440205 3.1793764 3.8864542 ]  CFL: 0.74633065 CPUTime:  125.318    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   334      Res: [3.0159555 3.1615009 3.1964327 3.8988471 ]  CFL: 0.79178219 CPUTime:  125.684    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   335      Res: [3.0366254 3.1822042 3.2237735 3.9197322 ]  CFL: 0.84000173 CPUTime:   126.05    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   336      Res: [3.0591116 3.2032381 3.2522827 3.9382376 ]  CFL: 0.89115783 CPUTime:  126.419    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   337      Res: [3.0822364 3.2271511 3.2808213 3.9621516 ]  CFL: 0.94542934 CPUTime:  126.785    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   338      Res: [3.1058322 3.2452979 3.2991917 3.9739043 ]  CFL: 1.003006 CPUTime:  127.153    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   339      Res: [3.1296196 3.2626058 3.3104914 3.984907 ]  CFL: 1.0640891 CPUTime:  127.612    Mem: 29.4922 MB
+KSP convergence reached at iteration: 3
+Iter:   340      Res: [3.1540497 3.2807775 3.3171749 3.9971336 ]  CFL: 1.1288921 CPUTime:   127.98    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032187s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033523s
+KSP convergence reached at iteration: 4
+Iter:   341      Res: [3.1788704 3.3099935 3.3431792 4.0303318 ]  CFL: 1.1976416 CPUTime:  128.652    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   342      Res: [3.2070956 3.3456493 3.3795214 4.0667383 ]  CFL: 1.270578 CPUTime:  129.017    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   343      Res: [3.2333695 3.372191 3.4137466 4.0898448 ]  CFL: 1.3479562 CPUTime:  129.377    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   344      Res: [3.2577986 3.3797626 3.410419 4.0833908 ]  CFL: 1.4300467 CPUTime:  129.739    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   345      Res: [3.2785456 3.3921804 3.4247617 4.102468 ]  CFL: 1.5171366 CPUTime:  130.107    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   346      Res: [3.2942939 3.4057243 3.4432208 4.1244321 ]  CFL: 1.6095302 CPUTime:  130.478    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   347      Res: [3.3088725 3.4492063 3.5060145 4.1804775 ]  CFL: 1.7075506 CPUTime:  130.855    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   348      Res: [3.3240161 3.4757674 3.5293755 4.2003226 ]  CFL: 1.8115404 CPUTime:  131.226    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   349      Res: [3.3388773 3.4863003 3.5158357 4.2054046 ]  CFL: 1.9218632 CPUTime:   131.59    Mem: 29.4922 MB
+KSP convergence reached at iteration: 4
+Iter:   350      Res: [3.3512004 3.5078222 3.5123734 4.2359818 ]  CFL: 2.0389047 CPUTime:  132.003    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.030601s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032716s
+KSP convergence reached at iteration: 4
+Iter:   351      Res: [3.3679686 3.5755826 3.5992254 4.3148137 ]  CFL: 2.163074 CPUTime:  132.426    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   352      Res: [3.3934571 3.5934293 3.6062498 4.3093531 ]  CFL: 2.2948052 CPUTime:  132.797    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   353      Res: [3.4101017 3.5693994 3.5346655 4.2692494 ]  CFL: 2.4345588 CPUTime:  133.163    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   354      Res: [3.4264211 3.5876091 3.5923 4.298525 ]  CFL: 2.5828234 CPUTime:  133.574    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   355      Res: [3.4498564 3.6255721 3.667862 4.3238254 ]  CFL: 2.7401174 CPUTime:  133.939    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   356      Res: [3.4704925 3.5956376 3.5351344 4.263418 ]  CFL: 2.9069905 CPUTime:    134.3    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   357      Res: [3.4687796 3.5750028 3.5528651 4.2730056 ]  CFL: 3.0840262 CPUTime:  134.663    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   358      Res: [3.4674546 3.6356237 3.6921942 4.3330604 ]  CFL: 3.2718434 CPUTime:  135.031    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   359      Res: [3.4602832 3.5841668 3.5684346 4.2538691 ]  CFL: 3.4710987 CPUTime:  135.398    Mem: 29.4922 MB
+KSP convergence reached at iteration: 5
+Iter:   360      Res: [3.4552606 3.5930908 3.5967751 4.2969348 ]  CFL: 3.6824886 CPUTime:  135.771    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031546s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.03277s
+KSP convergence reached at iteration: 5
+Iter:   361      Res: [3.4606067 3.6486434 3.6574394 4.344785 ]  CFL: 3.9067522 CPUTime:  136.188    Mem: 29.4922 MB
+KSP convergence reached at iteration: 6
+Iter:   362      Res: [3.4677399 3.6546341 3.5888037 4.3516001 ]  CFL: 4.1446734 CPUTime:  136.559    Mem: 29.4922 MB
+KSP convergence reached at iteration: 6
+Iter:   363      Res: [3.4794604 3.6668604 3.6434915 4.3571839 ]  CFL: 4.397084 CPUTime:  136.929    Mem: 29.4922 MB
+KSP convergence reached at iteration: 6
+Iter:   364      Res: [3.4885624 3.6528163 3.6336072 4.3191483 ]  CFL: 4.6648664 CPUTime:  137.292    Mem: 29.4922 MB
+KSP convergence reached at iteration: 6
+Iter:   365      Res: [3.4990252 3.631677 3.5841617 4.3028863 ]  CFL: 4.9489568 CPUTime:  137.649    Mem: 29.4922 MB
+KSP convergence reached at iteration: 6
+Iter:   366      Res: [3.5111368 3.6659822 3.6377487 4.3344827 ]  CFL: 5.2503482 CPUTime:  138.014    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   367      Res: [3.5063564 3.6359947 3.6063409 4.2929207 ]  CFL: 5.5700945 CPUTime:  138.386    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   368      Res: [3.4904244 3.6002743 3.5560124 4.2731078 ]  CFL: 5.9093132 CPUTime:  138.756    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   369      Res: [3.4809966 3.6270984 3.6141128 4.2953982 ]  CFL: 6.2691904 CPUTime:  139.124    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   370      Res: [3.4789299 3.6326618 3.5999491 4.2999107 ]  CFL: 6.6509841 CPUTime:  139.497    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032476s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033151s
+KSP convergence reached at iteration: 7
+Iter:   371      Res: [3.4801722 3.6311138 3.5661076 4.3081855 ]  CFL: 7.056029 CPUTime:  139.932    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   372      Res: [3.4943655 3.6748075 3.6072965 4.3505944 ]  CFL: 7.4857412 CPUTime:  140.302    Mem: 29.4922 MB
+KSP convergence reached at iteration: 7
+Iter:   373      Res: [3.5034447 3.6624652 3.5640908 4.3174377 ]  CFL: 7.9416228 CPUTime:  140.703    Mem: 29.4922 MB
+KSP convergence reached at iteration: 8
+Iter:   374      Res: [3.5059527 3.631893 3.5419958 4.2838655 ]  CFL: 8.4252676 CPUTime:  141.062    Mem: 29.4922 MB
+KSP convergence reached at iteration: 8
+Iter:   375      Res: [3.4907377 3.6324694 3.5861336 4.2791193 ]  CFL: 8.9383664 CPUTime:  141.442    Mem: 29.4922 MB
+KSP convergence reached at iteration: 8
+Iter:   376      Res: [3.4732477 3.5989467 3.5491301 4.2276206 ]  CFL: 9.482713 CPUTime:  141.812    Mem: 29.4922 MB
+KSP convergence reached at iteration: 8
+Iter:   377      Res: [3.486324 3.5995935 3.5028729 4.2343604 ]  CFL: 10.06021 CPUTime:  142.189    Mem: 29.4922 MB
+KSP convergence reached at iteration: 9
+Iter:   378      Res: [3.4432523 3.5563257 3.5327837 4.2074622 ]  CFL: 10.672877 CPUTime:  142.559    Mem: 29.4922 MB
+KSP convergence reached at iteration: 9
+Iter:   379      Res: [3.4063293 3.5332679 3.4772223 4.1777962 ]  CFL: 11.322855 CPUTime:  142.927    Mem: 29.4922 MB
+KSP convergence reached at iteration: 9
+Iter:   380      Res: [3.3937024 3.5050519 3.4087868 4.1546007 ]  CFL: 12.012417 CPUTime:  143.408    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.056658s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.063983s
+KSP convergence reached at iteration: 9
+Iter:   381      Res: [3.3984713 3.5494801 3.4554024 4.21211 ]  CFL: 12.743973 CPUTime:  144.082    Mem: 29.4922 MB
+KSP convergence reached at iteration: 9
+Iter:   382      Res: [3.3890953 3.5294956 3.4374073 4.1796311 ]  CFL: 13.520081 CPUTime:  144.455    Mem: 29.4922 MB
+KSP convergence reached at iteration: 10
+Iter:   383      Res: [3.3763931 3.4974856 3.383508 4.1332279 ]  CFL: 14.343454 CPUTime:  144.823    Mem: 29.4922 MB
+KSP convergence reached at iteration: 10
+Iter:   384      Res: [3.3560604 3.5130089 3.4154373 4.1756627 ]  CFL: 15.216971 CPUTime:   145.19    Mem: 29.4922 MB
+KSP convergence reached at iteration: 10
+Iter:   385      Res: [3.3197638 3.4899986 3.3747924 4.1513525 ]  CFL: 16.143684 CPUTime:  145.564    Mem: 29.4922 MB
+KSP convergence reached at iteration: 9
+Iter:   386      Res: [3.2771041 3.4387536 3.3073786 4.0833375 ]  CFL: 17.126834 CPUTime:  145.941    Mem: 29.4922 MB
+KSP convergence reached at iteration: 10
+Iter:   387      Res: [3.2308859 3.3453466 3.2100346 3.9553659 ]  CFL: 18.169859 CPUTime:  146.315    Mem: 29.4922 MB
+KSP convergence reached at iteration: 11
+Iter:   388      Res: [3.1767754 3.2757165 3.1405967 3.8886373 ]  CFL: 19.276403 CPUTime:  146.692    Mem: 29.4922 MB
+KSP convergence reached at iteration: 11
+Iter:   389      Res: [3.1413295 3.2463172 3.1256691 3.8619207 ]  CFL: 20.450336 CPUTime:  147.065    Mem: 29.4922 MB
+KSP convergence reached at iteration: 11
+Iter:   390      Res: [3.1280449 3.2297705 3.0810731 3.8361565 ]  CFL: 21.695761 CPUTime:  147.442    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03113s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032097s
+KSP convergence reached at iteration: 12
+Iter:   391      Res: [3.1244445 3.2554739 3.1383178 3.8771161 ]  CFL: 23.017033 CPUTime:  147.862    Mem: 29.4922 MB
+KSP convergence reached at iteration: 11
+Iter:   392      Res: [3.0413768 3.1223368 3.0121178 3.7266218 ]  CFL: 24.418771 CPUTime:  148.229    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   393      Res: [2.973381 3.0817162 3.0067494 3.7011119 ]  CFL: 25.905874 CPUTime:  148.678    Mem: 29.4922 MB
+KSP convergence reached at iteration: 11
+Iter:   394      Res: [2.9123717 3.0445605 2.9840472 3.6750232 ]  CFL: 27.483541 CPUTime:  149.114    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   395      Res: [2.8499127 2.9645596 2.8794951 3.5844488 ]  CFL: 29.157289 CPUTime:  149.506    Mem: 29.4922 MB
+KSP convergence reached at iteration: 13
+Iter:   396      Res: [2.7791675 2.8887743 2.809945 3.5034067 ]  CFL: 30.932968 CPUTime:  149.877    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   397      Res: [2.6969503 2.8066103 2.7321896 3.4190801 ]  CFL: 32.816786 CPUTime:  150.248    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   398      Res: [2.6125486 2.7192833 2.6513466 3.3284654 ]  CFL: 34.815328 CPUTime:  150.622    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   399      Res: [2.5222854 2.6274407 2.5611492 3.2354503 ]  CFL: 36.935582 CPUTime:  150.992    Mem: 29.4922 MB
+KSP convergence reached at iteration: 12
+Iter:   400      Res: [2.4229308 2.5573846 2.4988612 3.190436 ]  CFL: 39.184958 CPUTime:  151.361    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032553s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032454s
+KSP convergence reached at iteration: 12
+Iter:   401      Res: [2.3175559 2.4395443 2.3811272 3.05669 ]  CFL: 41.571322 CPUTime:  151.782    Mem: 29.4922 MB
+KSP convergence reached at iteration: 13
+Iter:   402      Res: [2.2031996 2.3215907 2.2523336 2.9384578 ]  CFL: 44.103016 CPUTime:  152.153    Mem: 29.4922 MB
+KSP convergence reached at iteration: 13
+Iter:   403      Res: [2.0634616 2.1813868 2.1056943 2.798025 ]  CFL: 46.78889 CPUTime:  152.528    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   404      Res: [1.9201214 2.0412968 1.968147 2.6568467 ]  CFL: 49.638333 CPUTime:  152.905    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   405      Res: [1.7679108 1.8858825 1.8017151 2.5017625 ]  CFL: 52.661307 CPUTime:  153.283    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   406      Res: [1.605516 1.7219362 1.6373093 2.3370066 ]  CFL: 55.868381 CPUTime:  153.661    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   407      Res: [1.4362931 1.5521242 1.4674196 2.1667273 ]  CFL: 59.270765 CPUTime:  154.035    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   408      Res: [1.2591484 1.3746783 1.2899661 1.9889673 ]  CFL: 62.880355 CPUTime:    154.4    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   409      Res: [1.074308 1.189614 1.1045614 1.8038579 ]  CFL: 66.709769 CPUTime:  154.765    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   410      Res: [0.88165862 0.99679027 0.91108858 1.6112076 ]  CFL: 70.772394 CPUTime:   155.13    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031127s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032311s
+KSP convergence reached at iteration: 14
+Iter:   411      Res: [0.68066868 0.79567865 0.70923801 1.4103925 ]  CFL: 75.082432 CPUTime:  155.554    Mem: 29.4922 MB
+KSP convergence reached at iteration: 14
+Iter:   412      Res: [0.47062057 0.58555646 0.49843922 1.2006068 ]  CFL: 79.654953 CPUTime:  155.921    Mem: 29.4922 MB
+KSP convergence reached at iteration: 15
+Iter:   413      Res: [0.25080145 0.36569851 0.27802256 0.98107576 ]  CFL: 84.505939 CPUTime:  156.294    Mem: 29.4922 MB
+KSP convergence reached at iteration: 15
+Iter:   414      Res: [0.020563454 0.1354434 0.047328199 0.75111439 ]  CFL: 89.652351 CPUTime:  156.665    Mem: 29.4922 MB
+KSP convergence reached at iteration: 15
+Iter:   415      Res: [-0.2206559 -0.10577999 -0.19423282 0.51014566 ]  CFL: 95.112179 CPUTime:  157.033    Mem: 29.4922 MB
+KSP convergence reached at iteration: 15
+Iter:   416      Res: [-0.47336467 -0.35848587 -0.44719319 0.25765633 ]  CFL: 100.90451 CPUTime:  157.403    Mem: 29.4922 MB
+KSP convergence reached at iteration: 16
+Iter:   417      Res: [-0.73804157 -0.62315626 -0.71205444 -0.0068314524 ]  CFL: 107.0496 CPUTime:  157.778    Mem: 29.4922 MB
+KSP convergence reached at iteration: 16
+Iter:   418      Res: [-1.0151007 -0.90020914 -0.98925326 -0.28373018 ]  CFL: 113.56892 CPUTime:   158.15    Mem: 29.4922 MB
+KSP convergence reached at iteration: 16
+Iter:   419      Res: [-1.3049861 -1.1900872 -1.2792416 -0.57347854 ]  CFL: 120.48526 CPUTime:  158.522    Mem: 29.4922 MB
+KSP convergence reached at iteration: 16
+Iter:   420      Res: [-1.6081123 -1.4932068 -1.5824471 -0.87648852 ]  CFL: 127.82282 CPUTime:  158.894    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031328s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032265s
+KSP convergence reached at iteration: 17
+Iter:   421      Res: [-1.9248809 -1.8099701 -1.8992816 -1.1931587 ]  CFL: 135.60722 CPUTime:  159.321    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   422      Res: [-2.2556976 -2.1407814 -2.2301455 -1.5238912 ]  CFL: 143.8657 CPUTime:  159.695    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   423      Res: [-2.600957 -2.4860359 -2.5754421 -1.8690797 ]  CFL: 152.62713 CPUTime:  160.072    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   424      Res: [-2.9610444 -2.8461194 -2.935561 -2.2291073 ]  CFL: 161.92212 CPUTime:  160.443    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   425      Res: [-3.3363393 -3.221411 -3.3108823 -2.6043517 ]  CFL: 171.78318 CPUTime:  160.811    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   426      Res: [-3.7272154 -3.6122846 -3.7017807 -2.9951857 ]  CFL: 182.24477 CPUTime:  161.179    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   427      Res: [-4.1340403 -4.0191074 -4.1086247 -3.4019757 ]  CFL: 193.34348 CPUTime:  161.552    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   428      Res: [-4.557175 -4.4422398 -4.5317739 -3.8250791 ]  CFL: 205.11809 CPUTime:  161.924    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   429      Res: [-4.9969736 -4.8820338 -4.9715744 -4.2648559 ]  CFL: 217.60979 CPUTime:  162.293    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   430      Res: [-5.4538202 -5.3388824 -5.428438 -4.7216786 ]  CFL: 230.86222 CPUTime:  162.665    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.031224s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032304s
+KSP convergence reached at iteration: 18
+Iter:   431      Res: [-5.9278867 -5.8129424 -5.9025358 -5.1957163 ]  CFL: 244.92173 CPUTime:  163.098    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   432      Res: [-6.4203645 -6.3055125 -6.3949429 -5.688338 ]  CFL: 259.83747 CPUTime:  163.467    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   433      Res: [-6.929708 -6.814533 -6.9044184 -6.196805 ]  CFL: 275.66157 CPUTime:  163.845    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   434      Res: [-7.4584061 -7.3433489 -7.4320376 -6.7269258 ]  CFL: 292.44936 CPUTime:   164.22    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   435      Res: [-8.0132737 -7.8968912 -7.9769798 -7.2765903 ]  CFL: 310.25952 CPUTime:  164.597    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   436      Res: [-8.4690187 -8.3395288 -8.4084856 -7.6914661 ]  CFL: 329.15433 CPUTime:   164.97    Mem: 29.4922 MB
+KSP convergence reached at iteration: 16
+Iter:   437      Res: [-9.0155869 -8.7495975 -8.6486475 -8.0067614 ]  CFL: 349.19983 CPUTime:  165.337    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   438      Res: [-9.1379857 -8.8107579 -8.7490943 -8.0646485 ]  CFL: 370.4661 CPUTime:  165.712    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   439      Res: [-9.1230405 -8.8436419 -8.7273514 -8.0853276 ]  CFL: 393.02748 CPUTime:  166.094    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   440      Res: [-9.0974546 -8.8278047 -8.7164629 -8.0555106 ]  CFL: 416.96285 CPUTime:  166.481    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032312s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033925s
+KSP convergence reached at iteration: 17
+Iter:   441      Res: [-9.016907 -8.7544687 -8.7259925 -8.0254468 ]  CFL: 442.35589 CPUTime:  166.938    Mem: 29.4922 MB
+KSP convergence reached at iteration: 15
+Iter:   442      Res: [-9.0974141 -8.7957944 -8.7199132 -8.0590398 ]  CFL: 469.29537 CPUTime:  167.324    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   443      Res: [-9.1165864 -8.8557163 -8.7633277 -8.0694634 ]  CFL: 497.87545 CPUTime:  167.704    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   444      Res: [-9.0960446 -8.8668316 -8.7156209 -8.0516986 ]  CFL: 528.19607 CPUTime:  168.084    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   445      Res: [-9.1054435 -8.7953433 -8.7205175 -8.0512907 ]  CFL: 560.36321 CPUTime:  168.468    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   446      Res: [-9.0919277 -8.7960872 -8.7645662 -8.0564564 ]  CFL: 594.48933 CPUTime:  168.849    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   447      Res: [-9.0257239 -8.728845 -8.5640079 -7.9592165 ]  CFL: 630.69373 CPUTime:   169.23    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   448      Res: [-9.0759424 -8.7610985 -8.6000765 -7.9799372 ]  CFL: 669.10298 CPUTime:  169.616    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   449      Res: [-8.9325277 -8.7328421 -8.7273073 -8.0294701 ]  CFL: 709.85135 CPUTime:  170.002    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   450      Res: [-8.9960123 -8.7513443 -8.6883263 -8.0003774 ]  CFL: 753.0813 CPUTime:    170.4    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032037s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033225s
+KSP convergence reached at iteration: 20
+Iter:   451      Res: [-9.0998978 -8.8375989 -8.6378473 -8.0284383 ]  CFL: 798.94395 CPUTime:  170.843    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   452      Res: [-9.0287988 -8.7923803 -8.7054237 -8.0422162 ]  CFL: 847.59963 CPUTime:  171.228    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   453      Res: [-8.9278764 -8.7159357 -8.7143221 -7.9861199 ]  CFL: 899.21845 CPUTime:  171.613    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   454      Res: [-9.0668491 -8.7972078 -8.7380923 -8.01866 ]  CFL: 953.98085 CPUTime:  171.996    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   455      Res: [-9.0308097 -8.8106738 -8.6243567 -7.9895417 ]  CFL: 1012.0783 CPUTime:  172.377    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   456      Res: [-9.1103212 -8.8356038 -8.713001 -8.0499538 ]  CFL: 1073.7139 CPUTime:  172.764    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   457      Res: [-9.2136618 -8.9128487 -8.8132158 -8.0907164 ]  CFL: 1139.103 CPUTime:  173.148    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   458      Res: [-9.0749209 -8.8109748 -8.6374019 -7.996415 ]  CFL: 1208.4744 CPUTime:  173.535    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   459      Res: [-9.0550646 -8.7781569 -8.6818731 -8.0221922 ]  CFL: 1282.0705 CPUTime:  173.923    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   460      Res: [-9.060916 -8.792506 -8.6879645 -8.0611342 ]  CFL: 1360.1486 CPUTime:  174.308    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032759s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033472s
+KSP convergence reached at iteration: 19
+Iter:   461      Res: [-9.1642713 -8.8541208 -8.7007604 -8.069282 ]  CFL: 1442.9816 CPUTime:  174.734    Mem: 29.4922 MB
+KSP convergence reached at iteration: 21
+Iter:   462      Res: [-9.0925176 -8.8207907 -8.7342858 -8.0684916 ]  CFL: 1530.8592 CPUTime:  175.123    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   463      Res: [-8.843838 -8.6938084 -8.7367602 -8.0041883 ]  CFL: 1624.0885 CPUTime:  175.514    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   464      Res: [-8.8852344 -8.7060535 -8.7188368 -8.0203666 ]  CFL: 1722.9955 CPUTime:  175.888    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   465      Res: [-8.9481478 -8.7460931 -8.6195665 -8.0015922 ]  CFL: 1827.926 CPUTime:  176.267    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   466      Res: [-8.9973793 -8.752345 -8.6378639 -7.9498308 ]  CFL: 1939.2467 CPUTime:  176.695    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   467      Res: [-9.0906687 -8.7885926 -8.6431941 -8.0138789 ]  CFL: 2057.3468 CPUTime:  177.078    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   468      Res: [-8.9794354 -8.7130009 -8.5953781 -7.9758497 ]  CFL: 2182.6392 CPUTime:  177.463    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   469      Res: [-9.1121541 -8.8294619 -8.7782065 -8.0864413 ]  CFL: 2315.5619 CPUTime:   177.85    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   470      Res: [-8.9266377 -8.6908986 -8.6357888 -7.9565444 ]  CFL: 2456.5796 CPUTime:  178.246    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.037323s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.038847s
+KSP convergence reached at iteration: 19
+Iter:   471      Res: [-9.0167209 -8.7905557 -8.647926 -8.0052256 ]  CFL: 2606.1853 CPUTime:  178.719    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   472      Res: [-9.0895202 -8.8101816 -8.708165 -8.0654288 ]  CFL: 2764.902 CPUTime:    179.1    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   473      Res: [-9.0083375 -8.7597655 -8.6061539 -7.9666835 ]  CFL: 2933.2846 CPUTime:  179.485    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   474      Res: [-9.1195111 -8.8227371 -8.6557287 -8.0112569 ]  CFL: 3111.9216 CPUTime:  179.876    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   475      Res: [-9.1205585 -8.7828509 -8.69706 -8.0037946 ]  CFL: 3301.4376 CPUTime:  180.264    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   476      Res: [-9.0273612 -8.7543353 -8.6609096 -8.0131106 ]  CFL: 3502.4952 CPUTime:   180.65    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   477      Res: [-9.0197605 -8.7624915 -8.6680614 -8.0145497 ]  CFL: 3715.7971 CPUTime:  181.033    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   478      Res: [-9.0105041 -8.7760061 -8.6240623 -7.9833366 ]  CFL: 3942.0892 CPUTime:  181.457    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   479      Res: [-9.2083494 -8.8589094 -8.7039254 -8.0748182 ]  CFL: 4182.1624 CPUTime:  181.834    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   480      Res: [-8.9856599 -8.7419062 -8.6333544 -8.0018273 ]  CFL: 4436.8561 CPUTime:  182.242    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032005s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033628s
+KSP convergence reached at iteration: 21
+Iter:   481      Res: [-9.1394036 -8.8453622 -8.7162459 -8.0867645 ]  CFL: 4707.0606 CPUTime:  182.691    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   482      Res: [-9.0300925 -8.7615843 -8.6348066 -7.9787133 ]  CFL: 4993.7206 CPUTime:  183.075    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   483      Res: [-9.1252982 -8.8171142 -8.6973812 -8.0507265 ]  CFL: 5297.8382 CPUTime:  183.452    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   484      Res: [-9.0953742 -8.7848552 -8.6597257 -8.0229331 ]  CFL: 5620.4766 CPUTime:  183.831    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   485      Res: [-9.0495139 -8.7760661 -8.6242787 -7.9959396 ]  CFL: 5962.7636 CPUTime:  184.287    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   486      Res: [-9.0148501 -8.7660567 -8.629291 -7.9940163 ]  CFL: 6325.8959 CPUTime:  184.694    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   487      Res: [-9.1850936 -8.8621418 -8.7038676 -8.0741087 ]  CFL: 6711.1429 CPUTime:  185.071    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   488      Res: [-9.0956519 -8.8444187 -8.6915091 -8.0390294 ]  CFL: 7119.8515 CPUTime:  185.453    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   489      Res: [-8.9841525 -8.7310174 -8.6422777 -7.9541532 ]  CFL: 7553.4505 CPUTime:   185.83    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   490      Res: [-9.0241109 -8.7366246 -8.6005 -7.9758684 ]  CFL: 8013.4556 CPUTime:  186.228    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032253s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.034765s
+KSP convergence reached at iteration: 20
+Iter:   491      Res: [-8.8990198 -8.6838704 -8.5949888 -7.9604686 ]  CFL: 8501.4751 CPUTime:  186.682    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   492      Res: [-9.0355062 -8.7857701 -8.7014291 -8.0473106 ]  CFL: 9019.2149 CPUTime:    187.1    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   493      Res: [-8.9245899 -8.7039659 -8.6168574 -7.932832 ]  CFL: 9568.4851 CPUTime:  187.477    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   494      Res: [-8.9770669 -8.7512704 -8.6586281 -8.0047258 ]  CFL:    10000 CPUTime:  187.864    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   495      Res: [-9.0355419 -8.7711957 -8.704042 -8.0464887 ]  CFL:    10000 CPUTime:  188.296    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   496      Res: [-8.9213082 -8.7521523 -8.6535843 -8.0164742 ]  CFL:    10000 CPUTime:   188.68    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   497      Res: [-8.837146 -8.6500405 -8.5417446 -7.9089834 ]  CFL:    10000 CPUTime:   189.09    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   498      Res: [-8.9396199 -8.716614 -8.5330048 -7.9371287 ]  CFL:    10000 CPUTime:  189.478    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   499      Res: [-8.7518928 -8.6014644 -8.5582381 -7.8776577 ]  CFL:    10000 CPUTime:  189.864    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   500      Res: [-8.7426364 -8.587852 -8.6130756 -7.8915315 ]  CFL:    10000 CPUTime:  190.256    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.03249s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.03419s
+KSP convergence reached at iteration: 21
+Iter:   501      Res: [-8.9648526 -8.7564357 -8.5794301 -7.9934996 ]  CFL:    10000 CPUTime:  190.702    Mem: 29.4922 MB
+KSP convergence reached at iteration: 21
+Iter:   502      Res: [-8.9368135 -8.7175389 -8.6430684 -7.9871812 ]  CFL:    10000 CPUTime:  191.082    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   503      Res: [-9.0845621 -8.8156691 -8.7408891 -8.0494579 ]  CFL:    10000 CPUTime:  191.462    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   504      Res: [-9.109008 -8.8551071 -8.7302297 -8.0790888 ]  CFL:    10000 CPUTime:  191.903    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   505      Res: [-9.1595659 -8.8506274 -8.7358141 -8.0714124 ]  CFL:    10000 CPUTime:   192.29    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   506      Res: [-9.1532785 -8.7939357 -8.6917983 -8.0319586 ]  CFL:    10000 CPUTime:  192.673    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   507      Res: [-8.988896 -8.7476769 -8.6794095 -8.0146772 ]  CFL:    10000 CPUTime:  193.048    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   508      Res: [-9.0802928 -8.782888 -8.6784222 -8.029959 ]  CFL:    10000 CPUTime:  193.421    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   509      Res: [-8.9603359 -8.7690427 -8.6723952 -8.0323436 ]  CFL:    10000 CPUTime:  193.801    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   510      Res: [-9.0143857 -8.7709331 -8.6629706 -8.0146787 ]  CFL:    10000 CPUTime:  194.187    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032112s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033236s
+KSP convergence reached at iteration: 20
+Iter:   511      Res: [-8.878747 -8.6836151 -8.6452259 -7.9549385 ]  CFL:    10000 CPUTime:  194.632    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   512      Res: [-8.909049 -8.7054856 -8.5627301 -7.9542602 ]  CFL:    10000 CPUTime:  195.017    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   513      Res: [-9.0471919 -8.7786933 -8.657568 -7.9982422 ]  CFL:    10000 CPUTime:  195.396    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   514      Res: [-8.819893 -8.6515652 -8.6383133 -7.950133 ]  CFL:    10000 CPUTime:  195.774    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   515      Res: [-8.834454 -8.6590555 -8.6051966 -7.9521821 ]  CFL:    10000 CPUTime:  196.154    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   516      Res: [-9.0793394 -8.7964595 -8.7182705 -8.070448 ]  CFL:    10000 CPUTime:   196.53    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   517      Res: [-8.8833164 -8.7150885 -8.6333852 -8.0106913 ]  CFL:    10000 CPUTime:  196.905    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   518      Res: [-9.0717614 -8.7882001 -8.6812957 -8.0306573 ]  CFL:    10000 CPUTime:  197.278    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   519      Res: [-9.0071567 -8.7276227 -8.6437199 -7.9692849 ]  CFL:    10000 CPUTime:  197.654    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   520      Res: [-8.9290194 -8.6843185 -8.6563109 -7.9606147 ]  CFL:    10000 CPUTime:  198.055    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.040758s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.042516s
+KSP convergence reached at iteration: 20
+Iter:   521      Res: [-8.8997677 -8.7285288 -8.693129 -7.9647188 ]  CFL:    10000 CPUTime:   198.61    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   522      Res: [-9.0628109 -8.7765101 -8.6590665 -8.0232937 ]  CFL:    10000 CPUTime:  199.038    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   523      Res: [-8.9251582 -8.7243409 -8.7008653 -8.0018939 ]  CFL:    10000 CPUTime:   199.44    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   524      Res: [-9.0181876 -8.7679136 -8.7459783 -8.0114725 ]  CFL:    10000 CPUTime:  199.838    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   525      Res: [-9.0195204 -8.7531335 -8.6527772 -7.9820559 ]  CFL:    10000 CPUTime:  200.233    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   526      Res: [-8.9149337 -8.7237807 -8.6208186 -7.9548159 ]  CFL:    10000 CPUTime:   200.63    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   527      Res: [-8.9982794 -8.7620706 -8.6300865 -7.9706263 ]  CFL:    10000 CPUTime:  201.026    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   528      Res: [-9.0361213 -8.7908775 -8.6533137 -8.0076569 ]  CFL:    10000 CPUTime:   201.42    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   529      Res: [-9.0463184 -8.8116712 -8.6997838 -8.0516266 ]  CFL:    10000 CPUTime:  201.817    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   530      Res: [-9.0178182 -8.7760192 -8.682526 -8.0358613 ]  CFL:    10000 CPUTime:  202.215    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.034271s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.03495s
+KSP convergence reached at iteration: 18
+Iter:   531      Res: [-8.9302066 -8.7107242 -8.561563 -7.9498421 ]  CFL:    10000 CPUTime:  202.671    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   532      Res: [-8.9723838 -8.7451234 -8.6065079 -7.9757716 ]  CFL:    10000 CPUTime:  203.071    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   533      Res: [-8.9634912 -8.758143 -8.6819996 -8.012861 ]  CFL:    10000 CPUTime:  203.468    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   534      Res: [-9.0387158 -8.8180222 -8.6866514 -8.0533515 ]  CFL:    10000 CPUTime:  203.866    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   535      Res: [-9.1814257 -8.8702315 -8.7497423 -8.0848439 ]  CFL:    10000 CPUTime:  204.261    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   536      Res: [-8.9770315 -8.7870929 -8.6948569 -8.0407352 ]  CFL:    10000 CPUTime:  204.662    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   537      Res: [-9.0863627 -8.8289594 -8.7105938 -8.0554771 ]  CFL:    10000 CPUTime:  205.063    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   538      Res: [-9.0882264 -8.8124098 -8.7305422 -8.0537461 ]  CFL:    10000 CPUTime:  205.461    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   539      Res: [-9.1071206 -8.781305 -8.6741379 -7.9597565 ]  CFL:    10000 CPUTime:  205.863    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   540      Res: [-9.0759979 -8.8014275 -8.6859853 -8.0264949 ]  CFL:    10000 CPUTime:  206.267    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.035081s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.035704s
+KSP convergence reached at iteration: 18
+Iter:   541      Res: [-9.060471 -8.802853 -8.6618873 -8.020145 ]  CFL:    10000 CPUTime:  206.727    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   542      Res: [-8.8187372 -8.6584882 -8.6066846 -7.9597891 ]  CFL:    10000 CPUTime:  207.121    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   543      Res: [-8.9113554 -8.6931787 -8.5685339 -7.9546202 ]  CFL:    10000 CPUTime:  207.516    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   544      Res: [-9.1453556 -8.8037981 -8.6836842 -8.0626318 ]  CFL:    10000 CPUTime:  207.914    Mem: 29.4922 MB
+KSP convergence reached at iteration: 21
+Iter:   545      Res: [-8.9823242 -8.7597164 -8.6743188 -8.0340767 ]  CFL:    10000 CPUTime:  208.312    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   546      Res: [-8.9136076 -8.7226596 -8.6918654 -7.9751662 ]  CFL:    10000 CPUTime:  208.708    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   547      Res: [-9.1005533 -8.8278846 -8.7227704 -8.0467745 ]  CFL:    10000 CPUTime:  209.103    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   548      Res: [-9.1431714 -8.840501 -8.7116002 -8.076946 ]  CFL:    10000 CPUTime:  209.498    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   549      Res: [-8.9664916 -8.7148117 -8.6100914 -7.9679588 ]  CFL:    10000 CPUTime:  209.894    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   550      Res: [-9.0573207 -8.7774623 -8.6623563 -7.9980956 ]  CFL:    10000 CPUTime:  210.292    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.033553s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.034951s
+KSP convergence reached at iteration: 19
+Iter:   551      Res: [-9.1372228 -8.8414434 -8.7325522 -8.0499509 ]  CFL:    10000 CPUTime:  210.747    Mem: 29.4922 MB
+KSP convergence reached at iteration: 17
+Iter:   552      Res: [-9.0944986 -8.8073283 -8.6342433 -7.9924941 ]  CFL:    10000 CPUTime:  211.141    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   553      Res: [-9.070474 -8.7854728 -8.6951748 -8.0185925 ]  CFL:    10000 CPUTime:  211.538    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   554      Res: [-8.9825677 -8.7724828 -8.6452005 -8.0430705 ]  CFL:    10000 CPUTime:  211.937    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   555      Res: [-9.1234305 -8.8282121 -8.7358911 -8.0651372 ]  CFL:    10000 CPUTime:  212.334    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   556      Res: [-8.9595769 -8.7385703 -8.7056373 -8.0208692 ]  CFL:    10000 CPUTime:  212.732    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   557      Res: [-8.9325546 -8.7062276 -8.6035956 -7.9496479 ]  CFL:    10000 CPUTime:   213.13    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   558      Res: [-9.1181822 -8.8539691 -8.6752793 -8.0345005 ]  CFL:    10000 CPUTime:  213.529    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   559      Res: [-9.0402075 -8.8148275 -8.7301314 -8.0634004 ]  CFL:    10000 CPUTime:  213.935    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   560      Res: [-8.9782378 -8.7577124 -8.6080843 -8.0000901 ]  CFL:    10000 CPUTime:  214.329    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.033312s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.034985s
+KSP convergence reached at iteration: 20
+Iter:   561      Res: [-8.9918042 -8.7377199 -8.6047621 -7.9839119 ]  CFL:    10000 CPUTime:  214.786    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   562      Res: [-9.0199561 -8.7994311 -8.7117882 -8.0324736 ]  CFL:    10000 CPUTime:  215.183    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   563      Res: [-9.2051863 -8.9005513 -8.7590231 -8.1166492 ]  CFL:    10000 CPUTime:  215.571    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   564      Res: [-9.0588537 -8.7879683 -8.6826316 -8.036456 ]  CFL:    10000 CPUTime:  215.959    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   565      Res: [-8.9664315 -8.7560786 -8.5964572 -7.9854043 ]  CFL:    10000 CPUTime:  216.351    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   566      Res: [-9.0436541 -8.7898842 -8.6295234 -8.0195156 ]  CFL:    10000 CPUTime:  216.734    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   567      Res: [-8.8565331 -8.6810614 -8.6707478 -7.9812663 ]  CFL:    10000 CPUTime:  217.117    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   568      Res: [-8.765311 -8.5912426 -8.6239468 -7.9057246 ]  CFL:    10000 CPUTime:  217.502    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   569      Res: [-8.8687882 -8.6884415 -8.6324717 -7.9619546 ]  CFL:    10000 CPUTime:   217.92    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   570      Res: [-8.8431395 -8.6764108 -8.5982504 -7.9219318 ]  CFL:    10000 CPUTime:  218.304    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.0317s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.032323s
+KSP convergence reached at iteration: 19
+Iter:   571      Res: [-9.0665157 -8.8165866 -8.6262681 -8.0069622 ]  CFL:    10000 CPUTime:  218.735    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   572      Res: [-9.0123929 -8.7900003 -8.7199212 -8.0365407 ]  CFL:    10000 CPUTime:  219.112    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   573      Res: [-9.0551833 -8.7739491 -8.6683052 -8.0343728 ]  CFL:    10000 CPUTime:  219.496    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   574      Res: [-9.0603028 -8.7925962 -8.6844955 -8.0117177 ]  CFL:    10000 CPUTime:  219.879    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   575      Res: [-9.0225287 -8.7971783 -8.7066966 -8.0315495 ]  CFL:    10000 CPUTime:  220.389    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   576      Res: [-8.8197453 -8.6405431 -8.6346752 -7.9427726 ]  CFL:    10000 CPUTime:  220.774    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   577      Res: [-8.8755993 -8.6933807 -8.6012491 -7.9422969 ]  CFL:    10000 CPUTime:  221.144    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   578      Res: [-9.0867548 -8.8258876 -8.7297063 -8.0353985 ]  CFL:    10000 CPUTime:  221.518    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   579      Res: [-9.0514971 -8.8050424 -8.7430086 -8.0393765 ]  CFL:    10000 CPUTime:  222.006    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   580      Res: [-9.0461933 -8.7799672 -8.8041631 -8.0572295 ]  CFL:    10000 CPUTime:  222.485    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.0322s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033311s
+KSP convergence reached at iteration: 21
+Iter:   581      Res: [-8.9822742 -8.7737135 -8.6721466 -8.0263904 ]  CFL:    10000 CPUTime:   222.93    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   582      Res: [-8.8962146 -8.6693725 -8.5728014 -7.9556947 ]  CFL:    10000 CPUTime:  223.316    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   583      Res: [-9.0195184 -8.8238577 -8.6964141 -8.0414407 ]  CFL:    10000 CPUTime:  223.694    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   584      Res: [-9.0359203 -8.7588482 -8.7151309 -8.0006136 ]  CFL:    10000 CPUTime:  224.079    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   585      Res: [-9.1190962 -8.8131863 -8.6356082 -8.0096508 ]  CFL:    10000 CPUTime:  224.461    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   586      Res: [-8.8434979 -8.6789855 -8.6079162 -7.9520603 ]  CFL:    10000 CPUTime:  224.845    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   587      Res: [-8.8732598 -8.6834229 -8.6094298 -7.9694293 ]  CFL:    10000 CPUTime:  225.227    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   588      Res: [-8.9882015 -8.7974361 -8.652636 -8.0107344 ]  CFL:    10000 CPUTime:  225.668    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   589      Res: [-8.9722961 -8.7263802 -8.6355884 -7.9832615 ]  CFL:    10000 CPUTime:  226.114    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   590      Res: [-9.1117 -8.8340261 -8.7056402 -8.0496716 ]  CFL:    10000 CPUTime:  226.504    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032365s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.034498s
+KSP convergence reached at iteration: 19
+Iter:   591      Res: [-9.0787189 -8.8138501 -8.6884142 -8.0518495 ]  CFL:    10000 CPUTime:  226.952    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   592      Res: [-8.9885072 -8.758987 -8.7302431 -7.9930235 ]  CFL:    10000 CPUTime:  227.335    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   593      Res: [-9.0526993 -8.7683744 -8.6197516 -7.9678815 ]  CFL:    10000 CPUTime:  227.723    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   594      Res: [-9.1741867 -8.8372623 -8.7372142 -8.0705196 ]  CFL:    10000 CPUTime:  228.234    Mem: 29.4922 MB
+KSP convergence reached at iteration: 20
+Iter:   595      Res: [-9.1731792 -8.8652901 -8.7546065 -8.1139834 ]  CFL:    10000 CPUTime:  228.619    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   596      Res: [-8.9372626 -8.7179681 -8.649731 -7.9829461 ]  CFL:    10000 CPUTime:      229    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   597      Res: [-8.8947762 -8.6822096 -8.6514553 -7.9494506 ]  CFL:    10000 CPUTime:  229.381    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   598      Res: [-9.1835004 -8.7954628 -8.6962854 -8.0140039 ]  CFL:    10000 CPUTime:  229.765    Mem: 29.4922 MB
+KSP convergence reached at iteration: 18
+Iter:   599      Res: [-9.1820052 -8.8172004 -8.6517622 -8.0095207 ]  CFL:    10000 CPUTime:  230.192    Mem: 29.4922 MB
+KSP convergence reached at iteration: 19
+Iter:   600      Res: [-8.8975281 -8.6817252 -8.6386639 -7.9514386 ]  CFL:    10000 CPUTime:  230.579    Mem: 29.4922 MB
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.032989s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033661s
+SubSystem WallTime: 232.111s
+#
+###### UNSETUP PHASE ################
+#
+Total Number Iter: 600 Reached Residual: -8.89753 and took: 3 min 50.632 sec
+Writing solution to: ./CFresults/cyl_Pg-P0.plt
+Writing took 0.039762s
+ParCFmeshFileWriter::writeToFile() => IO rank is 0
+Nodes written 
+States written 
+Writing solution to: ./CFresults/cyl_Pg-P0.CFmesh
+Writing took 0.033434s
+-------------------------------------------------------------
+#
+###### SOCKETS UNPLUG PHASE #########
+#
+#
+###### DESTRUCTION SUBSYSTEM PHASE #########
+#
+Terminated PETSc
+-------------------------------------------------------------
+COOLFluiD Environment Terminated
+-------------------------------------------------------------
