@@ -1,0 +1,8 @@
+!NAME nitrogen2  
+!NSP  2      
+!SPECIES N N2
+!MM(kgomol) 14.0067d-3 28.0134d-3
+!HF(Jokg) 3.361377055d7 0.d0
+!THEV(K) 0.0d0 3392.7d0
+!GAMS 1.66666666666666d0 1.4d0
+!TYPE A B

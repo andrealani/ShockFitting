@@ -1,0 +1,8 @@
+!NAME n2n  
+!NSP  2      
+!SPECIES N2 N
+!MM(kgomol) 28.0d-3 14.0d-3
+!HF(Jokg) 0.d0 3.3778802866d7 
+!THEV(K) 3393.0d0 0.d0
+!GAMS 1.4d0 1.66666666666666d0 
+!TYPE B A

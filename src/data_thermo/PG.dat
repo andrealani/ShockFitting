@@ -1,0 +1,8 @@
+!NAME PG  
+!NSP  2      
+!SPECIES A B
+!MM(kgomol) 28.96d-3 1.d0
+!HF(Jokg) 0.d0 0.d0
+!THEV(K) 0.0d0 0.d0
+!GAMS 1.4d0 1.4d0
+!TYPE B B
