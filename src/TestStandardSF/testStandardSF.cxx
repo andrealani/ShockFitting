@@ -32,7 +32,7 @@ int main (int argc, char** argv)
   testDir.at(7) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
 
   // number of executing test
-  const unsigned i = 4;
+  const unsigned i = 0;
 
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 

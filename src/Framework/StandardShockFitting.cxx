@@ -264,7 +264,7 @@ void StandardShockFitting::process()
    }
 
    m_triangleToCFmesh->convert();
-
+exit(1);
    cout << "_________________________________________________________________\n\n";
 
    m_COOLFluiD->call();
