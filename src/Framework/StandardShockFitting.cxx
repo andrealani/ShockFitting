@@ -193,12 +193,12 @@ void StandardShockFitting::process()
    cout << "_________________________________________________\n\n";
    cout << "Creating starting SF files from the captured solution \n\n";
 
-   m_createshockfile->convert();
+//   m_createshockfile->convert();
    m_createTriangleFiles->convert();
 
    m_callTriangle->generate(string("na00.node"));
    cout << ".................................................\n";
-
+exit(1);
    system(string("mv na00.poly na99.poly").c_str());
   }
 
@@ -264,7 +264,7 @@ void StandardShockFitting::process()
    }
 
    m_triangleToCFmesh->convert();
-exit(1);
+//exit(1);
    cout << "_________________________________________________________________\n\n";
 
    m_COOLFluiD->call();

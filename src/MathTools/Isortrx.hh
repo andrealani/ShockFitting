@@ -31,6 +31,9 @@ public:
   /// Constructor
   Isortrx (std::vector <int>, const unsigned*);
 
+  /// Constructor
+  Isortrx (std::vector <int>, unsigned);
+
   /// Destructor
   ~Isortrx();
 

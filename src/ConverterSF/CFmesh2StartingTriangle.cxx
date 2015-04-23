@@ -142,10 +142,10 @@ void CFmesh2StartingTriangle::readCFmeshFmt()
    ++LSKIP; } while(skipver != "!NB_DIM");
 
   file.open(string(m_meshInputfile).c_str());
- // read !COOLFLUID_VERSION coolfluidVersion
- // read !COOLFLUID_SVNVERSION coolfluidSvnVersion
- // read !CFMESH_FORMAT_VERSIONE cfmeshFmtversion
- while(ISKIP<(LSKIP)) { file >> skipver >> dummy;
+  // read !COOLFLUID_VERSION coolfluidVersion
+  // read !COOLFLUID_SVNVERSION coolfluidSvnVersion
+  // read !CFMESH_FORMAT_VERSION cfmeshFmtversion
+  while(ISKIP<(LSKIP)) { file >> skipver >> dummy;
                           ++ISKIP;      }
   file >> dummy >> ndim;                              // read !NB_DIM    ndim
   file >> dummy >> ndof;                              // read !NB_EQ     ndof

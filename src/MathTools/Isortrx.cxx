@@ -4,6 +4,7 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
+#include <iostream>
 #include <cmath>
 #include <vector>
 #include "Isortrx.hh"
@@ -27,6 +28,15 @@ Isortrx::Isortrx (vector <int> data, const unsigned* n)
 
 //--------------------------------------------------------------------------//
 
+Isortrx::Isortrx (vector <int> data, unsigned n)
+{
+ DATA.resize(data.size());
+ DATA = data;
+ N = n;
+}
+
+//--------------------------------------------------------------------------//
+
 Isortrx::~Isortrx()
 {
 }
@@ -46,7 +56,6 @@ vector <int> Isortrx::callIsortrx()
 
   LSTK.resize(31);
   RSTK.resize(31);
-
 
   const int M = 9;
 

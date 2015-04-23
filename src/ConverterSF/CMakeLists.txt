@@ -15,12 +15,16 @@ DummyConverter.cxx
 DummyConverter.hh
 ShockFileConverter.cxx
 ShockFileConverter.hh
+Tecplot2StartingTriangle.cxx
+Tecplot2StartingTriangle.hh
 Triangle2CFmesh.cxx
 Triangle2CFmeshFreez.cxx
 Triangle2CFmeshFreez.hh
 Triangle2CFmeshFVM.cxx
 Triangle2CFmeshFVM.hh
 Triangle2CFmesh.hh
+Triangle2Tecplot.cxx
+Triangle2Tecplot.hh
 )
 
 LIST ( APPEND ConverterSF_libs Framework SConfig MathTools)

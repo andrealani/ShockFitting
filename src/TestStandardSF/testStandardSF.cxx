@@ -26,13 +26,14 @@ int main (int argc, char** argv)
   testDir.at(1) = "CircularCylinder_Pg_inv_N_M20";
   testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
   testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
-  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6";
+//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6";
+  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
   testDir.at(5) = "CircularCylinder_Pg_inv_N_M6";
   testDir.at(6) = "CircularCylinder_Pg_vis_Bx_M17";
   testDir.at(7) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
 
   // number of executing test
-  const unsigned i = 0;
+  const unsigned i = 4;
 
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
