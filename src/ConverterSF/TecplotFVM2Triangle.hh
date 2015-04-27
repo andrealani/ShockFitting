@@ -4,17 +4,16 @@
 // GNU Lesser General Public License version 3 (LGPLv3).
 // See doc/lgpl.txt and doc/gpl.txt for the license text.
 
-#ifndef ShockFitting_Triangle2Tecplot_hh
-#define ShockFitting_Triangle2Tecplot_hh
+#ifndef ShockFitting_TecplotFVM2Triangle_hh
+#define ShockFitting_TecplotFVM2Triangle_hh
 
 //----------------------------------------------------------------------------//
 
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include "Framework/Converter.hh"
 #include "MathTools/Array2D.hh"
-#include "VariableTransformerSF/Param2Prim.hh"
+#include "VariableTransformerSF/Prim2Param.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -24,26 +23,24 @@ namespace ShockFitting {
 
 //----------------------------------------------------------------------------//
 
-/// This class defines Triangle2Tecplot, whose task is to make conversion
-/// from Triangle mesh generator format to Tecplot ASCII files format.
-/// The new values read on triangles files are stored in new arrays to not
-/// overwrite the old mesh status.
-/// These new values are pushed back at the end of the arrays of the old mesh
-/// in the fortran version these new arrays are referred to index "1"
-/// (ex: ZROE(1))
-/// According to the Standard ShockFitting version ('original' or 
-/// 'optimized') the reading and the writing objects are (or not) 
-/// demanded to operate
+/// This class defines a TecplotFVM2Triangle, whose task is to make conversion
+/// from Tecplot format to Triangle mesh generator format
+/// the connectivity is read from .CFmesh file because COOLFluiD changes
+/// the cell nodes when converting from Tecplot format and therefore the
+/// cfout.plt has different cell nodes compared to the cfin.plt
+/// while the LIST_STATE is read from the Tecplot file
+/// It is used for the Finite Volume Method case and it differs from the
+/// Tecplot2Triangle because of the .CFmesh file format read
 
-class Triangle2Tecplot : public Converter {
+class TecplotFVM2Triangle : public Converter {
 public:
 
   /// Constructor
   /// @param objectName the concrete class name
-  Triangle2Tecplot(const std::string& objectName);
+  TecplotFVM2Triangle(const std::string& objectName);
 
   /// Destructor
-  virtual ~Triangle2Tecplot();
+  virtual ~TecplotFVM2Triangle();
 
   /// Set up this object before its first use
   virtual void setup();
@@ -63,14 +60,21 @@ protected: // functions
 
 private: // helper functions
 
-  /// return the class name
-  std::string getClassName() { return "Triangle2Tecplot"; }
+  /// read Tecplot format file
+  void readTecplotFmt();
 
-  /// read triangle mesh generator format file
-  void readTriangleFmt();
+  /// resize vectors of the MeshData pattern with the new values read on Tecplot file
+  /// and assign the starting pointers for arrays 2D
+  void resizeVectors();
 
-  /// write CFmesh format file
-  void writeTecplotFmt();
+  /// fill nodcod vector
+  void setNodcod();
+
+  /// count number of boundary points
+  void countnbBoundaryNodes();
+
+  /// write Triangle format file
+  void writeTriangleFmt();
 
   /// assign variables used in ReadTrianleFmt to MeshData pattern
   void setMeshData();
@@ -78,7 +82,7 @@ private: // helper functions
   /// assign variables used in ReadTrianleFmt to PhysicsData pattern
   void setPhysicsData();
 
-  /// de-allocate dynamic arrays
+  /// de-allocate the dynamic arrays
   void freeArray();
 
 private: // data
@@ -86,20 +90,23 @@ private: // data
   /// number of degrees of freedom
   unsigned* ndof;
 
-  /// number of vertices
+  /// number of vertices for each element
   unsigned* nvt;
-
-  /// number of species
-  unsigned *nsp;
 
   /// number of mesh points
   std::vector<unsigned>* npoin;
-
+  
   /// number of mesh elements
   std::vector<unsigned>* nelem;
 
   /// number of boundary faces
   std::vector<unsigned>* nbfac;
+
+  /// number of boundary points
+  std::vector<unsigned>* nbpoin;
+
+  /// number of holes
+  std::vector<unsigned>* nhole;
 
   /// mesh points status
   std::vector <double>* zroeVect;
@@ -107,22 +114,19 @@ private: // data
   /// mesh points coordinates
   std::vector <double>* coorVect;
 
-  /// code characterizing mesh nodes
-//  std::vector<int>* nodcod;
-
   /// vector characterizing nodes elements (assignable to MeshData)
   std::vector<int>* celnodVect;
-
-  /// vector characterizing mesh elements (assignable to MeshData)
-  std::vector<int>* celcelVect;
 
   /// vector characterizing boundary faces (assignable to MeshData)
   std::vector<int>* bndfacVect;
 
-  /// vector storing boundary edges colours
-  std::vector<int>* ICLR;
+  /// vector characterizing elements (assignable to MeshData)
+  std::vector<int>* celcelVect;
 
-  /// name of the current file
+  /// code characterizing mesh points
+  std::vector<int>* nodcod;
+
+  /// name of current file
   std::stringstream* fname;
 
   /// mesh points coordinates (in array storing)
@@ -144,7 +148,10 @@ private: // data
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face
   /// bndfac(2)(i-face) boundary marker of i-boundary face
-  Array2D <int>* bndfac;
+  Array2D <int>* bndfac;  
+
+  // vector of TRS_NAME strings
+  std::vector<std::string> namebnd;
 
   /// dummy variables to store array dimension
   unsigned totsize;
@@ -152,11 +159,9 @@ private: // data
   /// dummy variable to store array starting pointer
   unsigned start;
 
-  /// string for the additional info on the shock boundary
-  std::string m_boundary;
-
   /// command object transforming variables
-  PAIR_TYPE(VariableTransformer) m_param2prim;
+  PAIR_TYPE(VariableTransformer) m_prim2param;
+
 };
 
 //----------------------------------------------------------------------------//
@@ -165,4 +170,4 @@ private: // data
 
 //----------------------------------------------------------------------------//
 
-#endif // ShockFitting_Triangle2Tecplot_hh
+#endif // ShockFitting_TecplotFVM2Triangle_hh

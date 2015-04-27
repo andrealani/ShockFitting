@@ -153,9 +153,6 @@ void Triangle2Tecplot::readTriangleFmt()
   zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
   coorVect->resize(PhysicsInfo::getnbDim() * totsize);
 
-  nodcod->resize(npoin->at(1) + 2 * PhysicsInfo::getnbShMax() *
-                 PhysicsInfo::getnbShPointsMax());
-
   // assign start pointers for the zroe and XY arrays
   start = PhysicsInfo::getnbDim() * 
           (npoin->at(0) + 2 * 
@@ -179,7 +176,7 @@ void Triangle2Tecplot::readTriangleFmt()
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    file >> dummy >> (*XY)(0,IPOIN) >> (*XY)(1,IPOIN);
    for(unsigned K=0; K<(*ndof); K++) { file >> (*zroe)(K,IPOIN); }
-   file >> nodcod->at(IPOIN);
+   file >> dummy;
   }
   file.close();
 
@@ -405,26 +402,36 @@ void Triangle2Tecplot::writeTecplotFmt()
   for(unsigned isp=0;isp<(*nsp);isp++) {
    stringstream ispstr;
    ispstr << isp;
-   rhostr.at(isp)="\"rho"+ispstr.str()+"\"";
+   rhostr.at(isp)="\"rho"+ispstr.str()+"\" ";
   }
 
   // assign the string for the number of nodes
   nbNodestr << "N=" << npoin->at(1);
 
   // assign the string for the number of elements
-  nbElemstr << "E=" << nelem->at(1);
+  nbElemstr << "E=" << nelem->at(1) << ",";
 
   // write the .plt file
   cfin = fopen("cfin.plt", "w");
 
   fprintf(cfin,"%s","TITLE      =  Unstructured grid data\n");
   fprintf(cfin,"%s","VARIABLES  =  \"x0\" \"x1\" ");
-  for(unsigned isp=0; isp<(*nsp);isp++) {
-   fprintf(cfin,"%s %s",rhostr.at(isp).c_str(), " ");
+
+  if(m_modelTransf=="TCneq") {
+   for(unsigned isp=0; isp<(*nsp);isp++) {
+    fprintf(cfin,"%s",rhostr.at(isp).c_str());
+   }
+   fprintf(cfin,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
   }
-  fprintf(cfin,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
+  else if (m_modelTransf=="Pg") {
+   fprintf(cfin,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+  }
+  else { cout << m_modelTransf << " model not implemented\n"; exit(1); }
+
   fprintf(cfin,"%s %s","ZONE   T=\"P0 ZONE0 Triag\",",nbNodestr.str().c_str());
-  fprintf(cfin,"%s %s %s",",",nbElemstr.str().c_str(),", F=FEPOINT, ET=TRIANGLE, SOLUTIONTIME=0\n");
+  fprintf(cfin,"%s %s %s",",",nbElemstr.str().c_str(),"F=FEPOINT, ET=TRIANGLE, SOLUTIONTIME=0\n");
+
+  // write the grid-points coordinates and state
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) { 
    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) {
     fprintf(cfin,"%20.16E %s",(*XY)(IA,IPOIN), " ");}
@@ -433,6 +440,7 @@ void Triangle2Tecplot::writeTecplotFmt()
   fprintf(cfin,"%s","\n");
   } 
 
+  // write the mesh cell nodes
   for(unsigned IELEM=0;IELEM<nelem->at(1);IELEM++) {
    for(unsigned K=0;K<3; K++){
     fprintf(cfin,"%11i %s",(*celnod)(K,IELEM)," ");
@@ -443,14 +451,21 @@ void Triangle2Tecplot::writeTecplotFmt()
   fclose(cfin);
 
   // write the -surf.plt file
-  cfin = fopen("cfin-surf.plt","w");
+  cfin = fopen("cfin.surf.plt","w");
 
-  fprintf(cfin,"%s","TITLE      =  Boundary data\n");
+  fprintf(cfin,"%s","TITLE      = Boundary data\n");
   fprintf(cfin,"%s","VARIABLES  =  \"x0\" \"x1\" ");
-  for(unsigned isp=0; isp<(*nsp);isp++) {
-   fprintf(cfin,"%s %s",rhostr.at(isp).c_str(), " ");
+
+  if(m_modelTransf=="TCneq") {
+   for(unsigned isp=0; isp<(*nsp);isp++) {
+    fprintf(cfin,"%s",rhostr.at(isp).c_str());
+   }
+   fprintf(cfin,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
   }
-  fprintf(cfin,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
+  else if (m_modelTransf=="Pg") {
+   fprintf(cfin,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+  }
+  else { cout << m_modelTransf << " model not implemented\n"; exit(1); }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
 
@@ -463,11 +478,13 @@ void Triangle2Tecplot::writeTecplotFmt()
     ++BND;
     if((IBC+1)==10) {
      if (m_boundary == "single") {
-      Tstr << "T= \"" << 10 << ", TR 0\", ";
-      nbElemstr << "E= " << ICLR->at(IBC+1) << ", ";
+      Tstr << "T=\"" << 10 << ", TR 0\",";
+      nbElemstr << "E=" << ICLR->at(IBC+1) << ", ";
       elemVector.resize(ICLR->at(IBC+1)*2);
       elemVector_noduplicate.resize(ICLR->at(IBC+1)*2);
       elemVector_unitIndex.resize(ICLR->at(IBC+1)*2);
+
+      // assign the cell nodes IDs to the vector elemVector
       h=0;
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -480,6 +497,9 @@ void Triangle2Tecplot::writeTecplotFmt()
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
+      // delete the duplicate of the cell nodes IDs from the elemVector
+      // by defining an elemVector_noduplicate vector
+      // and count the number of not-duplicated nodes
       h=0;      
       for(unsigned j=0;j<elemVector.size();j++){
        for(unsigned k=j+1;k<elemVector.size();k++) {
@@ -491,6 +511,7 @@ void Triangle2Tecplot::writeTecplotFmt()
        else { duplicate=0; }
       }
 
+      // assign the new size to the vectors
       elemVector_noduplicate.resize(h);
 
       elemVector_sort.resize(h);
@@ -498,13 +519,18 @@ void Triangle2Tecplot::writeTecplotFmt()
 
       elemVector_sort=elemVector_noduplicate;
 
+      // sort the elemVector_sort vector
       sort(elemVector_sort.begin(),elemVector_sort.end());
 
+      // since the tecplot cell nodes for each TRS are numbered 
+      // starting from 1:nbElem(TRS), the array_elemVector is defined to 
+      // link the SF cell node IDs to the new IDs defined inside the tecplot file
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
        array_elemVector_sort(0,j)=elemVector_sort.at(j);
        array_elemVector_sort(1,j)=j+1;
       }
 
+      // assign the new IDs to the elemVector_uniIndex vector
       for(unsigned j=0;j<elemVector.size(); j++) {
        for(unsigned k=0;k<array_elemVector_sort.getnCols();k++) {
         if(elemVector.at(j)==array_elemVector_sort(0,k)) {
@@ -512,22 +538,27 @@ void Triangle2Tecplot::writeTecplotFmt()
        }
       }
 
-      nbNodestr << "N= " << elemVector_noduplicate.size() << ", ";
+      nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
       fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
       fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
       fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
+      // write the grid-points coordinates and state
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
+ 
+       // why is elemVector_sort.at(j)-1 ???
        for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
-        fprintf(cfin,"%20.16F %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
        }
        for(unsigned k=0;k<(*ndof);k++) {
-        fprintf(cfin,"%20.16F %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
        }
        fprintf(cfin,"%s","\n");
       }
-      
+
+      // write the cell nodes with the ID used in tecplot
+      // 1:nbElem(TRS)      
       for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
        fprintf(cfin,"%11i",elemVector_unitIndex.at(j));
        fprintf(cfin,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
@@ -536,12 +567,13 @@ void Triangle2Tecplot::writeTecplotFmt()
      } // if m_boundary = single
 
      if (m_boundary == "splitted") {
-      Tstr << "T= InnerSup, TR 0\", ";
-      nbElemstr << "E= " << nbSh/2-1 << ", ";
+      Tstr << "T=\"InnerSup, TR 0\",";
+      nbElemstr << "E=" << nbSh/2-1 << ", ";
       elemVector.resize((nbSh/2-1)*2);
       elemVector_noduplicate.resize((nbSh/2-1)*2);
       elemVector_unitIndex.resize((nbSh/2-1)*2);
 
+      // assign the cell nodes IDs to the vector elemVector
       h=0;
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -559,6 +591,9 @@ void Triangle2Tecplot::writeTecplotFmt()
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
+      // delete the duplicate of the cell nodes IDs from the elemVector
+      // by defining a elemVector_noduplicate vector
+      // and count the number of not-duplicated nodes
       h=0;
       for(unsigned j=0;j<elemVector.size();j++){
        for(unsigned k=j+1;k<elemVector.size();k++) {
@@ -570,20 +605,26 @@ void Triangle2Tecplot::writeTecplotFmt()
        else { duplicate=0; }
       }
 
+      // assign the new size to the vectors
       elemVector_noduplicate.resize(h);
-
       elemVector_sort.resize(h);
       array_elemVector_sort.resize(2,h);
 
+      // define a new vector to sort the elements inside elemVector_noduplicate
       elemVector_sort=elemVector_noduplicate;
 
+      // sort the elemVcetor_sort vector
       sort(elemVector_sort.begin(),elemVector_sort.end());
 
+      // since the tecplot cell nodes for each TRS are numbered 
+      // starting from 1:nbElem(TRS), the array_elemVector is defined to 
+      // link the SF cell node IDs to the new IDs defined inside the tecplot file
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
        array_elemVector_sort(0,j)=elemVector_sort.at(j);
        array_elemVector_sort(1,j)=j+1;
       }
 
+      // assign the new IDs to the elemVector_uniIndex vector
       for(unsigned j=0;j<elemVector.size(); j++) {
        for(unsigned k=0;k<array_elemVector_sort.getnCols();k++) {
         if(elemVector.at(j)==array_elemVector_sort(0,k)) {
@@ -591,22 +632,25 @@ void Triangle2Tecplot::writeTecplotFmt()
        }
       }
 
-      nbNodestr << "N= " << elemVector_noduplicate.size() << ", ";
+      nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
       fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
       fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
       fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
+      // write the grid-points coordinates and state
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
        for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
-        fprintf(cfin,"%20.16F %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
        }
        for(unsigned k=0;k<(*ndof);k++) {
-        fprintf(cfin,"%20.16F %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j))," ");
        }
        fprintf(cfin,"%s","\n");
       }
 
+      // write the cell nodes with the ID used in tecplot
+      // 1:nbElem(TRS)
       for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
        fprintf(cfin,"%11i",elemVector_unitIndex.at(j));
        fprintf(cfin,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
@@ -616,12 +660,13 @@ void Triangle2Tecplot::writeTecplotFmt()
       Tstr.str(string());
       nbElemstr.str(string());
 
-      Tstr << "T= InnerSub, TR 0\", ";
-      nbElemstr << "E= " << nbSh/2-1 << ", ";
+      Tstr << "T=\"InnerSub, TR 0\",";
+      nbElemstr << "E=" << nbSh/2-1 << ", ";
       elemVector.resize((nbSh/2-1)*2);
       elemVector_noduplicate.resize((nbSh/2-1)*2);
       elemVector_unitIndex.resize((nbSh/2-1)*2);
 
+      // assign the cell nodes IDs to the vector elemVector
       h=0;
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -639,6 +684,9 @@ void Triangle2Tecplot::writeTecplotFmt()
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
+      // delete the duplicate of the cell nodes IDs from the elemVector
+      // by defining an elemVector_noduplicate vector
+      // and count the number of not-duplicated nodes
       h=0;
       for(unsigned j=0;j<elemVector.size();j++){
        for(unsigned k=j+1;k<elemVector.size();k++) {
@@ -650,20 +698,26 @@ void Triangle2Tecplot::writeTecplotFmt()
        else { duplicate=0; }
       }
 
+      // assign the new size to the vectors
       elemVector_noduplicate.resize(h);
-
       elemVector_sort.resize(h);
       array_elemVector_sort.resize(2,h);
 
+      // define a new vector sorting the elements inside elemVector_noduplicate
       elemVector_sort=elemVector_noduplicate;
 
+      // sort the elemVector_sort vector
       sort(elemVector_sort.begin(),elemVector_sort.end());
 
+      // since the tecplot cell nodes for each TRS are numbered 
+      // starting from 1:nbElem(TRS), the array_elemVector is defined to 
+      //  link the SF cell node IDs to the new IDs defined inside the tecplot file
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
        array_elemVector_sort(0,j)=elemVector_sort.at(j);
        array_elemVector_sort(1,j)=j+1;
       }
 
+      // assign the new IDs to the elemVector_uniIndex vector
       for(unsigned j=0;j<elemVector.size(); j++) {
        for(unsigned k=0;k<array_elemVector_sort.getnCols();k++) {
         if(elemVector.at(j)==array_elemVector_sort(0,k)) {
@@ -671,22 +725,25 @@ void Triangle2Tecplot::writeTecplotFmt()
        }
       }
 
-      nbNodestr << "N= " << elemVector_noduplicate.size() << ", ";
+      nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
       fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
       fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
       fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
+      // write the grid-points coordinates and state
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
        for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
-        fprintf(cfin,"%20.16F %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
        }
        for(unsigned k=0;k<(*ndof);k++) {
-        fprintf(cfin,"%20.16F %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
+        fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j))," ");
        }
        fprintf(cfin,"%s","\n");
       }
 
+      // write the cell nodes with the ID used in tecplot
+      // 1:nbElem(TRS)
       for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
        fprintf(cfin,"%11i",elemVector_unitIndex.at(j));
        fprintf(cfin,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
@@ -697,8 +754,8 @@ void Triangle2Tecplot::writeTecplotFmt()
 
     else {
 
-     Tstr << "T= \"" << BND << ", TR 0\", ";
-     nbElemstr << "E= " << ICLR->at(IBC+1) << ", ";
+     Tstr << "T=\"" << BND << ", TR 0\",";
+     nbElemstr << "E=" << ICLR->at(IBC+1) << ", ";
      elemVector.resize(ICLR->at(IBC+1)*2);
      elemVector_noduplicate.resize(ICLR->at(IBC+1)*2);
      elemVector_unitIndex.resize(ICLR->at(IBC+1)*2);
@@ -746,7 +803,7 @@ void Triangle2Tecplot::writeTecplotFmt()
       }
      }
 
-     nbNodestr << "N= " << elemVector_noduplicate.size() << ", ";
+     nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
      fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
      fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
@@ -754,10 +811,10 @@ void Triangle2Tecplot::writeTecplotFmt()
 
      for(unsigned j=0; j<elemVector_sort.size(); j++) {
       for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
-       fprintf(cfin,"%20.16F %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
+       fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
       }
       for(unsigned k=0;k<(*ndof);k++) {
-       fprintf(cfin,"%20.16F %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
+       fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j)-1)," ");
       }
       fprintf(cfin,"%s","\n");
      }
@@ -792,7 +849,7 @@ void Triangle2Tecplot::setMeshData()
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
-  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
+//  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");

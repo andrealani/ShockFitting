@@ -50,7 +50,7 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_writeTriangleFileFreezedConnect(),
   m_callTriangle(),
   m_callTriangleLib(),
-  m_triangleToCFmesh(),
+  m_triangleToCFfmt(),
   m_COOLFluiD(),
   m_CFmeshToTriangle(),
   m_copyZRoe1_0(),
@@ -122,7 +122,7 @@ void StandardShockFitting::setup()
   m_callTriangleLib = m_mGenerator[3].ptr();
   if(m_computeShockFittingResidual) { 
    m_computeSFresidual = m_sUpdater[2].ptr();}
-  m_triangleToCFmesh = m_fConverter[2].ptr();
+  m_triangleToCFfmt = m_fConverter[2].ptr();
   m_COOLFluiD = m_CFDSolver.ptr();
   m_CFmeshToTriangle = m_fConverter[3].ptr();
   m_copyZRoe1_0 = m_cMaker[1].ptr();
@@ -193,12 +193,12 @@ void StandardShockFitting::process()
    cout << "_________________________________________________\n\n";
    cout << "Creating starting SF files from the captured solution \n\n";
 
-//   m_createshockfile->convert();
+   m_createshockfile->convert();
    m_createTriangleFiles->convert();
 
    m_callTriangle->generate(string("na00.node"));
    cout << ".................................................\n";
-exit(1);
+
    system(string("mv na00.poly na99.poly").c_str());
   }
 
@@ -263,8 +263,8 @@ exit(1);
     m_writeTriangleFileFreezedConnect->write();
    }
 
-   m_triangleToCFmesh->convert();
-//exit(1);
+   m_triangleToCFfmt->convert();
+
    cout << "_________________________________________________________________\n\n";
 
    m_COOLFluiD->call();

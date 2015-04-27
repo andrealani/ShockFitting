@@ -94,7 +94,7 @@ void Triangle2CFmesh::convert()
 
   setMeshData();
   setPhysicsData();
-  
+
   if (MeshData::getInstance().getVersion()==("original")) 
   {
    // read triangle format file

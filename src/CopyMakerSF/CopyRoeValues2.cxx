@@ -73,6 +73,7 @@ void CopyRoeValues2::copy()
 
   for(unsigned IPOIN=0; IPOIN<ILIST; IPOIN++) {
    IB = M02M1->at(m_npoin0+IPOIN);
+
    if(IB != 0) {
     for(unsigned IA=0; IA<(*ndof); IA++) {
      (*zroe1)(IA,IB-1) = (*zroe0)(IA,IPOIN+npoin->at(0));

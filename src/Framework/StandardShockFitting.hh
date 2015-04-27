@@ -116,8 +116,9 @@ private:
   /// command object caling triangle library without input file
   SConfig::SharedPtr<MeshGenerator> m_callTriangleLib;
 
-  /// command object converting file format from Triangle to CFmesh
-  SConfig::SharedPtr<Converter> m_triangleToCFmesh;
+  /// command object converting file format from Triangle to 
+  /// coolfluid format (
+  SConfig::SharedPtr<Converter> m_triangleToCFfmt;
 
   /// command object converting file format from Triangle to CFmesh
   /// when the connectivity is freezed

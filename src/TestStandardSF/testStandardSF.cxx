@@ -23,11 +23,13 @@ int main (int argc, char** argv)
   const unsigned nbTest = 10;
   vector<string> testDir(nbTest);
   testDir.at(0) = "CircularCylinder_Pg_inv_N_M15";
+//  testDir.at(0) = "CircularCylinder_Pg_inv_N_M15_TECPLOT";
   testDir.at(1) = "CircularCylinder_Pg_inv_N_M20";
   testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
   testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
 //  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6";
-  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
+  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6_TECPLOT";
+//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
   testDir.at(5) = "CircularCylinder_Pg_inv_N_M6";
   testDir.at(6) = "CircularCylinder_Pg_vis_Bx_M17";
   testDir.at(7) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
@@ -66,9 +68,9 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the starting captured solution
-/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT_NS/restartFVM.CFmesh .";
+/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT/cyl-P0.plt .";
   system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT_NS/shock.dat .";
+  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT/cyl-P0-surf.plt .";
   system(commandln.c_str());
 */
   // link the chemical info file

@@ -97,7 +97,7 @@ void Interp::update()
    unsigned m_IPOIN = IPOIN+1;
 
    // nodcod = -1 internal phantom nodes
-   // nodcod = -2 boudnary phantom nodes
+   // nodcod = -2 boundary phantom nodes
    if (   (nodcod->at(IPOIN)==-1) || (nodcod->at(IPOIN)==-2)  ) {  
     logfile("Trying to locate ", m_IPOIN);
     logfile("(",(*XYBkg)(0,IPOIN),",",(*XYBkg)(1,IPOIN),")\n");
