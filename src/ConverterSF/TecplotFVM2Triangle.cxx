@@ -35,6 +35,9 @@ TecplotFVM2Triangle::TecplotFVM2Triangle(const std::string& objectName) :
   Converter(objectName)
 {
   m_prim2param.name() = "dummyVariableTransformer";
+  m_tecplotExtraValues = true;
+  addOption("extraValuesPrinted",&m_tecplotExtraValues,
+            "Specifies if extra values are printed in the tecplot file"); 
 }
 
 //----------------------------------------------------------------------------//
@@ -71,7 +74,6 @@ void TecplotFVM2Triangle::configure(OptionMap& cmap, const std::string& prefix)
 
   // assign strings on input.case file to variable transformer object
   m_prim2param.name() = m_inFmt+"2"+m_outFmt+m_modelTransf+m_additionalInfo;
-
 
   if (ConfigFileReader::isFirstConfig()) {
    m_prim2param.ptr().reset(SConfig::Factory<VariableTransformer>::getInstance().
@@ -173,7 +175,7 @@ void TecplotFVM2Triangle::readTecplotFmt()
   // read elements of LIST_ELEM 
   I=0;
   while(I<nelem->at(1)) { 
-   file >> dummy >> dummy >> dummy >> dummy >> dummy >> dummy >> dummy;
+   file >> dummy >> dummy >> dummy >> dummy;
    ++I;
   }
 
@@ -306,11 +308,10 @@ void TecplotFVM2Triangle::readTecplotFmt()
 
   // read the nodal coordinates and the list state
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
-   for(unsigned IV=0; IV<ndim; IV++) {  
-    file >> (*XY)(IV,IPOIN);
-   }
-   for(unsigned IV=0; IV<(*ndof); IV++) { 
-    file >> (*zroe)(IV,IPOIN);
+   for(unsigned IV=0; IV<ndim; IV++) { file >> (*XY)(IV,IPOIN); }
+   for(unsigned IV=0; IV<(*ndof); IV++) { file >> (*zroe)(IV,IPOIN); }
+   if(m_tecplotExtraValues) {
+    for(unsigned I=0; I<4; I++) { file >> dummy; }
    }
   }
 

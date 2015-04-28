@@ -87,6 +87,10 @@ private: // helper functions
 
 private: // data
 
+  /// specifies if extra values are printed in addition to the
+  /// commonly used degrees of freedom
+  bool m_tecplotExtraValues;
+
   /// number of degrees of freedom
   unsigned* ndof;
 

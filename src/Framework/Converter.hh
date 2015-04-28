@@ -75,6 +75,9 @@ protected: // data
 
   /// additional infos used to compute variables transformation
   std::string m_additionalInfo;
+
+  /// string storing the variable transformer object used for the model
+  std::string m_variableTransformer;
 };
 
 //--------------------------------------------------------------------------//

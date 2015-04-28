@@ -28,27 +28,32 @@ int main (int argc, char** argv)
   testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
   testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
 //  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6";
-  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6_TECPLOT";
-//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
-  testDir.at(5) = "CircularCylinder_Pg_inv_N_M6";
-  testDir.at(6) = "CircularCylinder_Pg_vis_Bx_M17";
-  testDir.at(7) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
+//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_Bx_M6_TECPLOT";
+  testDir.at(5) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
+  testDir.at(6) = "CircularCylinder_Pg_inv_N_M6";
+  testDir.at(7) = "CircularCylinder_Pg_vis_Bx_M17";
+  testDir.at(8) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
 
   // number of executing test
-  const unsigned i = 4;
+  const unsigned i = 5;
 
   string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
 
   string commandcp = "cp "+pwdTestDir+"/input.case .";
   system(commandcp.c_str());
 
-  if(i==3 || i==4 || i==5 || i==7) {
+  if(i==3 || i==4 || i==6 || i==8) {
   string commandcp = "cp "+pwdTestDir+"/cylRDS.inter .";
   system(commandcp.c_str());
   }
 
-  if(i==6) {
+  if(i==7) {
   string commandcp = "cp "+pwdTestDir+"/cyl.inter .";
+  system(commandcp.c_str());
+  }
+
+  if(i==5) {
+  string commandcp = "cp "+pwdTestDir+"/hornung_FVM.inter .";
   system(commandcp.c_str());
   }
 
@@ -68,18 +73,20 @@ int main (int argc, char** argv)
   system(commandln.c_str());
 
   // link the starting captured solution
-/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT/cyl-P0.plt .";
+/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULTS_1PROC/HornungN2-P0.plt .";
   system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULT/cyl-P0-surf.plt .";
+  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULTS_1PROC/HornungN2.CFmesh .";
+  system(commandln.c_str());
+  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULTS_1PROC/shock.dat .";
   system(commandln.c_str());
 */
   // link the chemical info file
-  if(i==3 || i==4) {
+  if(i==3 || i==4 || i==5) {
      commandln = "cp -rf "+pwdTestDir+"/nitrogen2.dat .";
      system(commandln.c_str());
   }
 
-  if(i==7) {
+  if(i==8) {
      commandln = "cp -rf "+pwdTestDir+"/air5.dat .";
      system(commandln.c_str());
   }

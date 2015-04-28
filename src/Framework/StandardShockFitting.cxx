@@ -267,7 +267,7 @@ void StandardShockFitting::process()
 
    cout << "_________________________________________________________________\n\n";
 
-   m_COOLFluiD->call();
+//   m_COOLFluiD->call();
 
    // change COOLFluiD output file name
    if(MeshData::getInstance().getnbProcessors()==1) {

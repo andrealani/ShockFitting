@@ -11,6 +11,8 @@ DummyConverter.cxx
 DummyConverter.hh
 ShockFileConverter.cxx
 ShockFileConverter.hh
+TecplotFVM2StartingTriangle.cxx
+TecplotFVM2StartingTriangle.hh
 TecplotFVM2Triangle.cxx
 TecplotFVM2Triangle.hh
 Tecplot2StartingTriangle.cxx
