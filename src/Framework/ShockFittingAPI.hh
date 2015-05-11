@@ -78,7 +78,7 @@ extern "C" {
   /// @param outState            output interpolated solution field
   /// @param outNode             output spatial coordinates field
   void SF_process_field_(int* federateID, int* dim,
-			 int* inNbBoundaries, int* inbInfo, int* inbNode, int* inbPtr,
+			 int* inNbBoundaries, int* inbInfo, int* inbNode, int* inbPtr, char* inbName,
 			 int* inNbElems,
 			 int* inNbStates,
 			 int* inStateStride,

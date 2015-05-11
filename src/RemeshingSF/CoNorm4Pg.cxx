@@ -10,6 +10,7 @@
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsInfo.hh"
+#include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
 //----------------------------------------------------------------------------//
@@ -212,20 +213,56 @@ void CoNorm4Pg::computeTau(unsigned ISH, unsigned I)
 
 void CoNorm4Pg::setVShNorForStype()
 {
+  double h, kinetic, upstreamPress, downstreamPress;
+
+vector <double>* zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
+
+  unsigned start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  Array3D <double>* ZRoeShu = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroeVect->at(start));
+
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    if(typeSh->at(ISH)=="S") {
     unsigned ii = 0;
     for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-     ui = (*ZRoeShd)(2,I,ISH)/(*ZRoeShd)(0,I,ISH);
-     vi = (*ZRoeShd)(3,I,ISH)/(*ZRoeShd)(0,I,ISH);
-     dum = ui*(*vShNor)(0,I,ISH)+vi*(*vShNor)(1,I,ISH);
-     if(dum>0) {ii++;}
-    }
+
+// The velocity condition does not always work properly (e.g. FVM)  
+// so a pressure condition has been implemented
+// BUT the latter should be verified
+
+// velocity condition
+//     ui = (*ZRoeShd)(2,I,ISH)/(*ZRoeShd)(0,I,ISH);
+//     vi = (*ZRoeShd)(3,I,ISH)/(*ZRoeShd)(0,I,ISH);
+//     dum = ui*(*vShNor)(0,I,ISH)+vi*(*vShNor)(1,I,ISH);
+//     if(dum>0) {ii++;}
+////
+
+// pressure conditon
+     kinetic = (*ZRoeShd)(2,I,ISH)*(*ZRoeShd)(2,I,ISH)+
+               (*ZRoeShd)(3,I,ISH)*(*ZRoeShd)(3,I,ISH);
+     kinetic = kinetic*0.5;
+     h = (*ZRoeShd)(1,I,ISH)/(*ZRoeShd)(0,I,ISH);
+     downstreamPress = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam()*
+                       ((*ZRoeShd)(0,I,ISH)*(*ZRoeShd)(0,I,ISH)*h-kinetic);
+ 
+     kinetic = (*ZRoeShu)(2,I,ISH)*(*ZRoeShu)(2,I,ISH)+
+               (*ZRoeShu)(3,I,ISH)*(*ZRoeShu)(3,I,ISH);
+     kinetic = kinetic*0.5;
+     h = (*ZRoeShu)(1,I,ISH)/(*ZRoeShu)(0,I,ISH);
+     upstreamPress = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam()*
+                     ((*ZRoeShu)(0,I,ISH)*(*ZRoeShu)(0,I,ISH)*h-kinetic);
+
+     if(upstreamPress>downstreamPress) {ii++;}
+    } // for I
+////
+
     if (ii < nShockPoints->at(ISH)/2 - 1) { break; }
-     for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
-      (*vShNor)(0,I,ISH) = -(*vShNor)(0,I,ISH);
-      (*vShNor)(1,I,ISH) = -(*vShNor)(1,I,ISH);
-     } // I
+    for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
+     (*vShNor)(0,I,ISH) = -(*vShNor)(0,I,ISH);
+     (*vShNor)(1,I,ISH) = -(*vShNor)(1,I,ISH);
+    } // I
    } // if typeSh->at(ISH)=="S"
   } // for
 }

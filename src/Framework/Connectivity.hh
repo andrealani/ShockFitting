@@ -24,6 +24,7 @@ namespace ShockFitting {
 
 class Connectivity {
 public:
+
   /// default constructor
   Connectivity() : m_nbElems(0), m_elementNode(NULL), m_elementPtr(NULL) {}
   
@@ -57,7 +58,7 @@ public:
   /// get number of nodes in element
   int getNbNodes(unsigned iElem) const 
   {assert(iElem < m_nbElems); return m_elementPtr[iElem+1] - m_elementPtr[iElem];}
-  
+
 private:
   
   /// number of elements in the connectivity

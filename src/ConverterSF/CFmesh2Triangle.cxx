@@ -96,6 +96,12 @@ void CFmesh2Triangle::convert()
   LogToScreen(DEBUG_MIN, "CFmesh2Triangle::reading CFmesh format\n");
   readCFmeshFmt();
 
+  // get CFmeshData from the Connectivity and Field objects
+  // and assign them to the SF array
+  // some data are not assigne using pointer address
+  LogToScreen(DEBUG_MIN, "CFmesh2Triangle::getting CFmesh data\n");
+//  getCFmeshData();
+
   // make the transformation from primitive variables to 
   // Roe parameter vector variables
   m_prim2param.ptr()->transform(); 
@@ -184,7 +190,7 @@ void CFmesh2Triangle::readCFmeshFmt()
   nFacB.resize(NCLR);
   for(unsigned IFACE=0; IFACE<NCLR; IFACE++) {
    file >> dummy >> strvalue;   // read !TRS_NAME trsName
-   namebnd.at(IFACE)= strvalue;
+   namebnd.at(IFACE) = strvalue;
    file >> dummy >> dummy;      // read !NB_TRs nbTRs   
    file >> dummy >> value;      // read !NB_GEOM_ENTS nbgeomEnts
    nFacB.at(IFACE) = value;
@@ -316,6 +322,70 @@ void CFmesh2Triangle::readCFmeshFmt()
 
 //----------------------------------------------------------------------------//
 
+void CFmesh2Triangle::getCFmeshData()
+{
+  // dummy variable
+  stringstream dumname;
+ 
+  // get number of degrees of freedom
+  (*ndof) = outStateField->getStride();
+
+  // get the number of mesh elements
+  nelem->at(1)=outConnectivity->getNbElems();
+
+  // get the number of points
+  npoin->at(1)=outStateField->getSize();
+
+  // count the total number of boundary faces
+  nbfac->at(1) = 0;
+  for(unsigned IB=0;IB<outbConnectivity->getNbBoundaries(); IB++) {
+   nbfac->at(1) = outbConnectivity->getNbFaces(IB) + nbfac->at(1);
+  }
+
+  // by now we assume that all the mesh elements have the same 
+  // number of vertices
+  (*nvt) = outConnectivity->getNbNodes(0);
+  nhole->at(1) = 0; 
+
+  // resize vectors of MeshData pattern with the new values read on CFmesh file
+  // and assign starting pointers for arrays 2D
+  resizeVectors_CF();
+
+  // the element-node connectivity is assigned by addressing
+  // the Connectivity array given by CF
+  // here the celnod values are increased of value 1 
+  for(unsigned IELEM=0; IELEM<outConnectivity->getNbElems();IELEM++) {
+   for(unsigned IVERT=0; IVERT<(*nvt); IVERT++) {
+    (*celnod)(IVERT,IELEM) = (*celnod)(IVERT,IELEM)+1; 
+   }
+  }
+
+  unsigned IFACE=0;
+  for(unsigned IC=0; IC<outbConnectivity->getNbBoundaries(); IC++) {
+   // read geometry entities list that is boundary data
+   // bndfac(2,IFACE) will be assigned after in writeTriangleFmt
+   for(unsigned IB=0; IB<outbConnectivity->getNbFaces(IC);IB++) {
+    // c++ indeces start from 0
+    (*bndfac)(0,IFACE) = *(outbConnectivity->getTable(IC)+IB*2)+1;
+    // c++ indeces start from 0
+    (*bndfac)(1,IFACE) = *(outbConnectivity->getTable(IC)+IB*2+1)+1;
+    (*bndfac)(2,IFACE) = IC+1; // c++ indeces start from 0
+    ++IFACE;
+   }
+  }
+
+  // the nodal coordinates and state are already assigned by addressing the
+  // Field output array in resize_CF
+
+  // fill nodcod vector
+  setNodcod();
+
+  // count number of boundary points
+  countnbBoundaryNodes();
+}
+
+//----------------------------------------------------------------------------//
+
 void CFmesh2Triangle::resizeVectors()
 {
   totsize = npoin->at(0) + npoin->at(1) + 
@@ -339,6 +409,7 @@ void CFmesh2Triangle::resizeVectors()
                              PhysicsInfo::getnbShMax() * 
                              PhysicsInfo::getnbShPointsMax()),
                              &coorVect->at(start));
+
   start = PhysicsInfo::getnbDofMax() *
           (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                               PhysicsInfo::getnbShPointsMax());
@@ -346,7 +417,7 @@ void CFmesh2Triangle::resizeVectors()
                               (npoin->at(1)+2 * 
                               PhysicsInfo::getnbShMax() *
                               PhysicsInfo::getnbShPointsMax()),
-                              &zroeVect->at(start));
+                             &zroeVect->at(start));
 
   totsize = nelem->at(0) + nelem->at(1);
   celcelVect->resize((*nvt) * totsize);
@@ -354,6 +425,63 @@ void CFmesh2Triangle::resizeVectors()
 
   start = (*nvt) * nelem->at(0);
   celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
+  celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
+
+  totsize = nbfac->at(0) + nbfac->at(1) + 
+            4 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax();
+  bndfacVect->resize(3 * totsize);
+
+  start = 3 * (nbfac->at(0) + 
+            2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
+  bndfac = new Array2D<int> (3,(nbfac->at(1) + 2 * PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShEdgesMax()),
+                             &bndfacVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void CFmesh2Triangle::resizeVectors_CF()
+{
+  totsize = npoin->at(0) + npoin->at(1) + 
+            4 * PhysicsInfo::getnbShMax() *
+                PhysicsInfo::getnbShPointsMax();
+  nodcod->resize(totsize);
+  unsigned startNodcod = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                                            PhysicsInfo::getnbShPointsMax();
+  // initialize nodcod of the shocked mesh
+  for(unsigned I=startNodcod; I<totsize; I++) {
+   nodcod->at(I) = 0; }
+
+  zroeVect->resize(PhysicsInfo::getnbDofMax() * totsize);
+  coorVect->resize(PhysicsInfo::getnbDim() * totsize);
+
+  start = PhysicsInfo::getnbDim() * 
+          (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax());
+  XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 * 
+                             PhysicsInfo::getnbShMax() * 
+                             PhysicsInfo::getnbShPointsMax()),
+                             outCoordinatesField->getArray()+0);
+
+  start = PhysicsInfo::getnbDofMax() *
+          (npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax());
+  zroe = new Array2D <double>(PhysicsInfo::getnbDofMax(),
+                              (npoin->at(1)+2 * 
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
+                              outStateField->getArray()+0);
+
+  totsize = nelem->at(0) + nelem->at(1);
+  celcelVect->resize((*nvt) * totsize);
+  celnodVect->resize((*nvt) * totsize);
+
+  start = (*nvt) * nelem->at(0);
+  celnod = new Array2D<int> ((*nvt),
+                              nelem->at(1), 
+                              outConnectivity->getTable()+0);
+
   celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
 
   totsize = nbfac->at(0) + nbfac->at(1) + 
@@ -450,7 +578,7 @@ void CFmesh2Triangle::writeTriangleFmt()
   fprintf(trianglefile,"%s %u %s", "0 ", PhysicsInfo::getnbDim(), " 0 1\n");
   fprintf(trianglefile,"%u %s",nbfac->at(1)," 1\n");
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
-   NBND = namebnd.at((*bndfac)(2,IFACE)-1); // c++ indeces start from 0
+   NBND = boundaryNames->at((*bndfac)(2,IFACE)-1); //c++ indeces start from 0
    if(NBND=="InnerSup" || NBND=="InnerSub") { NBND="10"; }
    fprintf(trianglefile,"%u %s",IFACE+1," ");
    fprintf(trianglefile,"%i %s %i",(*bndfac)(0,IFACE)," ",(*bndfac)(1,IFACE));
@@ -486,6 +614,20 @@ void CFmesh2Triangle::setMeshData()
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   fname = MeshData::getInstance().getData <stringstream>("FNAME");
+  boundaryNodes = MeshData::getInstance().getData <vector<int> >("CF_boundaryNodes");
+  boundaryNames =
+   MeshData::getInstance().getData <vector<string> >("CF_boundaryNames");
+  boundaryInfo = MeshData::getInstance().getData <vector<int> >("CF_boundaryInfo");
+  boundaryPtr = MeshData::getInstance().getData <vector<int> >("CF_boundaryPtr");
+  elementPtr = MeshData::getInstance().getData <vector<int> >("CF_elementPtr");
+  outConnectivity = 
+    MeshData::getInstance().getData <Connectivity> ("inConn");
+  outbConnectivity =
+    MeshData::getInstance().getData <BoundaryConnectivity> ("inbConn");
+  outStateField = 
+    MeshData::getInstance().getData <Field> ("inStateField");
+  outCoordinatesField = 
+    MeshData::getInstance().getData <Field> ("inNodeField");
 }
 
 //----------------------------------------------------------------------------//

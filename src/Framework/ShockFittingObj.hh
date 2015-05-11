@@ -33,7 +33,7 @@
 namespace ShockFitting {
   
   class BoundaryConnectivity;
-  class Field;
+  class Field_SF;
   
 //--------------------------------------------------------------------------//
 

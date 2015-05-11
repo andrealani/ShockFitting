@@ -18,7 +18,7 @@ namespace ShockFitting {
 
 //--------------------------------------------------------------------------//
 
-enum {XX=0, YY=1, ZZ=2};  
+//enum {XX=0, YY=1, ZZ=2};  
 
 /// This class defines a field. The actual field array MUST include 
 /// both solution variables and spatial coordinates (x,y,z).  

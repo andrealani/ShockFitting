@@ -76,7 +76,7 @@ void MoveDps4Pg::update()
    logfile("Shock n. ", iShock, "\n");
    for(unsigned IV=0; IV<nShockPoints->at(ISH); IV++) {
     unsigned iShockPoint = IV+1;
- 
+
     ro = (*ZroeSh)(0,IV,ISH)*(*ZroeSh)(0,IV,ISH);
     help = pow((*ZroeSh)(2,IV,ISH),2) + pow((*ZroeSh)(3,IV,ISH),2);
     p = PhysicsInfo::getGm1()/PhysicsInfo::getGam() *
@@ -131,7 +131,7 @@ void MoveDps4Pg::update()
     for(unsigned I=0; I<2; I++) {
      (*XYSh)(I,IV,ISH) = (*XYSh)(I,IV,ISH) + (*WSh)(I,IV,ISH) * dt;
     }
-    logfile((*XYSh)(0,IV,ISH), " ", (*XYSh)(1,IV,ISH), "\n");
+    logfile(IV+1,") : ",(*XYSh)(0,IV,ISH), " ", (*XYSh)(1,IV,ISH), "\n");
    }
   }
 

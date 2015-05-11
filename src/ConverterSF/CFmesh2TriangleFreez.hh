@@ -11,7 +11,10 @@
 
 #include <string>
 #include <sstream>
+#include "Framework/BoundaryConnectivity.hh"
+#include "Framework/Connectivity.hh"
 #include "Framework/Converter.hh"
+#include "Framework/Field.hh"
 #include "Framework/FileLogManip.hh"
 #include "MathTools/Array2D.hh"
 #include "VariableTransformerSF/Prim2Param.hh"
@@ -70,6 +73,12 @@ private: // helper functions
   /// and assign the starting pointers for arrays 2D
   void resizeVectors();
 
+  /// resize vectors of the MeshData pattern with the new values from CF Data
+  /// Connectivity and Field objects
+  /// and assign the starting pointers for arrays 2D taking into account the
+  /// Connectivity and Field objects given by CF
+  void resizeVectors_CF();
+
   /// read the nodcod vector from file .node
   void readNodCod();
 
@@ -81,6 +90,9 @@ private: // helper functions
 
   /// write Triangle format file
   void writeTriangleFmt();
+
+  /// get the CF mesh data from the internal array exchanged with CF
+  void getCFmeshData();
 
   /// assign variables used in ReadTrianleFmt to MeshData pattern
   void setMeshData();
@@ -134,6 +146,23 @@ private: // data
 
   /// code characterizing mesh points
   std::vector<int>* nodcod;
+
+  /// face-node connectivity
+  std::vector<int>* boundaryNodes;
+
+  /// vector storing the boundary patches names
+  std::vector<std::string>* boundaryNames;
+
+  /// array of size @see BNDS x 2, storing consecutively
+  /// (1) the number of elements (faces) in each boundary
+  /// (2) a pointer to the first element in each boundary
+  std::vector<int>* boundaryInfo;
+
+  /// pointer to the start of the corresponding boundary face
+  std::vector<int>* boundaryPtr;
+
+  /// pointer to the start of the corresponding element
+  std::vector<int>* elementPtr;
  
   /// name of current file
   std::stringstream* fname;
@@ -176,6 +205,20 @@ private: // data
 
   /// dummy variable to store array starting pointer
   unsigned start;
+
+  /// BoundaryConnectivity object storing boundary mesh connectivity
+  /// given by CF
+  BoundaryConnectivity* outbConnectivity;
+
+  /// Connectivity object storing mesh connectivity
+  /// given by CF
+  Connectivity* outConnectivity;
+
+  /// Field object storing solution variables given by CF
+  Field* outStateField;
+
+  /// Field object storing spatial coordinates given by CF
+  Field* outCoordinatesField;
 
   /// command object transforming variables
   PAIR_TYPE(VariableTransformer) m_prim2param;

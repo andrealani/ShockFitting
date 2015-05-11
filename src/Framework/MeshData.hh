@@ -166,9 +166,9 @@ private:
     m_freezedConnectivityRatio = 1e-4;
     addOption("maxFreezedConnectivityRatio",&m_freezedConnectivityRatio,
               "Maximum value of the ratio: WSh*dt/SNDMIN freezing the connectivity");
-    m_coolfluidCFmesh = true;
+    m_coolfluidCFmesh = false;
     addOption("WithP0",&m_coolfluidCFmesh,
-             "Coolfluid output file");
+             "Coolfluid output file with or without -P0");
     m_nproc = 1;
     addOption("NPROC",&m_nproc,
              "Number of processor");

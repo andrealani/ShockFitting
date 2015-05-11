@@ -10,10 +10,10 @@
 #include "Framework/MeshData.hh"
 #include "Framework/PhysicsData.hh"
 #include "Framework/BoundaryConnectivity.hh"
+#include "Framework/Connectivity.hh"
 #include "Framework/Field.hh"
 #include "MathTools/Array2D.hh"
 #include "MathTools/Array3D.hh"
-
 #include "SConfig/ObjectProvider.hh"
 #include "SConfig/ConfigFileReader.hh"
 
@@ -347,16 +347,16 @@ void ShockFittingObj::process()
 
 //--------------------------------------------------------------------------//
   
-  void ShockFittingObj::processField(const BoundaryConnectivity *const inBndConn, 
-				     const Field *const inState,
-				     const Field *const inNode,
-				     BoundaryConnectivity* outBndConn, 
-				     Field* outState,
-				     Field* outNode)
+void ShockFittingObj::processField(const BoundaryConnectivity *const inBndConn, 
+		                   const Field *const inState,
+		        	   const Field *const inNode,
+				   BoundaryConnectivity* outBndConn, 
+				   Field* outState,
+				   Field* outNode)
 {
-  LogToScreen(VERBOSE, "ShockFittingObj::processField()\n");
+  LogToScreen(VERBOSE, "ShockFittingObj::processField()\n");  
 }
-  
+
 //--------------------------------------------------------------------------//
   
 void ShockFittingObj::createMeshData()
@@ -401,6 +401,26 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <string>("FNAMEBACK");
 
   MeshData::getInstance().createData <vector <double> >("firstResidual", 1);
+
+  // vector used to store some CF connectivity data, the other
+  // are the ones assigned to MeshData
+  MeshData::getInstance().createData <vector <int> >("CF_boundaryNodes",1);
+  MeshData::getInstance().createData <vector <string> >("CF_boundaryNames",1);
+  MeshData::getInstance().createData <vector <int> >("CF_boundaryInfo",1);
+  MeshData::getInstance().createData <vector <int> >("CF_boundaryPtr",1);
+  MeshData::getInstance().createData <vector <int> >("CF_elementPtr",1);
+
+  // store the connectivity, the mesh points state and coordinates
+  // to exchange data with coofluid without using I/O
+  MeshData::getInstance().createData <Connectivity> ("inConn");
+  MeshData::getInstance().createData <BoundaryConnectivity> ("inbConn");
+  MeshData::getInstance().createData <Field> ("inNodeField");
+  MeshData::getInstance().createData <Field> ("inStateField");
+
+  MeshData::getInstance().createData <Connectivity> ("outConn");
+  MeshData::getInstance().createData <BoundaryConnectivity> ("outbConn");
+  MeshData::getInstance().createData <Field> ("outNodeField");
+  MeshData::getInstance().createData <Field> ("outStateField");
 
   MeshData::getInstance().setup();
 }
@@ -495,6 +515,22 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <string >("FNAMEBACK");
 
   MeshData::getInstance().deleteData <vector <double> >("firstResidual");
+
+  MeshData::getInstance().deleteData <vector <int> >("CF_boundaryNodes");
+  MeshData::getInstance().deleteData <vector <string> >("CF_boundaryNames");
+  MeshData::getInstance().deleteData <vector <int> >("CF_boundaryInfo");
+  MeshData::getInstance().deleteData <vector <int> >("CF_boundaryPtr");
+  MeshData::getInstance().deleteData <vector <int> >("CF_elementPtr");
+
+  MeshData::getInstance().deleteData <Connectivity> ("inConn");
+  MeshData::getInstance().deleteData <BoundaryConnectivity> ("inbConn");
+  MeshData::getInstance().deleteData <Field> ("inNodeField");
+  MeshData::getInstance().deleteData <Field> ("inStateField");
+
+  MeshData::getInstance().deleteData <Connectivity> ("outConn");
+  MeshData::getInstance().deleteData <BoundaryConnectivity> ("outbConn");
+  MeshData::getInstance().deleteData <Field> ("outNodeField");
+  MeshData::getInstance().deleteData <Field> ("outStateField");
 
   MeshData::getInstance().unsetup();
 }

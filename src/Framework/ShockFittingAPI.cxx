@@ -47,7 +47,7 @@ void SF_process_(int* federateID)
 //--------------------------------------------------------------------------//
 
 void SF_process_field_(int* federateID, int* dim,
-		       int* inNbBoundaries, int* inbInfo, int* inbNode, int* inbPtr,
+		       int* inNbBoundaries, int* inbInfo, int* inbNode, int* inbPtr, char* inbName,
 		       int* inNbElems,
 		       int* inNbStates,
 		       int* inStateStride,
@@ -55,7 +55,7 @@ void SF_process_field_(int* federateID, int* dim,
 		       int* inElementStatePtr,
 		       double* inState, 
 		       double* inNode, 
-		       int* outNbBoundaries, int* outbInfo, int* outbNode, int* outbPtr,
+		       int* outNbBoundaries, int* outbInfo, int* outbNode, int* outbPtr, char* outbName,
 		       int* outNbElems,
 		       int* outNbStates,
 		       int* outStateStride,
@@ -65,10 +65,13 @@ void SF_process_field_(int* federateID, int* dim,
 		       double* outNode)
 {  
   assert(*federateID < NFEDERATES);
-  
+
+  string* inbNamestr = new string(inbName);
+  string* outbNamestr = new string(outbName); 
+
   // create the boundary connectivity object
-  BoundaryConnectivity inBndConn((unsigned)(*dim), (unsigned)(*inNbBoundaries), inbInfo, inbNode, inbPtr);
-  BoundaryConnectivity outBndConn((unsigned)(*dim), (unsigned)(*outNbBoundaries), outbInfo, outbNode, outbPtr);
+  BoundaryConnectivity inBndConn((unsigned)(*dim), (unsigned)(*inNbBoundaries), inbInfo, inbNode, inbPtr, inbNamestr);
+  BoundaryConnectivity outBndConn((unsigned)(*dim), (unsigned)(*outNbBoundaries), outbInfo, outbNode, outbPtr, outbNamestr);
   
   // create element connectivity objects
   Connectivity inStateConn((unsigned)(*inNbElems), inElementState, inElementStatePtr);

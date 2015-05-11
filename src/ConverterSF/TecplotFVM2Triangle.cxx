@@ -309,7 +309,9 @@ void TecplotFVM2Triangle::readTecplotFmt()
   // read the nodal coordinates and the list state
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    for(unsigned IV=0; IV<ndim; IV++) { file >> (*XY)(IV,IPOIN); }
-   for(unsigned IV=0; IV<(*ndof); IV++) { file >> (*zroe)(IV,IPOIN); }
+   for(unsigned IV=0; IV<(*ndof); IV++) { file >> (*zroe)(IV,IPOIN); 
+   //if(IV==2) {(*zroe)(IV,IPOIN)=0.0;}
+   }
    if(m_tecplotExtraValues) {
     for(unsigned I=0; I<4; I++) { file >> dummy; }
    }

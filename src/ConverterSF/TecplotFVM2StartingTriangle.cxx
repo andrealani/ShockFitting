@@ -34,9 +34,9 @@ TecplotFVM2StartingTriangleProv("TecplotFVM2StartingTriangle");
 TecplotFVM2StartingTriangle::TecplotFVM2StartingTriangle(const std::string& objectName) :
   Converter(objectName)
 {
-  // first the *.CFmesh and the *plt files
+  // first the *.CFmesh and then the *plt file
   m_meshInputfile = vector<string>(); 
-  addOption("InputFile",&m_meshInputfile,
+  addOption("InputFiles",&m_meshInputfile,
             "Tecplot files containing the captured solution");
   // it must be set equal to 0 per Perfect Gas model
   m_nbSpecies = 0;

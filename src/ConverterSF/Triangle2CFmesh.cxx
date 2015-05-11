@@ -110,6 +110,10 @@ void Triangle2CFmesh::convert()
   LogToScreen(DEBUG_MIN, "Triangle2CFmesh::writing CFmesh format\n");
   writeCFmeshFmt();
 
+  // store CFmesh data to exchange data with CF without I/O
+  LogToScreen(DEBUG_MIN, "Triangle2CFmesh::storing CFmesh data\n");
+  storeCFmeshData();
+
   // de-allocate dynamic arrays
   freeArray();
 }
@@ -312,7 +316,7 @@ nine:
 
 void Triangle2CFmesh::writeCFmeshFmt()
 {
-  unsigned BNDS=0; unsigned BND=0; unsigned IND2=2;
+  unsigned BND=0; unsigned IND2=2;
   // @param LIST_STATE = 0 there is not a list of states
   // @param LIST_STATE = 1 there is a list of states
   unsigned  LIST_STATE = 1;
@@ -358,13 +362,15 @@ void Triangle2CFmesh::writeCFmeshFmt()
                               PhysicsInfo::getnbShEdgesMax()),
                               &bndfacVect->at(start));
   }
- 
+
+
   // find max value in bndfac(2,*) vector
   int maxNCl = (*bndfac)(2,0);
   for(unsigned IBFAC=0; IBFAC<nbfac->at(1); IBFAC++) {
    if((*bndfac)(2,IBFAC)>maxNCl) { maxNCl = (*bndfac)(2,IBFAC); }
   }
 
+  BNDS = 0;
   for(int IBC=0; IBC<maxNCl; IBC++) {
    if(ICLR->at(IBC+1)>0) { ++BNDS; }
   }
@@ -386,7 +392,6 @@ void Triangle2CFmesh::writeCFmeshFmt()
    } // if (*bndfac)(2,IFACE)==10
   } // for IFACE<nbfac->at(0)
 
-
   cfin = fopen("cfin.CFmesh", "w");
 
   fprintf(cfin,"%s %1u","!NB_DIM",PhysicsInfo::getnbDim());
@@ -401,7 +406,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
   fprintf(cfin,"%s %5u","!NB_ELEM_PER_TYPE",nelem->at(1));
   fprintf(cfin,"%s","\n!NB_NODES_PER_TYPE 3\n");
   fprintf(cfin,"%s","!NB_STATES_PER_TYPE 3\n");
-  fprintf(cfin,"%s","!LIST_ELEM");
+  fprintf(cfin,"%s","!LIST_ELEM\n");
   for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
    fprintf(cfin,"%s %10i","\n",(*celnod)(0,IELEM)-1);
    fprintf(cfin,"%11i",(*celnod)(1,IELEM)-1);
@@ -420,9 +425,10 @@ void Triangle2CFmesh::writeCFmeshFmt()
   }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
-
+ 
    if(ICLR->at(IBC+1)>0) { 
-    ++BND; 
+    ++BND;
+
     if((IBC+1)==10) {
      if (m_boundary == "single") {
       fprintf(cfin,"%s","\n!TRS_NAME  10\n");
@@ -442,8 +448,10 @@ void Triangle2CFmesh::writeCFmeshFmt()
         fprintf(cfin,"%s","\n");
         fprintf(cfin,"%1i %1i",IND2,IND2);
         fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
+
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
+
      } // if m_boundary = single
 
      if (m_boundary == "splitted") {
@@ -468,6 +476,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
         fprintf(cfin,"%s","\n");
         fprintf(cfin,"%1i %1i",IND2,IND2);
         fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
+
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
@@ -492,6 +501,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
         fprintf(cfin,"%s","\n");
         fprintf(cfin,"%1i %1i",IND2,IND2);
         fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
+
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
@@ -517,8 +527,10 @@ void Triangle2CFmesh::writeCFmeshFmt()
        fprintf(cfin,"%s","\n");
        fprintf(cfin,"%1i %1i",IND2,IND2);
        fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
+
       } // if (*bndfac)(2,j)==(IBC+1)
      } // for j<nbfac->at(1)
+
     } // else (ICLR(IBC+1)!=10)
 
    } // if ICLR.at(IBC+1)>0
@@ -529,7 +541,8 @@ void Triangle2CFmesh::writeCFmeshFmt()
   for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
    for(unsigned IA=0; IA<PhysicsInfo::getnbDim(); IA++) {
     fprintf(cfin,"%s"," ");
-    fprintf(cfin,"%32.16E",(*XY)(IA,IPOIN)); }
+    fprintf(cfin,"%32.16E",(*XY)(IA,IPOIN));
+   }
    fprintf(cfin,"%s","\n");
   }
 
@@ -539,7 +552,8 @@ void Triangle2CFmesh::writeCFmeshFmt()
    for(unsigned IPOIN=0; IPOIN<npoin->at(1); IPOIN++) {
     for(unsigned K=0; K<(*ndof); K++) {
      fprintf(cfin,"%s"," ");
-     fprintf(cfin,"%32.16E",(*zroe)(K,IPOIN));}
+     fprintf(cfin,"%32.16E",(*zroe)(K,IPOIN));
+    }
     fprintf(cfin,"%s","\n");
    }
   }
@@ -547,6 +561,360 @@ void Triangle2CFmesh::writeCFmeshFmt()
   fprintf(cfin,"%s","!END\n");
 
   fclose(cfin);
+}
+
+//----------------------------------------------------------------------------//
+
+void Triangle2CFmesh::storeCFmeshData()
+{
+  unsigned BND=0;
+  int ip;
+  vector <unsigned> np(2);
+
+  // dummy ostringstream variable used to store the boundary patches names
+  ostringstream iBndName;
+
+  // create Jcycl object
+  Jcycl J;
+
+  // allocate the arrays if the optimized version
+  if(MeshData::getInstance().getVersion()=="optimized")
+  {
+   // assign start pointers for the zroe and XY arrays
+   start = PhysicsInfo::getnbDim() *
+           (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() *
+           PhysicsInfo::getnbShPointsMax());
+   XY = new Array2D <double> (PhysicsInfo::getnbDim(),
+                             (npoin->at(1) + 2 *
+                              PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShPointsMax()),
+                             &coorVect->at(start));
+   start = PhysicsInfo::getnbDofMax() *
+           (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+   zroe = new Array2D <double> (PhysicsInfo::getnbDofMax(),
+                               (npoin->at(1) + 2 *
+                                PhysicsInfo::getnbShMax() *
+                                PhysicsInfo::getnbShPointsMax()),
+                                &zroeVect->at(start));
+  // assign starting pointers for the celcel and celnod arrays
+   start = (*nvt) * nelem->at(0);
+   celnod = new Array2D<int> ((*nvt), nelem->at(1), &celnodVect->at(start));
+   celcel = new Array2D<int> ((*nvt), nelem->at(1), &celcelVect->at(start));
+  // assign the starting pointers for the bndfac array
+   start = 3 * (nbfac->at(0) +
+          2 * PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShEdgesMax());
+   bndfac = new Array2D<int> (3,(nbfac->at(1) +
+                              2 * PhysicsInfo::getnbShMax() *
+                              PhysicsInfo::getnbShEdgesMax()),
+                              &bndfacVect->at(start));
+  }
+
+
+  // find max value in bndfac(2,*) vector
+  int maxNCl = (*bndfac)(2,0);
+  for(unsigned IBFAC=0; IBFAC<nbfac->at(1); IBFAC++) {
+   if((*bndfac)(2,IBFAC)>maxNCl) { maxNCl = (*bndfac)(2,IBFAC); }
+  }
+
+  BNDS = 0;
+  for(int IBC=0; IBC<maxNCl; IBC++) {
+   if(ICLR->at(IBC+1)>0) { ++BNDS; }
+  }
+
+  // compute number of shock elements
+  int nbSh = ICLR->at(10) + 2;  
+
+  unsigned minSh=npoin->at(1); unsigned maxSh=0;
+  for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
+   if((*bndfac)(2,IFACE)==10) {
+    int elem = (*bndfac)(0,IFACE);
+    int vert = (*bndfac)(1,IFACE);
+    for(unsigned k=0; k<2; k++) {
+     ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+     np.at(k) = ip-1;
+     if (np.at(k) < minSh) { minSh = np.at(k); }
+     if (np.at(k) > maxSh) { maxSh = np.at(k); }
+    } // for k<2
+   } // if (*bndfac)(2,IFACE)==10
+  } // for IFACE<nbfac->at(0)
+
+  // resize array of Connectivity objects
+  resizeConnectivityArray();
+
+  unsigned IBNODE=0;
+  unsigned m_IBNODE = 0;
+  for(int IBC=0; IBC<maxNCl; IBC++) {
+
+  if(ICLR->at(IBC+1)>0) { 
+   ++BND;
+
+   if((IBC+1)==10) {
+    if (m_boundary == "single") {
+
+     for(unsigned j=0; j<nbfac->at(1); j++) {
+      if((*bndfac)(2,j)==(IBC+1)) {
+       int elem = (*bndfac)(0,j);
+       int vert = (*bndfac)(1,j);
+       for(unsigned k=0; k<2; k++) {
+        ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+        np.at(k) = ip-1;
+       }
+       // store the array of the BoundaryConnectivity object 
+
+       // !! it should be more generic and not with only two nodes for each boundary face
+       for(unsigned k=0; k<2; k++) {
+        // face-node connectivity
+        boundaryNodes->at(IBNODE+k)=np.at(k);
+        // pointer to the start of the corresponding element
+        boundaryPtr->at(IBNODE+k)=IBNODE+k;
+       }
+
+       IBNODE=IBNODE+2;
+
+      } // if (*bndfac)(2,j)==(IBC+1)
+     } // for j<nbfac->at(1)
+
+     // store the array of the BoundaryConnectivity object
+     // array of size @see BNDS x 2, storing consecutively
+     // (1) the number of elements (faces) in each boundary
+     boundaryInfo->at((BND-1)*2)=ICLR->at(IBC+1);
+
+     // (2) a pointer to the first element in each boundary
+     // !! it should be more generic as IBC*nbFace (not only 2)
+     boundaryInfo->at((BND-1)*2+1)=boundaryPtr->at(m_IBNODE);
+     
+     // store the name of the boundary patch
+     iBndName << 10;
+     boundaryNames->at((BND-1)) = iBndName.str();
+     iBndName.str(string());
+
+    } // if m_boundary = single
+
+    if (m_boundary == "splitted") {
+     
+     // Supersonic boundary
+     for(unsigned j=0; j<nbfac->at(1); j++) {
+      if((*bndfac)(2,j)==(IBC+1)) {
+       int elem = (*bndfac)(0,j);
+       int vert = (*bndfac)(1,j);
+       for(unsigned k=0; k<2; k++) {
+        ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+        np.at(k) = ip-1;
+       }
+       if ((np.at(0) >= minSh) && (np.at(0) <  (minSh+nbSh/2)) &&
+           (np.at(1) >= minSh) && (np.at(1) <  (minSh+nbSh/2))) {
+
+       // store the array of the BoundaryConnectivity object
+
+       // !! it should be more generic and not with only two nodes for each boundary face
+       for(unsigned k=0; k<2; k++) {
+        // face-node connectivity 
+        boundaryNodes->at(IBNODE+k)=np.at(k);
+        // pointer to the start of the corresponding element 
+        boundaryPtr->at(IBNODE+k)=IBNODE+k;
+       }
+
+       IBNODE=IBNODE+2;
+
+       } // if np conditions
+      } // if (*bndfac)(2,j)==(IBC+1)
+     } // for j<nbfac->at(1)
+
+     // store the array of the BoundaryConnectivity object
+     // array of size @see BNDS x 2, storing consecutively
+     // (1) the number of elements (faces) in each boundary
+     boundaryInfo->at((BND-1)*2)=nbSh/2-1;
+     // (2) a pointer to the first element in each boundary
+     // !! it should be more generic as IBC*nbFace (not only 2)
+     boundaryInfo->at((BND-1)*2+1)=boundaryPtr->at(m_IBNODE);
+
+     // store the name of the boundary patch
+     iBndName << "InnerSup";
+     boundaryNames->at((BND-1)) = iBndName.str();
+     iBndName.str(string());
+
+     m_IBNODE = m_IBNODE + boundaryInfo->at((BND-1)*2);
+
+     // Subsonic boundary
+
+     for(unsigned j=0; j<nbfac->at(1); j++) {
+      if((*bndfac)(2,j)==(IBC+1)) {
+       int elem = (*bndfac)(0,j);
+       int vert = (*bndfac)(1,j);
+       for(unsigned k=0; k<2; k++) {
+        ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+        np.at(k) = ip-1;
+       }
+       if ((np.at(0) > (maxSh-nbSh/2)) && (np.at(0) <= maxSh) &&
+           (np.at(1) > (maxSh-nbSh/2)) && (np.at(1) <= maxSh)) {
+
+       // store the array of the BoundaryConnectivity object
+
+       // !! it should be more generic and not with only two nodes for each boundary face
+       for(unsigned k=0; k<2; k++) {
+        // face-node connectivity 
+        boundaryNodes->at(IBNODE+k)=np.at(k);
+        // pointer to the start of the corresponding element 
+        boundaryPtr->at(IBNODE+k)=IBNODE+k;
+       }
+
+       IBNODE=IBNODE+2;
+
+       } // if np conditions
+      } // if (*bndfac)(2,j)==(IBC+1)
+     } // for j<nbfac->at(1)
+
+     // store the array of the BoundaryConnectivity object
+     // array of size @see BNDS x 2, storing consecutively
+     // (1) the number of elements (faces) in each boundary
+     boundaryInfo->at(BND*2)=nbSh/2-1;
+     // (2) a pointer to the first element in each boundary
+     // !! it should be more generic as IBC*nbFace (not only 2)
+     boundaryInfo->at(BND*2+1)=boundaryPtr->at(m_IBNODE);
+
+     // store the name of the boundary patch
+     iBndName << "InnerSub";
+     boundaryNames->at(BND) = iBndName.str();
+     iBndName.str(string());
+
+    } // if m_boundary = splitted
+   } // if IBC==10
+
+   else            { 
+
+    for(unsigned j=0; j<nbfac->at(1); j++) {
+     if((*bndfac)(2,j)==(IBC+1)) {
+      int ielem = (*bndfac)(0,j);
+      int ivert = (*bndfac)(1,j);
+      for(unsigned k=0; k<2; k++) {
+       ip = (*celnod)(J.callJcycl(ivert+k+1)-1,ielem-1); // c++ indeces start from 0
+       np.at(k) = ip-1;
+      }
+
+      // store the array of the BoundaryConnectivity object
+
+      // !! it should be more generic and not with only two nodes for each boundary face
+      for(unsigned k=0; k<2; k++) {
+       // face-node connectivity 
+       boundaryNodes->at(IBNODE+k)=np.at(k);
+       // pointer to the start of the corresponding element 
+       boundaryPtr->at(IBNODE+k)=IBNODE+k;
+      }
+
+      IBNODE=IBNODE+2;
+
+     } // if (*bndfac)(2,j)==(IBC+1)
+    } // for j<nbfac->at(1)
+
+    // store the array of the BoundaryConnectivity object
+    // array of size @see BNDS x 2, storing consecutively
+    // (1) the number of elements (faces) in each boundary
+    boundaryInfo->at((BND-1)*2)=ICLR->at(IBC+1);
+
+    // (2) a pointer to the first element in each boundary
+    // !! it should be more generic as IBC*nbFace (not only 2)
+    boundaryInfo->at((BND-1)*2+1)=boundaryPtr->at(m_IBNODE);
+
+    // store the name of the boundary patch
+    iBndName << BND;
+    boundaryNames->at((BND-1)) = iBndName.str();
+    iBndName.str(string());
+
+    } // else (ICLR(IBC+1)!=10)
+
+    m_IBNODE = m_IBNODE + boundaryInfo->at((BND-1)*2);
+
+   } // if ICLR.at(IBC+1)>0
+  } // for IBC<maxNCl
+
+  // store element-node connectivity
+  for(unsigned IELEM=0; IELEM<nelem->at(1); IELEM++) {
+   // array storing pointers to the beginning of each element
+   elementPtr->at(IELEM)=IELEM*(*nvt)+0;
+   // since c++ array start from 0, the element-node connectivity
+   // ID are decreased of 1
+   // (it does not influence the SF connecitvity data because celnod
+   // will be overwritten in CFmesh2Triangle
+   for(unsigned IVERT=0;IVERT<(*nvt);IVERT++) {
+    (*celnod)(IVERT,IELEM)=(*celnod)(IVERT,IELEM)-1;
+   }
+  }
+
+  // assign the CF connectivity
+  storeConnectivity();
+  storeField();
+}
+
+//----------------------------------------------------------------------------//
+
+void  Triangle2CFmesh::resizeConnectivityArray()
+{
+  if(m_boundary=="single") { boundaryInfo->resize(BNDS*2);
+                             boundaryNames->resize(BNDS);}
+  if(m_boundary=="splitted") { boundaryInfo->resize((BNDS+1)*2);
+                               boundaryNames->resize(BNDS+1);}
+  // !! it should be more generic and not with only two nodes for each boundary face
+  boundaryNodes->resize(nbfac->at(1)*2);
+  boundaryPtr->resize(nbfac->at(1)*2);
+  elementPtr->resize(nelem->at(1));
+}
+
+//----------------------------------------------------------------------------//
+
+void Triangle2CFmesh::storeConnectivity()
+{
+  // @param PhysicsInfo::getnbDim() spatial dimension (2 or 3)
+  // @param nbBnds                  number of individual boundary patches
+  // @param boundaryInfo            array of size @see BNDS x 2, storing consecutively
+  //                                (1) the number of elements (faces) in each boundary
+  //                                (2) a pointer to the first element in each boundary
+  // @param boundaryNodes           element-node connectivity
+  // @param boundaryPtr             pointer to the start of the corresponding element
+  inbConnectivity->reset(PhysicsInfo::getnbDim(),
+                         boundaryInfo->size()/2,
+                         &boundaryInfo->at(0),
+                         &boundaryNodes->at(0),
+                         &boundaryPtr->at(0),
+                         &boundaryNames->at(0));
+
+  // @param nelem->at(1)    number of elements
+  // @param celnodVect      element-node connectivity
+  // @param elementPtr      pointer to the start of the corresponding element
+  inConnectivity->reset(nelem->at(1),
+                        &celnodVect->at((*nvt)*nelem->at(0)),
+                        &elementPtr->at(0));
+}
+
+//----------------------------------------------------------------------------//
+
+void Triangle2CFmesh::storeField()
+{
+  unsigned start;
+
+  // @param npoin           number of degrees of freedom
+  // @param inConnectivity  inner connectivity 
+  // @param zroeVect        mesh points state
+  start = PhysicsInfo::getnbDofMax() *
+          (npoin->at(0) + 2 *
+          PhysicsInfo::getnbShMax() * PhysicsInfo::getnbShPointsMax());
+  inStateField->reset(npoin->at(1),
+                      (*ndof), // stride for dof freedom (e.g.nb of equations) 
+                      (*inConnectivity),
+                      &zroeVect->at(start));
+
+  // @param npoin             number of degrees of freedom
+  // @param inConnectivity    inner connectivity 
+  // @param coorVect          mesh points coordinates
+  start = PhysicsInfo::getnbDim() *
+          (npoin->at(0) + 2 *
+           PhysicsInfo::getnbShMax() *
+           PhysicsInfo::getnbShPointsMax());
+  inCoordinatesField->reset(npoin->at(1),
+                            (*ndof),// stride for dof (e.g.nb of equations) 
+                            (*inConnectivity),
+                            &coorVect->at(start));
 }
 
 //----------------------------------------------------------------------------//
@@ -572,6 +940,17 @@ void Triangle2CFmesh::setMeshData()
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   fname = MeshData::getInstance().getData <stringstream>("FNAME");
   ICLR = MeshData::getInstance().getData <vector<int> >("ICLR");
+  boundaryNodes = MeshData::getInstance().getData <vector<int> >("CF_boundaryNodes");
+  boundaryNames =
+   MeshData::getInstance().getData <vector<string> >("CF_boundaryNames");
+  boundaryInfo = MeshData::getInstance().getData <vector<int> >("CF_boundaryInfo");
+  boundaryPtr = MeshData::getInstance().getData <vector<int> >("CF_boundaryPtr");  
+  elementPtr = MeshData::getInstance().getData <vector<int> >("CF_elementPtr"); 
+  inConnectivity = MeshData::getInstance().getData <Connectivity> ("inConn");
+  inbConnectivity = 
+    MeshData::getInstance().getData <BoundaryConnectivity> ("inbConn");
+  inStateField = MeshData::getInstance().getData <Field> ("inStateField");
+  inCoordinatesField = MeshData::getInstance().getData <Field> ("inNodeField");
 }
 
 //----------------------------------------------------------------------------//

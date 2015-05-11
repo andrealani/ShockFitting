@@ -782,20 +782,26 @@ void Triangle2Tecplot::writeTecplotFmt()
       else { duplicate=0; }
      }
 
+     // assign the new size to the vectors
      elemVector_noduplicate.resize(h);
-
      elemVector_sort.resize(h);
      array_elemVector_sort.resize(2,h);
 
+     // define a new vector to sort the elements inside elemVector_noduplicate
      elemVector_sort=elemVector_noduplicate;
 
+     // sort the elemVcetor_sort vector
      sort(elemVector_sort.begin(),elemVector_sort.end());
 
+     // since the tecplot cell nodes for each TRS are numbered
+     // starting from 1:nbElem(TRS), the array_elemVector is defined to
+     // link the SF cell node IDs to the new IDs defined inside the tecplot file
      for(unsigned j=0; j<elemVector_sort.size(); j++) {
       array_elemVector_sort(0,j)=elemVector_sort.at(j);
       array_elemVector_sort(1,j)=j+1;
      }
 
+     // assign the new IDs to the elemVector_uniIndex vector
      for(unsigned j=0;j<elemVector.size(); j++) {
       for(unsigned k=0;k<array_elemVector_sort.getnCols();k++) {
        if(elemVector.at(j)==array_elemVector_sort(0,k)) {
@@ -809,6 +815,7 @@ void Triangle2Tecplot::writeTecplotFmt()
      fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
      fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
+     // write the grid-points coordinates and state
      for(unsigned j=0; j<elemVector_sort.size(); j++) {
       for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
        fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j)-1)," ");
@@ -819,6 +826,8 @@ void Triangle2Tecplot::writeTecplotFmt()
       fprintf(cfin,"%s","\n");
      }
 
+     // write the cell nodes with the ID used in tecplot
+     // 1:nbElem(TRS)
      for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
       fprintf(cfin,"%11i",elemVector_unitIndex.at(j));
       fprintf(cfin,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
@@ -849,7 +858,6 @@ void Triangle2Tecplot::setMeshData()
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
   coorVect = MeshData::getInstance().getData <vector<double> >("COOR");
-//  nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   celnodVect = MeshData::getInstance().getData <vector<int> >("CELNOD");
   celcelVect = MeshData::getInstance().getData <vector<int> >("CELCEL");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
