@@ -80,7 +80,7 @@ void WriteTriangle::write()
   dummyfile = fname->str()+".node";
 
   file = fopen(dummyfile.c_str(),"w");
-
+ 
   ilist = npoin->at(0) + 2 * PhysicsInfo::getnbShMax() *
                              PhysicsInfo::getnbShPointsMax();
 
@@ -124,7 +124,7 @@ void WriteTriangle::write()
   file = fopen(dummyfile.c_str(),"w");
 
   fprintf(file,"%s %u %s", "0 ",PhysicsInfo::getnbDim()," 0 1 \n");
-  
+
   // set map vector for bndfac and write bndfac on poly file
   writeBndfac();
 
@@ -141,7 +141,7 @@ void WriteTriangle::write()
 
 void WriteTriangle::setMapVectorForNodcod()
 {
-  for (unsigned IPOIN=0; IPOIN< npoin->at(0); IPOIN++) {
+  for (unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if (nodcod->at(IPOIN)>=0) { ++TNPOIN;
                                M02M1->at(IPOIN+1) = TNPOIN;
                                M12M0->at(TNPOIN) = IPOIN+1; } 
@@ -155,7 +155,6 @@ void WriteTriangle::setMapVectorForNodcodSh()
   for (unsigned ISH=0; ISH<PhysicsInfo::getnbShMax(); ISH++) {
    for(unsigned I=0; I<PhysicsInfo::getnbShPointsMax(); I++) {
     ++icount;
-
     if ((*NodCodSh)(I,ISH)==10) { ++TNPOIN;
                                     M02M1->at(icount) = TNPOIN;
                                     M12M0->at(TNPOIN) = icount;}

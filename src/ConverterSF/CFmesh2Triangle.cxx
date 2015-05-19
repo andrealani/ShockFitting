@@ -577,6 +577,7 @@ void CFmesh2Triangle::writeTriangleFmt()
 
   fprintf(trianglefile,"%s %u %s", "0 ", PhysicsInfo::getnbDim(), " 0 1\n");
   fprintf(trianglefile,"%u %s",nbfac->at(1)," 1\n");
+
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    NBND = boundaryNames->at((*bndfac)(2,IFACE)-1); //c++ indeces start from 0
    if(NBND=="InnerSup" || NBND=="InnerSub") { NBND="10"; }

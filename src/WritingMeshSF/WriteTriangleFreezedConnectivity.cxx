@@ -121,6 +121,8 @@ void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
   *fname << setw(7-nbDig) << setfill('0') << left << string("na").c_str();
   *fname << MeshData::getInstance().getIstep();
 
+cout << fname->str() << endl;
+
   nbDig = 0;
   dummyIstep = MeshData::getInstance().getIstep()-1;
   while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
@@ -129,8 +131,7 @@ void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
 
   // if the solution has been saved in the previous step
   // take the files inside the corresponding folder
-  if (((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()==0) ) {
-
+  if(((MeshData::getInstance().getIstep()-1)-1)% MeshData::getInstance().getnbIbak()==0) {
    command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.poly ./" + fname->str() + ".1.poly";
    system(command.c_str());
    command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.ele ./" + fname->str() + ".1.ele";
@@ -141,9 +142,8 @@ void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
    system(command.c_str());
   }
 
-  else if (((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()!=0) 
-             && (MeshData::getInstance().getIstep()-1)!=1 ) {
-
+  // else copy the triangle files stored in the execution directory 
+  else if ((((MeshData::getInstance().getIstep()-1)-1)% MeshData::getInstance().getnbIbak()!=0) && (MeshData::getInstance().getIstep()-1)!=1) { 
    command = "cp " + fnameOld + ".1.poly " + fname->str() + ".1.poly";
    system(command.c_str());
    command = "cp " + fnameOld + ".1.ele " + fname->str() + ".1.ele";
@@ -154,9 +154,7 @@ void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
    system(command.c_str());
   }
 
-  else if ((MeshData::getInstance().getIstep()-1) % MeshData::getInstance().getnbIbak()!=0 
-            && (MeshData::getInstance().getIstep()-1)==1) {
-
+  else if ((MeshData::getInstance().getIstep()-1)==1) {
    command = "cp ./step00001/na00001.1.poly ./na00002.1.poly";
    system(command.c_str());
    command = "cp ./step00001/na00001.1.ele ./na00002.1.ele";

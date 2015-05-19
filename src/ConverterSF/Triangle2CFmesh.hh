@@ -131,7 +131,7 @@ private: // data
   /// vector characterizing boundary faces (assignable to MeshData)
   std::vector<int>* bndfacVect;
 
-  /// vector storing boundary edges colours
+  /// vector storing  number of boundary faces
   std::vector<int>* ICLR;
 
   /// face-node connectivity

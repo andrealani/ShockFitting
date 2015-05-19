@@ -112,7 +112,7 @@ void Triangle2CFmesh::convert()
 
   // store CFmesh data to exchange data with CF without I/O
   LogToScreen(DEBUG_MIN, "Triangle2CFmesh::storing CFmesh data\n");
-  storeCFmeshData();
+//  storeCFmeshData();
 
   // de-allocate dynamic arrays
   freeArray();
@@ -392,6 +392,7 @@ void Triangle2CFmesh::writeCFmeshFmt()
    } // if (*bndfac)(2,IFACE)==10
   } // for IFACE<nbfac->at(0)
 
+
   cfin = fopen("cfin.CFmesh", "w");
 
   fprintf(cfin,"%s %1u","!NB_DIM",PhysicsInfo::getnbDim());
@@ -418,10 +419,12 @@ void Triangle2CFmesh::writeCFmeshFmt()
 
   if (m_boundary == "single") {
    fprintf(cfin,"%s %3u","\n!NB_TRSs",BNDS); 
+   boundaryNames->resize(BNDS);
   }
 
   else if (m_boundary == "splitted") {
    fprintf(cfin,"%s %3u","\n!NB_TRSs",BNDS+1);
+   boundaryNames->resize(BNDS+1);
   }
 
   for(int IBC=0; IBC<maxNCl; IBC++) {
@@ -436,6 +439,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
       fprintf(cfin,"%s %4u","!NB_GEOM_ENTS",ICLR->at(IBC+1));
       fprintf(cfin,"%s","\n!GEOM_TYPE Face\n");
       fprintf(cfin,"%s","!LIST_GEOM_ENT");
+
+      // assign the boundary name to the corresponding MeshData vector
+      boundaryNames->at(BND-1)="10";
 
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
@@ -481,6 +487,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
+      // assign the boundary name to the corresponding MeshData vector
+      boundaryNames->at(BND-1) = "InnerSup";
+
       // Subsonic boundary
       fprintf(cfin,"%s","\n!TRS_NAME  InnerSub\n");
       fprintf(cfin,"%s","!NB_TRs 1\n");
@@ -506,6 +515,9 @@ void Triangle2CFmesh::writeCFmeshFmt()
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
 
+      // assign the boundary name to the corresponding MeshData vector
+      boundaryNames->at(BND) = "InnerSub";
+
      } // if m_boundary = splitted
     } // if IBC==10
 
@@ -515,6 +527,11 @@ void Triangle2CFmesh::writeCFmeshFmt()
      fprintf(cfin,"%s %4i","!NB_GEOM_ENTS",ICLR->at(IBC+1));
      fprintf(cfin,"%s","\n!GEOM_TYPE Face\n");
      fprintf(cfin,"%s","!LIST_GEOM_ENT");
+
+     // assign the boundary name to the corresponding MeshData vector
+     stringstream dummyBnd;
+     dummyBnd << BND;
+     boundaryNames->at(BND-1) = dummyBnd.str();
 
      for(unsigned j=0; j<nbfac->at(1); j++) {
       if((*bndfac)(2,j)==(IBC+1)) {

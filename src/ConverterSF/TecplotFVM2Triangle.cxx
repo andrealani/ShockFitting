@@ -295,9 +295,14 @@ void TecplotFVM2Triangle::readTecplotFmt()
   countnbBoundaryNodes();
 
   // open the tecplot file to read the list state in the grid-points
-  string cfoutTecplot = "cfout-P0.plt";
+  string cfoutTecplot = "cfout.plt";
 
   file.open(string(cfoutTecplot).c_str());
+
+  if(!file.is_open()) {
+   cout << "TecplotFVMTriangle::error => failed to open .plt file\n";
+   exit(1);
+  }
 
   // read "TITLE      = .." 
   //      "VARIABLES  = .."

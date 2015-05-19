@@ -155,11 +155,11 @@ void BndryNodePtr::myroutine()
   // node seems to belong to two boundary faces
       ifail = IPOIN;
       cout << "BndryNodePtr::error => Node seems to belong to two boundary faces\n";
-      cout << "Face no. " << IFACE << endl;
-      for (unsigned k=0; k<3; k++) { cout << (*bndfac)(k,IFACE) << ", " << endl;}
-      cout << "Node no. " << IPOIN << endl;
-      for (unsigned k=0; k<3; k++) { cout << (*nodptr)(ipos,k) << ", " << endl;}
-      cout << "Color " << (*bndfac)(2,IFACE) << endl;
+      cout << "Face no. " << IFACE+1 << endl;
+      for (unsigned k=0; k<3; k++) { cout << (*bndfac)(k,IFACE) << ", ";}
+      cout << "\nNode no. " << IPOIN+1 << endl;
+      for (unsigned k=0; k<3; k++) { cout << (*nodptr)(ipos,k) << ", ";}
+      cout << "\nColor " << (*bndfac)(2,IFACE) << endl;
       goto seven;
      }
      IFACE++;

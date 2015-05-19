@@ -2,7 +2,6 @@ LIST ( APPEND Framework_files
 BaseShockFitting.cxx
 BaseShockFitting.hh
 BoundaryConnectivity.hh
-BoundaryConnectivity_SF.hh
 CFDSolver.cxx
 CFDSolver.hh
 ChemicalConsts.hh
@@ -11,12 +10,10 @@ ChemicalInfo.hh
 Clist.hh
 Compatibility.hh
 Connectivity.hh
-Connectivity_SF.hh
 Converter.cxx
 Converter.hh
 CopyMaker.cxx
 CopyMaker.hh
-Field_SF.hh
 FieldInterpolator.cxx
 FieldInterpolator.hh
 FileLogManip.hh

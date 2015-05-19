@@ -243,7 +243,9 @@ void StandardShockFitting::process()
    }
 
    m_findPhantPoints->remesh();
+
    m_changeBndryPoints->remesh();
+
    m_computeNormalVector->remesh();
 
    m_computeShockLayer->remesh();
@@ -267,10 +269,10 @@ void StandardShockFitting::process()
 
    cout << "_________________________________________________________________\n\n";
 
-//   m_COOLFluiD->call();
+   m_COOLFluiD->call();
 
    // change COOLFluiD output file name
-/*   if(MeshData::getInstance().getnbProcessors()==1) {
+   if(MeshData::getInstance().getnbProcessors()==1) {
     if(MeshData::getInstance().withP0()) { 
      execmd = "cp -f cfout-P0.CFmesh cfout.CFmesh"; 
      system(execmd.c_str());
@@ -292,11 +294,11 @@ void StandardShockFitting::process()
     if(MeshData::getInstance().withP0()) { execmd = "rm -f cfout-P?.CFmesh";
                                            system(execmd.c_str()); }
    }
-*/
+
    cout << "_________________________________________________________________\n\n";
 
    m_CFmeshToTriangle->convert();
-exit(1);
+
    if  (m_version=="original" )  { m_readInputFile1->generate(); }
 
    m_copyZRoe1_0->copy();
@@ -347,17 +349,18 @@ exit(1);
     system(execmd.c_str());
 
     if (MeshData::getInstance().getnbProcessors()==1) {
-     execmd = "cp -f cfout-P0.plt cf" + backdir.str().substr(4,9) + ".plt";
+     execmd = "mv cfout.plt cf" + backdir.str().substr(4,9) + ".plt";
      system(execmd.c_str());
-     execmd = "cp -f cfout-P0-surf.plt cf" + backdir.str().substr(4,9) + "-surf.plt";
+     execmd = "mv cfout.surf.plt cf" + backdir.str().substr(4,9) + "-surf.plt";
      system(execmd.c_str());
+     execmd = "mv -f cf*.plt " + backdir.str();
 //     execmd = "cp Wall.plt-1 wall" + backdir.str().substr(4,9) + ".plt";
     }
     else if (MeshData::getInstance().getnbProcessors()>1) {
      execmd = "rename out cf"+backdir.str().substr(4,9)+" cfout-P?.plt";
      execmd = "mv -f cf*.plt " + backdir.str();
      system(execmd.c_str());
-     execmd = "cp Wall.plt-1 wall" + backdir.str().substr(4,9) + ".plt";
+//     execmd = "cp Wall.plt-1 wall" + backdir.str().substr(4,9) + ".plt";
     }
 
     system(execmd.c_str());

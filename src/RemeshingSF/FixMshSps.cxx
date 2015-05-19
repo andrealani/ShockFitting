@@ -74,7 +74,7 @@ void FixMshSps::remesh()
 
   createShockNodesList();
 
-  /// create downstream shock edges
+  // create downstream shock edges
   createDownShEdges();
 
   for(unsigned ISPPNTS=0; ISPPNTS<(*nSpecPoints); ISPPNTS++) {

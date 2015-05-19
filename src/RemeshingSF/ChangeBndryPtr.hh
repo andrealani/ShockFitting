@@ -51,7 +51,7 @@ private: // helper functions
   void removeNode(int);
 
   /// update the i-face=nodptr(ipos,2)
-  void updateIface();
+  void updateIface(int);
 
   /// remove the i-face=nodptr(ipos,3)
   void removeIface();
@@ -98,6 +98,10 @@ private: // data
   /// bndfac(2)(i-face) boundary marker of i-boundary face
   Array2D <int>* bndfac;
 
+  /// working vector used to store the end points of the 
+  /// face made inactive
+  Array2D <int> inactiveFaceInfo;
+
   /// position of i-node in nodptr vector
   int ipos;
 
@@ -106,6 +110,9 @@ private: // data
 
   /// dummy vector used to store bndfac elements
   std::vector <int> inode;
+
+  /// boolean vecto used to the current face has been already removed
+  std::vector <bool> alreadyRemoved;
 
   /// store file log info
   FileLogManip logfile;

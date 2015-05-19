@@ -228,19 +228,15 @@ vector <double>* zroeVect = MeshData::getInstance().getData <vector<double> >("Z
     unsigned ii = 0;
     for (unsigned I=0; I<nShockPoints->at(ISH); I++) {
 
-// The velocity condition does not always work properly (e.g. FVM)  
-// so a pressure condition has been implemented
-// BUT the latter should be verified
-
 // velocity condition
-//     ui = (*ZRoeShd)(2,I,ISH)/(*ZRoeShd)(0,I,ISH);
-//     vi = (*ZRoeShd)(3,I,ISH)/(*ZRoeShd)(0,I,ISH);
-//     dum = ui*(*vShNor)(0,I,ISH)+vi*(*vShNor)(1,I,ISH);
-//     if(dum>0) {ii++;}
+     ui = (*ZRoeShd)(2,I,ISH)/(*ZRoeShd)(0,I,ISH);
+     vi = (*ZRoeShd)(3,I,ISH)/(*ZRoeShd)(0,I,ISH);
+     dum = ui*(*vShNor)(0,I,ISH)+vi*(*vShNor)(1,I,ISH);
+     if(dum>0) {ii++;}
 ////
 
 // pressure conditon
-     kinetic = (*ZRoeShd)(2,I,ISH)*(*ZRoeShd)(2,I,ISH)+
+/*     kinetic = (*ZRoeShd)(2,I,ISH)*(*ZRoeShd)(2,I,ISH)+
                (*ZRoeShd)(3,I,ISH)*(*ZRoeShd)(3,I,ISH);
      kinetic = kinetic*0.5;
      h = (*ZRoeShd)(1,I,ISH)/(*ZRoeShd)(0,I,ISH);
@@ -254,9 +250,9 @@ vector <double>* zroeVect = MeshData::getInstance().getData <vector<double> >("Z
      upstreamPress = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam()*
                      ((*ZRoeShu)(0,I,ISH)*(*ZRoeShu)(0,I,ISH)*h-kinetic);
 
-     if(upstreamPress>downstreamPress) {ii++;}
-    } // for I
+     if(upstreamPress>downstreamPress) {ii++;}*/
 ////
+    } // for I
 
     if (ii < nShockPoints->at(ISH)/2 - 1) { break; }
     for (unsigned I=0; I<nShockPoints->at(ISH); I++) {

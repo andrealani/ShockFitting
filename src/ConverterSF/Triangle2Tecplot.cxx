@@ -381,7 +381,7 @@ void Triangle2Tecplot::writeTecplotFmt()
   }
 
   // compute number of shock elements
-  int nbSh = ICLR->at(10) + 2;  
+  int nbSh = ICLR->at(10) + 2;
 
   unsigned minSh=npoin->at(1); unsigned maxSh=0;
   for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
@@ -397,7 +397,6 @@ void Triangle2Tecplot::writeTecplotFmt()
    } // if (*bndfac)(2,IFACE)==10
   } // for IFACE<nbfac->at(0)
 
-  
   // assign the string of the rho variables
   for(unsigned isp=0;isp<(*nsp);isp++) {
    stringstream ispstr;
@@ -567,6 +566,8 @@ void Triangle2Tecplot::writeTecplotFmt()
      } // if m_boundary = single
 
      if (m_boundary == "splitted") {
+
+      // Supersonic boundary
       Tstr << "T=\"InnerSup, TR 0\",";
       nbElemstr << "E=" << nbSh/2-1 << ", ";
       elemVector.resize((nbSh/2-1)*2);
@@ -580,16 +581,16 @@ void Triangle2Tecplot::writeTecplotFmt()
         int elem = (*bndfac)(0,j);
         int vert = (*bndfac)(1,j);
         for(unsigned k=0; k<2; k++) {
-         np.at(k) = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1)-1;
+         ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+         np.at(k) = ip-1;
         }
         if ((np.at(0) >= minSh) && (np.at(0) <  (minSh+nbSh/2)) &&
             (np.at(1) >= minSh) && (np.at(1) <  (minSh+nbSh/2))) {
-         elemVector.at(h)=np.at(0);
-         elemVector.at(h+1)=np.at(1);
+         for(unsigned k=0; k<2; k++) {elemVector.at(h+k)= np.at(k);}
          h=h+2;
-        } // if np conditions
-       } // if (*bndfac)(2,j)==(IBC+1)
-      } // for j<nbfac->at(1)
+        }
+       }
+      }
 
       // delete the duplicate of the cell nodes IDs from the elemVector
       // by defining a elemVector_noduplicate vector
@@ -660,6 +661,8 @@ void Triangle2Tecplot::writeTecplotFmt()
       Tstr.str(string());
       nbElemstr.str(string());
 
+      // Subsonic boundary
+
       Tstr << "T=\"InnerSub, TR 0\",";
       nbElemstr << "E=" << nbSh/2-1 << ", ";
       elemVector.resize((nbSh/2-1)*2);
@@ -673,16 +676,16 @@ void Triangle2Tecplot::writeTecplotFmt()
         int elem = (*bndfac)(0,j);
         int vert = (*bndfac)(1,j);
         for(unsigned k=0; k<2; k++) {
-         np.at(k) = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1)-1;
+         ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
+         np.at(k) = ip-1;
         }
         if ((np.at(0) > (maxSh-nbSh/2)) && (np.at(0) <= maxSh) &&
             (np.at(1) > (maxSh-nbSh/2)) && (np.at(1) <= maxSh)) {
-         elemVector.at(h)=np.at(0);
-         elemVector.at(h+1)=np.at(1);
+         for(unsigned k=0; k<2; k++) {elemVector.at(h+k)= np.at(k);}
          h=h+2;
-        } // if np conditions
-       } // if (*bndfac)(2,j)==(IBC+1)
-      } // for j<nbfac->at(1)
+        } // if np.at()
+       } // if((*bndfac)(2,j)==(IBC+1)) 
+      } // for j<nbfac->at(1) 
 
       // delete the duplicate of the cell nodes IDs from the elemVector
       // by defining an elemVector_noduplicate vector
@@ -725,22 +728,44 @@ void Triangle2Tecplot::writeTecplotFmt()
        }
       }
 
+      // variable storing curvilinear coordinates of the
+      // innersub grid points
+      double r;
+
+      // output file storing info on the subsonic boundary patch
+      FILE* fileFarFieldBC = fopen("FarFieldBc.dat", "w");
+
       nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
+      // write data on *plt file
       fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
       fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
       fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
+      // write the number of nodes belonging to InnerSub on
+      // the ile storing InnerSub infos
+      fprintf(fileFarFieldBC,"%5u %s",h, "\n");
+
       // write the grid-points coordinates and state
+      // on the tecplot file and on the file storing info
+      // on InnerSub boundary patch
       for(unsigned j=0; j<elemVector_sort.size(); j++) {
+       r = 0;
        for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
         fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
+        r = r + pow((*XY)(k,elemVector_sort.at(j)),2);
        }
+       fprintf(fileFarFieldBC,"%28.16e",sqrt(r));
        for(unsigned k=0;k<(*ndof);k++) {
         fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j))," ");
+        fprintf(fileFarFieldBC,"%30.16e",(*zroe)(k,elemVector_sort.at(j)));
        }
        fprintf(cfin,"%s","\n");
+       fprintf(fileFarFieldBC,"%s","\n");
       }
+
+      // close file storing InnerSub info
+      fclose(fileFarFieldBC);
 
       // write the cell nodes with the ID used in tecplot
       // 1:nbElem(TRS)
