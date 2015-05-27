@@ -95,8 +95,10 @@ int main (int argc, char** argv)
   }
 
   // link the coolfluid files
-  commandln = "cp -rf " + pwdTestDir + "/coolfluid-solver.xml .";
-  system(commandln.c_str());
+  if(i!=9) {
+   commandln = "cp -rf " + pwdTestDir + "/coolfluid-solver.xml .";
+   system(commandln.c_str());
+  }
   commandln = "cp -rf "+pwdTestDir+"/cf00.CFcase .";
   system(commandln.c_str());
 

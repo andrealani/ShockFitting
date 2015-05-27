@@ -1,0 +1,454 @@
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{rotating}
+\usepackage{lscape}
+\usepackage{setspace}
+\usepackage{mathrsfs}
+\usepackage{chemarr}
+\usepackage{yfonts}
+\usepackage{xfrac}
+
+\begin{document}
+
+\title{\underline{Shock-Fitting Solver: \textit{input.case} configuration file}}
+\date{}
+\maketitle
+The Shock-Fitting Solver configuration file is named \textit{input.case}. 
+It is composed by several lines. 
+Each line is in the form \texttt{KEY = VALUE}.
+The \texttt{KEY} is an object or an object parameter and the \texttt{VALUE} is the quantity assigned to \texttt{KEY}.
+\newline
+\newline
+The \texttt{VALUE} can be:
+
+\begin{itemize}
+\item{an alpha-numeric string}
+\item{an integer}
+\item{a boolean (\textit{true} or \textit{false})}
+\item{a floating point number}
+\item{an arbitrary complex analytical function}
+\item{an array of all the previous}
+\end{itemize}
+
+If a parameter is not necessary for a specified case, the \texttt{VALUE} can be set equal to "\texttt{/}".
+The \texttt{VALUE}s can be broken in different lines by using the character backslash.
+Comments start with "\#".
+
+
+\subsubsection*{The \textit{Shock-fitting Solver} model}
+
+\hspace*{1cm} \texttt{.ShockFittingObj = StandardShockFitting}
+\newline
+\newline
+specifies the model of the Shock-fitting Solver. It corresponds to a set of functionalities defined inside the code.
+Up-to-date the \texttt{StandardShockFitting} model and the next sections are, therefore, related to it.
+
+\subsubsection*{Model setting}
+
+\hspace*{1cm} \texttt{.StandardShockFitting = original}
+\newline
+\newline
+allows to choose the between different versions (if available) of the chosen Shock-Fitting Solver model. 
+\newline
+Up-to-date the \texttt{StandardShockFitting} has two version:
+
+\begin{itemize}
+\item{\texttt{original}: the \texttt{Triangle Mesh Generator} library is called as executable files. The data are passed to it through \texttt{I/O} files.}
+\item{\texttt{optimized}: the \texttt{Triangle Mesh Generator} library is called through it functions. The data are passed to it through arrays.}
+\end{itemize}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual = true}
+\newline
+\newline
+specifies if the shock-fitting residual are computed during the execution. If \texttt{true}, the \texttt{ComputeResidual} object must be added to the \texttt{StateUpdaterSF} library list of section \ref{subsubsec:state updater}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.startFromCapturedFiles = true}
+\newline
+\newline
+defines if the Shock-fitting Solver initial files are generated from the files storing the captured solution.
+
+\subsubsection*{MeshData}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.EPS = 0.20e-12}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.SNDMIN = 0.05}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.DXCELL = 0.0006}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.SHRELAX = 0.9}
+\newline
+\newline
+define the distance between two shock faces, the maximum non-dimensional distance of phantom nodes, the length of the shock edges, the relax coefficient of shock points integration.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.Naddholes = 0}
+\newline
+\newline
+defines the number of hole points.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.CADDholes = 0}
+\newline
+\newline
+defines the coordinates of the hole points specified above.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.freezedWallCells = true}
+\newline
+\newline
+specifies if the connectivity of the wall cells must be freezed.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.WithP0 = true}
+\newline
+\newline
+specifies the name of the output file given by \texttt{COOLFluiD} according to the compiled \texttt{COOLFluiD} version.
+Choose \texttt{true} for the \texttt{2013.9} version and \texttt{false} for the \texttt{2014.11} one or higher.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.NPROC = 4}
+\newline
+\newline
+defines the number of processor used for the \texttt{COOLFluiD} execution. 
+\newline
+With \texttt{.NPROC = 1} it will be executed sequentially, with \texttt{.NPROC = 2} or more, it will be executed in parallel.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.NBegin = 0}
+\newline
+\newline
+specifies the number of the first step. If \texttt{.NBegin = 0} is chosen, the steps numbering will start from \texttt{0}. 
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.NSteps = 1000}
+\newline
+\newline
+specifies for how many steps the simulation will be run.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.IBAK = 100}
+\newline
+\newline
+defines every how many steps the solution will be saved. The files are saved inside directories named \textit{step} and the number of the current step (e.g: the step number 101 will be saved in the folder named as \textit{step00101}).
+
+\subsubsection*{PhysicsData}
+
+\textbf{PhysicsInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NDIM = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NDOFMAX = 6}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NSHMAX = 5}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NPSHMAX = 1000}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NESHMAX = 999}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NADDHOLESMAX = 10}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12}
+\newline
+\newline
+specify the space dimension, the maximum number of degrees of freedom, the maximum number of shocks, the maximum number of shock points for each shock, the maximum number of shock edges for each shocks\footnote{this values must always set equal to \texttt{NPSHMAX-1}}, the maximum number of holes, the maximum number of special points.
+\newline
+These options are mostly stable and should be not be changed at the first attempt.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.40e0}
+\newline
+\newline
+defines the value of the free-stream heat capacity ratio. This value is used only in the \texttt{PG} (\textit{Perfect Gas}) and \texttt{Cneq} (\textit{Chemical non equilibrium}) gas models.
+\newline
+\newline
+\textbf{ChemicalInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = TCneq}
+\newline
+\newline
+specifies the gas model. Up-to-date the \texttt{PG} (\textit{Perfet Gas}) and \texttt{Cneq} (\textit{Chemical non equilibrium} with argon mixture) and \texttt{TCneq} (\textit{Thermo-chemical non-equilibrium}) are implemented.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = nitrogen2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = nitrogen2.dat}
+\newline
+\newline
+define the name of the the gas mixture and the file containing the gas mixture informations. It is used in the \texttt{TCneq} gas model.
+\newline
+The mixture file template is shown hereafter:
+\newline
+\newline
+\hspace*{1.2cm}
+\texttt{!NAME \hspace*{2cm} (name of the mixture)}
+\newline
+\hspace*{1.2cm}
+\texttt{!NSP \hspace*{2.2cm} (number of the chemical species)}
+\newline
+\hspace*{1.2cm}
+\texttt{!SPECIES \hspace*{1.4cm} (name of the species - IUPAC)}
+\newline
+\hspace*{1.2cm}
+\texttt{!MM \hspace*{2.4cm} (molecular weight of the species $[$kg$/$mol$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!HF \hspace*{2.4cm} (formation enthalpy at 0 K of the species $[$J$/$kg$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!THEV \hspace*{2cm} (characteristic vibrational temperature $[$K$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!GAMS \hspace*{2cm} (specific heat ratio of each species)}
+\newline
+\hspace*{1.2cm}
+\texttt{!TYPE \hspace*{2cm} (type of molecule:}
+\newline
+\texttt{\hspace*{6cm} A: atomic}
+\newline
+\texttt{\hspace*{6cm} B: di-atomic or aligned}
+\newline
+\texttt{\hspace*{6cm} T: tri-atomic non aligned)}
+\newline
+\newline
+some examples can be found inside the folder \texttt{src$/$data$\_$template}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.Qref = /}
+\newline
+\newline
+specifies the reference speed. It should be activated only for the \texttt{Cneq} model.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IEV = 3}
+\newline
+\newline
+Those options are most stable and should not be changed.
+\newline
+\newline
+\textbf{ReferenceInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4}
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = 0.00036354}
+\hspace*{14.5cm} \texttt{ \textbackslash{}}
+\newline
+\hspace*{14.6cm} \texttt{0.00461646}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1.0e0}
+\newline
+\newline
+are used by the \texttt{VariableTransformerSF} library. 
+\newline
+Those options define the gas heat capacity ratio, the gas constant, the free-stream temperature, the free-stream pressure, the free-stream speed, the species densities and a reference length. The species densities must be specified only for the \texttt{TCneq} and \texttt{Cneq} models.
+
+\subsubsection{MeshGeneratorSF}
+
+\hspace*{1cm}\texttt{.StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo \textbackslash{}}
+\newline
+\hspace*{9.5cm} \texttt{TriangleExe Tricall}
+\newline
+\newline
+specifies the classes of the \texttt{MeshGeneratorSF} library called in the current model of the Shock-fitting Solver.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle = FILEPATH/na00.1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle.FileTypes = node poly ele neigh edge}
+\newline
+\newline
+indicate the name  and the types of the mesh points reading files.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReSdwInfo.InputFiles = sh00.dat}
+\newline
+\newline
+specify the name of the shock informations reading file.
+\newline
+If the \texttt{freezedWallcell} option is set to \texttt{true}, \texttt{ReadTriangleFreez} must be used in place of \texttt{ReadTriangle}.
+
+\subsubsection*{RemeshingSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.RemeshingList = BndryNodePtr RdDpsEq FndPhPs
+\textbackslash{}}
+\newline
+\hspace*{8.6cm} \texttt{ChangeBndryPtr CoPntDispl \textbackslash{}}
+\newline
+\hspace*{8.6cm}\texttt{ FixMshSps RdDpsEq}
+\newline
+\newline
+specifies the classes of the \texttt{RemeshingSF} library called in the current model of the Shock-fitting Solver.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CoNorm = CoNorm4TCneq}
+\newline
+\newline
+defines the derived object of the \texttt{CoNorm} class that are asked to operate. It must be set according to the gas model: \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq} should be added to the string \texttt{CoNorm4}.
+\newline
+If the \texttt{freezedWallcell} option is set to \texttt{true}, \texttt{BndryNodePtrFreez} must be used in place of \texttt{BndryNodePtr} and \texttt{BndryFacePtrFreez} must be added to the list.
+
+\subsubsection*{WritingMeshSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.WritingMeshList = WriteTriangle \textbackslash{}}
+\newline
+\hspace*{9cm} \texttt{WriteBackTriangle \textbackslash{}}
+\newline
+\hspace*{9cm} \texttt{WriteSdwInfo }
+\newline
+\newline
+specifies the classes of the \texttt{WritingMeshSF} library called in the current model of the Shock-fitting Solver.
+\newline
+If the \texttt{freezedWallcell} option is set to \texttt{true}, \texttt{WriteTriangleFreez} must be used in place of \texttt{WriteTriangle}.
+
+\subsubsection*{ConverterSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.ConverterList = ShockFileConverter \textbackslash{}}
+\newline
+\hspace*{8.6cm} \texttt{CFmesh2StartingTriangle \textbackslash{}}
+\newline
+\hspace*{8.6cm} \texttt{Triangle2CFmesh CFmesh2Triangle}
+\newline
+\newline
+specifies the classes of the \texttt{ConverterSF} library called in the current model of the Shock-fitting Solver. For each converter class the following lines must be specified (in the example below are related to \texttt{CFmesh2Triangle} class):
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.From = Prim}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.To = Param}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.GasModel = TCneq}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.AdditionalInfo = Dimensional}
+\newline
+\newline
+They define the strings that will create the name of the \texttt{VariableTrasformerSF} object asked to make the variables transformation. 
+\newline
+\newline
+Up-to-date the \texttt{From} and the \texttt{To} options have \texttt{Prim} and \texttt{Param} as possible values. 
+\newline
+The \texttt{GasModel} can be \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq}. 
+\newline
+The \texttt{AdditionalInfo} specifies the CFD variables format (\texttt{Dimensional} or \texttt{Adimensional}).
+\newline
+\newline
+The \texttt{ShockCreatorFile}, \texttt{CFmesh2StartingTriangle}, \texttt{Triangle2CFmesh} objects have more informations in addition to the ones mentioned above.
+\newline
+The \texttt{ShockCreatorFile} creates the shock input file (\textit{sh00.dat}) from a \texttt{tecplot} poly-line tracing the shock profile.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.InputFile = FILEPATH/shock.dat}
+\newline
+\newline
+defines the name of the \texttt{tecplot} file containing the shock points poly-line.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbDof = 6}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbShocks = 1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbSpecPoints = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.TypeSpecPoints = OPY}
+\newline
+\newline
+specify the options needed for the \textit{sh00.dat} file creation: the number of degrees of freedom, the number of shocks, the number of special points, the type of the special points.
+\newline
+Up-to-date only \texttt{OPY} can be chosen as special points.
+\newline
+\newline
+The \texttt{CFmesh2StartingTriangle} is used to create the \textit{triangle} files from the starting captured solution.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2StartingTriangle.InputFile = FILEPATH/file.CFmesh}
+\newline
+\newline
+specifies the name of the \texttt{COOLFluiD} file storing the captured solution.
+\newline
+\newline
+The \texttt{Triangle2CFmesh} has an additional info that states if the shock boundary is \textit{single} or it is \textit{splitted} in a \textit{subsonic} and a \textit{supersonic} edges:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.Triangle2CFmesh.ShockBoundary = single}
+\newline
+\newline
+the two options are therefore \texttt{single} or \texttt{splitted}.
+\newline
+If the \texttt{freezedWallcell} option is set to \texttt{true}, \texttt{Triangle2CFmeshFreez} and \texttt{CFmesh2TriangleFreez} must be used in place of \texttt{Triangle2CFmesh} and \texttt{CFmesh2Triangle}.
+\newline
+\newline
+Converters from Tecplot format to \texttt{triangle} format are defined inside the code. When using the Residual Distribution Methods, the \texttt{Triangle2CFmesh} and \texttt{CFmesh2Triangle} converters can be replaced with \texttt{Triangle2Tecplot} and \texttt{Tecplot2Triangle}.
+\newline
+
+\underline{\emph{REMARK}}: when using the Finite Volume Method the called converters must be \texttt{Triangle2Tecplot}, \texttt{TecplotFVM2StartingTriangle} and \texttt{TecplotFVM2Triangle}.
+
+\subsubsection*{CopyMakerSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.CopyMakerList = MeshBackup CopyRoeValues1 \textbackslash{}}
+\newline
+\hspace*{8.6cm} \texttt{CopyRoeValues2 MeshRestoring}
+\newline
+\newline
+specifies the classes of the \texttt{CopyMakerSF} library called in the current model of the Shock-fitting Solver.
+
+\subsubsection*{StateUpdaterSF}
+\label{subsubsec:state updater}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.CopyMakerList = FixStateSps Interp $\backslash$}
+\newline
+ \hspace*{8.6cm} \texttt{ComputeResidual}
+\newline
+\newline
+specifies the classes of the \texttt{StateUpdaterSF} library called in the current model of the Shock-fitting Solver.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.whichNorm = L1}
+\newline
+\newline
+defines the norm of the discretization error used to compute the residual. Up-to-date the \texttt{L1} and \texttt{L2} norms are implemented.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.isItWeighted = true}
+\newline
+\newline
+specifies if the norm is weighted on the first residual value.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.gasModel = Pg}
+\newline
+\newline
+sets the gas model used to make the conversion to primitive variables.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeStateDps = ComputeStateDps4TCneq}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MoveDps = MoveDps4TCneq}
+\newline
+\newline
+define the \texttt{ComputeStateDps} and \texttt{MoveDps} objects asked to operate. They must be chosen according to the gas model: \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq} must be added to the string \texttt{ComputeStateDps4} and \texttt{MoveDps4}.
+
+\end{document}
