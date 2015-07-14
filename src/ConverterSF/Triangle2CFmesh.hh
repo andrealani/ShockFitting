@@ -104,6 +104,9 @@ private: // data
   /// number of vertices
   unsigned* nvt;
 
+  /// number of species
+  unsigned *nsp;
+
   /// total number of boundary patches
   unsigned BNDS;
 

@@ -734,6 +734,25 @@ void Triangle2Tecplot::writeTecplotFmt()
 
       // output file storing info on the subsonic boundary patch
       FILE* fileFarFieldBC = fopen("FarFieldBc.dat", "w");
+      FILE* printFarFieldBC = fopen("FarFieldBc.plt", "w");
+
+//      fprintf(fileFarFieldBC,"%s","VARIABLES  =  \"s\"");
+      fprintf(fileFarFieldBC,"%s","VARIABLES  =  \"y\"");
+
+      fprintf(printFarFieldBC,"%s","TITLE = Boundary data\n");
+      fprintf(printFarFieldBC,"%s","VARIABLES  =  \"x0\" \"x1\" ");
+
+      if(m_modelTransf=="TCneq") {
+      for(unsigned isp=0; isp<(*nsp);isp++) {
+       fprintf(fileFarFieldBC,"%s",rhostr.at(isp).c_str());
+      }
+      fprintf(fileFarFieldBC,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
+      }
+      else if (m_modelTransf=="Pg") {
+       fprintf(fileFarFieldBC,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+       fprintf(printFarFieldBC,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+      }
+      else { cout << m_modelTransf << " model not implemented\n"; exit(1); }
 
       nbNodestr << "N=" << elemVector_noduplicate.size() << ", ";
 
@@ -741,6 +760,10 @@ void Triangle2Tecplot::writeTecplotFmt()
       fprintf(cfin,"%s %s","ZONE",nbNodestr.str().c_str());
       fprintf(cfin,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
       fprintf(cfin,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
+
+      fprintf(printFarFieldBC,"%s %s","ZONE",nbNodestr.str().c_str());
+      fprintf(printFarFieldBC,"%s %s",Tstr.str().c_str(),nbElemstr.str().c_str());
+      fprintf(printFarFieldBC,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
 
       // write the number of nodes belonging to InnerSub on
       // the ile storing InnerSub infos
@@ -753,26 +776,33 @@ void Triangle2Tecplot::writeTecplotFmt()
        r = 0;
        for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
         fprintf(cfin,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
+        fprintf(printFarFieldBC,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
         r = r + pow((*XY)(k,elemVector_sort.at(j)),2);
        }
-       fprintf(fileFarFieldBC,"%28.16e",sqrt(r));
+       fprintf(fileFarFieldBC,"%28.16e",(*XY)(1,elemVector_sort.at(j))); 
+//       fprintf(fileFarFieldBC,"%28.16e",sqrt(r));
        for(unsigned k=0;k<(*ndof);k++) {
         fprintf(cfin,"%20.16E %s",(*zroe)(k,elemVector_sort.at(j))," ");
         fprintf(fileFarFieldBC,"%30.16e",(*zroe)(k,elemVector_sort.at(j)));
+        fprintf(printFarFieldBC,"%30.16e",(*zroe)(k,elemVector_sort.at(j)));
        }
        fprintf(cfin,"%s","\n");
        fprintf(fileFarFieldBC,"%s","\n");
+       fprintf(printFarFieldBC,"%s","\n");
       }
-
-      // close file storing InnerSub info
-      fclose(fileFarFieldBC);
 
       // write the cell nodes with the ID used in tecplot
       // 1:nbElem(TRS)
       for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
        fprintf(cfin,"%11i",elemVector_unitIndex.at(j));
        fprintf(cfin,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
+       fprintf(printFarFieldBC,"%11i",elemVector_unitIndex.at(j));
+       fprintf(printFarFieldBC,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
       }
+
+      // close file storing InnerSub info
+      fclose(fileFarFieldBC);
+      fclose(printFarFieldBC);
 
      } // if m_boundary = splitted
     } // if IBC==10

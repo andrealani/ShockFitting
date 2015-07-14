@@ -24,9 +24,8 @@ MeshGenerator::MeshGenerator(const std::string& objectName) :
   BaseShockFitting(objectName)
 {
   m_inputFile = vector<string>();
-  addOption("InputFiles",&m_inputFile,
+  addOption("InputFile",&m_inputFile,
             "List of the names of input files");
-
 }
 
 

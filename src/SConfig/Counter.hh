@@ -17,13 +17,13 @@ class Counter {
 public:
   
   // overloading the operator++
-  void operator++() {m_counter++;}
+  void operator++() { m_counter++; }
   
   // overloading the operator--
-  void operator--() {m_counter--;}
+  void operator--() { m_counter--; }
   
   // tell if the counter is == 0
-  bool isZero() const {return m_counter == 0;}
+  bool isZero() const { return m_counter == 0;}
   
 protected:
   

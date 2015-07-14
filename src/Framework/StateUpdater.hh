@@ -12,6 +12,7 @@
 //--------------------------------------------------------------------------//
 
 #include "Framework/BaseShockFitting.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -55,6 +56,10 @@ public:
   /// Gets the class name
   static std::string getClassName() {return "StateUpdater";}
 
+protected: // functions
+
+  // get the name of the parent
+  std::string getParentName() const {return getClassName();}
 };
 
 //--------------------------------------------------------------------------//

@@ -7,6 +7,7 @@
 #include "StateUpdaterSF/MoveDps4Ar.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -22,12 +23,12 @@ namespace ShockFitting {
 //----------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<MoveDps4Ar, MoveDps> moveDpsArProv("MoveDps4Ar");
+ObjectProvider<MoveDps4Ar, StateUpdater> moveDpsArProv("MoveDps4Ar");
 
 //----------------------------------------------------------------------------//
 
 MoveDps4Ar::MoveDps4Ar(const std::string& objectName) :
- MoveDps(objectName)
+ StateUpdater(objectName)
 {
 }
 
@@ -149,6 +150,58 @@ void MoveDps4Ar::update()
   freeArray();
 
   logfile.Close();
+}
+
+//----------------------------------------------------------------------------//
+
+void MoveDps4Ar::setAddress()
+{
+  unsigned start;
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() + 
+          PhysicsInfo::getnbShPointsMax() * PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
+  ZroeSh = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                 PhysicsInfo::getnbShPointsMax(),
+                                 PhysicsInfo::getnbShMax(),
+                                 &zroeVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void MoveDps4Ar::freeArray()
+{
+  delete ZroeSh;
+}
+
+//----------------------------------------------------------------------------//
+
+void MoveDps4Ar::setMeshData()
+{
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroeVect = MeshData::getInstance().getData <vector <double> > ("ZROE");
+}
+
+//----------------------------------------------------------------------------//
+
+void MoveDps4Ar::setPhysicsData()
+{
+  ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  gref = PhysicsData::getInstance().getData <double> ("GREF");
+  nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
+    PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+  nShockEdges =
+    PhysicsData::getInstance().getData <vector <unsigned> > ("nShockEdges");
+  typeSh =
+    PhysicsData::getInstance().getData <vector <string> > ("TYPESH");
+  hf = PhysicsData::getInstance().getData <vector <double> > ("HF");
+  WSh = PhysicsData::getInstance().getData <Array3D<double> > ("WSH");
+  XYSh = PhysicsData::getInstance().getData <Array3D <double> > ("XYSH"); 
 }
 
 //----------------------------------------------------------------------------//

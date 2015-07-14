@@ -9,8 +9,6 @@ ChangeBndryPtr.cxx
 ChangeBndryPtr.hh
 CoIntrPnt.cxx
 CoIntrPnt.hh
-CoNorm.cxx
-CoNorm.hh
 CoNorm4Ar.cxx
 CoNorm4Ar.hh
 CoNorm4Pg.cxx

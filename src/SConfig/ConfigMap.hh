@@ -7,6 +7,7 @@
 #ifndef ConfigMap_hh
 #define ConfigMap_hh
 
+#include <iostream>
 #include <fstream>
 #include <map>
 
@@ -40,12 +41,13 @@ public:
     ConfigOption* op1 = new GenericOption<TYPE>(cname1, isDynamic, desc, condition, var);
     m_name2option[cname1] = op1; // store a pointer to the option locally
     options.push_back(op1); 
-    
+std::cout << "cname1 " << cname1 << std::endl;
     // this allows to specify base class name instead fof concrete class
     // for options which are inherited
     if (cname2 != cname1) {
       ConfigOption* op2 = new GenericOption<TYPE>(cname2, isDynamic, desc, condition, var);
       m_name2option[cname2] = op2; // store a pointer to the option locally
+std::cout << "cname2 " << cname2 << std::endl;
       options.push_back(op2);  
     }
     

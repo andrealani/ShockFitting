@@ -12,7 +12,7 @@
 #include <vector>
 #include "Framework/BaseShockFitting.hh"
 #include "Framework/Field.hh"
-#include "SConfig/SharedPtr.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -62,6 +62,11 @@ public:
 
   /// Gets the Class name
   static std::string getClassName() {return "MeshGenerator";}
+
+protected: //functions
+
+  // get the name of the parent
+  std::string getParentName() const {return getClassName();}
 
 protected: //data
 

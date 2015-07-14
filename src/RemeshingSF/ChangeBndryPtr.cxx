@@ -138,11 +138,12 @@ void ChangeBndryPtr::lookForNode(int IPOIN)
 void ChangeBndryPtr::removeNode(int IPOIN)
 {
   inode.resize(2);
-  for (unsigned K=1; K<3; K++) {
-   iface = (*nodptr)(ipos,K);
+  for (unsigned K=0; K<2; K++) {
+   iface = (*nodptr)(ipos,K+1);
+
    if ((*bndfac)(0,iface-1) != IPOIN+1) // c++ indeces start from 0
-      { inode.at(K-1) = (*bndfac)(0,iface-1); }
-   else { inode.at(K-1) = (*bndfac)(1,iface-1); } // c++ indeces start from 0
+      { inode.at(K) = (*bndfac)(0,iface-1); }
+   else { inode.at(K) = (*bndfac)(1,iface-1); } // c++ indeces start from 0
   }
 }
 
@@ -159,9 +160,9 @@ void ChangeBndryPtr::updateIface(int IPOIN)
   (*bndfac)(0,iface-1)=inode.at(0); 
 
   // if the closer face has been already removed (it happens when there are two 
-  // neighbouring phantom nodes) use the edge point of face next the removed one
+  // neighbouring phantom nodes) use the edge point of face next to the removed one
   if(alreadyRemoved.at((*nodptr)(ipos,2))) {
- 
+
    if(inactiveFaceInfo(0,(*nodptr)(ipos,2))!=IPOIN+1) {
     (*bndfac)(1,iface-1)=inactiveFaceInfo(0,(*nodptr)(ipos,2));
    }
@@ -172,7 +173,8 @@ void ChangeBndryPtr::updateIface(int IPOIN)
   }
 
   // else use the edge point of the closer face
-  else { (*bndfac)(0,iface-1)=inode.at(1); }
+//  else { (*bndfac)(0,iface-1)=inode.at(1); }
+  else { (*bndfac)(1,iface-1)=inode.at(1); }
 
   logfile("has been updated with ",(*bndfac)(0,iface-1)," ",(*bndfac)(1,iface-1),"\n");
 }
@@ -188,7 +190,7 @@ void ChangeBndryPtr::removeIface()
 
   if(!alreadyRemoved.at(iface)) {
 
-   logfile("Face: ", iface, ": ");
+   logfile("Face ", iface, ": ");
    logfile((*bndfac)(0,iface-1)," ",(*bndfac)(1,iface-1),"\n");
    logfile("has been removed\n");
 
@@ -196,9 +198,9 @@ void ChangeBndryPtr::removeIface()
    alreadyRemoved.at(iface)= true;
    // store infos on the face closer to the removed one
    // it is useful in case of neighbouring phantom nodes
-   // @inactiveFaceInfo(0,iface) one of the two edge point
-   // @inactiveFaceInfo(1,iface) second edge point
-   // @inactiveFaceInfo(2,iface) ID face
+   // @param inactiveFaceInfo(0,iface)   one of the two edge points
+   // @param inactiveFaceInfo(1,iface)   the second edge point
+   // @param inactiveFaceInfo(2,iface)   ID face
    inactiveFaceInfo(0,iface)=(*bndfac)(0,(*nodptr)(ipos,1)-1);
    inactiveFaceInfo(1,iface)=(*bndfac)(1,(*nodptr)(ipos,1)-1);
    inactiveFaceInfo(2,iface)=(*nodptr)(ipos,1);

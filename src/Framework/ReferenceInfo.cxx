@@ -46,7 +46,7 @@ ReferenceInfo::ReferenceInfo(const std::string& objectName) :
   m_rhor = vector<double>();
   addOption("SpeciesDensities",&m_rhor,
             "Species densities");
-  m_Lref = 1;
+  m_Lref = 1e0;
   addOption("Lref",&m_Lref,
             "Reference length");
 }
@@ -69,7 +69,7 @@ double ReferenceInfo::m_uref=1;
 
 //--------------------------------------------------------------------------//
 
-double ReferenceInfo::m_Lref=1;
+double ReferenceInfo::m_Lref=1e0;
 
 //--------------------------------------------------------------------------//
 

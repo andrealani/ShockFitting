@@ -28,6 +28,7 @@ namespace ShockFitting {
 /// In order to create it, a tecplot file containg the shock polyline is asked
 /// The name of the tecplot file is the one specified in the input.case
 /// Initializer.ShockdatFileConverter.Inputfile = "shockexample"
+/// The class works only with OPY special points
 
 class ShockFileConverter : public Converter {
 public:

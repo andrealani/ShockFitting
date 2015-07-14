@@ -7,6 +7,7 @@
 #include "StateUpdaterSF/ComputeStateDps4TCneq.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "StateUpdaterSF/CoDc.hh"
 #include "StateUpdaterSF/CoShock.hh"
@@ -23,13 +24,13 @@ namespace ShockFitting {
 //----------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<ComputeStateDps4TCneq, ComputeStateDps>
+ObjectProvider<ComputeStateDps4TCneq, StateUpdater>
  computeStateDpsTCneqProv("ComputeStateDps4TCneq");
 
 //----------------------------------------------------------------------------//
 
 ComputeStateDps4TCneq::ComputeStateDps4TCneq(const std::string& objectName) :
-  ComputeStateDps(objectName)
+  StateUpdater(objectName)
 {
   TotnbShockPoints = 0;
 }
@@ -298,6 +299,77 @@ void ComputeStateDps4TCneq::saveDownState(unsigned IV, unsigned ISH)
   for(unsigned I=0; I<(*ndof); I++) {
    (*ZroeShdOld)(I,IV,ISH) = (*ZroeShd)(I,IV,ISH);
   }
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4TCneq::setAddress()
+{
+  unsigned start;
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  ZroeShu =
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
+  ZroeShd =
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4TCneq::setDiscSpeedSize()
+{
+  WSh->resize(PhysicsInfo::getnbDim(),
+              PhysicsInfo::getnbShPointsMax(),
+              PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4TCneq::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4TCneq::setMeshData()
+{
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroeVect = MeshData::getInstance().getData <vector <double> > ("ZROE");
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4TCneq::setPhysicsData()
+{
+  ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
+  // this values is read in ReferenceInfo
+  gref = PhysicsData::getInstance().getData <double> ("GREF");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
+     PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+  typeSh = PhysicsData::getInstance().getData <vector <string> > ("TYPESH");
+  hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
+  vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
+  WSh = PhysicsData::getInstance().getData <Array3D<double> > ("WSH");
+  ZroeShuOld =
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHuOLD");
+  ZroeShdOld =
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHdOLD");
 }
 
 //----------------------------------------------------------------------------//

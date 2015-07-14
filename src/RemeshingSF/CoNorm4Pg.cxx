@@ -9,6 +9,7 @@
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "Framework/ReferenceInfo.hh"
 #include "SConfig/ObjectProvider.hh"
@@ -25,12 +26,12 @@ namespace ShockFitting {
 //---------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<CoNorm4Pg, CoNorm> computeNormalVector4PgProv("CoNorm4Pg");
+ObjectProvider<CoNorm4Pg, Remeshing> computeNormalVector4PgProv("CoNorm4Pg");
 
 //--------------------------------------------------------------------------//
 
 CoNorm4Pg::CoNorm4Pg(const std::string& objectName) :
-  CoNorm(objectName)
+  Remeshing(objectName)
 {
 }
 
@@ -213,16 +214,6 @@ void CoNorm4Pg::computeTau(unsigned ISH, unsigned I)
 
 void CoNorm4Pg::setVShNorForStype()
 {
-  double h, kinetic, upstreamPress, downstreamPress;
-
-vector <double>* zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");
-
-  unsigned start = npoin->at(0) * PhysicsInfo::getnbDofMax();
-  Array3D <double>* ZRoeShu = new Array3D <double> (PhysicsInfo::getnbDofMax(),
-                                  PhysicsInfo::getnbShPointsMax(),
-                                  PhysicsInfo::getnbShMax(),
-                                  &zroeVect->at(start));
-
   for(unsigned ISH=0; ISH<(*nShocks); ISH++) {
    if(typeSh->at(ISH)=="S") {
     unsigned ii = 0;
@@ -233,24 +224,6 @@ vector <double>* zroeVect = MeshData::getInstance().getData <vector<double> >("Z
      vi = (*ZRoeShd)(3,I,ISH)/(*ZRoeShd)(0,I,ISH);
      dum = ui*(*vShNor)(0,I,ISH)+vi*(*vShNor)(1,I,ISH);
      if(dum>0) {ii++;}
-////
-
-// pressure conditon
-/*     kinetic = (*ZRoeShd)(2,I,ISH)*(*ZRoeShd)(2,I,ISH)+
-               (*ZRoeShd)(3,I,ISH)*(*ZRoeShd)(3,I,ISH);
-     kinetic = kinetic*0.5;
-     h = (*ZRoeShd)(1,I,ISH)/(*ZRoeShd)(0,I,ISH);
-     downstreamPress = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam()*
-                       ((*ZRoeShd)(0,I,ISH)*(*ZRoeShd)(0,I,ISH)*h-kinetic);
- 
-     kinetic = (*ZRoeShu)(2,I,ISH)*(*ZRoeShu)(2,I,ISH)+
-               (*ZRoeShu)(3,I,ISH)*(*ZRoeShu)(3,I,ISH);
-     kinetic = kinetic*0.5;
-     h = (*ZRoeShu)(1,I,ISH)/(*ZRoeShu)(0,I,ISH);
-     upstreamPress = (ReferenceInfo::getgam()-1)/ReferenceInfo::getgam()*
-                     ((*ZRoeShu)(0,I,ISH)*(*ZRoeShu)(0,I,ISH)*h-kinetic);
-
-     if(upstreamPress>downstreamPress) {ii++;}*/
 ////
     } // for I
 
@@ -456,6 +429,64 @@ void CoNorm4Pg::setTauIm1ToZero() {tauxim1 = 0; tauyim1 = 0;}
 //----------------------------------------------------------------------------//
 
 void CoNorm4Pg::setTauIm2ToZero() {tauxim2 = 0; tauyim2 = 0;}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4Pg::setAddress()
+{
+  unsigned start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
+                   PhysicsInfo::getnbShPointsMax() *
+                   PhysicsInfo::getnbShMax() *
+                   PhysicsInfo::getnbDofMax();
+  ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroe->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4Pg::setSize()
+{
+  vShNor->resize(PhysicsInfo::getnbDim(),
+                 PhysicsInfo::getnbShPointsMax(),
+                 PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4Pg::freeArray()
+{
+  delete ZRoeShd;
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4Pg::setMeshData()
+{
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4Pg::setPhysicsData()
+{
+  ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
+      PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");
+  nSpecPoints =
+      PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
+  typeSh =
+      PhysicsData::getInstance().getData <vector<string> > ("TYPESH");
+  typeSpecPoints =
+      PhysicsData::getInstance().getData <vector<string> > ("TypeSpecPoints");
+  XYSh = PhysicsData::getInstance().getData <Array3D<double> > ("XYSH");
+  vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
+  SHinSPPs =
+      PhysicsData::getInstance().getData <Array3D<unsigned> > ("SHinSPPs");
+}
 
 //----------------------------------------------------------------------------//
 

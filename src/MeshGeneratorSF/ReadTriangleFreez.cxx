@@ -38,6 +38,9 @@ ReadTriangleFreez::ReadTriangleFreez(const std::string& objectName) :
   m_fileTypes = vector<string>();
   addOption("FileTypes",&m_fileTypes,
              "List of file types names");
+  m_boundaryTypes = vector<string>();
+  addOption("BCtypes",&m_boundaryTypes,
+             "List of the boundary conditions corresponding to the .poly boundary markers");
 }
 
 //--------------------------------------------------------------------------//
@@ -255,6 +258,11 @@ void ReadTriangleFreez::ReadPoly()
                                  PhysicsInfo::getnbShEdgesMax();
    bndfacVect->resize(3 * totsize0);
    bndfac = new Array2D<int> (3,totsize0,&bndfacVect->at(0));
+   if(m_boundaryTypes.size()==0)
+    { cout << "ReadTriangleFreez:: (!) warning => the boundary conditions types";
+      cout << " are not specified\n";}
+   else { BCmap->resize(nbfac->at(0)+ 2 * PhysicsInfo::getnbShMax() *
+                                          PhysicsInfo::getnbShEdgesMax()); }
   }
 
   else if ((*firstRead)==0) {
@@ -272,7 +280,12 @@ void ReadTriangleFreez::ReadPoly()
 
   for (unsigned IFACE=0; IFACE < m_nbfac; IFACE++) {
    if(iedge(2,IFACE)!=999 && iedge(2,IFACE)>0) {
-    for(unsigned IA=0; IA < 3; IA++) {  (*bndfac)(IA,IFACE) = iedge(IA,IFACE);}
+    for(unsigned IA=0; IA < 3; IA++) {  
+     (*bndfac)(IA,IFACE) = iedge(IA,IFACE);
+    }
+    // store the strings of the boundary conditions
+    if((*firstRead)==1 && m_boundaryTypes.size()!=0)
+    { BCmap->at(IFACE) = m_boundaryTypes.at((*bndfac)(2,IFACE)-1);}
    }
   }
 
@@ -526,6 +539,7 @@ void ReadTriangleFreez::setMeshData ()
   nelem = MeshData::getInstance().getData <vector<unsigned> > ("NELEM");
   nbfac = MeshData::getInstance().getData <vector<unsigned> > ("NBFAC");
   nbpoin = MeshData::getInstance().getData <vector<unsigned> > ("NBPOIN");
+  BCmap = MeshData::getInstance().getData <vector<string> >("BoundariesMap");
   nhole = MeshData::getInstance().getData <vector<unsigned> > ("NHOLE");
   nodcod = MeshData::getInstance().getData <vector<int> >("NODCOD");
   zroeVect = MeshData::getInstance().getData <vector<double> >("ZROE");

@@ -10,7 +10,9 @@
 //--------------------------------------------------------------------------//
 
 #include <cmath>
-#include "StateUpdaterSF/ComputeStateDps.hh"
+#include "Framework/FileLogManip.hh"
+#include "Framework/StateUpdater.hh"
+#include "MathTools/Array3D.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -23,7 +25,7 @@ namespace ShockFitting {
 /// by enforcing Rankine-Hugoniot relations between the upstream and 
 /// the downstream states for a perfect gas model
 
-class ComputeStateDps4Pg : public ComputeStateDps {
+class ComputeStateDps4Pg : public StateUpdater {
 public:
 
   /// Constructor
@@ -41,6 +43,23 @@ public:
 
   /// Update solution
   void update();
+
+private: // functions
+
+  /// assign start pointers of Array2D and 3D
+  void setAddress();
+
+  /// resize discontinuity speed array
+  void setDiscSpeedSize();
+
+  /// assign values used in ComputeState to MeshData pattern
+  void setMeshData();
+
+  /// assign values used in ComputeState to PhysicsData pattern
+  void setPhysicsData();
+
+  /// de-allocate the dynamic arrays
+  void freeArray();
 
 private: // helper functions
 
@@ -64,11 +83,68 @@ private: // helper functions
 
 private: // data
 
+  /// number of degrees of freedom
+  unsigned* ndof;
+
+  /// number of shocks
+  unsigned* nShocks;
+
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+  
+  /// number of shock points for each shock
+  std::vector<unsigned>* nShockPoints;
+
+  /// number of shock edges for each shock
+  std::vector<unsigned>* nShockEdges;
+
+  /// type of shock
+  std::vector <std::string>* typeSh;
+
+  /// mesh points status
+  std::vector<double>* zroeVect;
+
+  /// shock points normal vectors
+  Array3D <double>* vShNor;
+
+  /// shock/discontinuity speed
+  Array3D <double>* WSh;
+
+  /// upstream status
+  Array3D <double>* ZroeShu;
+
+  /// downstream status
+  Array3D <double>* ZroeShd;
+
+  /// old upstream status
+  Array3D <double>* ZroeShuOld;
+
+  /// old downstream status
+  Array3D <double>* ZroeShdOld;
+
+  /// total number of shock points
+  unsigned TotnbShockPoints;
+
+  /// dummy variables storing normal vector values
+  double dx; double dy;
+
+  /// discontinuity speed
+  double WS;
+
+  /// working variable storing the riemann invariant
+  double R2;
+
+  /// helping variables
+  double help;
+
   /// work vector  used to store upstream values
   std::vector<double> xu;
 
   /// working vector used to store downstream values
   std::vector<double> xd;
+
+  /// store log file infos
+  FileLogManip logfile;
 };
 
 //--------------------------------------------------------------------------//

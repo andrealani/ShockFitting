@@ -25,29 +25,29 @@ ChemicalInfo::ChemicalInfo(const std::string& objectName) :
   Counter(),
   ConfigObject(objectName)
 {
-  m_Qref = 1;
+  m_Qref = 1e0;
   addOption("Qref",&m_Qref,
             "reference speed");
-  m_IE = 1;
+  m_IE = 0;
   addOption("IE",&m_IE,
              "Global index");
   m_IX = 1;
   addOption("IX",&m_IX,
              "Global index");
-  m_IY = 1;
+  m_IY = 2;
   addOption("IY",&m_IY,
              "Global index");
-  m_IEV = 1;
+  m_IEV = 3;
   addOption("IEV",&m_IEV,
              "Global index");
-  m_model = 1;
-  addOption("MODEL",&m_model,
+  m_model = "dummyModel";
+  addOption("Model",&m_model,
 	    "Gas model");
   m_mixture = 1;
-  addOption("MIXTURE",&m_mixture,
+  addOption("Mixture",&m_mixture,
 	    "Gas Mixture");
   m_inputFile = vector<string>();
-  addOption("InputFiles",&m_inputFile,
+  addOption("InputFile",&m_inputFile,
             "Gas mixture data input file");
 }
 
@@ -154,7 +154,8 @@ void ChemicalInfo::setMixtureFileName()
   if (mixtureFile_name != m_mixture){
    logfile("ChemicalInfo::error => data file is wrong");
    logfile(mixtureFile_name, m_mixture.c_str(),"\n");
-   exit(1);}
+   exit(1);
+  }
 }
 
 //--------------------------------------------------------------------------//

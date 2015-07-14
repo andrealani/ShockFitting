@@ -8,6 +8,7 @@
 #include "RemeshingSF/ShpDpndnc.hh"
 #include "Framework/MeshData.hh"
 #include "Framework/Log.hh"
+#include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 
@@ -23,13 +24,13 @@ namespace ShockFitting {
 //---------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<CoNorm4TCneq, CoNorm> 
+ObjectProvider<CoNorm4TCneq, Remeshing> 
 computeNormalVector4TCneqProv("CoNorm4TCneq");
 
 //--------------------------------------------------------------------------//
 
 CoNorm4TCneq::CoNorm4TCneq(const std::string& objectName) :
-  CoNorm(objectName)
+  Remeshing(objectName)
 {
 }
 
@@ -478,6 +479,73 @@ void CoNorm4TCneq::setTauIm1ToZero() {tauxim1 = 0; tauyim1 = 0;}
 //----------------------------------------------------------------------------//
 
 void CoNorm4TCneq::setTauIm2ToZero() {tauxim2 = 0; tauyim2 = 0;}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4TCneq::setAddress()
+{
+  unsigned start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
+                   PhysicsInfo::getnbShPointsMax() *
+                   PhysicsInfo::getnbShMax() *
+                   PhysicsInfo::getnbDofMax();
+  ZRoeShd = new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                                  PhysicsInfo::getnbShPointsMax(),
+                                  PhysicsInfo::getnbShMax(),
+                                  &zroe->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4TCneq::setSize()
+{
+  vShNor->resize(PhysicsInfo::getnbDim(),
+                 PhysicsInfo::getnbShPointsMax(),
+                 PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4TCneq::freeArray()
+{
+  delete ZRoeShd;
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4TCneq::setMeshData()
+{
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroe = MeshData::getInstance().getData <vector<double> > ("ZROE");
+}
+
+//----------------------------------------------------------------------------//
+
+void CoNorm4TCneq::setPhysicsData()
+{
+  gref = PhysicsData::getInstance().getData <double> ("GREF");
+  ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
+  hf = PhysicsData::getInstance().getData <vector<double> > ("HF");
+  gams = PhysicsData::getInstance().getData <vector<double> > ("GAMS");
+  Rs = PhysicsData::getInstance().getData <vector<double> > ("RS");
+  IE = PhysicsData::getInstance().getData <unsigned> ("IE");
+  IEV = PhysicsData::getInstance().getData <unsigned> ("IEV");
+  IX = PhysicsData::getInstance().getData <unsigned> ("IX");
+  IY = PhysicsData::getInstance().getData <unsigned> ("IY");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
+      PhysicsData::getInstance().getData <vector<unsigned> > ("nShockPoints");
+  nSpecPoints =
+      PhysicsData::getInstance().getData <unsigned> ("nSpecPoints");
+  typeSh =
+      PhysicsData::getInstance().getData <vector<string> > ("TYPESH");
+  typeSpecPoints =
+      PhysicsData::getInstance().getData <vector<string> > ("TypeSpecPoints");
+  XYSh = PhysicsData::getInstance().getData <Array3D<double> > ("XYSH");
+  vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
+  SHinSPPs =
+      PhysicsData::getInstance().getData <Array3D<unsigned> > ("SHinSPPs");
+}
 
 //----------------------------------------------------------------------------//
 

@@ -107,6 +107,7 @@ void WriteTriangleFreezedConnectivity::write()
 void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
 {
   string command;
+  string command_comm;
   string fnameOld;
   stringstream backdir;
 
@@ -121,8 +122,6 @@ void WriteTriangleFreezedConnectivity::copyAnDrenameTriangleFiles()
   *fname << setw(7-nbDig) << setfill('0') << left << string("na").c_str();
   *fname << MeshData::getInstance().getIstep();
 
-cout << fname->str() << endl;
-
   nbDig = 0;
   dummyIstep = MeshData::getInstance().getIstep()-1;
   while(dummyIstep>0) { dummyIstep/=10; nbDig++; }
@@ -132,13 +131,14 @@ cout << fname->str() << endl;
   // if the solution has been saved in the previous step
   // take the files inside the corresponding folder
   if(((MeshData::getInstance().getIstep()-1)-1)% MeshData::getInstance().getnbIbak()==0) {
-   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.poly ./" + fname->str() + ".1.poly";
+   command_comm = "cp " + MeshData::getInstance().getResultsDir() + "/" + backdir.str() + "/" +fnameOld;
+   command = command_comm + ".1.poly ./" + fname->str() + ".1.poly";
    system(command.c_str());
-   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.ele ./" + fname->str() + ".1.ele";
+   command = command_comm + ".1.ele ./" + fname->str() + ".1.ele";
    system(command.c_str());
-   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.neigh ./" + fname->str() + ".1.neigh";
+   command = command_comm + ".1.neigh ./" + fname->str() + ".1.neigh";
    system(command.c_str());
-   command = "cp ./" + backdir.str() + "/" +fnameOld + ".1.edge ./" + fname->str() + ".1.edge";
+   command = command_comm + ".1.edge ./" + fname->str() + ".1.edge";
    system(command.c_str());
   }
 
@@ -155,13 +155,14 @@ cout << fname->str() << endl;
   }
 
   else if ((MeshData::getInstance().getIstep()-1)==1) {
-   command = "cp ./step00001/na00001.1.poly ./na00002.1.poly";
+   command_comm = "cp " + MeshData::getInstance().getResultsDir() + "/step00001/";
+   command = command_comm + "na00001.1.poly ./na00002.1.poly";
    system(command.c_str());
-   command = "cp ./step00001/na00001.1.ele ./na00002.1.ele";
+   command = command_comm + "na00001.1.ele ./na00002.1.ele";
    system(command.c_str());
-   command = "cp ./step00001/na00001.1.neigh ./na00002.1.neigh";
+   command = command_comm + "na00001.1.neigh ./na00002.1.neigh";
    system(command.c_str());
-   command = "cp ./step00001/na00001.1.edge ./na00002.1.edge";
+   command = command_comm + "na00001.1.edge ./na00002.1.edge";
    system(command.c_str());
   }
 

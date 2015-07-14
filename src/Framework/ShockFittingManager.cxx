@@ -42,17 +42,17 @@ void ShockFittingManager::configure(const std::string& input, int argc, char** a
   ConfigFileReader cfileReader;
   
   LogToScreen(VERBOSE, "ShockFittingManager::configure() root => before reading from " << input << "\n");
-  
+ 
   // read the input file
   cfileReader.read(input, cmap);
   
   LogToScreen(VERBOSE, "ShockFittingManager::configure() root => after reading from " << input << "\n");
-  
+
   const string prefix = ""; 
   configure(cmap, prefix);
   
   LogToScreen(VERBOSE, "ShockFittingManager::configure() root => after configure\n");
-  
+ 
   // dump the options which haven't been used
   ConfigMap::getInstance().dumpWrongOptions(cmap);
   ConfigMap::getInstance().dumpOptions(); 
@@ -88,14 +88,17 @@ void ShockFittingManager::configure(OptionMap& cmap, const string& prefix)
   LogToScreen(VERBOSE, "ShockFittingManager::configure() => start\n");
   
   ConfigObject::configure(cmap, prefix);
+
   if (ConfigFileReader::isFirstConfig()) {
     const string name = m_ShockFittingObj.name(); 
+
     LogToScreen(VERBOSE, "ShockFittingManager::configure() => name for coupling tools obj is " << name <<"\n");
     m_ShockFittingObj.ptr().reset(SConfig::Factory<ShockFittingObj>::getInstance().
 				   getProvider(name)->create(name));
   }
+
   configureDeps (cmap, m_ShockFittingObj.ptr().get());
-  
+ 
   LogToScreen(VERBOSE, "ShockFittingManager::configure() => end\n");
 }
   

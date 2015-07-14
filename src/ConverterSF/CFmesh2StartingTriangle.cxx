@@ -34,7 +34,7 @@ CFmesh2StartingTriangleProv("CFmesh2StartingTriangle");
 CFmesh2StartingTriangle::CFmesh2StartingTriangle(const std::string& objectName) :
   Converter(objectName)
 {
-  m_meshInputfile = "DummyCFMeshFile";
+  m_meshInputfile = "";
   addOption("InputFile",&m_meshInputfile,
             "CFmesh file containing the captured solution");
   m_prim2param.name() = "dummyVariableTransformer";
@@ -77,13 +77,9 @@ void CFmesh2StartingTriangle::configure(OptionMap& cmap, const std::string& pref
 
   if (ConfigFileReader::isFirstConfig()) {
    m_prim2param.ptr().reset(SConfig::Factory<VariableTransformer>::getInstance().
-                            getProvider(m_prim2param.name())
-                            ->create(m_prim2param.name()));
+                             getProvider(m_prim2param.name())
+                             ->create(m_prim2param.name()));
   }
-
-  // configure variable transformer object
-  configureDeps(cmap, m_prim2param.ptr().get());
-
 }
 
 //----------------------------------------------------------------------------//
@@ -104,7 +100,7 @@ void CFmesh2StartingTriangle::convert()
   for(unsigned IPOIN=0; IPOIN<npoin; IPOIN++) {
    for(unsigned i=0; i<ndof; i++) { m_prim.at(i) = prim.at(IPOIN*ndof+i); }
    for(unsigned i=0; i<ndim; i++) { m_XY.at(i) = XY.at(IPOIN*ndim+i); }
-   m_prim2param.ptr()->transform(&m_prim,&m_XY,&m_zroe);
+   m_prim2param.ptr()->transform(m_prim,m_XY,m_zroe);
    for(unsigned i=0; i<ndof; i++) { zroe.at(IPOIN*ndof+i) = m_zroe.at(i); }
   }
 
@@ -283,7 +279,7 @@ void CFmesh2StartingTriangle::readCFmeshFmt()
 
   // read the nodal coordinates
   for(unsigned IPOIN=0; IPOIN<npoin; IPOIN++) {
-   for(unsigned IV=0; IV<ndim; IV++) { file >> XY.at(IPOIN*ndim+IV); }
+   for(unsigned IV=0; IV<ndim; IV++) { file >> XY.at(IPOIN*ndim+IV);}
   }
   file >> dummy >>  LIST_STATES;
 
@@ -320,6 +316,14 @@ void CFmesh2StartingTriangle::setNodcod()
     nodcod.at(IPOIN-1) = help+1;
    }
   }
+/*
+  for(unsigned IFACE=0; IFACE<nbfac; IFACE++) {
+   for(unsigned I=0; I<nvt-1; I++) {
+    IPOIN = bndfac.at(IFACE*3+I);
+    nodcod.at(IPOIN-1) = bndfac.at(IFACE*3+2);
+   }
+  }
+*/
 }
 
 //----------------------------------------------------------------------------//
@@ -373,7 +377,6 @@ void CFmesh2StartingTriangle::writeTriangleFmt()
   fprintf(trianglefile,"%u %s",nbfac," 1\n");
   for(unsigned IFACE=0; IFACE<nbfac; IFACE++) {
    NBND = namebnd.at(bndfac.at(IFACE*3+2)-1); // c++ indeces start from 0
-   if(NBND=="InnerSup" || NBND=="InnerSub") { NBND="10"; }
    fprintf(trianglefile,"%u %s",IFACE+1," ");
    fprintf(trianglefile,"%i %s %i",bndfac.at(IFACE*3+0)," ",bndfac.at(IFACE*3+1));
    fprintf(trianglefile,"%s %s %s"," ",NBND.c_str()," \n");

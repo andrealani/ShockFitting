@@ -112,6 +112,13 @@ private: // data
   /// specifies the gas model used fot the coconverison in primitive variables
   std::string m_gasModel;
 
+  /// specifies the lowest value of the residual to stop the simulation
+  double m_minResidual;
+
+  /// specifies what happens when the lowest residual is reached
+  /// by default the "endSimulation" is set
+  std::string m_stopAdditionalInfo;
+
   /// command object computing norm of the discretization error
   PAIR_TYPE(StateUpdater) m_normErr;
 

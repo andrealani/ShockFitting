@@ -42,4 +42,29 @@ void VariableTransformer::configure(OptionMap& cmap, const std::string& prefix)
 
 //--------------------------------------------------------------------------//
 
+void VariableTransformer::setup()
+{
+}
+
+//--------------------------------------------------------------------------//
+
+void VariableTransformer::unsetup() 
+{
+}
+
+//--------------------------------------------------------------------------//
+
+void VariableTransformer::transform() 
+{
+}
+
+//--------------------------------------------------------------------------//
+
+void VariableTransformer::transform(std::vector<double>&, std::vector<double>&,
+                         std::vector<double>&) 
+{
+}
+
+//--------------------------------------------------------------------------//
+
 } // namespace ShockFitting

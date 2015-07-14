@@ -19,7 +19,8 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 CopyMaker::CopyMaker(const std::string& objectName) :
-  BaseShockFitting(objectName)
+  Counter(),
+  ConfigObject(objectName)
 {
 }
 
@@ -35,7 +36,7 @@ void CopyMaker::configure(OptionMap& cmap, const std::string& prefix)
 {
   LogToScreen(VERBOSE, "CopyMaker::configure() => start\n");
 
-  BaseShockFitting::configure(cmap, prefix);
+  ConfigObject::configure(cmap, prefix);
 
   LogToScreen(VERBOSE, "CopyMaker::configure() => end\n");
 }

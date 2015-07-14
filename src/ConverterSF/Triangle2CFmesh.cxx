@@ -323,6 +323,15 @@ void Triangle2CFmesh::writeCFmeshFmt()
   int ip;
   vector <unsigned> np(2);
 
+  // variables used to write on the farfield tecplot file
+  vector<string> rhostr((*nsp));
+
+  vector<int>elemVector;
+  vector<int>elemVector_noduplicate;
+  vector<int>elemVector_unitIndex;
+  vector<int>elemVector_sort;
+  Array2D <int> array_elemVector_sort;
+
   // writing file
   FILE* cfin;
 
@@ -379,7 +388,8 @@ void Triangle2CFmesh::writeCFmeshFmt()
   int nbSh = ICLR->at(10) + 2;  
 
   unsigned minSh=npoin->at(1); unsigned maxSh=0;
-  for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
+//  for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
+  for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    if((*bndfac)(2,IFACE)==10) {
     int elem = (*bndfac)(0,IFACE);
     int vert = (*bndfac)(1,IFACE);
@@ -391,7 +401,6 @@ void Triangle2CFmesh::writeCFmeshFmt()
     } // for k<2
    } // if (*bndfac)(2,IFACE)==10
   } // for IFACE<nbfac->at(0)
-
 
   cfin = fopen("cfin.CFmesh", "w");
 
@@ -477,12 +486,12 @@ void Triangle2CFmesh::writeCFmeshFmt()
          ip = (*celnod)(J.callJcycl(vert+k+1)-1,elem-1); // c++ indeces start from 0
          np.at(k) = ip-1;
         }
+
         if ((np.at(0) >= minSh) && (np.at(0) <  (minSh+nbSh/2)) &&
             (np.at(1) >= minSh) && (np.at(1) <  (minSh+nbSh/2))) {
         fprintf(cfin,"%s","\n");
         fprintf(cfin,"%1i %1i",IND2,IND2);
         fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
-
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
@@ -497,6 +506,12 @@ void Triangle2CFmesh::writeCFmeshFmt()
       fprintf(cfin,"%s","\n!GEOM_TYPE Face\n");
       fprintf(cfin,"%s","!LIST_GEOM_ENT");
 
+      elemVector.resize((nbSh/2-1)*2);
+      elemVector_noduplicate.resize((nbSh/2-1)*2);
+      elemVector_unitIndex.resize((nbSh/2-1)*2);
+
+      unsigned h=0; unsigned duplicate=0;
+      
       for(unsigned j=0; j<nbfac->at(1); j++) {
        if((*bndfac)(2,j)==(IBC+1)) {
         int elem = (*bndfac)(0,j);
@@ -507,13 +522,111 @@ void Triangle2CFmesh::writeCFmeshFmt()
         }
         if ((np.at(0) > (maxSh-nbSh/2)) && (np.at(0) <= maxSh) &&
             (np.at(1) > (maxSh-nbSh/2)) && (np.at(1) <= maxSh)) {
+
         fprintf(cfin,"%s","\n");
         fprintf(cfin,"%1i %1i",IND2,IND2);
         fprintf(cfin,"%11i %10i %10i %10i",np.at(0),np.at(1),np.at(0),np.at(1));
-
+        for(unsigned k=0; k<2; k++) {elemVector.at(h+k)= np.at(k);}
+        h=h+2;
         } // if np conditions
        } // if (*bndfac)(2,j)==(IBC+1)
       } // for j<nbfac->at(1)
+
+      // delete the duplicate of the cell nodes IDs from the elemVector
+      // by defining an elemVector_noduplicate vector
+      // and count the number of not-duplicated nodes
+      h=0;
+      for(unsigned j=0;j<elemVector.size();j++){
+       for(unsigned k=j+1;k<elemVector.size();k++) {
+        if(elemVector.at(j)==elemVector.at(k)) { duplicate++; }
+       }
+       if(duplicate==0) { elemVector_noduplicate.at(h)=elemVector.at(j);
+                          h++;
+                         }
+       else { duplicate=0; }
+      }
+
+      elemVector_noduplicate.resize(h);
+      elemVector_sort.resize(h);
+      array_elemVector_sort.resize(2,h);
+
+      // define a new vector sorting the elements inside elemVector_noduplicate
+      elemVector_sort=elemVector_noduplicate;
+
+      // sort the elemVector_sort vector
+      sort(elemVector_sort.begin(),elemVector_sort.end());
+
+      // since the tecplot cell nodes for each TRS are numbered 
+      // starting from 1:nbElem(TRS), the array_elemVector is defined to 
+      //  link the SF cell node IDs to the new IDs defined inside the tecplot file
+      for(unsigned j=0; j<elemVector_sort.size(); j++) {
+       array_elemVector_sort(0,j)=elemVector_sort.at(j);
+       array_elemVector_sort(1,j)=j+1;
+      }
+
+      // assign the new IDs to the elemVector_uniIndex vector
+      for(unsigned j=0;j<elemVector.size(); j++) {
+       for(unsigned k=0;k<array_elemVector_sort.getnCols();k++) {
+        if(elemVector.at(j)==array_elemVector_sort(0,k)) {
+         elemVector_unitIndex.at(j)=array_elemVector_sort(1,k); }
+       }
+      }
+
+      // variable storing curvilinear coordinates of the
+      // innersub grid points
+      double r;
+
+      // output file storing info on the subsonic boundary patch
+      FILE* fileFarFieldBC = fopen("FarFieldBc.dat", "w");
+      FILE* printFarFieldBC = fopen("FarFieldBc.plt", "w");
+
+      fprintf(fileFarFieldBC,"%s","VARIABLES  =  \"y\" ");
+      fprintf(printFarFieldBC,"%s","TITLE = Boundary data\n");
+      fprintf(printFarFieldBC,"%s","VARIABLES  =  \"x0\" \"x1\" ");
+
+      if(m_modelTransf=="TCneq") {
+      for(unsigned isp=0; isp<(*nsp);isp++) {
+       fprintf(fileFarFieldBC,"%s",rhostr.at(isp).c_str());
+      }
+      fprintf(fileFarFieldBC,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
+      fprintf(printFarFieldBC,"%s","\"u\" \"v\" \"T\" \"Tv0\" \n");
+      }
+      else if (m_modelTransf=="Pg") {
+       fprintf(fileFarFieldBC,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+       fprintf(printFarFieldBC,"%s","\"p\" \"u\" \"v\" \"T\"\n");
+      }
+      else { cout << m_modelTransf << " model not implemented\n"; exit(1); }
+
+      fprintf(fileFarFieldBC,"%u %s",elemVector_noduplicate.size(),"\n");
+
+      fprintf(printFarFieldBC,"%s %u","ZONE N=",elemVector_noduplicate.size());
+      fprintf(printFarFieldBC,"%s %u %s",", T=\"InnerSub, TR 0\", E=",nbSh/2-1,"," );
+      fprintf(printFarFieldBC,"%s","F=FEPOINT, ET=LINESEG, SOLUTIONTIME=0\n");
+ 
+      for(unsigned j=0;j<elemVector_noduplicate.size();j++) {
+       r = 0;
+       for(unsigned k=0;k<PhysicsInfo::getnbDim();k++) {
+        r = r + pow((*XY)(k,elemVector_noduplicate.at(j)),2);
+        fprintf(printFarFieldBC,"%20.16E %s",(*XY)(k,elemVector_sort.at(j))," ");
+       }
+         fprintf(fileFarFieldBC,"%28.16e",(*XY)(1,elemVector_noduplicate.at(j)));
+       for(unsigned k=0;k<(*ndof);k++) {
+        fprintf(fileFarFieldBC,"%30.16e",(*zroe)(k,elemVector_noduplicate.at(j)));
+        fprintf(printFarFieldBC,"%30.16e",(*zroe)(k,elemVector_sort.at(j)));
+       }
+       fprintf(fileFarFieldBC,"%s","\n");
+       fprintf(printFarFieldBC,"%s","\n");
+      }
+
+      for(unsigned j=0;j<elemVector.size()-1;j=j+2) {
+       fprintf(printFarFieldBC,"%11i",elemVector_unitIndex.at(j));
+       fprintf(printFarFieldBC,"%11i %s",elemVector_unitIndex.at(j+1),"\n");
+      }
+
+
+      // close file storing InnerSub info
+      fclose(fileFarFieldBC);
+      fclose(printFarFieldBC);
 
       // assign the boundary name to the corresponding MeshData vector
       boundaryNames->at(BND) = "InnerSub";
@@ -975,6 +1088,7 @@ void Triangle2CFmesh::setMeshData()
 void Triangle2CFmesh::setPhysicsData()
 {
   ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  nsp = PhysicsData::getInstance().getData <unsigned> ("NSP");
 }
 
 //----------------------------------------------------------------------------//

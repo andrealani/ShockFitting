@@ -5,8 +5,6 @@ CoDc.cxx
 CoDc.hh
 ComputeResidual.cxx
 ComputeResidual.hh
-ComputeStateDps.cxx
-ComputeStateDps.hh
 ComputeStateDps4Ar.cxx
 ComputeStateDps4Ar.hh
 ComputeStateDps4Pg.cxx
@@ -25,8 +23,6 @@ FixStateSps.cxx
 FixStateSps.hh
 Interp.cxx
 Interp.hh
-MoveDps.cxx
-MoveDps.hh
 MoveDps4Ar.cxx
 MoveDps4Ar.hh
 MoveDps4Pg.cxx

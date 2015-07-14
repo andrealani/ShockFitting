@@ -7,6 +7,7 @@
 #include "StateUpdaterSF/ComputeStateDps4Pg.hh"
 #include "Framework/Log.hh"
 #include "Framework/MeshData.hh"
+#include "Framework/PhysicsData.hh"
 #include "Framework/PhysicsInfo.hh"
 #include "SConfig/ObjectProvider.hh"
 #include "StateUpdaterSF/CoDc.hh"
@@ -24,13 +25,13 @@ namespace ShockFitting {
 //----------------------------------------------------------------------------//
 
 // this variable instantiation activates the self-registration mechanism
-ObjectProvider<ComputeStateDps4Pg, ComputeStateDps>
+ObjectProvider<ComputeStateDps4Pg, StateUpdater>
  computeStateDpsPgProv("ComputeStateDps4Pg");
 
 //----------------------------------------------------------------------------//
 
 ComputeStateDps4Pg::ComputeStateDps4Pg(const std::string& objectName) :
- ComputeStateDps(objectName)
+ StateUpdater(objectName)
 {
 }
 
@@ -233,6 +234,69 @@ void ComputeStateDps4Pg::saveDownState(unsigned IV, unsigned ISH)
   for(unsigned I=0; I<(*ndof); I++) {
    (*ZroeShdOld)(I,IV,ISH) = (*ZroeShd)(I,IV,ISH);
   }
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4Pg::setAddress()
+{
+  unsigned start;
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax();
+  ZroeShu =
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
+  start = npoin->at(0) * PhysicsInfo::getnbDofMax() +
+          PhysicsInfo::getnbShPointsMax() *
+          PhysicsInfo::getnbShMax() *
+          PhysicsInfo::getnbDofMax();
+  ZroeShd =
+    new Array3D <double> (PhysicsInfo::getnbDofMax(),
+                          PhysicsInfo::getnbShPointsMax(),
+                          PhysicsInfo::getnbShMax(),
+                          &zroeVect->at(start));
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4Pg::setDiscSpeedSize()
+{
+  WSh->resize(PhysicsInfo::getnbDim(),
+              PhysicsInfo::getnbShPointsMax(),
+              PhysicsInfo::getnbShMax());
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4Pg::freeArray()
+{
+  delete ZroeShu; delete ZroeShd;
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4Pg::setMeshData()
+{
+  npoin = MeshData::getInstance().getData <vector<unsigned> > ("NPOIN");
+  zroeVect = MeshData::getInstance().getData <vector <double> > ("ZROE");
+}
+
+//----------------------------------------------------------------------------//
+
+void ComputeStateDps4Pg::setPhysicsData()
+{
+  ndof = PhysicsData::getInstance().getData <unsigned> ("NDOF");
+  nShocks = PhysicsData::getInstance().getData <unsigned> ("nShocks");
+  nShockPoints =
+     PhysicsData::getInstance().getData <vector <unsigned> > ("nShockPoints");
+  typeSh = PhysicsData::getInstance().getData <vector <string> > ("TYPESH");
+  vShNor = PhysicsData::getInstance().getData <Array3D<double> > ("VSHNOR");
+  WSh = PhysicsData::getInstance().getData <Array3D<double> > ("WSH");
+  ZroeShuOld =
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHuOLD");
+  ZroeShdOld =
+       PhysicsData::getInstance().getData <Array3D <double> > ("ZROESHdOLD");
 }
 
 //----------------------------------------------------------------------------//

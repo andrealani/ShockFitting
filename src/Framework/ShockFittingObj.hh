@@ -19,12 +19,10 @@
 #include "Framework/FileProcessing.hh"
 #include "Framework/MeshGenerator.hh"
 #include "Framework/Remeshing.hh"
+#include "Framework/ShockDetector.hh"
 #include "Framework/StateUpdater.hh"
 #include "Framework/VariableTransformer.hh"
 #include "Framework/WritingMesh.hh"
-#include "RemeshingSF/CoNorm.hh"
-#include "StateUpdaterSF/ComputeStateDps.hh"
-#include "StateUpdaterSF/MoveDps.hh"
 
 #define PAIR_TYPE(a) SConfig::StringT<SConfig::SharedPtr<a> >
 
@@ -94,6 +92,12 @@ public:
     return m_mGenerator;
   }
 
+  /// get the shock detector list
+  std::vector<PAIR_TYPE(ShockDetector)>& getShockDetectorList()
+  {
+    return m_sDetector;
+  }
+
   /// get the remeshing list
   std::vector<PAIR_TYPE(Remeshing)>& getRemeshingList()
   {
@@ -116,6 +120,12 @@ public:
   std::vector<PAIR_TYPE(CopyMaker)>& getCopyMakerList()
   {
     return m_cMaker;
+  }
+
+  /// get the CFD solver list
+  std::vector<PAIR_TYPE(CFDSolver)>& getCFDSolverList()
+  {
+    return m_cfdSolver;
   }
 
   /// get the state updater list
@@ -150,14 +160,14 @@ protected:
   /// array of file processing
   std::vector<PAIR_TYPE(FileProcessing)> m_fProcessing;
 
+  /// array of shock detector
+  std::vector<PAIR_TYPE(ShockDetector)> m_sDetector;
+
   /// array of mesh generator readers
   std::vector<PAIR_TYPE(MeshGenerator)> m_mGenerator ;
 
   /// array of field remeshing
   std::vector<PAIR_TYPE(Remeshing)> m_fRemeshing;
-
-  /// object normal vector computing
-  PAIR_TYPE(CoNorm) m_cNormalVector;
 
   /// array of data writing
   std::vector<PAIR_TYPE(WritingMesh)> m_wMesh;
@@ -165,20 +175,14 @@ protected:
   /// array of converter objects
   std::vector<PAIR_TYPE(Converter)> m_fConverter;
 
+  /// object calling CFDSolver
+  std::vector<PAIR_TYPE(CFDSolver)> m_cfdSolver;
+
   /// array of copy maker objects
   std::vector<PAIR_TYPE(CopyMaker)> m_cMaker;
 
   /// array of state updater objects
   std::vector<PAIR_TYPE(StateUpdater)> m_sUpdater;
-
-  /// object calling CFDSolver
-  PAIR_TYPE(CFDSolver) m_CFDSolver;
-
-  /// object updating solution
-  PAIR_TYPE(ComputeStateDps) m_cState;
-
-  /// object moving shock points
-  PAIR_TYPE(MoveDps) m_moveDps;
 
 private: // helper functions
 

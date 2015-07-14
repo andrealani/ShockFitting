@@ -24,7 +24,7 @@ namespace ShockFitting {
 /// @author Andrea Lani
 
 class ShockFittingManager : public SConfig::Counter, 
-			       public SConfig::ConfigObject {
+       		            public SConfig::ConfigObject {
 public:
   
   /// Constructor 

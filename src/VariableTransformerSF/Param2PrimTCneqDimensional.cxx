@@ -155,32 +155,32 @@ void Param2PrimTCneqDimensional::transform()
 
 //--------------------------------------------------------------------------//
 
-void Param2PrimTCneqDimensional::transform(vector <double>* m_zroe,
-					   vector <double>* m_XY,
-                                           vector <double>* m_prim)
+void Param2PrimTCneqDimensional::transform(vector <double>& m_zroe,
+					   vector <double>& m_XY,
+                                           vector <double>& m_prim)
 {
   setPhysicsData();
 
   // zrho and rho
   double sqrtr = 0;
   for (unsigned ISP=0; ISP<(*nsp); ISP++) { 
-   sqrtr = sqrtr + m_zroe->at(ISP);  }
+   sqrtr = sqrtr + m_zroe.at(ISP);  }
    rho = pow(sqrtr,2);
  
   // rho-i and alpha-i
   alpha.resize(*nsp);
   rhos.resize(*nsp);
   for (unsigned ISP=0; ISP<(*nsp); ISP++) {
-   alpha.at(ISP) = m_zroe->at(ISP)/sqrtr;
-   rhos.at(ISP) = m_zroe->at(ISP) * sqrtr * ReferenceInfo::getrhoref();
+   alpha.at(ISP) = m_zroe.at(ISP)/sqrtr;
+   rhos.at(ISP) = m_zroe.at(ISP) * sqrtr * ReferenceInfo::getrhoref();
   } 
 
   // u, v, h, ev
   u.resize(2);
-  h = m_zroe->at((*IE))/sqrtr * pow(ReferenceInfo::geturef(),2);
-  u.at(0) = m_zroe->at((*IX))/sqrtr * ReferenceInfo::geturef();
-  u.at(1) = m_zroe->at((*IY))/sqrtr * ReferenceInfo::geturef();
-  ev = m_zroe->at((*IEV))/sqrtr * pow(ReferenceInfo::geturef(),2);
+  h = m_zroe.at((*IE))/sqrtr * pow(ReferenceInfo::geturef(),2);
+  u.at(0) = m_zroe.at((*IX))/sqrtr * ReferenceInfo::geturef();
+  u.at(1) = m_zroe.at((*IY))/sqrtr * ReferenceInfo::geturef();
+  ev = m_zroe.at((*IEV))/sqrtr * pow(ReferenceInfo::geturef(),2);
 
   // kinetic energy
   kinetic = pow(u.at(0),2)+pow(u.at(1),2);
@@ -228,16 +228,16 @@ void Param2PrimTCneqDimensional::transform(vector <double>* m_zroe,
          exit(1); }
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-   m_prim->at(ISP)=rhos.at(ISP);
+   m_prim.at(ISP)=rhos.at(ISP);
   }
 
-  m_prim->at((*IE)) = u.at(0);
-  m_prim->at((*IX)) = u.at(1);
-  m_prim->at((*IY)) = T.at(0);
-  m_prim->at((*IEV)) = T.at(1);
+  m_prim.at((*IE)) = u.at(0);
+  m_prim.at((*IX)) = u.at(1);
+  m_prim.at((*IY)) = T.at(0);
+  m_prim.at((*IEV)) = T.at(1);
 
-  m_XY->at(0) = m_XY->at(0) * ReferenceInfo::getLref();
-  m_XY->at(1) = m_XY->at(1) * ReferenceInfo::getLref();
+  m_XY.at(0) = m_XY.at(0) * ReferenceInfo::getLref();
+  m_XY.at(1) = m_XY.at(1) * ReferenceInfo::getLref();
 }
 
 //--------------------------------------------------------------------------//

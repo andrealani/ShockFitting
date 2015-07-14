@@ -115,7 +115,7 @@ void Tecplot2StartingTriangle::convert()
     { m_prim.at(i) = prim.at(IPOIN*ndof+i); }
    for(unsigned i=0; i<PhysicsInfo::getnbDim(); i++)
     { m_XY.at(i) = XY.at(IPOIN*PhysicsInfo::getnbDim()+i); }
-   m_prim2param.ptr()->transform(&m_prim,&m_XY,&m_zroe);
+   m_prim2param.ptr()->transform(m_prim,m_XY,m_zroe);
    for(unsigned i=0; i<ndof; i++) { zroe.at(IPOIN*ndof+i) = m_zroe.at(i); }
   }
 

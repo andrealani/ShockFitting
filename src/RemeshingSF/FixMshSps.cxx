@@ -165,16 +165,17 @@ void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
 
   // look for boundary edge for downstream point
   setShockPointCoor("Down",IP.at(0),ISH.at(0));
-
   logfile("\nTypeSpecPoints: ", typeSpecPoints->at(ISPPNTS), "\n");
 
   iedg1 = lookForBE.getBEdg(xsh, ysh);
+
   s1 = lookForBE.getS();
 
   if (iedg1==-1) {
    cout << "FixMshSps::error => failed matching shock points\n";
    cout << "                    look in the FixMshSps.log file for more info\n";
    logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
+   logfile("Downstream point: xsh ",xsh,"ysh ",ysh,"\n");
    exit(1);}
   int iedg = iedg1+1; // only for log file printing, c++ indeces start from 0
   logfile(" s(1): ", s1, " ");
@@ -191,6 +192,7 @@ void FixMshSps::fixMeshForIPorOPorWPNR(unsigned ISPPNTS)
    cout << "FixMshSps::error => failed matching the shock points\n";
    cout << "                    look in the FixMshSps.log file for more info\n"; 
    logfile("Failed matching 1st shock point of the shock n.",ishock,"\n");
+   logfile("Upstream point: xsh ",xsh,"ysh ",ysh,"\n");
    exit(1);}
   iedg = iedg2+1; // only for log file printing, c++ indeces start from 0
   logfile(" s(2): ", s2, " ");

@@ -9,6 +9,7 @@
 
 //--------------------------------------------------------------------------//
 
+#include <cmath>
 #include <vector>
 #include "SConfig/ConfigObject.hh"
 #include "Framework/FileLogManip.hh"
@@ -79,6 +80,9 @@ public:
 
   /// get the gas constant
   static double getRgas() { return m_Rgas; }
+
+  /// get the reference mach number
+  static double getMachref() { return m_uref/std::sqrt(m_gam*m_Rgas*m_Tref); }
 
   /// set rhoref
   static void setrhoref(double rhoref) { m_rhoref = rhoref; }

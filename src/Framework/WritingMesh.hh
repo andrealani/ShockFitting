@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "Framework/BaseShockFitting.hh"
-#include "SConfig/SharedPtr.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -50,6 +50,11 @@ public:
 
   /// Gets the Class name
   static std::string getClassName() {return "WritingMesh";}
+
+protected: // functions
+
+  // get the name of the parent
+  std::string getParentName() const {return getClassName();}
 
 };
 

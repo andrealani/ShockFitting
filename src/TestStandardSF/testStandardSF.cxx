@@ -7,119 +7,31 @@ using namespace ShockFitting;
 int main (int argc, char** argv)
 {
   int federateID = 0;
+
   cout << "### Creating coupling tool in federate [" << federateID << "]\n";
+  /// create the shock fitting for the given federate
+  /// @param federateID   ID of the federate (< NFEDERATES)
   SF_create_(&federateID);
 
-  // (0) CircularCylinder_Pg_inv_N_M15  : perfect gas M=15 inviscid
-  // (1) CircularCylinder_Pg_inv_N_M20  : perfect gas M=20 inviscid
-  // (2) CircularCylinder_Pg_inv_N_M25  : perfect gas M=25 inviscid
-  // (3) CircularCylinder_VKI_LRD_2.1   : TCneq       M6, LRD   inviscid
-  // (4) CircularCylinder_TCneq_inv_Nitro_Bx_M6: TCneq, M= 6, LDA
-  // (5) CircularCylinder_Pg_vis_Bx_M17 : perfect gas M=17 viscous
-  //                                      from the folder vki
-  // (6) CircularCylinder_Pg_vis_N_M6 : perfect gas M=6 inviscid
-  // (7) CircularCylinder_TCneq_vis_Air5_LDA_M17: TCneq M17, LDA, viscid
-  //
-  const unsigned nbTest = 15;
-  vector<string> testDir(nbTest);
-  testDir.at(0) = "CircularCylinder_Pg_inv_N_M15";
-//  testDir.at(0) = "CircularCylinder_Pg_inv_N_M15_TECPLOT";
-  testDir.at(9) = "CircularCylinder_Pg_inv_FVM_M15";
-  testDir.at(1) = "CircularCylinder_Pg_inv_N_M20";
-  testDir.at(2) = "CircularCylinder_Pg_inv_N_M25";
-  testDir.at(3) = "CircularCylinder_VKI_LRD_2.1";
-  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_N_M6";
-//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_N_M6_TECPLOT";
-//  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_N_M6_FreezedConnectivity";
-  testDir.at(4) = "CircularCylinder_TCneq_inv_Nitro_N_M6_RESTART";
-  testDir.at(5) = "CircularCylinder_TCneq_inv_Nitro_FVM_Roe_M6";
-  testDir.at(6) = "CircularCylinder_Pg_inv_N_M6";
-  testDir.at(7) = "CircularCylinder_Pg_vis_Bx_M17";
-  testDir.at(8) = "CircularCylinder_TCneq_vis_Air5_LDA_M17";
-
-  // number of executing test
-  const unsigned i = 9; 
-
-  string pwdTestDir = "../../../src/TestStandardSF/"+testDir.at(i);
-
-  string commandcp = "cp "+pwdTestDir+"/input.case .";
-  system(commandcp.c_str());
-
-  if(i==3 || i==4 || i==6 || i==8) {
-  string commandcp = "cp "+pwdTestDir+"/cylRDS.inter .";
-  system(commandcp.c_str());
+  if (!fileExists(argv[1])) {
+    cout << "ERROR: file <" << argv[1] << "> does not exist in current directory!\n"; abort();
   }
 
-  if(i==7 || i==9) {
-  string commandcp = "cp "+pwdTestDir+"/cyl.inter .";
-  system(commandcp.c_str());
-  }
+  /// configure the shock fitting
+  /// @param federateID      ID of the federate (< NFEDERATES)
+  /// @param inputFile       configuration filename or string
+  /// @param argc        number of command line options
+  /// @param argv        command line options
+  SF_configure_(&federateID, (char*)argv[1], &argc, &argv);
 
-  if(i==5) {
-  string commandcp = "cp "+pwdTestDir+"/hornung_FVM.inter .";
-  system(commandcp.c_str());
-  }
-
-  // link the I/O files 
-  string commandln;
-  commandln = "cp -rf "+pwdTestDir+"/na00.1.node .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/na00.1.poly .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/na00.1.ele .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/na00.1.neigh .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/na00.1.edge .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/sh00.dat .";
-  system(commandln.c_str());
-
-  // link the starting captured solution
-/*  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/RESULTS/cyl-P0.plt .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFResults/cyl.CFmesh .";
-  system(commandln.c_str());
-  commandln = "cp -rf "+pwdTestDir+"/StartCapturedSolution/CFResults/shock.dat .";
-  system(commandln.c_str());
-*/
-  // link the chemical info file
-  if(i==3 || i==4 || i==5) {
-     commandln = "cp -rf "+pwdTestDir+"/nitrogen2.dat .";
-     system(commandln.c_str());
-  }
-
-  if(i==8) {
-     commandln = "cp -rf "+pwdTestDir+"/air5.dat .";
-     system(commandln.c_str());
-  }
-
-  // link the coolfluid files
-  if(i!=9) {
-   commandln = "cp -rf " + pwdTestDir + "/coolfluid-solver.xml .";
-   system(commandln.c_str());
-  }
-  commandln = "cp -rf "+pwdTestDir+"/cf00.CFcase .";
-  system(commandln.c_str());
-
-  string inputFile = "input.case";
-  if (!fileExists(inputFile.c_str())) {
-    cout << "ERROR: file <" << inputFile << "> does not exist in current directory!\n"; abort();
-  }
-
-  SF_configure_(&federateID, (char*)inputFile.c_str(), &argc, &argv);
-
-cout << "-------------------------------------------" << endl;
-cout << "--------------------------------------------" << endl;
-cout << endl <<"Processing test " << testDir.at(i) << endl << endl;
-cout << "-------------------------------------------" << endl;
-cout << "-------------------------------------------" << endl;
-
-
+  /// run the shock fitting 
+  /// @param federateID   ID of the federate (< NFEDERATES)
   SF_process_(&federateID);
 
 
   cout << "### Destroy coupling tools in federate [" << federateID << "]\n";
+  /// finalize the shock fitting for the given federate
+  /// @param federateID    ID of the federate (< NFEDERATES)
   SF_destroy_(&federateID);
 
   return 1;

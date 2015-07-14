@@ -104,7 +104,7 @@ void CFmesh2StartingTriangleFVM::convert()
   for(unsigned IPOIN=0; IPOIN<npoin; IPOIN++) {
    for(unsigned i=0; i<ndof; i++) { m_prim.at(i) = prim.at(IPOIN*ndof+i); }
    for(unsigned i=0; i<ndim; i++) { m_XY.at(i) = XY.at(IPOIN*ndim+i); }
-   m_prim2param.ptr()->transform(&m_prim,&m_XY,&m_zroe);
+   m_prim2param.ptr()->transform(m_prim,m_XY,m_zroe);
    for(unsigned i=0; i<ndof; i++) { zroe.at(IPOIN*ndof+i) = m_zroe.at(i); }
   }
 

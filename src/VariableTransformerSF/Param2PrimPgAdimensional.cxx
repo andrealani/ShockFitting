@@ -96,9 +96,9 @@ void Param2PrimPgAdimensional::transform()
 
 //--------------------------------------------------------------------------//
 
-void Param2PrimPgAdimensional::transform(vector <double>* m_zroe,
-                                         vector <double>* m_XY,
-                                         vector <double>* m_prim)
+void Param2PrimPgAdimensional::transform(vector <double>& m_zroe,
+                                         vector <double>& m_XY,
+                                         vector <double>& m_prim)
 {
 }
 

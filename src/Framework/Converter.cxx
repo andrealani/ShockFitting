@@ -21,16 +21,16 @@ namespace ShockFitting {
 Converter::Converter(const std::string& objectName) :
   BaseShockFitting(objectName)
 {
-  m_inFmt = "DummyInFmt";
+  m_inFmt = "";
   addOption("From",&m_inFmt,
             "Input variables format");
-  m_outFmt = "DummyOutFmt";
+  m_outFmt = "";
   addOption("To",&m_outFmt,
             "Output variables format");
-  m_modelTransf = "DummyGasModel";
+  m_modelTransf = "";
   addOption("GasModel",&m_modelTransf,
             "Gas model used to compute variables transformation");
-  m_additionalInfo = "DummyAdditionalInfo";
+  m_additionalInfo = "";
   addOption("AdditionalInfo",&m_additionalInfo,
             "CFmesh output and input adimensional or dimensional");
 }

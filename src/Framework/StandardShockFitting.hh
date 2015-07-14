@@ -52,6 +52,9 @@ private:
   /// Standard Shock Fitting Version
   std::string m_version;
 
+  /// set the directory path for the results
+  std::string m_resultsDir;
+
   /// specifies the starting file format
   bool m_startFiles;
 
@@ -93,7 +96,7 @@ private:
   SConfig::SharedPtr<Remeshing> m_changeBndryPoints;
 
   /// command object computing shock points normal
-  SConfig::SharedPtr<CoNorm> m_computeNormalVector;
+  SConfig::SharedPtr<Remeshing> m_computeNormalVector;
 
   /// command object remeshing shock layer
   SConfig::SharedPtr<Remeshing> m_computeShockLayer;
@@ -134,7 +137,7 @@ private:
   SConfig::SharedPtr<CopyMaker> m_copyZRoe1_0;
 
   /// command object updating solution
-  SConfig::SharedPtr<ComputeStateDps> m_updateSolution;
+  SConfig::SharedPtr<StateUpdater> m_updateSolution;
 
   /// command object fixing mesh around special points
   SConfig::SharedPtr<StateUpdater> m_fixSpecPoints;
@@ -143,7 +146,7 @@ private:
   SConfig::SharedPtr<CopyMaker> m_copyZRoeSh0_1;
 
   /// command object moving shock points
-  SConfig::SharedPtr<MoveDps> m_moveShPoints;
+  SConfig::SharedPtr<StateUpdater> m_moveShPoints;
 
   /// command object updating values in the phantom nodes
   SConfig::SharedPtr<StateUpdater> m_updatePhantPoints;

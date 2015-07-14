@@ -61,8 +61,8 @@ public:
   virtual void transform() = 0;
 
   /// command given variables transformation
-  virtual void transform(std::vector<double>*, std::vector<double>*,
-                         std::vector<double>*) = 0;
+  virtual void transform(std::vector<double>&, std::vector<double>&,
+                         std::vector<double>&) = 0;
 
   /// Gets the Class name
   static std::string getClassName() {return "Param2Prim";}

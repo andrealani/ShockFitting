@@ -45,8 +45,8 @@ public:
   virtual void transform();
 
   /// command given variables transformation
-  virtual void transform(std::vector<double>*, std::vector<double>*,
-                         std::vector<double>*);
+  virtual void transform(std::vector<double>&, std::vector<double>&,
+                         std::vector<double>&);
 };
 
 //--------------------------------------------------------------------------//

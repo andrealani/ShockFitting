@@ -78,7 +78,7 @@ void DiscrErrorNormL1weighted::update()
   }
 
   // store the value of the first residual
-  if(MeshData::getInstance().getIstep()==2) {
+  if(MeshData::getInstance().getIstep()==MeshData::getInstance().getnbBegin()+2) {
    firstResidualValue->resize((*ndof));
    for(unsigned K=0; K<(*ndof); K++) {
     firstResidualValue->at(K) = normValue.at(K) / npoin->at(0);
@@ -90,13 +90,17 @@ void DiscrErrorNormL1weighted::update()
     normValue.at(K) = normValue.at(K) / npoin->at(0) / firstResidualValue->at(K);
   }
 
+  string fileConv = MeshData::getInstance().getResultsDir() + "/SFconvergence.plt";
+
   // define the fstream value printing the norm
-  ofstream printNorm("SFconvergence.plt",ios::app);
+  ofstream printNorm(fileConv.c_str(),ios::app);
 
   for(unsigned K=0; K<(*ndof); K++) {
-   printNorm << normValue.at(K) << " "; }
+   printNorm << normValue.at(K) << " ";
+  }
 
   printNorm << endl;
+
   printNorm.close();
 }
 

@@ -31,19 +31,19 @@ shockFileConverterProv("ShockFileConverter");
 ShockFileConverter::ShockFileConverter(const std::string& objectName) :
  Converter(objectName)
 {
-  m_shInputfile = "DummyshFile";
+  m_shInputfile = "";
   addOption("InputFile",&m_shInputfile,
             "File containing the shock polyline and the downstream state");
-  m_nbDof = 0;
+  m_nbDof = 1;
   addOption("nbDof",&m_nbDof,
             "Number of variables inside the shock input file");
-  m_nbShocks = 0;
+  m_nbShocks = 1;
   addOption("nbShocks",&m_nbShocks,
             "Number of shocks");
-  m_nbSpecPoints = 0;
+  m_nbSpecPoints = 1;
   addOption("nbSpecPoints",&m_nbSpecPoints,
             "Number of special points");
-  m_typeSpecialPoint = "DymmySpecialPoint";
+  m_typeSpecialPoint = "";
   addOption("TypeSpecPoints",&m_typeSpecialPoint,
             "Type of the special points");
   m_prim2param.name() = "dummyVariableTransformer";
@@ -79,19 +79,18 @@ void ShockFileConverter::unsetup()
 
 void ShockFileConverter::configure(OptionMap& cmap, const std::string& prefix)
 {
+  LogToScreen(VERBOSE, "ShockFileConverter::configure() => start\n");
+
   Converter::configure(cmap, prefix);
 
   // assign strings on input.case file to variable transformer object
   m_prim2param.name() = m_inFmt+"2"+m_outFmt+m_modelTransf+m_additionalInfo;
 
-  if (ConfigFileReader::isFirstConfig()) {
-   m_prim2param.ptr().reset(SConfig::Factory<VariableTransformer>::getInstance().
-                             getProvider(m_prim2param.name())
-                             ->create(m_prim2param.name()));
-  }
+  m_prim2param.ptr().reset(SConfig::Factory<VariableTransformer>::getInstance().
+                            getProvider(m_prim2param.name())
+                            ->create(m_prim2param.name()));
 
-  // configure variable transformer object
-  configureDeps(cmap, m_prim2param.ptr().get());
+  LogToScreen(VERBOSE, "ShockFileConverter::configure() => end\n");
 }
 
 //----------------------------------------------------------------------------//
@@ -143,7 +142,7 @@ void ShockFileConverter::convert()
 
   // command object transforming upstream variables
   // actually the shock points coordinates are not modified
-  m_prim2param.ptr()->transform(&m_prim,&XYSh,&ZRoeShu);
+  m_prim2param.ptr()->transform(m_prim,XYSh,ZRoeShu);
 
   // transform downstream variables
   // compute the number of shock points
@@ -189,12 +188,11 @@ void ShockFileConverter::convert()
    for(unsigned IV=0; IV<m_nbDof; IV++) { shockdat >> m_prim.at(IV); }
 
    if((IPOIN == 0) || (IPOIN == nbShockPoints-1)) {
-     // set XYSh(0) to 0 for the OPY special point
-     if(m_typeSpecialPoint == "OPY") {XYSh.at(0) = 0;}
+     if(m_typeSpecialPoint=="OPY") { XYSh.at(0) = 0.; }
    }
 
    // command object transforming downstream variables
-   m_prim2param.ptr()->transform(&m_prim,&XYSh,&ZRoeShd);
+   m_prim2param.ptr()->transform(m_prim,XYSh,ZRoeShd);
 
    for(unsigned IV=0; IV<PhysicsInfo::getnbDim(); IV++) {
     fprintf(shfile,"%18.15F %s",XYSh.at(IV)," ");}
@@ -217,6 +215,7 @@ void ShockFileConverter::convert()
   }
 
   fclose(shfile);  
+
   shockdat.close();
 }
 

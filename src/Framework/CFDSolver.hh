@@ -9,7 +9,8 @@
 
 //--------------------------------------------------------------------------//
 
-#include "Framework/BaseShockFitting.hh"
+#include "SConfig/ConfigObject.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -19,7 +20,8 @@ namespace ShockFitting {
 
 /// This class defines CFDSolver, whose task is to call a CFDSolver
 
-class CFDSolver : public BaseShockFitting {
+class CFDSolver : public SConfig::Counter,
+                  public SConfig::ConfigObject { 
 public:
 
   /// typedef needed by the self-registration mechanism
@@ -48,6 +50,11 @@ public:
 
   /// Gets the Class name
   static std::string getClassName() {return "CFDSolver";}
+
+protected: // functions
+
+ // get the name of the parent
+ std::string getParentName() const {return getClassName();}
 
 protected: // data
 

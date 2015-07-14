@@ -96,9 +96,9 @@ void Prim2ParamPgAdimensional::transform()
 
 //--------------------------------------------------------------------------//
 
-void Prim2ParamPgAdimensional::transform(vector <double>* m_prim,
-					 vector <double>* m_XY,
-					 vector <double>* m_zroe)
+void Prim2ParamPgAdimensional::transform(vector <double>& m_prim,
+					 vector <double>& m_XY,
+					 vector <double>& m_zroe)
 {
   double sqrtr;
 
@@ -107,21 +107,21 @@ void Prim2ParamPgAdimensional::transform(vector <double>* m_prim,
 
   ReferenceInfo::setrhoref(rhoref);
 
-  rho = m_prim->at(0) / m_prim->at(3) / ReferenceInfo::getRgas()/ 
+  rho = m_prim.at(0) / m_prim.at(3) / ReferenceInfo::getRgas()/ 
         ReferenceInfo::getTref() * ReferenceInfo::geturef() * ReferenceInfo::geturef();
   sqrtr = sqrt(rho);
-  kinetic = pow(m_prim->at(1),2)+pow(m_prim->at(2),2);
+  kinetic = pow(m_prim.at(1),2)+pow(m_prim.at(2),2);
   kinetic = kinetic*0.5;
   help = ReferenceInfo::getgam()/(ReferenceInfo::getgam()-1);
-  h = help * ReferenceInfo::getRgas() * m_prim->at(3) + kinetic;
+  h = help * ReferenceInfo::getRgas() * m_prim.at(3) + kinetic;
 
-  m_zroe->at(3) = sqrtr * m_prim->at(2);
-  m_zroe->at(2) = sqrtr * m_prim->at(1);
-  m_zroe->at(1) = sqrtr * h;
-  m_zroe->at(0) = sqrtr;
+  m_zroe.at(3) = sqrtr * m_prim.at(2);
+  m_zroe.at(2) = sqrtr * m_prim.at(1);
+  m_zroe.at(1) = sqrtr * h;
+  m_zroe.at(0) = sqrtr;
 
-  m_XY->at(0) = m_XY->at(0)/ ReferenceInfo::getLref();
-  m_XY->at(1) = m_XY->at(1)/ ReferenceInfo::getLref();
+  m_XY.at(0) = m_XY.at(0)/ ReferenceInfo::getLref();
+  m_XY.at(1) = m_XY.at(1)/ ReferenceInfo::getLref();
 }
 
 //--------------------------------------------------------------------------//

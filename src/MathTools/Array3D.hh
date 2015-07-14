@@ -41,9 +41,10 @@ public:
   /// Copy Constructor
   Array3D (const Array3D& ArrayCopy)
   {
-    setSize1(ArrayCopy.getSize1());
-    setSize2(ArrayCopy.getSize2());
-    setSize3(ArrayCopy.getSize3());
+    const unsigned dim1 = ArrayCopy.getSize1();
+    const unsigned dim2 = ArrayCopy.getSize2();
+    const unsigned dim3 = ArrayCopy.getSize3();
+    setSize1(dim1); setSize2(dim2);setSize3(dim3);
     ptr = new TYPE[size1*size2*size3];
     for(unsigned i=0; i<size1*size2*size3; i++) {
      ptr[i] = ArrayCopy.ptr[i];
@@ -87,9 +88,9 @@ public:
   void setSize3 (const unsigned dim) {size3=dim;}
 
   /// return array sizes
-  unsigned getSize1() {return size1;}
-  unsigned getSize2() {return size2;}
-  unsigned getSize3() {return size3;}
+  unsigned getSize1() const {return size1;}
+  unsigned getSize2() const {return size2;}
+  unsigned getSize3() const {return size3;}
 
   /// return total size
   unsigned size() {return size1*size2*size3;}

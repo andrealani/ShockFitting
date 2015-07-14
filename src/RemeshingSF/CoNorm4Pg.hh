@@ -10,8 +10,9 @@
 //--------------------------------------------------------------------------//
 
 #include <fstream>
-#include "RemeshingSF/CoNorm.hh"
+#include "Framework/Remeshing.hh" 
 #include "Framework/FileLogManip.hh"
+#include "MathTools/Array3D.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -23,7 +24,7 @@ namespace ShockFitting {
 /// vectors to the shocks and discontinuities in shock/discontinuity points
 /// for NDOF = 4 && MODEL = PG
 
-class CoNorm4Pg : public CoNorm {
+class CoNorm4Pg : public Remeshing {
 public:
 
   /// Constructor
@@ -41,6 +42,23 @@ public:
 
   /// Compute normal vectors
   void remesh();
+
+private: // functions
+
+  /// assign start pointers of Array2D and 3D
+  void setAddress();
+
+  /// resize vectors and arrays
+  void setSize();
+
+  /// assign values used in CoNorm to MeshData pattern
+  void setMeshData();
+
+  /// assign values used in CoNorm to PhysicsData pattern
+  void setPhysicsData();
+
+  /// de-allocate dynamic arrays
+  void freeArray();
 
 private: // helper functions
 
@@ -93,8 +111,69 @@ private: // helper functions
 
 private: // data
 
+  /// dummy variables for the shock speed
+  double ush,vsh;
+  double ui, vi;
+
+  /// dummy variables for the shock points coordinates
+  double xi,yi,xj,yj,xj2,yj2;
+
+  /// dummy variables for the normal vectors computation
+  double taux, tauy, tau;
+  double tauxip1, tauyip1, tauxip2, tauyip2;
+  double tauxim1, tauyim1, tauxim2, tauyim2;
+  double lp1, lp2, lm1, lm2, lp12, lm12, lm22, lp22;
+  double dum, nx1, nx2, ny1, ny2, nx4, ny4;
+
+  /// dummy variables for the status recovering
+  double uj, vj, roj, help, aj, pj;
+
+  /// dummy variables for the shock dependencies
+  int depip1, depim1;
+
+  /// dummy variables for shock indeces
+  unsigned I;
+  std::vector<unsigned> ISH;
+  std::vector<unsigned> IP;
+
+  /// number of degrees of freedom
+  unsigned* ndof;
+
+  /// number of mesh points
+  std::vector<unsigned>* npoin;
+
+  /// number of shocks
+  unsigned* nShocks;
+
+  /// number of special points
+  unsigned* nSpecPoints;
+
+  /// number of shock points for each shock
+  std::vector<unsigned>* nShockPoints;
+
+  /// type of shock
+  std::vector<std::string>* typeSh;
+
+  /// type of special points
+  std::vector<std::string>* typeSpecPoints;
+
+  /// mesh points status
+  std::vector <double>* zroe;
+
   /// store log file infos
   FileLogManip logfile;
+
+  /// shock points coordinates
+  Array3D <double>* XYSh;
+
+  /// downstream status
+  Array3D <double>* ZRoeShd;
+
+  /// shock points normal vectors
+  Array3D <double>* vShNor;
+
+  /// array characterizing special points
+  Array3D <unsigned>* SHinSPPs;
 };
 
 //----------------------------------------------------------------------------//

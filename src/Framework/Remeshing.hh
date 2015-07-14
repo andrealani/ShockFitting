@@ -59,7 +59,6 @@ public:
 
   /// Gets the Class name
   static std::string getClassName() {return "Remeshing";}
-
 };
 
 //--------------------------------------------------------------------------//

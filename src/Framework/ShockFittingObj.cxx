@@ -48,11 +48,11 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
 
   m_mGenerator = vector<PAIR_TYPE(MeshGenerator)>();
   addOption("MeshGeneratorList",&m_mGenerator,
-            "List of the names of mesh generator files");
+            "List of the names of mesh generator");
 
-  m_cNormalVector.name() = "CoNorm";
-  addOption("CoNorm", &m_cNormalVector,
-            "Object computing normal vector");
+  m_sDetector = vector<PAIR_TYPE(ShockDetector)>();
+  addOption("ShockDetectorList",&m_sDetector,
+            "List of the names of shock detectors");
 
   m_fRemeshing = vector<PAIR_TYPE(Remeshing)>();
   addOption("RemeshingList",&m_fRemeshing,
@@ -66,7 +66,9 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   addOption("ConverterList",&m_fConverter,
             "List of the names of converter objects");
 
-  m_CFDSolver.name() = "COOLFluiD";
+  m_cfdSolver = vector<PAIR_TYPE(CFDSolver)>();
+  addOption("CFDSolverList",&m_cfdSolver,
+            "List of the names of cfd solver objects");
 
   m_cMaker = vector<PAIR_TYPE(CopyMaker)>();
   addOption("CopyMakerList",&m_cMaker,
@@ -75,14 +77,6 @@ ShockFittingObj::ShockFittingObj(const std::string& objectName) :
   m_sUpdater = vector<PAIR_TYPE(StateUpdater)>();
   addOption("StateUpdaterList",&m_sUpdater,
             "List of the names of state updaters");
-
-  m_cState.name() = "ComputeStateDps";
-  addOption("ComputeStateDps", &m_cState,
-            "Object updating solution by enforcing RH relations");
-
-  m_moveDps.name() = "MoveDps";
-  addOption("MoveDps", &m_moveDps,
-            "Object moving shock points");
 }
   
 //--------------------------------------------------------------------------//
@@ -111,13 +105,11 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the mesh generator
     createList<MeshGenerator>(m_mGenerator);
 
+    // create the shock detector
+    createList<ShockDetector>(m_sDetector);
+
     // create the remeshing
     createList<Remeshing>(m_fRemeshing);
-
-    // create the normal vector computing
-    m_cNormalVector.ptr().reset(SConfig::Factory<CoNorm>::getInstance().
-                          getProvider(m_cNormalVector.name())
-                          ->create(m_cNormalVector.name()));
 
     // create the writing objects
     createList<WritingMesh>(m_wMesh);
@@ -125,26 +117,14 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
     // create the converter objects
     createList<Converter>(m_fConverter);
 
-    // create the object calling COOLFluiD
-    m_CFDSolver.ptr().reset(SConfig::Factory<CFDSolver>::getInstance().
-                          getProvider(m_CFDSolver.name())
-                          ->create(m_CFDSolver.name()));
+    // create the object calling cfd solver 
+    createList<CFDSolver>(m_cfdSolver);
 
     // create the copy maker objects
     createList<CopyMaker>(m_cMaker);
 
     // create the state updaters list
     createList<StateUpdater>(m_sUpdater);
-
-    // create the solution updating
-    m_cState.ptr().reset(SConfig::Factory<ComputeStateDps>::getInstance().
-                          getProvider(m_cState.name())
-                          ->create(m_cState.name()));
-
-    // create shock moving shock points
-    m_moveDps.ptr().reset(SConfig::Factory<MoveDps>::getInstance().
-                          getProvider(m_moveDps.name())
-                          ->create(m_moveDps.name()));
   }
 
   // configure the field interpolators
@@ -163,18 +143,20 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
   // configure mesh data
   configureDeps (cmap, &MeshData::getInstance());
 
-  // configure the file mesh generator
+  // configure the mesh generator
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     configureDeps (cmap, m_mGenerator[i].ptr().get());
+  }
+
+  // configure the shock detector
+  for (unsigned i = 0; i < m_sDetector.size(); ++i) {
+    configureDeps (cmap, m_sDetector[i].ptr().get());
   }
 
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     configureDeps (cmap, m_fRemeshing[i].ptr().get());
   }
-
-  // configure the normal vector computing
-  configureDeps (cmap, m_cNormalVector.ptr().get());
 
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
@@ -186,24 +168,20 @@ void ShockFittingObj::configure(SConfig::OptionMap& cmap,
    configureDeps (cmap, m_fConverter[i].ptr().get());
   }
 
+  // configure the object calling CFD solver objects 
+  for (unsigned i = 0; i < m_cfdSolver.size(); ++i) {
+   configureDeps (cmap, m_cfdSolver[i].ptr().get());
+  }
+
   // configure the copy maker objects
   for (unsigned i = 0; i < m_cMaker.size(); ++i) {
    configureDeps (cmap, m_cMaker[i].ptr().get());
   }
 
-  // configure the object calling COOLFluiD
-  configureDeps (cmap,m_CFDSolver.ptr().get());
-
   // configure the state updating
   for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
    configureDeps (cmap, m_sUpdater[i].ptr().get());
   }
-
-  // configure the object updating solution
-  configureDeps (cmap,m_cState.ptr().get());
-
-  // configure the object moving shock points
-  configureDeps (cmap,m_moveDps.ptr().get());
 
   LogToScreen(VERBOSE, "ShockFittingObj::configure() => end\n");
 }
@@ -222,24 +200,25 @@ void ShockFittingObj::setup()
   for (unsigned i = 0; i < m_fInterpolator.size(); ++i) {
     m_fInterpolator[i].ptr()->setup();
   }
-  
-  // configure the file processing
+
   for (unsigned i = 0; i < m_fProcessing.size(); ++i) {
     m_fProcessing[i].ptr()->setup();
   } 
 
-  // configure the file mesh generator
+  // configure the mesh generator
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     m_mGenerator[i].ptr()->setup();
+  }
+
+  // configure the shock detector
+  for (unsigned i = 0; i < m_sDetector.size(); ++i) {
+    m_sDetector[i].ptr()->setup();
   }
 
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->setup();
   }
-
-  // configure the normal vector computing
-  m_cNormalVector.ptr()->setup();
 
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
@@ -251,8 +230,10 @@ void ShockFittingObj::setup()
     m_fConverter[i].ptr()->setup();
   }
 
-  // configure the object calling COOLFluiD
-  m_CFDSolver.ptr()->setup();
+  // configure the object calling CFD solver objects
+  for (unsigned i = 0; i < m_cfdSolver.size(); ++i) {
+    m_cfdSolver[i].ptr()->setup();
+  }
 
   // configure the copy maker objects
   for (unsigned i = 0; i < m_cMaker.size(); ++i) {
@@ -263,12 +244,6 @@ void ShockFittingObj::setup()
   for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
     m_sUpdater[i].ptr()->setup();
   }
-
-  // configure the computing state
-  m_cState.ptr()->setup();
-
-  // configure object moving shock points
-  m_moveDps.ptr()->setup();
 
   LogToScreen(VERBOSE, "ShockFittingObj::setup() => end\n");
 }
@@ -293,18 +268,20 @@ void ShockFittingObj::unsetup()
     m_fProcessing[i].ptr()->unsetup();
   }
 
-  // configure the file mesh generator
+  // configure the mesh generator
   for (unsigned i = 0; i < m_mGenerator.size(); ++i) {
     m_mGenerator[i].ptr()->unsetup();
+  }
+
+  // configure the shock detector
+  for (unsigned i = 0; i < m_sDetector.size(); ++i) {
+    m_sDetector[i].ptr()->unsetup();
   }
 
   // configure the remeshing
   for (unsigned i = 0; i < m_fRemeshing.size(); ++i) {
     m_fRemeshing[i].ptr()->unsetup();
   }
-
-  // configure the normal vector computing
-  m_cNormalVector.ptr()->unsetup();
 
   // configure the writing objects
   for (unsigned i = 0; i < m_wMesh.size(); ++i) {
@@ -316,8 +293,10 @@ void ShockFittingObj::unsetup()
     m_fConverter[i].ptr()->unsetup();
   }
 
-  // configure the object calling COOLFluiD
-  m_CFDSolver.ptr()->unsetup();
+  // configure the object calling CFD solver objects
+  for (unsigned i = 0; i < m_cfdSolver.size(); ++i) {
+    m_cfdSolver[i].ptr()->unsetup();
+  }
 
   // configure the copy maker objects
   for (unsigned i = 0; i < m_cMaker.size(); ++i) {
@@ -328,12 +307,6 @@ void ShockFittingObj::unsetup()
   for (unsigned i = 0; i < m_sUpdater.size(); ++i) {
     m_sUpdater[i].ptr()->unsetup();
   }
-
-  // configure the object updating solution
-  m_cState.ptr()->unsetup();
-
-  // configure object moving shock points
-  m_moveDps.ptr()->unsetup();
 
   LogToScreen(VERBOSE, "ShockFittingObj::unsetup() => end\n");
 }
@@ -366,6 +339,7 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <unsigned> ("NFPOIN", 1);
   MeshData::getInstance().createData <unsigned> ("nPhanPoints",1);
   MeshData::getInstance().createData <unsigned> ("nBoundPhanPoints",1);
+  MeshData::getInstance().createData <vector<string> > ("BoundariesMap",1);
   MeshData::getInstance().createData <vector<unsigned> > ("NPOIN", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NEDGE", 2);
   MeshData::getInstance().createData <vector<unsigned> > ("NELEM", 2);
@@ -386,6 +360,11 @@ void ShockFittingObj::createMeshData()
   MeshData::getInstance().createData <vector <int> >("M12M0", 1);
   MeshData::getInstance().createData <vector <unsigned> >("M02M1", 1);
   MeshData::getInstance().createData <vector <int> >("ICLR", 1);
+
+  MeshData::getInstance().createData <vector<double> >("MedianDualCellArea",1);
+  MeshData::getInstance().createData <vector<unsigned> >("MedianDualCellNodes",1);
+  MeshData::getInstance().createData <vector<unsigned> >("MedianDualCellNode",1);
+  MeshData::getInstance().createData <vector<unsigned> >("MedianDualCellPtr",1);
 
   // store the primitive variables on the grid-points of the background
   // mesh for the current step and for the previous step
@@ -483,6 +462,7 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <unsigned> ("NFPOIN");
   MeshData::getInstance().deleteData <unsigned> ("nPhanPoints");
   MeshData::getInstance().deleteData <unsigned> ("nBoundPhanPoints");
+  MeshData::getInstance().deleteData <vector<string> > ("BoundariesMap");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NPOIN");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NEDGE");
   MeshData::getInstance().deleteData <vector<unsigned> > ("NELEM");
@@ -502,6 +482,11 @@ void ShockFittingObj::deleteMeshData()
   MeshData::getInstance().deleteData <vector <int> >("M12M0");
   MeshData::getInstance().deleteData <vector <unsigned> >("M02M1");
   MeshData::getInstance().deleteData <vector <int> >("ICLR");
+
+  MeshData::getInstance().deleteData <vector<double> >("MedianDualCellArea");
+  MeshData::getInstance().deleteData <vector<unsigned> >("MedianDualCellNodes");
+  MeshData::getInstance().deleteData <vector<unsigned> >("MedianDualCellNode");
+  MeshData::getInstance().deleteData <vector<unsigned> >("MedianDualCellPtr");
 
   MeshData::getInstance().deleteData <Array2D <double> >("primVariablesBkg"); 
   MeshData::getInstance().deleteData <Array2D <double> >("primVariablesBkgOld");

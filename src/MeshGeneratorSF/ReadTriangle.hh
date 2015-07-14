@@ -143,6 +143,10 @@ private: // data
   /// code characterizing mesh points
   std::vector <int>* nodcod;
 
+  /// vector storing the strings of boundary conditions
+  /// corresponding to the boundary marker of each boundary edge
+  std::vector<std::string>* BCmap;
+
   /// mesh points state (assignable to MeshData)
   std::vector <double>* zroeVect;
 
@@ -152,13 +156,13 @@ private: // data
   /// mesh boundary faces (assignable to MeshData)
   std::vector<int>* bndfacVect;
 
-  /// vector characterizing nodes elements
+  /// vector characterizing nodes elements (assignable to MeshData)
   std::vector<int>* celnodVect;
 
-  /// vector characterizing elements
+  /// vector characterizing elements (assignable to MeshData)
   std::vector<int>* celcelVect;
 
-  /// vector characterizing edges
+  /// vector characterizing edges (assignable to MeshData)
   std::vector<int>* edgptrVect;
 
   /// mesh points coordinates (in array storing)
@@ -197,6 +201,11 @@ private: // data
 
   /// type of the input files 
   std::vector<std::string> m_fileTypes;
+
+  /// strings of boundary conditions
+  /// it will be used in the evaluation of special points 
+  /// to link the boundary marker of each edge to a boundary condition
+  std::vector<std::string> m_boundaryTypes;
 
   /// defines start pointers for arrays
   unsigned start;

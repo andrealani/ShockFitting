@@ -46,7 +46,8 @@ public:
 		 OptionValidation<TYPE>* condition = NULL)
   {
     const std::string configName1 = getName() + "." + name;
-    const std::string configName2 = getParentName() + "." + name;
+//    const std::string configName2 = getParentName() + "." + name;
+    const std::string configName2 = getParentName() + "." + getName() + "." + name;
     ConfigMap::getInstance().add<TYPE>
       (name, configName1, configName2, desc, isDynamic, condition, var, m_options);
   }

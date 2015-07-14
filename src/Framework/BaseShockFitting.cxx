@@ -21,13 +21,14 @@ BaseShockFitting::BaseShockFitting(const std::string& objectName) :
   Counter(),
   ConfigObject(objectName)
 {
-  m_flagInputVars = vector<bool>();
+/*  m_flagInputVars = vector<bool>();
   addOption("FlagInputVars",&m_flagInputVars,
             "Flag input variables: 1 (active), 0 (inactive)");
   
   m_flagOutputVars = vector<bool>();
   addOption("FlagOutputVars",&m_flagOutputVars,
             "Flag output variables: 1 (active), 0 (inactive)");
+*/
 }
  
 //--------------------------------------------------------------------------//

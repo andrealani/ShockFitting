@@ -67,6 +67,9 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_version = "dummyVersion";
   addOption("Version",&m_version,
             "Current version of the StandardShockFitting");
+  m_resultsDir = "./";
+  addOption("ResultsDir",&m_resultsDir,
+            "Results directory path");
   m_startFiles = false;
   addOption("startFromCapturedFiles",&m_startFiles,
             "The starting files are the ones from the captured solution");
@@ -112,9 +115,9 @@ void StandardShockFitting::setup()
   m_redistrEqShockPoints = m_fRemeshing[1].ptr();
   m_findPhantPoints = m_fRemeshing[2].ptr();
   m_changeBndryPoints = m_fRemeshing[3].ptr();
-  m_computeNormalVector = m_cNormalVector.ptr();
-  m_computeShockLayer = m_fRemeshing[4].ptr();
-  m_fixMeshSpecialPoints = m_fRemeshing[5].ptr();
+  m_computeNormalVector = m_fRemeshing[4].ptr();
+  m_computeShockLayer = m_fRemeshing[5].ptr();
+  m_fixMeshSpecialPoints = m_fRemeshing[6].ptr();
   m_writeTriangleFile = m_wMesh[0].ptr();
   if(MeshData::getInstance().freezedConnectivityOption()) {
    m_writeTriangleFileFreezedConnect = m_wMesh[3].ptr(); }
@@ -123,15 +126,15 @@ void StandardShockFitting::setup()
   if(m_computeShockFittingResidual) { 
    m_computeSFresidual = m_sUpdater[2].ptr();}
   m_triangleToCFfmt = m_fConverter[2].ptr();
-  m_COOLFluiD = m_CFDSolver.ptr();
+  m_COOLFluiD = m_cfdSolver[0].ptr();
   m_CFmeshToTriangle = m_fConverter[3].ptr();
   m_copyZRoe1_0 = m_cMaker[1].ptr();
-  m_updateSolution = m_cState.ptr();
-  m_fixSpecPoints = m_sUpdater[0].ptr(); 
+  m_updateSolution = m_sUpdater[0].ptr();
+  m_fixSpecPoints = m_sUpdater[1].ptr(); 
   m_copyZRoeSh0_1 = m_cMaker[2].ptr();
-  m_moveShPoints = m_moveDps.ptr();
-  m_updatePhantPoints = m_sUpdater[1].ptr();
-  m_redistrShockPoints = m_fRemeshing[6].ptr();
+  m_moveShPoints = m_sUpdater[2].ptr();
+  m_updatePhantPoints = m_sUpdater[3].ptr();
+  m_redistrShockPoints = m_fRemeshing[7].ptr();
   m_writeBackTriangleFile = m_wMesh[1].ptr();
   m_writeShockInfo = m_wMesh[2].ptr();
   m_meshRestore = m_cMaker[3].ptr();
@@ -170,6 +173,13 @@ void StandardShockFitting::process()
 
   // set the Shock Fitting version
   MeshData::getInstance().setVersion(m_version);
+
+  // assign the results directory to the MeshData pattern
+  MeshData::getInstance().setResultsDir(m_resultsDir);
+
+  // create the results directory
+  execmd = "mkdir " + MeshData::getInstance().getResultsDir();
+  system(execmd.c_str());
 
   cout << "\n--------------------- Shock Fitting Solver ----------------------\n\n";
   cout << "_____________________ StandardShockFitting ______________________\n\n";
@@ -255,7 +265,7 @@ void StandardShockFitting::process()
    if(!MeshData::getInstance().getFreezedConnectivity()) {
  
     if      (m_version=="original")  { m_writeTriangleFile->write();
-                                      m_callTriangle->generate();    }
+                                       m_callTriangle->generate();    }
  
     else if (m_version=="optimized") { m_callTriangleLib->generate(); }
    }
@@ -342,29 +352,30 @@ void StandardShockFitting::process()
     system(execmd.c_str());
 
     execmd = "mv -f shocknor.dat sh99.dat cfout.CFmesh cfin.CFmesh "
-             + *fnameback + ".node " + "cfin*plt "; 
+             + *fnameback + ".node "; 
     if (MeshData::getInstance().getVersion()=="original")
      { execmd = execmd + fname->str() + ".* ";}
     execmd = execmd + backdir.str();
     system(execmd.c_str());
 
+    execmd = "mv cfin*plt " + backdir.str();
+    system(execmd.c_str());
+
     if (MeshData::getInstance().getnbProcessors()==1) {
-     execmd = "mv cfout.plt cf" + backdir.str().substr(4,9) + ".plt";
+     execmd = "mv -f cfo*.plt " + backdir.str();
      system(execmd.c_str());
-     execmd = "mv cfout.surf.plt cf" + backdir.str().substr(4,9) + "-surf.plt";
-     system(execmd.c_str());
-     execmd = "mv -f cf*.plt " + backdir.str();
-//     execmd = "cp Wall.plt-1 wall" + backdir.str().substr(4,9) + ".plt";
     }
     else if (MeshData::getInstance().getnbProcessors()>1) {
      execmd = "rename out cf"+backdir.str().substr(4,9)+" cfout-P?.plt";
      execmd = "mv -f cf*.plt " + backdir.str();
      system(execmd.c_str());
-//     execmd = "cp Wall.plt-1 wall" + backdir.str().substr(4,9) + ".plt";
     }
 
+    // mv the step directory in the results directory
+    execmd = "mv " + backdir.str() + " " + MeshData::getInstance().getResultsDir();
     system(execmd.c_str());
-   }
+
+   } // if the solution must be saved in the current step
 
    // during the current step the solution wont be saved
    else {
@@ -375,14 +386,19 @@ void StandardShockFitting::process()
     system(execmd.c_str());
    }
 
-   execmd = "cut -c1- residual.dat >> convergence.dat";
+   execmd = "cut -c1- residual.dat >> " + MeshData::getInstance().getResultsDir();
+   execmd = execmd + "/convergence.dat";
    system(execmd.c_str());
   }
+
+  execmd = "rm -rf con* residual.dat states.mesh-0 tree.xml options.dat ";
+  system(execmd.c_str());
 
   cout << "_________________________________________________________________\n";
   cout << "_________________________________________________________________\n";
 
   LogToScreen(VERBOSE, "StandardShockFitting::process() => end\n");
+
 }
 
 //--------------------------------------------------------------------------//

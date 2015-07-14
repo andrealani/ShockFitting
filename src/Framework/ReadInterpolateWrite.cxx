@@ -92,7 +92,7 @@ void ReadInterpolateWrite::process()
 {
   LogToScreen(VERBOSE, "ReadInterpolateWrite::process() => start\n");
   
-  m_readInputFile1->process();
+/*  m_readInputFile1->process();
   m_readInputFile2->process();
   
   Field inField;
@@ -105,7 +105,7 @@ void ReadInterpolateWrite::process()
   
   m_writeOutputFile->setSolutionField(&outField);
   m_writeOutputFile->process();
-  
+*/  
   LogToScreen(VERBOSE, "ReadInterpolateWrite::process() => end\n");
 }
   

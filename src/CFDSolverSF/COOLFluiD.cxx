@@ -101,14 +101,14 @@ void COOLFluiD::call()
   if(MeshData::getInstance().getnbProcessors()==1) {
    LogToScreen(DEBUG_MIN,"COOLFluiD::running sequential\n");
    command.str(string());
-   command << "./coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
+   command << "./coolfluid-solver --scase ./cf00.CFcase  >& log/coolfluid.log";
   }
 
   else if (MeshData::getInstance().getnbProcessors()>1) {
    LogToScreen(DEBUG_MIN,"COOLFluiD::running parallel\n");
    command.str(string());
    command << "  mpirun -np " << MeshData::getInstance().getnbProcessors() ;
-   command << " ./coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
+   command << "./coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
   }
 
   FILE* file = popen(command.str().c_str(),"r");

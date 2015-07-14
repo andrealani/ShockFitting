@@ -19,6 +19,7 @@ namespace SConfig {
 template <typename T>
 class SharedPtr {
 public:
+
   // constructor 
   SharedPtr(T* ptr = NULL) : m_ptr(ptr) 
   {
@@ -65,13 +66,13 @@ private:
   {
     if (m_ptr != NULL) ++(*m_ptr);
   }
-  
+
   // decrement the pointer
   void decrement() 
   {
     if (m_ptr != NULL) {
-      --(*m_ptr);	
-      if (m_ptr->isZero()) delete m_ptr;
+      --(*m_ptr);
+      if (m_ptr->isZero()) { delete m_ptr; m_ptr=NULL; }
     }
   }
   

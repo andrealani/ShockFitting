@@ -1,6 +1,8 @@
 LIST ( APPEND MeshGeneratorSF_files
 DummyMeshGenerator.cxx
 DummyMeshGenerator.hh
+MedianDualCell.cxx
+MedianDualCell.hh
 ReadTriangle.cxx
 ReadTriangleFreez.cxx
 ReadTriangle.hh

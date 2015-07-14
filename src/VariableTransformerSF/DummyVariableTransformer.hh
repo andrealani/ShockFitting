@@ -21,7 +21,6 @@ namespace ShockFitting {
 /// of logically coupled variables (states or coordinates) into another set of 
 /// variables. 
 /// 
-/// @author Andrea Lani
 
 class DummyVariableTransformer : public VariableTransformer {
 public:
@@ -43,8 +42,8 @@ public:
   virtual void transform ();
 
   /// Transform one given set of variable into another
-  virtual void transform (std::vector <double>*, std::vector <double>*,
-                          std::vector <double>*);
+  virtual void transform (std::vector <double>&, std::vector <double>&,
+                          std::vector <double>&);
 };
   
 //--------------------------------------------------------------------------//

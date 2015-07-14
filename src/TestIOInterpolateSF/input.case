@@ -1,7 +1,7 @@
 .ShockFittingObj = ReadInterpolateWrite 
 # settings for coupling tools object 
 .ReadInterpolateWrite {
- .VariableTransformerList = DummyVariableTransformer
+# .VariableTransformerList = DummyVariableTransformer
  .FieldInterpolatorList = BoxFieldInterpolator
  .BoxFieldInterpolator {
   .InputXyzIDs    = 0 1 2

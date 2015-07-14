@@ -53,6 +53,9 @@ private: // helper functions
   /// assign array starting pointers
   void setAddress();
 
+  /// de-allocate dynamic array
+  void freeArray();
+
 private: // data
 
   /// number of vertex
@@ -69,6 +72,10 @@ private: // data
 
   /// vector characterizing edges (assignable to MeshData)
   std::vector<int>* edgptrVect;
+
+  /// vector storing the strings of boundary conditions
+  /// corresponding to the boundary marker of each boundary edge
+  std::vector<std::string>* BCmap;
 
   /// bndfac(0)(i-face) 1° endpoint of i-boundary face
   /// bndfac(1)(i-face) 2° endpoint of i-boundary face

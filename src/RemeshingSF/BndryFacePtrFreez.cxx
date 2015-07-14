@@ -71,12 +71,24 @@ void BndryFacePtrFreez::remesh()
 
   unsigned m_nbfac = 0;
 
+  // define a map vector holding boundary conditions names
+   vector<string> map_boundaryNames;
+  if(BCmap->size()>1) {
+   map_boundaryNames.resize(nbfac->at(0));
+   for(unsigned IBFACE=0;IBFACE<nbfac->at(0);IBFACE++) {
+    map_boundaryNames.at((*bndfac)(2,IBFACE)-1)=BCmap->at(IBFACE); 
+   }
+  }
+
   for(unsigned IEDGE=0; IEDGE<nedge->at(0); IEDGE++) {
    if( (*edgptr)(2,IEDGE) > 0 && (*edgptr)(2,IEDGE) !=999) {
     (*bndfac)(0,m_nbfac)=(*edgptr)(0,IEDGE);
     (*bndfac)(1,m_nbfac)=(*edgptr)(1,IEDGE);
     (*bndfac)(2,m_nbfac)=(*edgptr)(2,IEDGE);
-    ++m_nbfac;
+    if(BCmap->size()>1) {
+     BCmap->at(m_nbfac)=map_boundaryNames.at((*bndfac)(2,m_nbfac)-1);
+    }
+     ++m_nbfac;
    }
    else if ((*edgptr)(2,IEDGE) < 0) {
     cout << "BndryFacePtrFreez::error => negative IBC: \n";
@@ -92,6 +104,9 @@ void BndryFacePtrFreez::remesh()
    cout << "                       \nwhile it is " << m_nbfac << endl;
    exit(1);
   } 
+
+  // de-allocate dynamic array
+  freeArray();
 }
 
 //--------------------------------------------------------------------------//
@@ -108,6 +123,13 @@ void BndryFacePtrFreez::setAddress()
 
 //--------------------------------------------------------------------------//
 
+void BndryFacePtrFreez::freeArray()
+{
+  delete bndfac; delete edgptr;
+}
+
+//--------------------------------------------------------------------------//
+
 void BndryFacePtrFreez::setMeshData()
 {
   nvt = MeshData::getInstance().getData <unsigned> ("NVT");
@@ -115,6 +137,7 @@ void BndryFacePtrFreez::setMeshData()
   nedge = MeshData::getInstance().getData <vector<unsigned> > ("NEDGE");
   bndfacVect = MeshData::getInstance().getData <vector<int> >("BNDFAC");
   edgptrVect = MeshData::getInstance().getData <vector<int> >("EDGPTR");
+  BCmap = MeshData::getInstance().getData <vector<string> >("BoundariesMap");
 }
 
 //--------------------------------------------------------------------------//

@@ -20,7 +20,7 @@
 
 const int NFEDERATES = 100;  
 SConfig::SharedPtr<ShockFitting::ShockFittingManager> obj[NFEDERATES];
-  
+
 // --- extern definitions --- // 
 #ifdef __cplusplus
 extern "C" {

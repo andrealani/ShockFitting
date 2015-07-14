@@ -48,38 +48,38 @@ PhysicsInfo::PhysicsInfo(const std::string& objectName) :
   addOption("NSPMAX",&m_nspmax,
             "Maximum number of special points");
 
-  m_naddholesmax = 1;
+  m_naddholesmax = 10;
   addOption("NADDHOLESMAX",&m_naddholesmax,
             "Maximum number of holes");
 }
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_ndim=1;
+unsigned PhysicsInfo::m_ndim=2;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_ndofmax=1;
+unsigned PhysicsInfo::m_ndofmax=6;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_nshmax=1;
+unsigned PhysicsInfo::m_nshmax=5;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_npshmax=1;
+unsigned PhysicsInfo::m_npshmax=1000;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_neshmax = 1;
+unsigned PhysicsInfo::m_neshmax = 500;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_naddholesmax = 1;
+unsigned PhysicsInfo::m_naddholesmax = 10;
 
 //--------------------------------------------------------------------------//
 
-unsigned PhysicsInfo::m_nspmax = 1;
+unsigned PhysicsInfo::m_nspmax = 12;
 
 //--------------------------------------------------------------------------//
 

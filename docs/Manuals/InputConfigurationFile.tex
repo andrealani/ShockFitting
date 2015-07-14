@@ -18,10 +18,10 @@
 
 \begin{document}
 
-\title{\underline{Shock-Fitting Solver: \textit{input.case} configuration file}}
+\title{\underline{Shock-Fitting Solver: \textit{case} configuration file}}
 \date{}
 \maketitle
-The Shock-Fitting Solver configuration file is named \textit{input.case}. 
+The Shock-Fitting Solver configuration file has the extension \textit{case}. 
 It is composed by several lines. 
 Each line is in the form \texttt{KEY = VALUE}.
 The \texttt{KEY} is an object or an object parameter and the \texttt{VALUE} is the quantity assigned to \texttt{KEY}.
@@ -53,7 +53,7 @@ Up-to-date the \texttt{StandardShockFitting} model and the next sections are, th
 
 \subsubsection*{Model setting}
 
-\hspace*{1cm} \texttt{.StandardShockFitting = original}
+\hspace*{1cm} \texttt{.StandardShockFitting.Version = original}
 \newline
 \newline
 allows to choose the between different versions (if available) of the chosen Shock-Fitting Solver model. 
@@ -64,7 +64,13 @@ Up-to-date the \texttt{StandardShockFitting} has two version:
 \item{\texttt{original}: the \texttt{Triangle Mesh Generator} library is called as executable files. The data are passed to it through \texttt{I/O} files.}
 \item{\texttt{optimized}: the \texttt{Triangle Mesh Generator} library is called through it functions. The data are passed to it through arrays.}
 \end{itemize}
-
+\vspace*{0.6cm}
+\hspace*{1cm} \texttt{.StandardShockFitting.ResultsDir = $./$Results$\_$SF}
+\newline
+\newline
+specifies the directory path to store the results.
+\newline
+\newline
 \hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual = true}
 \newline
 \newline
@@ -160,7 +166,7 @@ defines every how many steps the solution will be saved. The files are saved ins
 \hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12}
 \newline
 \newline
-specify the space dimension, the maximum number of degrees of freedom, the maximum number of shocks, the maximum number of shock points for each shock, the maximum number of shock edges for each shocks\footnote{this values must always set equal to \texttt{NPSHMAX-1}}, the maximum number of holes, the maximum number of special points.
+specify the space dimension, the maximum number of degrees of freedom, the maximum number of shocks, the maximum number of shock points for each shock, the maximum number of shock edges for each shock\footnote{this values must always set equal to \texttt{NPSHMAX-1}}, the maximum number of holes, the maximum number of special points.
 \newline
 These options are mostly stable and should be not be changed at the first attempt.
 \newline
@@ -174,18 +180,18 @@ defines the value of the free-stream heat capacity ratio. This value is used onl
 \textbf{ChemicalInfo}
 \newline
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = TCneq}
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.Model = TCneq}
 \newline
 \newline
 specifies the gas model. Up-to-date the \texttt{PG} (\textit{Perfet Gas}) and \texttt{Cneq} (\textit{Chemical non equilibrium} with argon mixture) and \texttt{TCneq} (\textit{Thermo-chemical non-equilibrium}) are implemented.
 \newline
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = nitrogen2}
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.Mixture = nitrogen2}
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = nitrogen2.dat}
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.InputFile = nitrogen2.dat}
 \newline
 \newline
-define the name of the the gas mixture and the file containing the gas mixture informations. It is used in the \texttt{TCneq} gas model.
+define the name of the the gas mixture and the file containing the gas mixture informations. They must be specified only for the \texttt{TCneq} gas model.
 \newline
 The mixture file template is shown hereafter:
 \newline
@@ -230,18 +236,6 @@ some examples can be found inside the folder \texttt{src$/$data$\_$template}
 specifies the reference speed. It should be activated only for the \texttt{Cneq} model.
 \newline
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0}
-\newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1}
-\newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2}
-\newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IEV = 3}
-\newline
-\newline
-Those options are most stable and should not be changed.
-\newline
-\newline
 \textbf{ReferenceInfo}
 \newline
 \newline
@@ -255,17 +249,24 @@ Those options are most stable and should not be changed.
 \newline
 \hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594.0e0}
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = 0.00036354}
-\hspace*{14.5cm} \texttt{ \textbackslash{}}
 \newline
-\hspace*{14.6cm} \texttt{0.00461646}
+are used by the \texttt{VariableTransformerSF} library and define the gas heat capacity ratio, the gas constant, the free-stream temperature, the free-stream pressure and the free-stream speed.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.isVelocityConcordantWithX = true}
+\newline
+\newline
+specify if the x-component of the velocity is concordant with the x-axis. By default it is set to \texttt{false}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = \texttt{ \textbackslash{}}}
+\newline
+\hspace*{1.3cm} \texttt{0.00036354 0.00461646}
 \newline
 \hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1.0e0}
 \newline
 \newline
-are used by the \texttt{VariableTransformerSF} library. 
-\newline
-Those options define the gas heat capacity ratio, the gas constant, the free-stream temperature, the free-stream pressure, the free-stream speed, the species densities and a reference length. The species densities must be specified only for the \texttt{TCneq} and \texttt{Cneq} models.
+define the species densities and a reference length. They must be specified only for the \texttt{TCneq} and \texttt{Cneq} models.
 
 \subsubsection{MeshGeneratorSF}
 
@@ -277,7 +278,7 @@ Those options define the gas heat capacity ratio, the gas constant, the free-str
 specifies the classes of the \texttt{MeshGeneratorSF} library called in the current model of the Shock-fitting Solver.
 \newline
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle = FILEPATH/na00.1}
+\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle.InputFile = FILEPATH/na00.1}
 \newline
 \hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle.FileTypes = node poly ele neigh edge}
 \newline
@@ -285,7 +286,7 @@ specifies the classes of the \texttt{MeshGeneratorSF} library called in the curr
 indicate the name  and the types of the mesh points reading files.
 \newline
 \newline
-\hspace*{1cm} \texttt{.StandardShockFitting.ReSdwInfo.InputFiles = sh00.dat}
+\hspace*{1cm} \texttt{.StandardShockFitting.ReSdwInfo.InputFile = FILEPATH/sh00.dat}
 \newline
 \newline
 specify the name of the shock informations reading file.
@@ -378,7 +379,7 @@ defines the name of the \texttt{tecplot} file containing the shock points poly-l
 \newline
 specify the options needed for the \textit{sh00.dat} file creation: the number of degrees of freedom, the number of shocks, the number of special points, the type of the special points.
 \newline
-Up-to-date only \texttt{OPY} can be chosen as special points.
+Up-to-date only \texttt{OPY} can be chosen as special point.
 \newline
 \newline
 The \texttt{CFmesh2StartingTriangle} is used to create the \textit{triangle} files from the starting captured solution.

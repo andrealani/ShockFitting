@@ -200,8 +200,9 @@ void Interp::finder(unsigned IPOIN)
     ielem = IELEM+1; // c++ indeces start from 0
     ifound = 0;
     return;
-   }
-  } 
+   } // if ( s>= 0 && s<= 1) && ( t>= 0 && t<= 1)
+  }  // for IELEM<nelem->at(1)
+
   ifound = 1;
   cout << "Search failed for Vertex coords " << x0 << ", " << y0 << "\n";
   for(unsigned IV=0; IV<3; IV++) { cout << a.at(IV) << " "; }

@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "Framework/BaseShockFitting.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -21,7 +22,6 @@ namespace ShockFitting {
 /// of logically coupled variables (states or coordinates) into another set of 
 /// variables. 
 /// 
-/// @author Andrea Lani
 
 class VariableTransformer : public BaseShockFitting {
 public:
@@ -37,10 +37,10 @@ public:
   virtual ~VariableTransformer();
    
   /// Set up this object before its first use
-  virtual void setup() = 0;
+  virtual void setup();
   
   /// Unset up this object after its last use
-  virtual void unsetup() = 0;
+  virtual void unsetup();
   
   /// Configures the options for this object.
   /// To be extended by derived classes.
@@ -48,28 +48,19 @@ public:
   virtual void configure(SConfig::OptionMap& cmap, const std::string& prefix);
   
   /// Transform one set of variable into another
-  virtual void transform () = 0;
+  virtual void transform ();
 
   /// Transform one set of given variable to another
-  virtual void transform(std::vector<double>*, std::vector<double>*,
-                         std::vector<double>*) = 0;
+  virtual void transform(std::vector<double>&, std::vector<double>&,
+                         std::vector<double>&);
 
   /// Gets the Class name
   static std::string getClassName() {return "VariableTransformer";}
 
-protected: // data
+protected: // functions
 
-  /// in variables format
-  std::string m_inFmt;
-
-  /// out variables format
-  std::string m_outFmt;  
-
-  /// model used to compute the variables transformation
-  std::string m_modelTransf;
-
-  /// additional infos used to compute variables transformation
-  std::string m_addInfo;
+  // get the name of the parent
+  std::string getParentName() const {return getClassName();}
 };
   
 //--------------------------------------------------------------------------//

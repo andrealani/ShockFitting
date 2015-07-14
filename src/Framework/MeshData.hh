@@ -36,7 +36,7 @@ public:
      for (unsigned i=0; i<caddholes->size(); i++) {
      caddholes->at(i) = m_caddholes.at(i);}
     }
-    else {caddholes->resize(1); caddholes->at(0)=m_caddholes.at(0);}
+    else {caddholes->resize(1); caddholes->at(0)= 0; } //m_caddholes.at(0);}
   }
 
   /// Unset up this object before its first use
@@ -73,6 +73,12 @@ public:
   
   /// get the name of the parent
   std::string getParentName() const {return std::string("MeshData");}
+
+  /// set the results directory
+  void setResultsDir(std::string resDir) { m_resultsDir = resDir; }
+
+  /// get the results directory
+  std::string getResultsDir() const { return m_resultsDir; }
 
   /// get the number of starting step
   unsigned getnbBegin() const { return m_nbegin; }
@@ -210,6 +216,9 @@ private: // data
   std::string m_version;
 
 private: // data (read from input file)
+
+  /// string of the results directory path
+  std::string m_resultsDir;
 
   /// distance between two shock faces
   double m_eps;

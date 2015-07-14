@@ -7,8 +7,6 @@
 #ifndef ConfigOption_hh
 #define ConfigOption_hh 
 
-#include <iostream>
-
 #include "NamedObject.hh"
 
 //----------------------------------------------------------------------------//

@@ -178,7 +178,10 @@ void BndryNodePtr::myroutine()
 void BndryNodePtr::getnbBndryPoints()
 {
   nbpoin->at(0)=0;
-  for (unsigned IPOIN=0; IPOIN<npoin->at(0)-1; IPOIN++) {
+
+   // (!!) changed from npoin->at(0)-1 to npoin->at(0)
+//  for (unsigned IPOIN=0; IPOIN<npoin->at(0)-1; IPOIN++) {
+   for (unsigned IPOIN=0; IPOIN<npoin->at(0); IPOIN++) {
    if((*nodcod)[IPOIN]>0) {nbpoin->at(0)++;}
   }
 }

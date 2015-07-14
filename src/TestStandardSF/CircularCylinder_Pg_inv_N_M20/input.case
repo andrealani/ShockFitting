@@ -1,12 +1,15 @@
 .ShockFittingObj = StandardShockFitting
 
+# set the directory path for the results
+.StandardShockFitting.ResultsDir = ./Results_SF
+
 # version 'original'
 # version 'optimized' (calling triangle mesh generator library without in/out files)
 .StandardShockFitting.Version = original
 
 # specifies if the triangle file  are given (set to false) or are generated from
 # the started caotured solution (set to true)
-#.StandardShockFitting.startFromCapturedFiles = true 
+.StandardShockFitting.startFromCapturedFiles = true 
  
 # computes the residual related to the shock fitting algorithm if set to true
 .StandardShockFitting.shockFittingResidual = true
@@ -14,38 +17,28 @@
 ###----------------------- MeshData ------------------------
  # distance between two shock faces
  .StandardShockFitting.MeshData.EPS = 0.20e-13
-
  # max non dimensional distance of phantom nodes
- .StandardShockFitting.MeshData.SNDMIN = 0.2
-
+ .StandardShockFitting.MeshData.SNDMIN = 0.1
  # length of the shock edges
- .StandardShockFitting.MeshData.DXCELL = 0.065 
-
+ .StandardShockFitting.MeshData.DXCELL = 0.0755555 
  # relax coefficient of shock points integration
- .StandardShockFitting.MeshData.SHRELAX = 0.9
-
+ .StandardShockFitting.MeshData.SHRELAX = 0.5
  # number of hole points
   .StandardShockFitting.MeshData.Naddholes = 0            
-
  # hole points coordinates
   .StandardShockFitting.MeshData.CADDholes = 0 
-
  # number of processor
   .StandardShockFitting.MeshData.NPROC = 1           
-   
  # set the output of coolfluid according to the coolfluid version
  # coolfluid version 2013.9 returns cfout-P0.CFmesh (WithP0 = true)
  # coolfluid version 2014.11  returns cfout.CFmesh (WithP0 = false)
-  .StandardShockFitting.MeshData.WithP0 = true 
-
+  .StandardShockFitting.MeshData.WithP0 = false 
  # beginning step
   .StandardShockFitting.MeshData.NBegin = 0
-
  # number of step
-  .StandardShockFitting.MeshData.NSteps = 12001 
-
+  .StandardShockFitting.MeshData.NSteps = 100 
  # number of iterations before saving solution
-  .StandardShockFitting.MeshData.IBAK = 100
+  .StandardShockFitting.MeshData.IBAK = 1
 ###----------------------------------------------------------
 
 
@@ -54,25 +47,18 @@
  ##--- PhysicsInfo
   # space dimension
     .StandardShockFitting.PhysicsData.PhysicsInfo.NDIM = 2       
-
   # max number of degrees of freedom (should not be changed)
     .StandardShockFitting.PhysicsData.PhysicsInfo.NDOFMAX = 6       
-
   # max number of shocks
     .StandardShockFitting.PhysicsData.PhysicsInfo.NSHMAX = 5               
-
   # max number of shock points for each shock
     .StandardShockFitting.PhysicsData.PhysicsInfo.NPSHMAX = 1000                      
-
   # max number of shock edges for each shock (NPSHMAX-1)
     .StandardShockFitting.PhysicsData.PhysicsInfo.NESHMAX = 999                       
-
   # max number of holes
     .StandardShockFitting.PhysicsData.PhysicsInfo.NADDHOLESMAX = 10               
-
   # max number of special points
     .StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12                        
-
   # specific heat ratio
     .StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.40e+0 
  ##------
@@ -80,46 +66,21 @@
 
  ##--- ChemicalInfo
   # gas model (PG, Cneq, TCneq)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = PG                 
-
-  # mixture name (only if model=Cneq or model=TCneq)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = /                
-                                         
-  # mixture file (only if model=Cneq or model=TCneq, look at data_template.dat)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = /
-                
-  # reference speed (only if model=Cneq and mixture=Ar4)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.Qref = /                            
-
-  # global indeces (should not be changed)
-    .StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0                    
-    .StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1                      
-    .StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2                         
-    .StandardShockFitting.PhysicsData.ChemicalInfo.IEV = 3                             
+    .StandardShockFitting.PhysicsData.ChemicalInfo.Model = PG                 
  ##------
 
 
  ##--- ReferenceInfo
   # isoentropic coefficient of the gas
     .StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4e0            
-
   # gas constant (J/kg/K)
     .StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287.0e0               
-
   # reference temperature (K)
     .StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 273.14e0                    
-
   # freestream pressure (Pa)
     .StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 10e0              
-
   # reference speed (m/s)
     .StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 6623.94e0                
-
-  # species densities (only if model=TCneq or model=Cneq)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = /
-
-  # reference length (only if model=TCneq)
-    .StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1  
  ##------
 
 ###----------------------------------------------------------
@@ -130,24 +91,17 @@
                                            TriangleExe Tricall 
 
 # processing file
-   .StandardShockFitting.ReadTriangle.InputFiles = na00.1 
-
+   .StandardShockFitting.ReadTriangle.InputFile = na00.1 
 # file types (in default order)
    .StandardShockFitting.ReadTriangle.FileTypes = node poly ele neigh edge
-
 # shock points informations file
-  .StandardShockFitting.ReSdwInfo.InputFiles = sh00.dat
+  .StandardShockFitting.ReSdwInfo.InputFile = sh00.dat
 ##------
 
 
 ##--- List of remeshing objects
 .StandardShockFitting.RemeshingList = BndryNodePtr RdDpsEq FndPhPs ChangeBndryPtr \
-                                       CoPntDispl FixMshSps RdDps
-# object computing normal vector CoNorm
-# add Pg for perfect gas
-# add Ar for chemical non equilibrium 
-# add TCneq for temperature and chemical non equilibrium 
- .StandardShockFitting.CoNorm = CoNorm4Pg
+                                      CoNorm4Pg CoPntDispl FixMshSps RdDps
 ##------
 
 
@@ -161,17 +115,13 @@
                                        Triangle2CFmesh CFmesh2Triangle
 
   # input file containing the shock polyline and the downstream state
-  .StandardShockFitting.ShockFileConverter.InputFile = shock.dat
-
+  .StandardShockFitting.ShockFileConverter.InputFile = ./StartCapturedSolution/CFresults/shock.dat
   # number of variables inside the shock input file
   .StandardShockFitting.ShockFileConverter.nbDof = 4
-
   # number of shocks
   .StandardShockFitting.ShockFileConverter.nbShocks = 1
-
   # number of special points
   .StandardShockFitting.ShockFileConverter.nbSpecPoints = 2
-
   # type of the special point
   # it is now implemented only for OPY special point
   .StandardShockFitting.ShockFileConverter.TypeSpecPoints = OPY
@@ -190,7 +140,7 @@
   .StandardShockFitting.ShockFileConverter.AdditionalInfo = Dimensional
 
   # object converting the starting captured solution in the triangle files           
-  .StandardShockFitting.CFmesh2StartingTriangle.InputFile = cyl_Pg-P0.CFmesh 
+  .StandardShockFitting.CFmesh2StartingTriangle.InputFile = ./StartCapturedSolution/CFresults/cyl_Pg-P0.CFmesh 
   .StandardShockFitting.CFmesh2StartingTriangle.From = Prim
   .StandardShockFitting.CFmesh2StartingTriangle.To = Param
   .StandardShockFitting.CFmesh2StartingTriangle.GasModel = Pg
@@ -213,6 +163,12 @@
 ##------
 
 
+##--- List of CFD solver
+.StandardShockFitting.CFDSolverList = COOLFluiD
+##-----
+
+
+
 ##--- List of copy maker objects
 .StandardShockFitting.CopyMakerList = MeshBackup CopyRoeValues1 \
                                        CopyRoeValues2 MeshRestoring
@@ -220,22 +176,11 @@
 
 
 ## List of state updater objects
-.StandardShockFitting.StateUpdaterList = FixStateSps Interp ComputeResidual
-
-# object compute mesh points state ComputeSateDps
-# add Pg for perfect gas
-# add Ar for chemical non equilibrium
-# add TCneq for temperature and chemical non equilibrium
- .StandardShockFitting.ComputeStateDps = ComputeStateDps4Pg
-
-# object moving discontinuities MoveDps
-# add Pg for perfect gas
-# add Ar for chemical non equilibrium
-# add TCneq for temperature and chemical non equilibrium
- .StandardShockFitting.MoveDps = MoveDps4Pg
+.StandardShockFitting.StateUpdaterList = ComputeStateDps4Pg FixStateSps MoveDps4Pg \
+                                         Interp ComputeResidual
 
 # specifies the norm used to compute the residual (L1 or L2)
- .StandardShockFitting.ComputeResidual.wichNorm = L1
+ .StandardShockFitting.ComputeResidual.whichNorm = L1
 # specifies if the norm is weighted (true or false)
  .StandardShockFitting.ComputeResidual.isItWeighted = true 
 # specifies the gas model used to make the trasnformation to primitive var

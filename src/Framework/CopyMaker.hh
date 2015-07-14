@@ -9,8 +9,8 @@
 
 //--------------------------------------------------------------------------//
 
-#include "Framework/BaseShockFitting.hh"
-#include "SConfig/SharedPtr.hh"
+#include "SConfig/ConfigObject.hh"
+#include "SConfig/Provider.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -21,7 +21,8 @@ namespace ShockFitting {
 /// This class defines a CopyMaker, whose task is to make copy
 /// of the mesh variables and arrays.
 
-class CopyMaker : public BaseShockFitting {
+class CopyMaker : public SConfig::Counter,
+                  public SConfig::ConfigObject { 
 public:
 
   /// typedef needed by the self-registration mechanism
@@ -48,6 +49,12 @@ public:
   /// Copy arrays
   virtual void copy() = 0;
 
+  /// Gets the Class name
+  static std::string getClassName() {return "CopyMaker";}
+protected: //functions
+
+  // get the name of the parent
+  std::string getParentName() const {return getClassName();}
 };
 
 //--------------------------------------------------------------------------//

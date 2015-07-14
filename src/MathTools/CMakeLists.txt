@@ -12,7 +12,11 @@ Ishel.cxx
 Isortrx.hh
 Isortrx.cxx
 Jcycl.hh
+LeastSquaresMethod.cxx
+LeastSquaresMethod.hh
 MinMax.hh
+MovingAverageFilter.cxx
+MovingAverageFilter.hh
 Solg.hh
 )
 

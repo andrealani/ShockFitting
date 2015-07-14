@@ -32,7 +32,7 @@ ComputeResidual::ComputeResidual(const std::string& objectName) :
 {
   m_normErr.name() = "DummyNorm";
   m_whichNorm = "L1orL2";
-  addOption("wichNorm", &m_whichNorm,
+  addOption("whichNorm", &m_whichNorm,
             "Specifies which ype of norm will be used");
   m_isItWeighted = false;
   addOption("isItWeighted", &m_isItWeighted,
@@ -40,6 +40,12 @@ ComputeResidual::ComputeResidual(const std::string& objectName) :
   m_gasModel = "DummyModel"; // up-to-date Pg or TCneq 
   addOption("gasModel", &m_gasModel,
             "Gas model required for the conversion in primitive variables");
+  m_minResidual = 10e-10;
+  addOption("minResidual", &m_minResidual,
+            "Lowest value of the residual to stop the simulation");
+  m_stopAdditionalInfo = "endSimulation";
+  addOption("stopAdditionalInfo", &m_stopAdditionalInfo,
+            "specifies what happens when the lowest residual is reached");
 }
 
 //--------------------------------------------------------------------------//
@@ -111,16 +117,21 @@ void ComputeResidual::update()
 {
   LogToScreen(INFO,"ComputeResidual::update()\n");
 
+  string fileConv;
+  
   setMeshData();
   setPhysicsData();
 
+  fileConv = MeshData::getInstance().getResultsDir() + "/SFconvergence.plt";
 
-  if(MeshData::getInstance().getIstep()==1) {
+//  if(MeshData::getInstance().getIstep()==1) {
 
+    if(MeshData::getInstance().getIstep()==
+       MeshData::getInstance().getnbBegin()+1) {
    // resize vector and arrays
    resizeArray();
 
-   ofstream printNorm("SFconvergence.plt",ios::app);
+   ofstream printNorm(fileConv.c_str(),ios::app); 
    printNorm << "TITLE = Shock Fitting Convergence, norm: "<< m_whichNorm;
    if(m_isItWeighted) { printNorm << " weighted"; }
    printNorm << "\n";
@@ -134,9 +145,9 @@ void ComputeResidual::update()
   setAddress();
 
   // write the number of the current on the the output file
-  if(MeshData::getInstance().getIstep()>1) {
-
-   ofstream printNorm("SFconvergence.plt",ios::app);
+  if(MeshData::getInstance().getIstep()>
+     MeshData::getInstance().getnbBegin()+1) {
+   ofstream printNorm(fileConv.c_str(),ios::app);      
    printNorm << MeshData::getInstance().getIstep() << " ";
    printNorm.close();
   }
@@ -148,7 +159,7 @@ void ComputeResidual::update()
    }
 
    // convert the zroe variables in primitive variables
-   m_paramToprimDimensional.ptr()->transform(&m_zroe,&m_XY,&m_prim);
+   m_paramToprimDimensional.ptr()->transform(m_zroe,m_XY,m_prim);
 
    // assign the transformed prim variablesof the IPOIN-point  to 
    // the corrisponding array
@@ -157,7 +168,8 @@ void ComputeResidual::update()
    }
   }
 
-  if(MeshData::getInstance().getIstep()>1) {
+  if(MeshData::getInstance().getIstep()>
+     MeshData::getInstance().getnbBegin()+1) {
    // compute the norm of the discretization error using the
    // primitive variables of the background mesh grid-points
    m_normErr.ptr()->update();

@@ -429,12 +429,12 @@ void BoxFieldInterpolator::finalize(Field* inField, Field* outField)
 	    if (ip == 0) { sol[idx] = 0.;}
 	    sol[idx] += dist2*oldSol[c]*invSumDist2;  
 	    
-	    // if (varIO == 10) {
-	    //   cout << "point [" << ip << "] => dist2 = " << dist2  << ", oldSol[c] = " << oldSol[c] << ", invSumDist2 = " << invSumDist2 << "\n";
-	    //   cout << "dist2*oldSol[c] = " << dist2*oldSol[c] << endl; 
-	    //   cout << "dist2*oldSol[c]*invSumDist2 = " << dist2*oldSol[c]*invSumDist2 << endl;
-	    //   cout << "sol[idx] = " << sol[idx] << endl; 
-	    // }
+	     if (varIO == 10) {
+	       cout << "point [" << ip << "] => dist2 = " << dist2  << ", oldSol[c] = " << oldSol[c] << ", invSumDist2 = " << invSumDist2 << "\n";
+	       cout << "dist2*oldSol[c] = " << dist2*oldSol[c] << endl; 
+	       cout << "dist2*oldSol[c]*invSumDist2 = " << dist2*oldSol[c]*invSumDist2 << endl;
+	       cout << "sol[idx] = " << sol[idx] << endl; 
+	     }
 	    varIO++;
 	  }
 	}
@@ -446,10 +446,10 @@ void BoxFieldInterpolator::finalize(Field* inField, Field* outField)
 	  const unsigned idx = startc + varIO;
 	  m_vminOut[varIO] = (sol[idx] < m_vminOut[varIO]) ? sol[idx] : m_vminOut[varIO];
 	  m_vmaxOut[varIO] = (sol[idx] > m_vmaxOut[varIO]) ? sol[idx] : m_vmaxOut[varIO];
-	  // if (varIO == 10) {
-	  //   cout << "m_vminIn = " << m_vminIn[varIO] << ", m_vminOut = " << m_vminOut[varIO] << "\n";
-	  //   if (m_vminOut[varIO] < m_vminIn[varIO]) abort();
-	  // }
+	   if (varIO == 10) {
+	     cout << "m_vminIn = " << m_vminIn[varIO] << ", m_vminOut = " << m_vminOut[varIO] << "\n";
+	     if (m_vminOut[varIO] < m_vminIn[varIO]) abort();
+	   }
 	  varIO++;
 	}
       }

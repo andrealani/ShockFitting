@@ -30,7 +30,7 @@ void SF_configure_(int* federateID, char* input,
 {
   // preprocess strings (needed if coming from FORTRAN)
   string iname(input); trimRear(iname);
-  
+
   assert(*federateID < NFEDERATES);
   obj[*federateID]->configure(iname, *argc, *argv);
   obj[*federateID]->setup();
@@ -87,6 +87,9 @@ void SF_process_field_(int* federateID, int* dim,
   
   obj[*federateID]->getObj().processField(&inBndConn, &finState, &finNode, 
 					  &outBndConn, &foutState, &foutNode);
+
+  delete inbNamestr;
+  delete outbNamestr;
 }
 
 //--------------------------------------------------------------------------//
@@ -111,7 +114,7 @@ void SF_interpolate_field_(int* federateID,
   
   assert(*federateID < NFEDERATES);
   SharedPtr<ShockFittingManager> ct = obj[*federateID];
-  std::vector<PAIR_TYPE(FieldInterpolator)>& list = 
+/*  std::vector<PAIR_TYPE(FieldInterpolator)>& list = 
     ct->getObj().getFieldInterpolatorList();
   
   for (unsigned i = 0; i < list.size(); ++i) {
@@ -127,7 +130,7 @@ void SF_interpolate_field_(int* federateID,
       // interpolate
       list[i].ptr()->interpolate(&finState, &foutState);
     }
-  }
+  }*/
 }
 
 //--------------------------------------------------------------------------//
@@ -139,14 +142,14 @@ void SF_process_file_(int* federateID, char* objName)
 
   assert(*federateID < NFEDERATES);
   SharedPtr<ShockFittingManager> ct = obj[*federateID];
-  std::vector<PAIR_TYPE(FileProcessing)>& list = 
+/*  std::vector<PAIR_TYPE(FileProcessing)>& list = 
     ct->getObj().getFileProcessingList();
   
   for (unsigned i = 0; i < list.size(); ++i) {
     if (list[i].name() == oname) {
       list[i].ptr()->process();
     }
-  }
+  }*/
 }
 
 //--------------------------------------------------------------------------//

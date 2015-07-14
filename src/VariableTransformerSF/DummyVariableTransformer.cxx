@@ -55,9 +55,9 @@ void DummyVariableTransformer::transform()
 
 //--------------------------------------------------------------------------//
 
-void DummyVariableTransformer::transform(std::vector<double>* m_before,
-					 std::vector<double>* m_XY,
-                                         std::vector<double>* m_after)
+void DummyVariableTransformer::transform(std::vector<double>& m_before,
+					 std::vector<double>& m_XY,
+                                         std::vector<double>& m_after)
 {
   std::cout << "DummyVariableTransformer::transform()\n";
 }

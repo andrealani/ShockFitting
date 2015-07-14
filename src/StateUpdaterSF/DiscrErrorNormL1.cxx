@@ -84,9 +84,11 @@ void DiscrErrorNormL1::update()
     normValue.at(K) = normValue.at(K) / npoin->at(0); 
   }
 
-  // define the fstream value printing the norm
-  ofstream printNorm("SFconvergence.plt",ios::app);
+  string fileConv = MeshData::getInstance().getResultsDir() + "/SFconvergence.plt";
 
+  // define the fstream value printing the norm
+  ofstream printNorm(fileConv.c_str(),ios::app);
+  
   for(unsigned K=0; K<(*ndof); K++) {
    printNorm << normValue.at(K) << " "; }
 

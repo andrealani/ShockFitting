@@ -147,9 +147,9 @@ void Prim2ParamTCneqDimensional::transform()
 
 //--------------------------------------------------------------------------//
 
-void Prim2ParamTCneqDimensional::transform(vector <double>* m_prim,
-                                           vector <double>* m_XY,
-                                           vector <double>* m_zroe)
+void Prim2ParamTCneqDimensional::transform(vector <double>& m_prim,
+                                           vector <double>& m_XY,
+                                           vector <double>& m_zroe)
 {
   double sqrtr = 0;
 
@@ -164,13 +164,13 @@ void Prim2ParamTCneqDimensional::transform(vector <double>* m_prim,
   T.resize(2,0);
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++)
-   { rhos.at(ISP) = m_prim->at(ISP); }
+   { rhos.at(ISP) = m_prim.at(ISP); }
 
   for(unsigned I=0; I<PhysicsInfo::getnbDim(); I++)
-   { u.at(I) = m_prim->at((*nsp)+I); }
+   { u.at(I) = m_prim.at((*nsp)+I); }
 
   for(unsigned I=0; I<2; I++)
-   { T.at(I) = m_prim->at((*nsp)+PhysicsInfo::getnbDim()+I); }
+   { T.at(I) = m_prim.at((*nsp)+PhysicsInfo::getnbDim()+I); }
 
   // rho
   rho = 0;
@@ -210,19 +210,19 @@ void Prim2ParamTCneqDimensional::transform(vector <double>* m_prim,
 
   sqrtr = sqrtr/sqrt(ReferenceInfo::getrhoref());
 
-  m_zroe->at((*IEV)) = sqrtr * ev /
+  m_zroe.at((*IEV)) = sqrtr * ev /
                (ReferenceInfo::geturef()*ReferenceInfo::geturef());
-  m_zroe->at((*IX)) = sqrtr * u.at(0) / ReferenceInfo::geturef();
-  m_zroe->at((*IY)) = sqrtr * u.at(1) / ReferenceInfo::geturef();
-  m_zroe->at((*IE)) = sqrtr * h /
+  m_zroe.at((*IX)) = sqrtr * u.at(0) / ReferenceInfo::geturef();
+  m_zroe.at((*IY)) = sqrtr * u.at(1) / ReferenceInfo::geturef();
+  m_zroe.at((*IE)) = sqrtr * h /
               (ReferenceInfo::geturef()*ReferenceInfo::geturef());
 
   for(unsigned ISP=0; ISP<(*nsp); ISP++) {
-   m_zroe->at(ISP) = sqrtr * alpha.at(ISP);
+   m_zroe.at(ISP) = sqrtr * alpha.at(ISP);
   }
 
-  m_XY->at(0) = m_XY->at(0) / ReferenceInfo::getLref();
-  m_XY->at(1) = m_XY->at(1) / ReferenceInfo::getLref();
+  m_XY.at(0) = m_XY.at(0) / ReferenceInfo::getLref();
+  m_XY.at(1) = m_XY.at(1) / ReferenceInfo::getLref();
 
 }
 

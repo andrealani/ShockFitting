@@ -60,10 +60,10 @@ protected: // data
 
   /// flag input variables which are active
   std::vector<bool> m_flagInputVars;
-  
+    
   /// flag output variables which are active
   std::vector<bool> m_flagOutputVars;
-  
+         
 };
 
 //--------------------------------------------------------------------------//

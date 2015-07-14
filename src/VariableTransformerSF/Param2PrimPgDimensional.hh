@@ -45,8 +45,11 @@ public:
   virtual void transform();
 
   /// transform given variables
-  virtual void transform(std::vector<double>*, std::vector<double>*,
-                         std::vector<double>*);
+  virtual void transform(std::vector<double>&, std::vector<double>&,
+                         std::vector<double>&);
+
+  /// get the class name
+  static std::string getClassName() {return "Param2PrimPgDimensional";}
 };
 
 //--------------------------------------------------------------------------//

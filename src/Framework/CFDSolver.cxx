@@ -19,7 +19,8 @@ namespace ShockFitting {
 //--------------------------------------------------------------------------//
 
 CFDSolver::CFDSolver(const std::string& objectName) :
-  BaseShockFitting(objectName)
+  Counter(),
+  ConfigObject(objectName)
 {
   m_alterCFDinputfile = false;
   addOption("alterCFDinputFile",&m_alterCFDinputfile,
@@ -41,7 +42,7 @@ void CFDSolver::configure(OptionMap& cmap, const std::string& prefix)
 {
   LogToScreen(VERBOSE, "CFDSolver::configure() => start\n");
 
-  BaseShockFitting::configure(cmap, prefix);
+  ConfigObject::configure(cmap, prefix);
 
   LogToScreen(VERBOSE, "CFDSolver::configure() => end\n");
 }
