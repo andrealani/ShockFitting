@@ -564,6 +564,7 @@ void CFmesh2StartingTriangleFreez::computeEdgesFlag()
   iedge:
    while(IEDGE<nedges) {
     int JELEM = edgnod.at(IEDGE*4+3); // edgnod(3,IEDGE)
+
     // test of boundary edges
     if(JELEM>nelem || JELEM <1) {
      I1 = edgnod.at(IEDGE*4+0); // edgnod(0,IEDGE)
@@ -592,12 +593,18 @@ void CFmesh2StartingTriangleFreez::computeEdgesFlag()
     else {
      N1 = edgnod.at(IEDGE*4+0)-1; // edgnod(0,IEDGE)-1 
      N2 = edgnod.at(IEDGE*4+1)-1; // edgnod(1,IEDGE)-1 
-     // sqrt(pow((*XY)(0,N1),2) + pow((*XY)(1,N1),2))
-     D1.at(0) = sqrt(pow(XY.at(N1*PhysicsInfo::getnbDim()+0),2) +
-                     pow(XY.at(N1*PhysicsInfo::getnbDim()+1),2));
-     // sqrt(pow((*XY)(0,N2),2) + pow((*XY)(1,N2),2))
-     D1.at(1) = sqrt(pow(XY.at(N2*PhysicsInfo::getnbDim()+0),2) +
-                     pow(XY.at(N2*PhysicsInfo::getnbDim()+1),2));
+
+     ///(!) set the cylinder origin coordinates here
+     const double x0 = 1.;
+     const double y0 = 0.;
+
+     // sqrt(pow(x0-(*XY)(0,N1),2) + pow(y0-(*XY)(1,N1),2))
+     D1.at(0) = sqrt(pow(x0-XY.at(N1*PhysicsInfo::getnbDim()+0),2) +
+                     pow(y0-XY.at(N1*PhysicsInfo::getnbDim()+1),2));
+     // sqrt(pow(x0-(*XY)(0,N2),2) + pow(y0-(*XY)(1,N2),2))
+     D1.at(1) = sqrt(pow(x0-XY.at(N2*PhysicsInfo::getnbDim()+0),2) +
+                     pow(y0-XY.at(N2*PhysicsInfo::getnbDim()+1),2));
+
      D0 = m.max(D1.at(0),D1.at(1));
      if(D0 <= 1.02e0) {
       ++N0;

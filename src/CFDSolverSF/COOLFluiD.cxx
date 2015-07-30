@@ -108,7 +108,7 @@ void COOLFluiD::call()
    LogToScreen(DEBUG_MIN,"COOLFluiD::running parallel\n");
    command.str(string());
    command << "  mpirun -np " << MeshData::getInstance().getnbProcessors() ;
-   command << "./coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
+   command << " ./coolfluid-solver --scase ./cf00.CFcase >& log/coolfluid.log";
   }
 
   FILE* file = popen(command.str().c_str(),"r");

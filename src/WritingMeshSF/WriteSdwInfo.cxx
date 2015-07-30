@@ -29,7 +29,7 @@ ObjectProvider<WriteSdwInfo, WritingMesh> writeSdwInfoProv("WriteSdwInfo");
 //--------------------------------------------------------------------------//
 
 WriteSdwInfo::WriteSdwInfo(const std::string& objectName) :
-  WritingMesh(objectName)
+ WritingMesh(objectName)
 {
 }
 
@@ -69,8 +69,6 @@ void WriteSdwInfo::write()
   unsigned iShock;
   unsigned NSHE, IDUMMY;
   logfile.Open(getClassName().c_str());
-
-  logfile("Opening file sh99.dat\n");
 
   file = fopen("sh99.dat","w");
 

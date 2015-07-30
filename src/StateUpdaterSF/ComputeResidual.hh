@@ -41,7 +41,7 @@ public:
   /// Unset up this object before its first use
   virtual void unsetup();
 
-  /// update phantom nodes values
+  /// compute the residual values in the grid points
   virtual void update();
 
 protected: // functions

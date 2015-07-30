@@ -22,7 +22,7 @@ class Array2D {
 public:
 
  /// Default Constructor
-  Array2D() {alreadyAlloc = false;}
+ Array2D() {alreadyAlloc = false;}
 
  /// Constructor with a given size
  Array2D (const unsigned totsize) {nRows = totsize; alreadyAlloc = false;}
@@ -40,10 +40,9 @@ public:
  Array2D(const Array2D& ArrayCopy)
  {
    setnRows(ArrayCopy.getnRows()); setnCols(ArrayCopy.getnCols());
+//   if(alreadyAlloc) { delete [] ptr; alreadyAlloc=false; }
    ptr = new TYPE[nRows*nCols];
-   for(unsigned i=0; i<nRows*nCols; i++) {
-    ptr[i]=ArrayCopy.ptr[i];
-   }
+   for(unsigned i=0; i<nRows*nCols; i++) { ptr[i]=ArrayCopy.ptr[i];}
    alreadyAlloc = true;
  }
 
@@ -63,6 +62,7 @@ public:
  void resize(const unsigned nbRows, const unsigned nbColumns)
  {
   setnRows(nbRows); setnCols(nbColumns);
+  if(alreadyAlloc) { delete [] ptr; alreadyAlloc=false; }
   ptr = new TYPE[nRows*nCols];
   for (unsigned i=0; i<nRows*nCols; i++) {ptr[i] = 0;} //initialize array
   alreadyAlloc = true;

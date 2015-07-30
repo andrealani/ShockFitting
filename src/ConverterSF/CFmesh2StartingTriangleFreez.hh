@@ -26,6 +26,12 @@ namespace ShockFitting {
 /// This class defines a CFmesh2StartingTriangleFreez, whose task is to make
 /// conversion from CFmesh format to Triangle mesh generator format files
 /// The triangle files are the ones start the Shock Fitting algorithm
+/// The "freez" option freezes the cell near the wall. The cells included 
+/// in a circonference with radius 1.02 will be freezed.
+/// (!) The "Freez" option works for cylinder only. 
+/// (!) Please check line 597 of .cxx present file to properly set 
+/// the coordinates of the cylinder origin
+//
 /// This class differs from the CFmesh2Triangle one because its arrays
 /// do not belong to the MeshData and PhysicsData patterns
 

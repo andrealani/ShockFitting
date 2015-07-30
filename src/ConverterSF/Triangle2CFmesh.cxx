@@ -388,7 +388,6 @@ void Triangle2CFmesh::writeCFmeshFmt()
   int nbSh = ICLR->at(10) + 2;  
 
   unsigned minSh=npoin->at(1); unsigned maxSh=0;
-//  for(unsigned IFACE=0; IFACE<nbfac->at(0); IFACE++) {
   for(unsigned IFACE=0; IFACE<nbfac->at(1); IFACE++) {
    if((*bndfac)(2,IFACE)==10) {
     int elem = (*bndfac)(0,IFACE);

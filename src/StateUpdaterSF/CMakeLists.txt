@@ -3,6 +3,8 @@ DummyStateUpdater.cxx
 DummyStateUpdater.hh
 CoDc.cxx
 CoDc.hh
+ComputeHeatFlux2DPg.cxx
+ComputeHeatFlux2DPg.hh
 ComputeResidual.cxx
 ComputeResidual.hh
 ComputeStateDps4Ar.cxx

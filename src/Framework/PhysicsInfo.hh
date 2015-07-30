@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------//
 
 #include "SConfig/ConfigObject.hh"
+#include "Framework/ReferenceInfo.hh"
 
 //--------------------------------------------------------------------------//
 
@@ -69,6 +70,11 @@ public:
 
   /// get @param gm1=gam-1
   static double getGm1() { return m_gm1; }
+
+  /// get the specific heat at constant pressure
+  static double getCp() { return ReferenceInfo::getgam()/
+                                (ReferenceInfo::getgam()-1)*
+                                 ReferenceInfo::getRgas();}
 
   /// set the space dimensions
   static void setnbDim(unsigned ndim) { m_ndim = ndim; }

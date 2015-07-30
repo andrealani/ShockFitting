@@ -61,6 +61,9 @@ private:
   /// specifies if the shock fitting residuals will be computed
   bool m_computeShockFittingResidual;
 
+  /// specifies if the heat flux is computed by the shock-fitting
+  bool m_postProHeatFlux;
+
   /// command object convert shock input file in sh00.dat
   SConfig::SharedPtr<Converter> m_createshockfile;
 
@@ -162,6 +165,9 @@ private:
 
   /// command object restoring mesh arrays
   SConfig::SharedPtr<CopyMaker> m_meshRestore;
+
+  /// command object computing heat flux
+  SConfig::SharedPtr<StateUpdater> m_computeHeatFlux;
 };
 
 //--------------------------------------------------------------------------//

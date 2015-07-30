@@ -124,10 +124,8 @@ void ComputeResidual::update()
 
   fileConv = MeshData::getInstance().getResultsDir() + "/SFconvergence.plt";
 
-//  if(MeshData::getInstance().getIstep()==1) {
-
-    if(MeshData::getInstance().getIstep()==
-       MeshData::getInstance().getnbBegin()+1) {
+  if(MeshData::getInstance().getIstep()==
+     MeshData::getInstance().getnbBegin()+1) {
    // resize vector and arrays
    resizeArray();
 

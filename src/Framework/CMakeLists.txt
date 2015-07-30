@@ -9,6 +9,8 @@ ChemicalInfo.cxx
 ChemicalInfo.hh
 Clist.hh
 Compatibility.hh
+ComputeGradient.cxx
+ComputeGradient.hh
 Connectivity.hh
 Converter.cxx
 Converter.hh
@@ -24,6 +26,7 @@ Log.hh
 MeshData.hh
 MeshGenerator.cxx
 MeshGenerator.hh
+PhysicsConsts.hh
 PhysicsData.hh
 PhysicsInfo.cxx
 PhysicsInfo.hh

@@ -45,6 +45,7 @@ public:
     const unsigned dim2 = ArrayCopy.getSize2();
     const unsigned dim3 = ArrayCopy.getSize3();
     setSize1(dim1); setSize2(dim2);setSize3(dim3);
+//    if(alreadyAlloc) { delete [] ptr; alreadyAlloc=false; }
     ptr = new TYPE[size1*size2*size3];
     for(unsigned i=0; i<size1*size2*size3; i++) {
      ptr[i] = ArrayCopy.ptr[i];
@@ -67,6 +68,7 @@ public:
   void resize(const unsigned dim1, const unsigned dim2, const unsigned dim3)
   {
     setSize1(dim1); setSize2(dim2);setSize3(dim3);
+    if(alreadyAlloc) { delete [] ptr; alreadyAlloc=false; }
     ptr = new TYPE[size1*size2*size3]; //create space for array
     for (unsigned i=0; i<size1*size2*size3; i++) {ptr[i] = 0;}
     alreadyAlloc = true;

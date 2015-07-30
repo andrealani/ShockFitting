@@ -120,7 +120,6 @@ void Interp::update()
     if (JPOIN==0) { 
      cout << "Interp::error => something wrong for " <<  JPOIN <<"\n";
     }
-
     for(unsigned I=0; I<(*ndof); I++) {
      (*zBkg)(I,IPOIN) = (*zroe)(I,JPOIN-1); // c++ indeces start form 0
     }

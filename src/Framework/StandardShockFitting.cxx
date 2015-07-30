@@ -62,7 +62,8 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_redistrShockPoints(),
   m_writeBackTriangleFile(),
   m_writeShockInfo(),
-  m_meshRestore()
+  m_meshRestore(),
+  m_computeHeatFlux()
 {
   m_version = "dummyVersion";
   addOption("Version",&m_version,
@@ -76,6 +77,9 @@ StandardShockFitting::StandardShockFitting(const std::string& objectName) :
   m_computeShockFittingResidual = false;
   addOption("shockFittingResidual",&m_computeShockFittingResidual,
             "Specifies if the shock fitting residual are computed");
+  m_postProHeatFlux = false;
+  addOption("heatFluxPostPro",&m_postProHeatFlux,
+            "Specifies if the heat flux is computed");
 }
 
 //--------------------------------------------------------------------------//
@@ -111,7 +115,7 @@ void StandardShockFitting::setup()
   m_readInputFile2 = m_mGenerator[1].ptr();
   m_bndryNodePtr = m_fRemeshing[0].ptr();
   if(MeshData::getInstance().cellsFreezed()) {
-   m_bndryFacePtr = m_fRemeshing[7].ptr(); }
+   m_bndryFacePtr = m_fRemeshing[8].ptr(); }
   m_redistrEqShockPoints = m_fRemeshing[1].ptr();
   m_findPhantPoints = m_fRemeshing[2].ptr();
   m_changeBndryPoints = m_fRemeshing[3].ptr();
@@ -123,8 +127,6 @@ void StandardShockFitting::setup()
    m_writeTriangleFileFreezedConnect = m_wMesh[3].ptr(); }
   m_callTriangle = m_mGenerator[2].ptr();
   m_callTriangleLib = m_mGenerator[3].ptr();
-  if(m_computeShockFittingResidual) { 
-   m_computeSFresidual = m_sUpdater[2].ptr();}
   m_triangleToCFfmt = m_fConverter[2].ptr();
   m_COOLFluiD = m_cfdSolver[0].ptr();
   m_CFmeshToTriangle = m_fConverter[3].ptr();
@@ -138,6 +140,10 @@ void StandardShockFitting::setup()
   m_writeBackTriangleFile = m_wMesh[1].ptr();
   m_writeShockInfo = m_wMesh[2].ptr();
   m_meshRestore = m_cMaker[3].ptr();
+  if(m_computeShockFittingResidual) {
+   m_computeSFresidual = m_sUpdater[4].ptr();}
+  if(m_postProHeatFlux) {
+   m_computeHeatFlux = m_sUpdater[5].ptr();}
 
   LogToScreen(VERBOSE, "StandardShockFitting::setup() => end\n");  
 }
@@ -335,6 +341,8 @@ void StandardShockFitting::process()
 
    if(m_computeShockFittingResidual) { m_computeSFresidual->update(); }
 
+   if(m_postProHeatFlux) {m_computeHeatFlux->update();}
+
    cout << "_________________________________________________________________\n";
 
    cout << "_________________________________________________________________\n\n";
@@ -363,6 +371,10 @@ void StandardShockFitting::process()
 
     if (MeshData::getInstance().getnbProcessors()==1) {
      execmd = "mv -f cfo*.plt " + backdir.str();
+     system(execmd.c_str());
+     execmd = "cp Wall* wall-"+backdir.str().substr(4,9)+".plt";
+     system(execmd.c_str());
+     execmd = "mv -f wall*.plt " + backdir.str();
      system(execmd.c_str());
     }
     else if (MeshData::getInstance().getnbProcessors()>1) {
