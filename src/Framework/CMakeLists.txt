@@ -9,8 +9,6 @@ ChemicalInfo.cxx
 ChemicalInfo.hh
 Clist.hh
 Compatibility.hh
-ComputeGradient.cxx
-ComputeGradient.hh
 Connectivity.hh
 Converter.cxx
 Converter.hh
