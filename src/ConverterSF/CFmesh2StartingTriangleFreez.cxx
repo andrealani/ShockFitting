@@ -595,7 +595,7 @@ void CFmesh2StartingTriangleFreez::computeEdgesFlag()
      N2 = edgnod.at(IEDGE*4+1)-1; // edgnod(1,IEDGE)-1 
 
      ///(!) set the cylinder origin coordinates here
-     const double x0 = 1.;
+     const double x0 = 0.; //1.;
      const double y0 = 0.;
 
      // sqrt(pow(x0-(*XY)(0,N1),2) + pow(y0-(*XY)(1,N1),2))

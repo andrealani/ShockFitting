@@ -188,7 +188,7 @@ void ShockFileConverter::convert()
    for(unsigned IV=0; IV<m_nbDof; IV++) { shockdat >> m_prim.at(IV); }
 
    if((IPOIN == 0) || (IPOIN == nbShockPoints-1)) {
-     if(m_typeSpecialPoint=="OPY") { XYSh.at(0) = 1.0 /*0.*/; }
+     if(m_typeSpecialPoint=="OPY") { XYSh.at(0) = 0.; }
    }
 
    // command object transforming downstream variables
