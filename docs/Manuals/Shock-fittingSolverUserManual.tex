@@ -1,0 +1,1083 @@
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{rotating}
+\usepackage{lscape}
+\usepackage{setspace}
+\usepackage{mathrsfs}
+\usepackage{chemarr}
+\usepackage{yfonts}
+\usepackage{xfrac}
+
+\begin{document}
+
+\title{Shock-fitting Solver User-manual}
+\maketitle
+
+Shock-fitting Solver is a modular shock fitting algorithm that can be coupled to arbitrary unstructured CFD codes. It is composed of several libraries dynamically linked. Their setting is handled by the user through a configuration file. 
+
+The code implements a \texttt{Fortran} software code of Paciorri and Bonfiglioli \cite{shockfittingalgorithm} in an \textit{object oriented} environment.
+
+The description of the algorithm can be found in \cite{deamicisthesis}, \cite{deamicisreport} and \cite{shockfittingalgorithm},while the description of the new \texttt{C++} architecture can be found in \cite{deamicisthesis}.
+
+The original \texttt{Fortran} algorithm works with several flow topologies. Up-to-date the \texttt{C++} algorithm has been tested for the circular cylinder case.
+
+
+\section{Installation instructions}
+\label{sec:installation instructions}
+
+The installation instructions are the following:
+
+\begin{enumerate}
+\item
+{
+Install \texttt{cmake} (version \textgreater{} 2.8) if not already installed in your system.
+}
+\item
+{
+Install the \texttt{COOLFluiD} platform following the installation instructions available on-line at:
+\newline
+\newline
+\hspace*{1cm} \texttt{https://github.com/andrealani/COOLFluiD/wiki/HOWTO}
+}
+\item
+{
+Download the Shock-fitting Solver installation script from the website\footnote{use the link on the left-hand side}:
+\newline
+\newline
+\hspace*{1cm} \texttt{https://github.com/andrealani/ShockFitting/wiki}
+}
+\item
+{
+Create a directory \texttt{build} inside your \texttt{CouplingTools} home:
+\newline
+\newline
+\hspace*{1cm} \texttt{mkdir build}
+}
+\item
+{
+Move into the directory:
+\newline
+\newline
+\hspace*{1cm} \texttt{cd build}
+}
+\item
+{
+Configure by running the command:
+\newline
+\newline
+\hspace*{1cm} \texttt{cmake .. - DMPI\textunderscore{}HOME=MPIDIR - DCMAKE\textunderscore{}CXX\textunderscore{}COMPILER=CXX - DCMAKE\textunderscore{}INSTALL\textunderscore{}
+\newline
+\hspace*{1cm} PREFIX=INSTALLDIR - DCF\textunderscore{}BUILD\textunderscore{}Framework\textunderscore{}API=ON - DCMAKE\textunderscore{}BUILD\textunderscore{}TYPE=DEBUG}
+\newline
+\newline
+where:
+\newline
+\hspace*{1cm} \texttt{CXX} : chosen \texttt{C++} compiler 
+\newline
+\hspace*{1cm} \texttt{MPIDIR} : directory of existing \texttt{MPI} installation 
+\newline
+\hspace*{1cm} \texttt{INSTALLDIR} : directory where CouplingTools libraries will be installed
+}
+\item
+{
+Compile the libraries through the command
+\newline
+\newline
+\hspace*{1cm} \texttt{make install}
+\newline
+\newline
+Upon successful completion, all shared libraries and include files (from the Framework only) can be found respectively inside:
+\newline
+\newline
+\hspace*{1cm} \texttt{INSTALLDIR/lib  \quad INSTALLDIR/include/couplingtools/Framework}
+}
+\end{enumerate}
+
+\section{How to set up a test case}
+\label{sec:setup test case}
+
+In order to setup a test case the following files are necessary:
+
+\begin{enumerate}
+\item{shock-fitting files (section \ref{subsec: sf input files})}
+\item{shock-fitting configuration file (\textit{input.case}, section \ref{subsec: input file conf}) }
+\item{\texttt{COOLFluiD} file(s) (section \ref{subsec: cf input files})}
+\end{enumerate}
+
+\subsection{Shock-fitting files}
+\label{subsec: sf input files}
+The required informations to initialize the shock-fitting algorithm are stored in the following files:
+
+\begin{itemize}
+\item{mesh data files. Here the informations on the background grid are stored in terms of geometry and state. Up-to-date the \texttt{triangle mesh generator} format is used. The mesh informations are stored in five formats: \textit{.node}, \textit{.poly}, \textit{.ele}, \textit{.neigh}, \textit{.edge}\footnote{only the \textit{.node} and \textit{.poly} files are actually necessary. Starting from them, the other ones can be created by running \texttt{triangle} with the \texttt{-nep} switch.}. Each file format is described in \cite{triangle}.}
+\item{shock(s) data file: \textit{sh00.dat}. It contains the the coordinates, the downstream and upstream states for each discontinuity(s) point:
+\newline
+\newline 
+\texttt{$<$$\#$ discontinuities$>$}
+\newline
+\newline
+\hspace*{0.2cm} then, for each discontinuity:
+\newline
+\newline
+\hspace*{0.2cm} \texttt{$<$$\#$ points $>$ $<$ type of discontinuity ($S$ or $D$)$>$}
+\newline
+\newline
+\hspace*{0.4cm} for each discontinuity point (\texttt{NB$\_$DIM}(=2)+\texttt{NB$\_$EQ} entries per line):
+\newline
+\newline
+\hspace*{0.4cm} \texttt{$<$x$>$ $<$y$>$ $<Z^{*}_1>$ $<Z^{*}_2>$ $<Z^{*}_3>$ ... $<Z^{*}_{nb_{eq}}>$}
+\newline
+\newline
+\hspace*{0.4cm} where $Z^{*}_{1,...,nb_{eq}}$ represent the non-dimensional Roe parameter vector variables.
+\newline
+\newline
+The special points\footnote{the \textit{special} points represent intersection points between the shock edges and the domain boundaries or the shock edges and other discontinuities.} are finally listed at the bottom of the file:
+\newline
+\newline 
+\texttt{$<$$\#$ special points$>$}
+\newline
+\newline 
+then, for each special point:
+\newline
+\newline 
+\hspace*{0.2cm} \texttt{$<$type special point$>$}
+\newline
+\newline 
+\hspace*{0.2cm} \texttt{$<$$\#$ discontinuity it belongs to$>$ $<$ $\#$ edge of the discontinuity it belongs to$>$}
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: up-to-date the \texttt{OP} and \texttt{IP} special points have been tested. }
+\end{itemize}
+
+\subsubsection{How to create the shock-fitting files}
+By counting out simple geometries, the files required to initialize the shock-fitting algorithm cannot be manually generated. They have to be created by starting from \textit{captured} solutions.
+
+The creation of the mesh data files is straightforward by starting from the file storing the CFD solution. It can be made by specifying the \texttt{CFmesh2StartingTriangle} object inside the shock-fitting configuration file, as described in section \ref{subsubsec:converter}.
+
+The creation of the discontinuities file can be made by manually extracting the discontinuity profile or by using a detection algorithm. Up-to-date the both two techniques have been tested when single bow shock appears within the domain.
+\begin{itemize}
+\item{Manual extraction of discontinuity: the shock profile is extracted by loading the \textit{.plt} captured solution with \texttt{Tecplot}. Then, by using the option:
+\newline
+\newline
+\hspace*{0.5cm} \texttt{Data/Extract/Points From Polyline}
+\newline
+\newline
+the shock profile is extracted by tracing a polyline.
+Finally, the data have to be written in an output file by specifying the shock points coordinates and the only variables corresponding to the \texttt{NB$\_$EQs} used (for the \textit{perfect gas} instance, the only \texttt{p u v T} variables have to be written; for the \textit{thermochemical non-equilibrium} instance, the only \texttt{$\rho_1$ $\rho_2$ ... $\rho_{nb_species}$ u v T $T_{v_{0}}$} variables have to be written).
+
+In order to create the shock-fitting discontinuity file, the \texttt{ShockFileConverter} object must be specified in the configuration file, as described in \ref{subsubsec:converter}.
+}
+\item{Automatic detection of discontinuity: the shock is detected by using a detection algorithm implemented inside the \textit{Shock Fitting Solver}. The \texttt{ShockDetector} object must be specified inside the shock-fitting configuration file. See section \ref{subsubsec:detector} for the details.}
+\end{itemize}
+
+\subsection{Shock-fitting configuration file}
+\label{subsec: input file conf}
+
+A configuration file, named as \textit{input.case}, is used to state the objects assembling the shock-fitting algorithm and specify the main features of each shock-fitting simulation.
+
+The configuration file is composed by several lines. 
+\newline
+Each line is in the form \texttt{KEY = VALUE}.
+The \texttt{KEY} is an object or an object parameter and the \texttt{VALUE} is the quantity assigned to \texttt{KEY}.
+\newline
+\newline
+The \texttt{VALUE} can be:
+
+\begin{itemize}
+\item{an alpha-numeric string}
+\item{an integer}
+\item{a boolean (\textit{true} or \textit{false})}
+\item{a floating point number}
+\item{an arbitrary complex analytical function}
+\item{an array of all the previous}
+\end{itemize}
+
+The \texttt{VALUE}s can be broken in different lines by using the character backslash.
+Comments start with "\texttt{$\#$}".
+
+
+\subsubsection{Model}
+\label{subsubsec:model}
+
+\hspace*{1cm} \texttt{.ShockFittingObj = StandardShockFitting}
+\newline
+\newline
+specifies the model of the Shock-fitting Solver and corresponds to a set of objects defined inside the code.
+\newline
+Up-to-date the \texttt{StandardShockFitting} and \texttt{StandardShockFittingBeta} models are defined. 
+\newline
+The \texttt{StandardShockFittingBeta} has been created in order to use and test the shock detection feature. It uses the same set of objects of the \texttt{StandardShockFitting} except for the \texttt{ShockDetector} library that is called in place of the \texttt{ShockFileConverter} object.
+
+\subsubsection{Model setting}
+\label{subsubsec:model setting}
+
+\hspace*{1cm} \texttt{.StandardShockFitting = original}
+\newline
+\newline
+allows to choose the between different versions (if available) of the chosen \texttt{Model}. 
+\newline
+Up-to-date the \texttt{original} version (the \texttt{triangle mesh generator} library is called as executable files. The data are passed to it through \texttt{I/O} files.) and the \texttt{optimized} version (the \texttt{triangle mesh generator} library is called through it functions. The data are passed to it through arrays.) are implemented.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ResultsDir = ./Results$\_$SF }
+\newline
+\newline
+specifies the path of the output files generated during the execution of the shock-fitting.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual = true}
+\newline
+\newline
+specifies if the shock-fitting residuals are computed during the execution. If \texttt{true}, the \texttt{ComputeResidual} object must be added to the \texttt{StateUpdaterSF} library list of section \ref{subsubsec:state updater}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.startFromCapturedFiles = true}
+\newline
+\newline
+specifies if the shock-fitting files have to be generated from a CFD solution (\texttt{true}) or if they are already available (\texttt{false}).
+If the \texttt{true} option is used, the \texttt{CFmesh2StartingTriangle} (section \ref{subsubsec:converter}) and the object creating the discontinuity file must be specified (section \ref{subsubsec:converter} or section \ref{subsubsec:detector}).
+
+\subsubsection{MeshData}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.EPS = 0.20e-12}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.SNDMIN = 0.05}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.DXCELL = 0.0006}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.SHRELAX = 0.9}
+\newline
+\newline
+define the distance between two shock faces, the maximum non-dimensional distance of phantom nodes, the length of the shock edges, the relax coefficient of shock points integration.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.Naddholes = 0}
+\newline
+\newline
+defines the number of hole points.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.CADDholes = 0}
+\newline
+\newline
+defines the coordinates of the hole points specified above.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.freezedWallCells = true}
+\newline
+\newline
+specifies if the connectivity of the wall cells must be freezed. This option is usually used for circular cylinder in viscous flows and requires specific converters with \texttt{Freez} options (see section \ref{subsubsec:converter}).
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.WithP0 = true}
+\newline
+\newline
+is used for backward compatibility. Choose \texttt{true} for the \texttt{2013.9} \texttt{COOLFluiD} version and \texttt{false} for the \texttt{2014.11} one or higher.
+\newline
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.MeshData.NPROC = 4}
+\newline
+\newline
+defines the number of processor used during the \texttt{COOLFluiD} execution. 
+\newline
+With \texttt{NPROC = 1} it will be executed sequentially, with \texttt{NPROC = 2} or more, it will be executed in parallel.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.NBegin = 0}
+\newline
+\newline
+specifies the number of the first step. If \texttt{NBegin = 0} is chosen, the steps numbering will start from \texttt{0}. 
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.NSteps = 1000}
+\newline
+\newline
+specifies the maximum number of steps.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.MeshData.IBAK = 100}
+\newline
+\newline
+defines every how many steps the solution will be saved. The files are saved inside directories named as \textit{step} and the number of the current step (\textit{e.g.}: step number 101 will be saved in the folder named as \texttt{step00101}).
+
+\subsubsection{PhysicsData}
+
+\textbf{PhysicsInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NDIM = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NDOFMAX = 6}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NSHMAX = 5}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NPSHMAX = 1000}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NESHMAX = 999}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NADDHOLESMAX = 10}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.NSPMAX = 12}
+\newline
+\newline
+specify the space dimension, the maximum number of degrees of freedom, the maximum number of shocks, the maximum number of shock points for each shock, the maximum number of shock edges for each shocks\footnote{this values must always set equal to \texttt{NPSHMAX-1}}, the maximum number of holes, the maximum number of special points.
+\newline
+At the first attempt these options are mostly stable and should be not be changed.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.PhysicsInfo.GAM = 1.40e0}
+\newline
+\newline
+defines the value of the free-stream heat capacity ratio \footnote {this value is actually used only for the \texttt{PG} (\textit{Perfect Gas}) and \texttt{Cneq} (\textit{Chemical non equilibrium}) gas models.}.
+\newline
+\newline
+\textbf{ChemicalInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MODEL = TCneq}
+\newline
+\newline
+specifies the gas model. Up-to-date the \texttt{PG} (\textit{Perfet Gas}), \texttt{Cneq} (\textit{Chemical non equilibrium} with argon mixture) and \texttt{TCneq} (\textit{Thermo-chemical non-equilibrium}) are implemented.
+\newline
+\newline
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IE = 0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IX = 1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IY = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.IEV = 3}
+\newline
+\newline
+Those options are most stable and should not be changed.
+\newline
+When \texttt{TCneq} model is chosen, the following options must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.MIXTURE = nitrogen2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.InputFiles = nitrogen2.dat}
+\newline
+\newline
+define the name of the the gas mixture and the file containing the gas mixture informations.
+\newline
+The mixture file template is shown hereafter:
+\newline
+\newline
+\hspace*{1.2cm}
+\texttt{!NAME \hspace*{2cm} (name of the mixture)}
+\newline
+\hspace*{1.2cm}
+\texttt{!NSP \hspace*{2.2cm} (number of the chemical species)}
+\newline
+\hspace*{1.2cm}
+\texttt{!SPECIES \hspace*{1.4cm} (name of the species - IUPAC)}
+\newline
+\hspace*{1.2cm}
+\texttt{!MM \hspace*{2.4cm} (molecular weight of the species $[$kg$/$mol$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!HF \hspace*{2.4cm} (formation enthalpy at 0 K of the species $[$J$/$kg$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!THEV \hspace*{2cm} (characteristic vibrational temperature $[$K$]$)}
+\newline
+\hspace*{1.2cm}
+\texttt{!GAMS \hspace*{2cm} (specific heat ratio of each species)}
+\newline
+\hspace*{1.2cm}
+\texttt{!TYPE \hspace*{2cm} (type of molecule:}
+\newline
+\texttt{\hspace*{6cm} A: atomic}
+\newline
+\texttt{\hspace*{6cm} B: di-atomic or aligned}
+\newline
+\texttt{\hspace*{6cm} T: tri-atomic non aligned)}
+\newline
+\newline
+some examples can be found inside the folder \texttt{src$/$data$\_$template}.
+\newline
+When \texttt{Cneq} model is chosen, the following option must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ChemicalInfo.Qref = 1.0}
+\newline
+\newline
+it defines the reference speed.
+\newline
+\newline
+\textbf{ReferenceInfo}
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.gamma = 1.4}
+\newline
+\hspace*{1cm}  \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.Rgas = 287.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.TempRef = 1833.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.PressRef = 57.65e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.VelocityRef = 5594.0e0}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.Lref = 1.0e0}
+\newline
+\newline
+are used by the \texttt{VariableTransformerSF} library. 
+\newline
+Those options define the gas heat capacity ratio, the gas constant, the free-stream temperature, the free-stream pressure, the free-stream speed and the reference length. 
+If \texttt{TCneq} and \texttt{Cneq} models are used, the species densities must be specified:
+\newline
+\newline
+\hspace*{1.cm} \texttt{.StandardShockFitting.PhysicsData.ReferenceInfo.SpeciesDensities = \textbackslash{}}
+\hspace*{1.4cm} \texttt{0.00036354 0.00461646}
+
+\subsubsection{MeshGeneratorSF}
+
+\hspace*{1cm}\texttt{.StandardShockFitting.MeshGeneratorList = ReadTriangle ReSdwInfo \textbackslash{}}
+\newline
+\hspace*{9.5cm} \texttt{TriangleExe Tricall}
+\newline
+\newline
+specifies the objects belonging to \texttt{MeshGeneratorSF} library that are called in the run model of the Shock-fitting Solver.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle = na00.1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReadTriangle.FileTypes = node poly ele neigh edge}
+\newline
+\newline
+indicate the name and the formats of the shock-fitting mesh data files.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ReSdwInfo.InputFiles = sh00.dat}
+\newline
+\newline
+specifies the name of the discontinuity file.
+\newline
+\newline
+If \texttt{StandardShockFittingBeta} is chosen in order to use the shock detection feature, the following option must be added:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.ReadTriangle.BCtypes = Wall Inlet Outlet}
+\newline
+\newline
+it specifies the strings assigned to the domain boundaries. They must be listed according to the boundary markers assigned inside the \textit{.poly} file. The first string corresponds to the boundaries having the boundarymarker=1, the second string corresponds to the boundaries having the boundarymarker=2 and so on.
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: if the \texttt{freezedWallcell} option is active (section \ref{subsubsec:model setting}), the \texttt{ReadTriangleFreez} object must be used in place of \texttt{ReadTriangle}.
+
+\subsubsection{RemeshingSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.RemeshingList = $\setminus$}
+\newline
+\hspace*{1.3cm} \texttt{BndryNodePtr RdDpsEq FndPhPs ChangeBndryPtr $\setminus$}
+\newline
+\hspace*{1.3cm} \texttt{CoNorm4Pg CoPntDispl FixMshSps RdDps}
+\newline
+\newline
+specifies the objects of the \texttt{RemeshingSF} library called in the run model of the Shock-fitting Solver.
+The \texttt{CoNorm} object must be defined according to the gas model: \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq} should be added to the string \texttt{CoNorm4}.
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: if the \texttt{freezedWallcell} option is active, the \texttt{BndryNodePtrFreez} object must be used in place of \texttt{BndryNodePtr} and the \texttt{BndryFacePtrFreez} object must be added at the end of the list:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.RemeshingList = $\setminus$}
+\newline
+\hspace*{1.3cm} \texttt{BndryNodePtrFreez RdDpsEq FndPhPs ChangeBndryPtr CoNorm4Pg $\setminus$}
+\newline
+\hspace*{1.3cm} \texttt{CoPntDispl FixMshSps RdDps BndryFacePtrFreez}
+
+\subsubsection{WritingMeshSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.WritingMeshList = \textbackslash{}}
+\newline
+\hspace*{1.3cm} \texttt{WriteTriangle WriteBackTriangle WriteSdwInfo}
+\newline
+\newline
+specifies the objects of the \texttt{WritingMeshSF} library called in the current model of the Shock-fitting Solver.
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: if the \texttt{freezedWallcell} option is active, the \texttt{WriteTriangleFreez} object must be used in place of \texttt{WriteTriangle}.
+
+\subsubsection{ShockDetectorSF}
+\label{subsubsec:detector}
+This library must be considered \textit{only if} the automatic shock detection is chosen to extract the shock polyline. It means that the \texttt{StandardShockFittingBeta} has been chosen as shock-fitting model (section \ref{subsubsec:model}) and the \texttt{startFromCapturedFiles} option has been actived (section \ref{subsubsec:model setting}).
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.ShockDetectorList = DetectorAlgorithm}
+\newline
+\newline
+specifies the objects of the \texttt{ShockDetector} library called in the run model of the Shock-fitting Solver.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.From = Param}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.To = Prim}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.GasModel = Pg}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.AdditionalInfo = Dimensional}
+\newline
+\newline
+In order to better understand the following options, see chapter 5 of  \cite{valereport}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.Detector = GnoffoShockSensor}
+\newline
+\newline
+specifies the detector method to extract the shock points from the CFD solution. Up-to-date the \texttt{GnoffoShockSensor} and the \texttt{NormalMachNumber} are implemented. The \texttt{GnoffoShockSensor} is the one best works with strong shocks.
+\newline
+\newline
+Three techniques are implemented to fit the shock point distribution extracted by the detector methods: \texttt{Ellipse}, \texttt{Polynomial}, \texttt{SplittingCurves}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.fittingTechnique = Ellipse}
+\newline
+\newline
+if \texttt{Ellipse} is chosen, no additional options must be specified.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.fittingTechnique = Polynomial}
+\newline
+\texttt{.StandardShockFittingBeta.DetectorAlgorithm.polynomialOrder = 2}
+\newline
+\newline
+if \texttt{Polynomial} is chosen, the polynomial order must be specified.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.fittingTechnique = SplittingCurves}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.nbXandYsegments = 1 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.segmPolynomialOrders = $\setminus$}
+\newline
+\hspace*{1.3cm} \texttt{5 5}
+\newline
+\newline
+if the \texttt{SplittingCurves} technique is chosen, the number of segments along the x-axis and the y-axis in addition to the order of the polynomial assigned to each segment must be specified.
+\newline
+Irrespective of the chosen fitting technique, the folloqing options must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.smoothingOption = true}
+\newline
+\newline
+if it is active (\texttt{true}), it smooths the trend of the polyline.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.DetectorAlgorithm.shockLayerFactor = 1.5}
+\newline
+\newline
+specifies the distance used to extract the upstream and downstream points. The \texttt{shockLayerFactor} will be multiplied by the \texttt{DXCELL} value.
+
+\subsubsection{ConverterSF}
+\label{subsubsec:converter}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.ConverterList = \textbackslash{}}
+\newline
+\hspace*{1.3cm} \texttt{ShockFileConverter CFmesh2StartingTriangle Triangle2CFmesh CFmesh2Triangle}
+\newline
+\newline
+specifies the objects of the \texttt{ConverterSF} library called in the run model of the Shock-fitting Solver. 
+\newline
+For each converter object in the list, the following lines must be added (in the example below are related to the \texttt{CFmesh2Triangle} object):
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.From = Prim}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.To = Param}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.GasModel = TCneq}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2Triangle.AdditionalInfo = Dimensional}
+\newline
+\newline
+They define the strings that will create the name of the \texttt{VariableTrasformerSF} object asked to make the variables transformation. 
+\newline
+\newline
+Up-to-date the \texttt{From} and the \texttt{To} options have \texttt{Prim} and \texttt{Param} as possible values. 
+\newline
+The \texttt{GasModel} can be \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq}. 
+\newline
+The \texttt{AdditionalInfo} specifies the CFD variables format (\texttt{Dimensional} or \texttt{Adimensional}).
+\newline
+\newline
+If the \texttt{startFromCapturedFiles} option is active (section \ref{subsubsec:model setting}) and the manual extraction of the shock polyline is used (therefore the \texttt{StandardShockFitting} is chosen as model) some additional options must be specified in the definition of the \texttt{ShockFileConverter}.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.InputFile = FILE$\textunderscore$PATH/shock.dat}
+\newline
+\newline
+defines the name of the \texttt{tecplot} file containing the shock points polyline and the corresponding informations.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbDof = 6}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbShocks = 1}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.nbSpecPoints = 2}
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ShockFileConverter.TypeSpecPoints = OPY}
+\newline
+\newline
+specify the options needed for the \textit{sh00.dat} file creation: the number of degrees of freedom, the number of shocks, the number of special points, the type of the special points.
+\newline
+Up-to-date only \texttt{OPY} are implemented as special points.
+\newline
+\newline
+If the \texttt{startFromCapturedFiles} option is active (section \ref{subsubsec:model setting}), the \texttt{CFmesh2StartingTriangle} is used to create the \textit{triangle} files from the captured solution. This additional line must be added in addtion to the options specified at the beginning of the section:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.CFmesh2StartingTriangle.InputFile = FILE$\textunderscore$PATH/start.CFmesh}
+\newline
+\newline
+specifies the name of the \texttt{COOLFluiD} file storing the captured solution.
+\newline
+\newline
+If the \texttt{Triangle2CFmesh} object is used, an additional info must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.Triangle2CFmesh.ShockBoundary = single}
+\newline
+\newline
+states if the shock boundary is \textit{single} or it is \textit{splitted} in a \textit{subsonic} and a \textit{supersonic} edges.
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: if the \texttt{freezedWallcell} option is set to \texttt{true}, \texttt{Triangle2CFmeshFreez} and \texttt{CFmesh2TriangleFreez} must be used in place of \texttt{Triangle2CFmesh} and \texttt{CFmesh2Triangle}.
+\newline
+\newline
+Converters from Tecplot format to \texttt{triangle} format are defined inside the code. When using the Residual Distribution Methods, the \texttt{Triangle2CFmesh} and \texttt{CFmesh2Triangle} converters can be replaced with \texttt{Triangle2Tecplot} and \texttt{Tecplot2Triangle}.
+\newline
+\newline
+\underline{\emph{WATCH OUT}}: when using the Finite Volume Method the converters must be \texttt{Triangle2Tecplot}, \texttt{TecplotFVM2StartingTriangle} and \texttt{TecplotFVM2Triangle}.
+
+\subsubsection{CFDSolverSF}
+
+\hspace*{1cm} \texttt{.StandardShockFittingBeta.CFDSolverList = COOLFluiD}
+\newline
+\newline
+specifies the CFD solver called during the execution of the shock-fitting. Up-to-date the \texttt{COOLFluiD} solver can be used.
+
+\subsubsection{CopyMakerSF}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.CopyMakerList = \textbackslash{}}
+\newline
+\hspace*{1.3cm} \texttt{MeshBackup CopyRoeValues1 CopyRoeValues2 MeshRestoring}
+\newline
+\newline
+specifies the objects of the \texttt{CopyMakerSF} library called in the run model of the Shock-fitting Solver.
+
+\subsubsection{StateUpdaterSF}
+\label{subsubsec:state updater}
+
+\hspace*{1cm} \texttt{.StandardShockFitting.StateUpdaterList = $\backslash$}
+\newline
+ \hspace*{1.3cm} \texttt{ComputeStateDps4Pg FixStateSps MoveDps4Pg Interp ComputeResidual}
+\newline
+\newline
+specifies the objects of the \texttt{StateUpdaterSF} library called in the run model of the Shock-fitting Solver.
+\newline
+The \texttt{ComputeStateDps} object must be defined according to the gas model: \texttt{Pg} or \texttt{Cneq} or \texttt{TCneq} should be added to the string \texttt{ComputeStateDps4}. Similarly  for \texttt{MoveDps} object.
+\newline
+The \texttt{ComputeResidual} object must be added only if the \texttt{ComputeResidual} option is active (section \ref{subsubsec:model setting}). If it is the case, some additional options must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.whichNorm = L1}
+\newline
+\newline
+defines the norm of the discretization error used to compute the residual. Up-to-date the \texttt{L1} and \texttt{L2} norms are implemented.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.isItWeighted = true}
+\newline
+\newline
+specifies if the norm is weighted on the first residual value.
+\newline
+\newline
+\hspace*{1cm} \texttt{.StandardShockFitting.ComputeResidual.gasModel = Pg}
+\newline
+\newline
+sets the gas model (\texttt{Pg} or \texttt{TCneq}) used to make the conversion to primitive variables.
+
+
+\subsection{The \textit{COOLFluiD} input files}
+\label{subsec: cf input files}
+
+The files requested to run \texttt{COOLFluiD} are the following:
+
+\begin{enumerate}
+\item{\texttt{.CFmesh} file, it is automatically generated during the Shock-fitting Solver execution}
+\item{\texttt{.CFcase} configuration file}
+\item{\texttt{coolfluid-solver.xml} file containing the link to the libraries}
+\end{enumerate}
+\noindent
+The \texttt{.CFcase} file description is available at:
+\newline
+\newline
+\hspace*{1cm}
+\texttt{https://github.com/andrealani/COOLFluiD/wiki}
+\newline
+\newline
+in the \texttt{HOWTO define a test case} section.
+
+\subsection{How to run}
+\label{subsec: run a test case}
+
+Once all the required files are collected, go to the folder containing all the required files and create a soft link to the executable of the shock fitting solver by writing the command:
+\newline
+\newline
+\hspace*{1cm} \texttt{ln -sf build/PATH$\textunderscore$TO$\textunderscore$THE$\textunderscore$EXECUTABLE$\textunderscore$FILE/EXECUTABLE$\textunderscore$FILE$\textunderscore$NAME .}
+\newline
+\newline
+run the test case through the command:
+\newline
+\newline
+\hspace*{1cm} \texttt{./EXECUTABLE$\textunderscore$FILE$\textunderscore$NAME input.case}
+\newline
+\newline
+For the \texttt{StandardShockFittingSF} instance, the two commands will be the following:
+\newline
+\newline
+\hspace*{1cm} \texttt{ln -sf  build/src/TestStandardSF/TestStandardSF .}
+\newline
+\newline
+\hspace*{1cm} \texttt{./TestStandardSF input.case}
+\newline
+\newline
+while, for the \texttt{StandardShockFittingBetaSF} instance, the command will be:
+\newline
+\newline
+\hspace*{1cm} \texttt{ln -sf  build/src/TestStandardBetaSF/TestStandardBetaSF .}
+\newline
+\newline
+\hspace*{1cm} \texttt{./TestStandardBetaSF input.case}
+\newline
+\newline
+\newline
+The sections hereafter are aimed to the user intending to act on the code modifying it, adding new features and keying it to its requirements.
+
+\section{Common libraries issues}
+\label{sec:libraries issues}
+
+Each library has a corresponding vector defined inside the code. This vector is used to handle the objects of the library. Each library vector has the following notation:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{\footnotesize{std::vector$<$SConfig::StringT$<$SConfig::SharedPtr$<$LIBRARY$\_$BASECLASS$\_$NAME$>>$}}
+\newline
+\hspace*{9cm}\texttt{\footnotesize{m$\_$LIBRARY$\_$VECTOR$\_$NAME;}}
+\newline
+\newline
+The library vector includes the pointers to the library objects as listed in the \textit{input.case}. The library objects execution is handled through the object pointers and not through the objects them self.
+This allows to obtain the dynamic nature of the software. The pointed objects are defined each time by the user inside the \textit{input.case}. The pointers act inside the code on objects place.
+\newline
+The called objects are defined through the \texttt{List} option inside the \textit{input.case}:
+\newline
+\newline
+\hspace*{0.08cm}
+\texttt{.StandardShockFitting.LIBRARY$\_$BASECLASS$\_$NAMEList = LIBRARYOBJECT1 LIBRARYOBJECT2}
+\newline
+\newline
+When a component is added to \texttt{List}, a pointer must be defined:
+\newline
+\newline
+\hspace*{0.08cm}
+\texttt{SConfig::SharedPtr$<$LIBRARY$\_$BASECLASS$\_$NAME$>$ m$\_$OBJECT$\_$POINTER$\_$NAME;}
+\newline
+\newline
+and it must be assigned to a position inside the library vector:
+\newline
+\newline
+\hspace*{0.08cm}
+\texttt{m$\_$OBJECT$\_$POINTER$\_$NAME = m$\_$LIBRARY$\_$NAME[POSITION].ptr();}
+\newline
+\newline
+where \texttt{POSITION} is the place that the addressed \texttt{LIBRARYOBJECT} occupies in the \texttt{LIBRARY$\_$NAMEList} of the \textit{input.case}.
+\newline
+The pointer is then used on object's place:
+\newline
+\newline
+\hspace*{1cm}
+\texttt{m$\_$OBJECT$\_$POINTER$\_$NAME$\rightarrow$LIBRARY$\_$MAINFUNCTION();}
+\newline
+\newline
+If the \texttt{LIBRARYOBJECT1} have be executed, it is enough to assign the position \texttt{0} to the pointer:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{m$\_$LIBRARY$\_$OBJECT$\_$POINTER = m$\_$LIBRARY$\_$NAME[0].ptr();}
+\newline
+\newline
+if the \texttt{LIBRARYOBJECT2} have to be executed instead, the position \texttt{1} must be assigned to the pointer:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{m$\_$LIBRARY$\_$OBJECT$\_$POINTER = m$\_$LIBRARY$\_$NAME[1].ptr();}
+\newline
+\newline
+however the execution command remains the same for the two objects, as written before:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{m$\_$LIBRARY$\_$OBJECT$\_$POINTER$\rightarrow$LIBRARY$\_$MAINFUNCTION();}
+\newline
+\newline
+Let us see an example using the \texttt{MeshGenratorSF} library. The scheme of the library is shown in Fig. \ref{fig:mesh generator objects}.
+\begin{figure}[htp]
+\center
+\includegraphics[width=1.0\columnwidth]{FIGURES/MeshGeneratorObjects.png}
+\caption{\texttt{MeshGenerator SF} library. The base object and its derived classes.} \label{fig:mesh generator objects}
+\end{figure}
+
+The library vector can be defined as follows:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{\footnotesize{std::vector$<$SConfig::StringT$<$SConfig::SharedPtr$<$MeshGenerator$>>$ m$\_$mGenerator;}}
+\newline
+\newline
+Inside the \textit{input.case} the \texttt{List} option is the following:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{.StandardShockFitting.MeshGneeratorList = ReadTriangle ReSdwInfo Tricall}
+\newline
+\newline
+The pointer to the first object of the \texttt{List} is instantiated through the command:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{SConfig::SharedPtr$<$MeshGenerator$>$m$\_$readTriangle;}
+\newline
+\newline
+and it is assigned to the first entity of the \texttt{MeshGeneratorList}:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{m$\_$readTriangle = m$\_$mGenerator[0].ptr();}
+\newline
+\newline
+and it is executed:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{m$\_$readTriangle$\rightarrow$generate();}
+\newline
+\newline
+In the next section the creation of a new component inside an existing library is explained.
+
+\section{How to add a new component to an existing library}
+\label{sec:create a library component}
+
+Each library has an own directory. The new member has to be placed in the folder of the library it belongs to.
+\newline
+The creation of a new library member is straightforward by following the "\texttt{Dummy}" template. 
+\newline
+In each library's directory there is a \textit{dummy} component (e.g: the \texttt{MeshGeneratorSF} library contains the \texttt{DummyMeshGenerator} member, the \texttt{RemeshingSF} library contains the \texttt{DummyRemeshing} and so on). By following the structure of the \texttt{Dummy} component, a new object can be easily created.
+
+\underline{\emph{WATCH OUT}}: add always the new component to the \textit{CMakeLists.txt} file of the library directory.
+\newline
+Once that the new component is created, it must be linked to the overall framework. These three steps can be follow:
+
+\begin{enumerate}
+\item{define a new library pointer inside the \texttt{StandardShockFitting.hh} file. The new pointer must be related to the \textit{base} class of the library:
+\newline
+\newline
+\hspace*{0.8cm} \texttt{SConfig::SharedPtr$<$LIBRARY$\_$BASECLASS$\_$NAME$>$ m$\_$OBJECT$\_$POINTER$\_$NAME;}
+}
+\item{Inside the \texttt{StandardShockFitting.cxx} file, assign the pointer to a position of the library's vector, according to the \textit{input.case} \texttt{List}:
+\newline
+\newline
+\hspace*{0.8cm} \texttt{m$\_$OBJECT$\_$POINTER$\_$NAME = m$\_$LIBRARY$\_$NAME.[POSITION].ptr();}
+}
+\item{use the pointer on object's place:
+\newline
+\newline
+\hspace*{0.8cm} \texttt{m$\_$OBJECT$\_$POINTER$\_$NAME$\rightarrow$MAINFUNCTION();}
+}
+\end{enumerate}
+
+In the next section the creation of a new library is explained.
+
+\section{How to add a new library}
+\label{sec:add new library}
+
+\subsection{Creating a new library}
+
+As already explained in chapter 5 of \cite{deamicisthesis}, each library has a main component, the \textit{base} class, and several members, the \textit{derived} classes. 
+Each \textit{base} class has the \texttt{setup} and \texttt{unsetup} methods and a function identifying its main purpose. The members of the library inherits and customizes the main function according to their personal task.
+\newline
+Let us suppose to need a new library, e.g \texttt{DummyLibrarySF}. The main goal of this library is \texttt{create}.
+\newline
+The steps toward the creation of the library are the following:
+\begin{enumerate}
+\item{insert the description of the \textit{base} class in the \texttt{Framework} folder. Here all the \textit{base} classes of the library with their functions are defined.
+
+\underline{\emph{WATCH OUT}}: add always the new members to the \textit{CMakeLists.cxx} file of the \texttt{Framework} directory.
+
+In List \ref{fig:dummy library hh} the \texttt{.hh} file is shown, while is List \ref{fig:dummy library cxx} the \texttt{.cxx} file is represented.
+
+\begin{figure}[htp]
+\center
+\includegraphics[width=1.0\columnwidth]{FIGURES/DummyLibraryhh.png}
+\caption{List showing \texttt{DummyLibrary.hh} file.} \label{fig:dummy library hh}
+\end{figure}
+
+\begin{figure}[htp]
+\center
+\includegraphics[width=1.0\columnwidth]{FIGURES/DummyLibrarycxx.png}
+\caption{List showing \texttt{DummyLibrary.cxx} file.} \label{fig:dummy library cxx}
+\end{figure}
+}
+\item{create a library directory in the \texttt{src} folder. The directory should be named as \texttt{DummyLibrarySF}. Here all the \textit{derived} classes can be stored.
+}
+\item{create the \textit{CMakeLists.txt} file as appeared below:
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{LIST (APPEND DummyLibrarySF$\_$files}
+\newline
+\hspace*{0.8cm}
+\texttt{DummyComponent.cxx}
+\newline
+\hspace*{0.8cm}
+\texttt{DummyComponent.hh}
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{LIST (APPEND DummyLibrarySF$\_$libs Framework SConfig MathTools)}
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{SF$\_$ADD$\_$PLUGIN$\_$LIBRARY (DummyLibrarySF)}
+\newline
+\newline
+\hspace*{0.8cm}
+\texttt{$\#$SF$\_$WARN$\_$ORPHAN$\_$FILES()}
+\newline
+\newline
+After "\texttt{LIST}" all the library components (\textit{e.g}: \texttt{DummyComponent}) come in succession.
+}
+\item{start to create the libraries component beginning with the \texttt{Dummy} one. An example of a \texttt{DummyComponent} \texttt{.hh} and \texttt{.cxx} files is shown in List \ref{fig:dummy component hh} and List \ref{fig:dummy component cxx}.
+
+\begin{figure}[htp]
+\center
+\includegraphics[width=0.5\columnwidth]{FIGURES/DummyComponenthh.png}
+\caption{List showing \texttt{DummyComponent.hh} file.} \label{fig:dummy component hh}
+\end{figure}
+
+\begin{figure}[htp]
+\center
+\includegraphics[width=0.6\columnwidth]{FIGURES/DummyComponentcxx.png}
+\caption{List showing \texttt{DummyComponent.cxx} file.} \label{fig:dummy component cxx}
+\end{figure}
+
+As appears in Lists \ref{fig:dummy component hh} and \ref{fig:dummy component cxx}, the \texttt{DummyComponent} inherits the main \texttt{DummyLibrary} functions (\textit{setup} and \textit{unsetup}) and customizes the key function (\textit{create}) to its purposes (e.g: creating a file with a specified value written inside). 
+\newline
+To the \texttt{m$\_$file} variable is assigned, automatically, the value named \texttt{.CreatingFile} and specified inside the \textit{input.case}\footnote{in the \textit{input.case} the KEY = VALUE format will be:
+\newline
+\texttt{.DummyLibrary.DummyComponent.CreatingFile = example.txt}}.
+\newline
+Following this example other \texttt{DummyLibrarySF} members can be generated.
+}
+\item{add the new library to the \textit{CMakeLists.txt} file of the folder in which the current model of the Shock-fitting Solver is called and tested. In List \ref{fig:test standard cmakelists} is shown an example related to the \texttt{StandardShockFitting} model.
+
+\begin{figure}[htp]
+\center
+\includegraphics[width=0.8\columnwidth]{FIGURES/TestStandardSFCMakeLists.png}
+\caption{List showing \texttt{TestStandardSF} \textit{CMakeLists.txt} file.} \label{fig:test standard cmakelists}
+\end{figure}
+}
+\end{enumerate}
+
+\subsection{Linking the new library to the overall framework}
+
+Once that the new library is ready to operate, it must be inserted in the overall framework of the Shock-fitting Solver. 
+\newline
+In order to accomplish it, follow the steps listed hereafter:
+\begin{enumerate}
+\item{define the library vector inside the \texttt{ShockFittingObj.hh} file:
+\newline
+\newline
+\hspace*{1cm} \texttt{std::vector$<$PAIR$\_$TYPE(DummyLibrary)$>$ m$\_${}dummyLib;}
+\newline
+\newline
+}
+\item{make the library \textit{configurable} through the following command (from here after the defined lines must be specified inside the \texttt{ShockFittingObj.cxx} file) :
+\newline
+\newline
+\hspace*{1cm} \texttt{m$\_$dummyLib = vector$<$PAIR$\_$TYPE(DummyLibrary)$>$();}
+\newline
+\hspace*{1cm} \texttt{addOption("DummyLibraryList",$\&$m$\_$dummyLib,}
+\newline
+\hspace*{3cm} \texttt{"List of the DummyLibrary objects")};
+\newline
+\newline
+}
+\item{make the library \textit{registrable} through the command \footnote{this line corresponds to a function already defined in the \texttt{ShockFittingObj.hh} file}:
+\newline
+\newline
+\hspace*{1cm} \texttt{createList$<$DummyLibrary$>$(m$\_$dummyLib);}
+}
+\item{in order to configure, set-up and unset-up the library components at run time, the following lines must be specified:
+\newline
+\newline
+\hspace*{1cm} \texttt{for(unsigned i=0;i$<$ m$\_$dummyLib.size(); i++)} $\{$
+\newline
+\hspace*{2cm} \texttt{configureDeps(cmap,$\&$m$\_$dummyLib$[$i$]$.ptr()$\to$get();}
+\newline
+\hspace*{1cm} $\}$
+\newline
+\newline
+\hspace*{1cm} \texttt{for(unsigned i=0;i$<$ m$\_$dummyLib.size(); i++)} $\}$
+\newline
+\hspace*{2cm} \texttt{m$\_$dummyLib$[$i$]$.ptr()$\to$setup();}
+\newline
+\hspace*{1cm} $\}$
+\newline
+\newline
+\hspace*{1cm}\texttt{for(unsigned i=0;i$<$ m$\_$dummyLib.size(); i++)} 
+\newline
+\hspace*{2cm} \texttt{m$\_$dummyLib$[$i$]$.ptr()$\to$unsetup();}
+\newline
+\hspace*{1cm} $\}$
+}
+\item{create the library components by following section \ref{sec:how to create a lib component}.}
+\end{enumerate}
+
+\begin{thebibliography}{9}
+
+\bibitem{deamicisthesis}
+Valentina De Amicis,
+\emph{Implementation and verification of a shock$-$fitting solver for hypersonic flows},
+Master Thesis (2015).
+
+\bibitem{deamicisreport}
+Valentina De Amicis,
+\emph{An unstructured, two-dimensional, shock-fitting solver for hypersonic flows},
+VKI Project Report (2015).
+
+\bibitem{shockfittingalgorithm}
+R. Paciorri and A. Bonfiglioli,
+\emph{Shock interaction computations on unstructured, two-dimensional grids using a shock-fitting technique},
+Journal of Computational Physics, \textbf{230}, pag. 3155 $-$ 3177, 2011.
+
+\bibitem{triangle}
+ Jonathan Richard Shewchuk,
+ \emph{Triangle, a Two-Dimensional Quality Mesh Generator and Delaunay Triangulator.},
+ \texttt{https://www.cs.cmu.edu/$\sim$quake/triangle.html}.
+ 
+\end{thebibliography}
+
+\end{document}
