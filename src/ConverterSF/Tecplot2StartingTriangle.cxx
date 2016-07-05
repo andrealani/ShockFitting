@@ -395,7 +395,7 @@ void Tecplot2StartingTriangle::writeTriangleFmt()
    for(unsigned IB=m_nbfac;IB<nFacB.at(IFACE)+m_nbfac;IB++) {
     NBND.str(string());
     NBND << namebnd.at(IFACE); // c++ indeces start from 0
-    if(NBND=="InnerSup" || NBND=="InnerSub") { NBND << "10"; }
+    if(NBND.str() == "InnerSup" || NBND.str() == "InnerSub") { NBND << "10"; }
     fprintf(trianglefile,"%5u",IB+1);
     fprintf(trianglefile,"%5i %5i",bndfac.at(IB*3+0),bndfac.at(IB*3+1));
     fprintf(trianglefile,"%3s %s",NBND.str().c_str()," \n");
