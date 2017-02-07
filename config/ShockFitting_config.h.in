@@ -93,8 +93,12 @@
   #endif
 #endif
 
+// Triangle definitions 
 #cmakedefine SF_HAVE_TRILIBRARY      
 #cmakedefine ANSI_DECLARATORS
 #cmakedefine NO_TIMER
+
+// CGAL definitions
+#cmakedefine SF_HAVE_CGAL
 
 #endif // !ShockFitting_SFconfig_hh

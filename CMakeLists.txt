@@ -136,8 +136,9 @@ ADD_DEFINITIONS  ( -DNO_TIMER )
 ADD_DEFINITIONS  ( -DANSI_DECLARATORS )
 ADD_DEFINITIONS  ( -DTRILIBRARY )
 
-# check for subversion support
-#INCLUDE(CheckSvnVersion)
+IF (NOT CGAL_HOME EQUAL "")
+SET(SF_HAVE_CGAL 1 CACHE BOOL "Definition of symbol for using CGAL library")
+ENDIF()
 
 ##############################################################################
 LOG ( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" )
@@ -198,6 +199,11 @@ LOG ( " Kernel libs           : [${SF_KERNEL_LIBS}]")
 LOG ( " Static plugin libs    : [${SF_KERNEL_STATIC_LIBS}]")
 LOG ( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 LOG ( "")
+LOG ( "    SF_HAVE_TRILIBRARY : [${SF_HAVE_TRILIBRARY}]" )
+LOG ( "    SF_HAVE_CGAL       : [${SF_HAVE_CGAL}]" )
+LOG ( "    CGAL_HOME          : [${CGAL_HOME}]" )
+LOG ( "    CGAL_INCLUDE_DIR   : [${CGAL_INCLUDE_DIR}]" )
+LOG ( "    CGAL_LIBRARIES     : [${CGAL_LIBRARIES}]" )
 
 # if file with orphan files exists remove it
 SET ( ORPHAN_FILE "${ShockFitting_BINARY_DIR}/OrphanFiles.txt" )

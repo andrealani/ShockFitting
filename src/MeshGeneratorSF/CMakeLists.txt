@@ -31,8 +31,14 @@ Tricall.hh
 )
 LIST ( APPEND TriangleSF_libs Framework SConfig MathTools MeshGeneratorSF triangleLib )
 SF_ADD_PLUGIN_LIBRARY ( TriangleSF )
-
 ENDIF()
+
+# example for CGAL (not necessarily to be put here)
+# IF (SF_HAVE_CGAL)
+# LIST ( APPEND CGALSF_includedirs ${CGAL_INCLUDE_DIR} )
+# LIST ( APPEND CGALSF_libs Framework SConfig MathTools MeshGeneratorSF ${CGAL_LIBRARIES} )
+# SF_ADD_PLUGIN_LIBRARY ( CGALSF )
+# ENDIF()
 
 #SF_WARN_ORPHAN_FILES()
 
