@@ -136,9 +136,11 @@ ADD_DEFINITIONS  ( -DNO_TIMER )
 ADD_DEFINITIONS  ( -DANSI_DECLARATORS )
 ADD_DEFINITIONS  ( -DTRILIBRARY )
 
-IF (NOT CGAL_HOME EQUAL "")
-SET(SF_HAVE_CGAL 1 CACHE BOOL "Definition of symbol for using CGAL library")
-ENDIF()
+# CGAL
+FIND_PACKAGE(CGAL)
+#IF (NOT CGAL_HOME EQUAL "")
+#SET(SF_HAVE_CGAL 1 CACHE BOOL "Definition of symbol for using CGAL library")
+#ENDIF()
 
 ##############################################################################
 LOG ( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" )
